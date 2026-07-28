@@ -121,9 +121,13 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 
 /* ---------- HERO ---------- */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:140px 0 90px}
-.hero-bg{position:absolute;inset:-6% 0;z-index:0;background:url('assets/hero-bg.webp') center 38%/cover no-repeat;will-change:transform}
+.hero-bg{position:absolute;inset:-6% 0;z-index:0;overflow:hidden;will-change:transform}
+.hero-bg::before{content:"";position:absolute;inset:0;background:url('assets/hero-bg.webp') center 38%/cover no-repeat;will-change:transform;animation:kenburns 35s ease-in-out infinite alternate}
+@keyframes kenburns{to{transform:scale(1.07)}}
 .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,var(--bg) 2%,transparent 32%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
 .hero-inner{position:relative;z-index:2;text-align:center}
+.hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
+@keyframes halo{from{opacity:.5}to{opacity:1}}
 .hero-inner .sec-tag{justify-content:center}
 .hero h1{font-size:clamp(50px,8.4vw,132px);line-height:1.06;margin:26px auto 30px;font-weight:600;text-align:center}
 .hero h1 em{font-style:italic;font-weight:500;color:var(--bronze-hi)}
