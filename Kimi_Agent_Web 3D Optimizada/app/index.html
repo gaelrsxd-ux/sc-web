@@ -160,7 +160,7 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
   100%{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
 }
 /* El velo pasa a .hero para quedar por encima de los dos planos */
-.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,var(--bg) 2%,transparent 32%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,var(--bg) 9%,rgba(10,11,14,.86) 20%,transparent 46%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
 .hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(calc(var(--mx)*-.15),calc(var(--my)*-.15),0);will-change:transform}
 .hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
 @keyframes halo{from{opacity:.5}to{opacity:1}}
@@ -183,7 +183,7 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 /* El velo arranca casi opaco: el hero tiene fondo propio y se desplaza con el
    scroll, mientras el lienzo va fijo. Sin esta apertura gradual se vería la
    costura entre ambos como una línea horizontal. */
-.manifesto{position:relative;text-align:center;background:radial-gradient(ellipse 72% 58% at 50% -6%,rgba(200,169,106,.13),transparent 66%),linear-gradient(180deg,rgba(10,11,14,.995) 0%,rgba(10,11,14,.96) 12%,rgba(10,11,14,.88) 42%,rgba(10,11,14,.83) 100%);padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
+.manifesto{position:relative;text-align:center;background:radial-gradient(ellipse 72% 58% at 50% -6%,rgba(200,169,106,.13),transparent 66%),linear-gradient(180deg,rgba(10,11,14,.995) 0%,rgba(10,11,14,.96) 14%,rgba(10,11,14,.89) 48%,rgba(10,11,14,.86) 100%);padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
 /* La bruma del hero desciende hasta aquí: la misma foto que ya está cacheada,
    ampliada y casi apagada. Encadena las dos secciones y cuesta 0 KB. */
 /* La bruma que antes se pintaba aquí la aporta ahora la escena 0 del lienzo */
@@ -196,7 +196,7 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 .manifesto .sig{margin-top:32px;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--muted)}
 
 /* ---------- BAIT: mejor proyecto ---------- */
-.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(44px,5.5vw,80px);background:linear-gradient(180deg,rgba(10,11,14,.83),rgba(10,11,14,.89))}
+.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(44px,5.5vw,80px);background:linear-gradient(180deg,rgba(10,11,14,.86),rgba(10,11,14,.87))}
 /* Retícula de plano técnico que emerge hacia abajo: da cuerpo al "construimos
    el sistema" y entrega el testigo a la foto de acero y vidrio de Servicios. */
 .bait::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(200,169,106,.14) 0 1px,transparent 1px 104px),repeating-linear-gradient(0deg,rgba(200,169,106,.07) 0 1px,transparent 1px 104px);-webkit-mask-image:linear-gradient(to bottom,transparent 6%,rgba(0,0,0,.8) 70%,#000 100%);mask-image:linear-gradient(to bottom,transparent 6%,rgba(0,0,0,.8) 70%,#000 100%)}
@@ -214,9 +214,12 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 /* ---------- SERVICIOS ---------- */
 /* Las secciones ya no llevan su propia foto: solo el velo que hace legible el
    texto. La imagen la pone el lienzo del descenso, que va por detrás. */
-#servicios{background:linear-gradient(180deg,rgba(10,11,14,.90),rgba(10,11,14,.85));border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding-top:clamp(52px,6.5vw,92px)}
-#proyectos{background:linear-gradient(180deg,rgba(10,11,14,.91),rgba(10,11,14,.87))}
-#contacto{background:linear-gradient(180deg,rgba(10,11,14,.92),rgba(10,11,14,.88));border-top:1px solid var(--line-soft)}
+/* Velos encadenados: el valor final de cada sección es el inicial de la
+   siguiente, y todos sobre el mismo negro rgba(10,11,14). Sin bordes en las
+   fronteras: cualquier raya delata dónde acaba una sección. */
+#servicios{background:linear-gradient(180deg,rgba(10,11,14,.87),rgba(10,11,14,.84));padding-top:clamp(52px,6.5vw,92px)}
+#proyectos{background:linear-gradient(180deg,rgba(10,11,14,.855),rgba(10,11,14,.875))}
+#contacto{background:linear-gradient(180deg,rgba(10,11,14,.855),rgba(10,11,14,.90))}
 /* legibilidad reforzada en contacto */
 form.frame{background:rgba(12,14,19,.93)}
 .frame label{color:#CFC9BB}
@@ -245,7 +248,9 @@ form.frame{background:rgba(12,14,19,.93)}
 .dia{display:inline-block;width:8px;height:8px;background:currentColor;transform:rotate(45deg);flex-shrink:0}
 
 /* ---------- CIFRAS ---------- */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+/* La banda de cifras no tenía fondo: el lienzo asomaba a plena intensidad y
+   se veía más clara que sus vecinas. Ahora entra en la cadena de velos. */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:linear-gradient(180deg,rgba(10,11,14,.84),rgba(10,11,14,.855))}
 @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
 .stat{padding:clamp(36px,4.5vw,64px) 18px;text-align:center;border-left:1px solid var(--line-soft)}
 .stat:first-child{border-left:none}
@@ -269,7 +274,9 @@ form.frame{background:rgba(12,14,19,.93)}
 .work .res span{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
 
 /* ---------- RESEÑAS ---------- */
-#resenas{background:linear-gradient(180deg,rgba(17,19,24,.90),rgba(17,19,24,.86));border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);overflow:hidden}
+/* Antes usaba --bg2 (#111318), más azul que el resto: ese era el cambio de
+   color que se notaba al entrar en esta sección. Ahora comparte el negro. */
+#resenas{background:linear-gradient(180deg,rgba(10,11,14,.875),rgba(10,11,14,.855));overflow:hidden}
 #resenas::before{content:"";background:radial-gradient(ellipse 55% 62% at 50% 55%,rgba(200,169,106,.08),transparent 72%),repeating-conic-gradient(from 0deg at 50% 42%,rgba(200,169,106,.05) 0deg .6deg,transparent .6deg 9deg);-webkit-mask-image:radial-gradient(ellipse 70% 80% at 50% 42%,black 20%,transparent 75%);mask-image:radial-gradient(ellipse 70% 80% at 50% 42%,black 20%,transparent 75%)}
 /* comilla gigante en contorno */
 #resenas::after{content:"“";position:absolute;left:-2vw;top:6%;font-family:var(--serif);font-size:clamp(260px,34vw,520px);line-height:.8;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.11);pointer-events:none;z-index:0}
@@ -306,7 +313,7 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
 .form-msg.show{opacity:1}
 
 /* ---------- FOOTER ---------- */
-footer{position:relative;z-index:2;border-top:1px solid var(--line-soft);padding:clamp(56px,7vw,90px) 0 36px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05)),linear-gradient(180deg,rgba(10,11,14,.90),rgba(10,11,14,.98))}
+footer{position:relative;z-index:2;padding:clamp(56px,7vw,90px) 0 36px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05)),linear-gradient(180deg,rgba(10,11,14,.90),rgba(10,11,14,.985))}
 footer .wordmark{font-family:var(--serif);font-size:clamp(34px,4.4vw,54px);font-weight:600;line-height:1}
 footer .wordmark em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 footer .motto{margin:20px 0 8px;font-size:10px;letter-spacing:7px;text-transform:uppercase;color:var(--muted)}
