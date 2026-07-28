@@ -100,6 +100,11 @@ nav ul a:hover::after{width:100%}
 
 /* ---------- LAYOUT ---------- */
 main{position:relative;z-index:2}
+/* ---------- DESCENSO: lienzo fijo bajo toda la página ---------- */
+#descenso{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;contain:strict}
+#descenso .esc{position:absolute;left:-4%;right:-4%;top:-16%;bottom:-16%;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;visibility:hidden;will-change:transform,opacity;backface-visibility:hidden}
+/* Veta de luz: el estrato que se atraviesa al cambiar de escena */
+#veta{position:absolute;left:0;right:0;top:50%;height:44vh;margin-top:-22vh;opacity:0;will-change:transform,opacity;background:radial-gradient(ellipse 82% 48% at 50% 50%,rgba(200,169,106,.22),rgba(200,169,106,.06) 46%,transparent 74%)}
 .wrap{max-width:1560px;margin:auto;padding:0 clamp(22px,4.5vw,72px)}
 section{padding:clamp(84px,10vw,140px) 0;position:relative}
 section::before{position:absolute;inset:0;pointer-events:none;z-index:0}
@@ -175,11 +180,13 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 /* ---------- MANIFIESTO ---------- */
 /* El resplandor va en el propio background: el ::before original lo definía
    sin position ni tamaño, así que era una caja de cero píxeles y no se veía. */
-.manifesto{position:relative;text-align:center;background:radial-gradient(ellipse 72% 58% at 50% -6%,rgba(200,169,106,.13),transparent 66%),var(--bg);padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
+/* El velo arranca casi opaco: el hero tiene fondo propio y se desplaza con el
+   scroll, mientras el lienzo va fijo. Sin esta apertura gradual se vería la
+   costura entre ambos como una línea horizontal. */
+.manifesto{position:relative;text-align:center;background:radial-gradient(ellipse 72% 58% at 50% -6%,rgba(200,169,106,.13),transparent 66%),linear-gradient(180deg,rgba(10,11,14,.995) 0%,rgba(10,11,14,.96) 12%,rgba(10,11,14,.88) 42%,rgba(10,11,14,.83) 100%);padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
 /* La bruma del hero desciende hasta aquí: la misma foto que ya está cacheada,
    ampliada y casi apagada. Encadena las dos secciones y cuesta 0 KB. */
-.manifesto::before{content:"";position:absolute;left:-8%;right:-8%;top:-14%;bottom:-6%;z-index:0;background:url('assets/hero-bg.webp') center 20%/cover no-repeat;opacity:.17;will-change:transform;animation:brumaCae 54s ease-in-out infinite alternate;-webkit-mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.55) 50%,transparent 86%);mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.55) 50%,transparent 86%)}
-@keyframes brumaCae{from{transform:scale(1.16) translate3d(-1.6%,-1%,0)}to{transform:scale(1.3) translate3d(1.6%,1%,0)}}
+/* La bruma que antes se pintaba aquí la aporta ahora la escena 0 del lienzo */
 /* marca de agua "&" gigante en contorno — puro texto, cero peso */
 .manifesto::after{content:"&";position:absolute;right:-3vw;top:50%;transform:translateY(-50%);font-family:var(--serif);font-style:italic;font-size:clamp(300px,40vw,620px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.11);pointer-events:none;z-index:0;will-change:transform;animation:ampRespira 30s ease-in-out infinite alternate}
 @keyframes ampRespira{from{transform:translateY(-50%) translate3d(0,-16px,0) rotate(-1.1deg)}to{transform:translateY(-50%) translate3d(0,16px,0) rotate(1.1deg)}}
@@ -189,7 +196,7 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 .manifesto .sig{margin-top:32px;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--muted)}
 
 /* ---------- BAIT: mejor proyecto ---------- */
-.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(44px,5.5vw,80px)}
+.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(44px,5.5vw,80px);background:linear-gradient(180deg,rgba(10,11,14,.83),rgba(10,11,14,.89))}
 /* Retícula de plano técnico que emerge hacia abajo: da cuerpo al "construimos
    el sistema" y entrega el testigo a la foto de acero y vidrio de Servicios. */
 .bait::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(200,169,106,.14) 0 1px,transparent 1px 104px),repeating-linear-gradient(0deg,rgba(200,169,106,.07) 0 1px,transparent 1px 104px);-webkit-mask-image:linear-gradient(to bottom,transparent 6%,rgba(0,0,0,.8) 70%,#000 100%);mask-image:linear-gradient(to bottom,transparent 6%,rgba(0,0,0,.8) 70%,#000 100%)}
@@ -205,9 +212,11 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 @keyframes ringp{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.28);opacity:0}}
 
 /* ---------- SERVICIOS ---------- */
-#servicios{background:linear-gradient(180deg,rgba(10,11,14,.94),rgba(10,11,14,.9)),url('assets/bg-servicios.webp') center/cover no-repeat,var(--bg2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding-top:clamp(52px,6.5vw,92px)}
-#proyectos{background:linear-gradient(180deg,rgba(10,11,14,.95),rgba(10,11,14,.91)),url('assets/bg-proyectos.webp') center/cover no-repeat,var(--bg)}
-#contacto{background:linear-gradient(180deg,rgba(10,11,14,.96),rgba(10,11,14,.92)),url('assets/bg-contacto.webp') center/cover no-repeat,var(--bg);border-top:1px solid var(--line-soft)}
+/* Las secciones ya no llevan su propia foto: solo el velo que hace legible el
+   texto. La imagen la pone el lienzo del descenso, que va por detrás. */
+#servicios{background:linear-gradient(180deg,rgba(10,11,14,.90),rgba(10,11,14,.85));border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding-top:clamp(52px,6.5vw,92px)}
+#proyectos{background:linear-gradient(180deg,rgba(10,11,14,.91),rgba(10,11,14,.87))}
+#contacto{background:linear-gradient(180deg,rgba(10,11,14,.92),rgba(10,11,14,.88));border-top:1px solid var(--line-soft)}
 /* legibilidad reforzada en contacto */
 form.frame{background:rgba(12,14,19,.93)}
 .frame label{color:#CFC9BB}
@@ -260,7 +269,7 @@ form.frame{background:rgba(12,14,19,.93)}
 .work .res span{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
 
 /* ---------- RESEÑAS ---------- */
-#resenas{background:var(--bg2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);overflow:hidden}
+#resenas{background:linear-gradient(180deg,rgba(17,19,24,.90),rgba(17,19,24,.86));border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);overflow:hidden}
 #resenas::before{content:"";background:radial-gradient(ellipse 55% 62% at 50% 55%,rgba(200,169,106,.08),transparent 72%),repeating-conic-gradient(from 0deg at 50% 42%,rgba(200,169,106,.05) 0deg .6deg,transparent .6deg 9deg);-webkit-mask-image:radial-gradient(ellipse 70% 80% at 50% 42%,black 20%,transparent 75%);mask-image:radial-gradient(ellipse 70% 80% at 50% 42%,black 20%,transparent 75%)}
 /* comilla gigante en contorno */
 #resenas::after{content:"“";position:absolute;left:-2vw;top:6%;font-family:var(--serif);font-size:clamp(260px,34vw,520px);line-height:.8;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.11);pointer-events:none;z-index:0}
@@ -297,7 +306,7 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
 .form-msg.show{opacity:1}
 
 /* ---------- FOOTER ---------- */
-footer{position:relative;z-index:2;border-top:1px solid var(--line-soft);padding:clamp(56px,7vw,90px) 0 36px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05))}
+footer{position:relative;z-index:2;border-top:1px solid var(--line-soft);padding:clamp(56px,7vw,90px) 0 36px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05)),linear-gradient(180deg,rgba(10,11,14,.90),rgba(10,11,14,.98))}
 footer .wordmark{font-family:var(--serif);font-size:clamp(34px,4.4vw,54px);font-weight:600;line-height:1}
 footer .wordmark em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 footer .motto{margin:20px 0 8px;font-size:10px;letter-spacing:7px;text-transform:uppercase;color:var(--muted)}
@@ -313,6 +322,18 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
 </style>
 </head>
 <body>
+
+<!-- ============ DESCENSO ============
+     Lienzo único fijo detrás de toda la página. Las escenas se funden entre
+     sí mientras comparten un mismo desplazamiento: el ojo lo lee como una
+     sola cámara bajando, no como fondos que se relevan. -->
+<div id="descenso" aria-hidden="true">
+  <div class="esc" data-src="assets/hero-bg.webp"    data-ancla=".manifesto"></div>
+  <div class="esc" data-src="assets/bg-servicios.webp" data-ancla="#servicios"></div>
+  <div class="esc" data-src="assets/bg-proyectos.webp" data-ancla="#proyectos"></div>
+  <div class="esc" data-src="assets/bg-contacto.webp"  data-ancla="#contacto"></div>
+  <div id="veta"></div>
+</div>
 
 <div id="preloader">
   <img src="assets/logo.svg" alt="S&C Solutions Company">
@@ -634,6 +655,56 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
   },{passive:true});
   function t0(){return performance.now();}
   arranca();
+})();
+
+/* ---------- DESCENSO: una sola cámara que baja por toda la página ----------
+   Cada escena tiene una sección de anclaje. Su peso vale 1 cuando esa sección
+   está centrada en pantalla y cae a 0 justo cuando lo está la vecina, así que
+   los pesos de dos escenas contiguas siempre suman 1: fundido limpio.
+   Todas comparten el mismo factor de desplazamiento, y de ahí viene la
+   ilusión de continuidad: no se relevan, la cámara sigue bajando. */
+(()=>{
+  const cont=document.getElementById('descenso');
+  if(!cont)return;
+  const esc=[...cont.querySelectorAll('.esc')]
+    .map(el=>({el,ancla:document.querySelector(el.dataset.ancla),lista:false}))
+    .filter(o=>o.ancla);
+  const n=esc.length; if(!n)return;
+  const veta=document.getElementById('veta');
+  const K=.18;               /* recorrido de la cámara por escena */
+  let pend=false;
+  function pinta(){
+    pend=false;
+    const vh=innerHeight;
+    const c=esc.map(o=>{const r=o.ancla.getBoundingClientRect();return r.top+r.height/2-vh/2;});
+    let f=0;
+    for(let i=0;i<n;i++){
+      const d=c[i];
+      let g=d<0?(i<n-1?c[i+1]-c[i]:vh*2):(i>0?c[i]-c[i-1]:vh);
+      g=Math.max(g,1);
+      const w=Math.max(0,1-Math.abs(d)/g);
+      const o=esc[i];
+      if(w>.004){
+        if(!o.lista){o.el.style.backgroundImage="url('"+o.el.dataset.src+"')";o.lista=true;}
+        if(o.el.style.visibility!=='visible')o.el.style.visibility='visible';
+        o.el.style.opacity=w.toFixed(3);
+        o.el.style.transform='translate3d(0,'+(d*K).toFixed(1)+'px,0) scale('+(1.14-w*.06).toFixed(3)+')';
+      }else if(o.el.style.visibility!=='hidden'){
+        o.el.style.visibility='hidden';o.el.style.opacity='0';
+      }
+      f+=i*w;
+    }
+    if(veta){
+      const fr=f-Math.floor(f);
+      veta.style.opacity=(4*fr*(1-fr)*.9).toFixed(3);
+      veta.style.transform='translate3d(0,'+((.5-fr)*90).toFixed(1)+'vh,0)';
+    }
+  }
+  const pide=()=>{if(!pend){pend=true;requestAnimationFrame(pinta);}};
+  addEventListener('scroll',pide,{passive:true});
+  addEventListener('resize',pide,{passive:true});
+  addEventListener('load',pide);
+  pinta();
 })();
 
 /* ---------- ZOOM ENTRE SECCIONES ---------- */
