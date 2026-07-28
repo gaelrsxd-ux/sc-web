@@ -156,7 +156,7 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 }
 /* El velo pasa a .hero para quedar por encima de los dos planos */
 .hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,var(--bg) 2%,transparent 32%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
-.hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(calc(var(--mx)*-.28),calc(var(--my)*-.28),0);will-change:transform}
+.hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(calc(var(--mx)*-.15),calc(var(--my)*-.15),0);will-change:transform}
 .hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
 @keyframes halo{from{opacity:.5}to{opacity:1}}
 .hero-inner .sec-tag{justify-content:center}
@@ -590,7 +590,7 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
 (()=>{
   const hero=document.querySelector('.hero');
   if(!hero||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const AMPX=30,AMPY=18,ESPERA=2200;
+  const AMPX=62,AMPY=32,ESPERA=2200;
   let px=0,py=0,gx=0,gy=0,cx=0,cy=0;
   let ultPuntero=-1e9,ultGiro=-1e9,visible=true,raf=0;
   const lim=(v,m)=>Math.max(-m,Math.min(m,v));
@@ -600,7 +600,7 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
     let dx,dy;
     if(t-ultPuntero<ESPERA){dx=px;dy=py;}
     else if(t-ultGiro<ESPERA){dx=gx;dy=gy;}
-    else{dx=Math.sin(t/7000)*AMPX*.85;dy=Math.sin(t/9300+1.1)*AMPY*.85;}
+    else{dx=Math.sin(t/4800)*AMPX*.9;dy=Math.sin(t/6200+1.1)*AMPY*.9;}
     cx+=(dx-cx)*.06;cy+=(dy-cy)*.06;
     hero.style.setProperty('--mx',cx.toFixed(2)+'px');
     hero.style.setProperty('--my',cy.toFixed(2)+'px');
