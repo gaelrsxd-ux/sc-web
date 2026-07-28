@@ -581,29 +581,49 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
   },{passive:true});
 })();
 
-/* ---------- PROFUNDIDAD CON EL PUNTERO ----------
+/* ---------- PROFUNDIDAD DEL HERO: PUNTERO, GIROSCOPIO Y DERIVA AUTÓNOMA ----------
    Escribe --mx/--my en .hero; el CSS reparte ese desplazamiento entre los dos
    planos (35% el lejano, 100% el cercano) y el titular va en sentido contrario.
+   Tres fuentes con relevo por prioridad: si el puntero lleva un rato quieto
+   entra el giroscopio, y si tampoco hay, una deriva lenta que nunca se repite.
    Solo custom properties: no toca el DOM ni compite con el parallax de scroll. */
 (()=>{
   const hero=document.querySelector('.hero');
   if(!hero||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const AMPX=30,AMPY=18;
-  let tx=0,ty=0,cx=0,cy=0,raf=0;
-  const paso=()=>{
-    cx+=(tx-cx)*.07;cy+=(ty-cy)*.07;
+  const AMPX=30,AMPY=18,ESPERA=2200;
+  let px=0,py=0,gx=0,gy=0,cx=0,cy=0;
+  let ultPuntero=-1e9,ultGiro=-1e9,visible=true,raf=0;
+  const lim=(v,m)=>Math.max(-m,Math.min(m,v));
+  const arranca=()=>{if(!raf&&visible)raf=requestAnimationFrame(paso);};
+  function paso(){
+    const t=performance.now();
+    let dx,dy;
+    if(t-ultPuntero<ESPERA){dx=px;dy=py;}
+    else if(t-ultGiro<ESPERA){dx=gx;dy=gy;}
+    else{dx=Math.sin(t/7000)*AMPX*.85;dy=Math.sin(t/9300+1.1)*AMPY*.85;}
+    cx+=(dx-cx)*.06;cy+=(dy-cy)*.06;
     hero.style.setProperty('--mx',cx.toFixed(2)+'px');
     hero.style.setProperty('--my',cy.toFixed(2)+'px');
-    raf=(Math.abs(tx-cx)>.05||Math.abs(ty-cy)>.05)?requestAnimationFrame(paso):0;
-  };
-  const arranca=()=>{if(!raf)raf=requestAnimationFrame(paso);};
+    raf=visible?requestAnimationFrame(paso):0;
+  }
+  new IntersectionObserver(es=>{visible=es[0].isIntersecting;arranca();},{threshold:0}).observe(hero);
+  /* Al volver de una pestaña en segundo plano el navegador congela rAF: reengancha */
+  addEventListener('visibilitychange',()=>{if(!document.hidden){raf=0;arranca();}},{passive:true});
   hero.addEventListener('pointermove',e=>{
     const r=hero.getBoundingClientRect();
-    tx=((e.clientX-r.left)/r.width-.5)*-2*AMPX;
-    ty=((e.clientY-r.top)/r.height-.5)*-2*AMPY;
-    arranca();
+    px=((e.clientX-r.left)/r.width-.5)*-2*AMPX;
+    py=((e.clientY-r.top)/r.height-.5)*-2*AMPY;
+    ultPuntero=t0(),arranca();
   },{passive:true});
-  hero.addEventListener('pointerleave',()=>{tx=0;ty=0;arranca();},{passive:true});
+  hero.addEventListener('pointerleave',()=>{ultPuntero=-1e9;},{passive:true});
+  addEventListener('deviceorientation',e=>{
+    if(e.gamma==null&&e.beta==null)return;
+    gx=lim((e.gamma||0)/32,1)*-AMPX;
+    gy=lim(((e.beta||0)-45)/32,1)*-AMPY;
+    ultGiro=t0(),arranca();
+  },{passive:true});
+  function t0(){return performance.now();}
+  arranca();
 })();
 
 /* ---------- ZOOM ENTRE SECCIONES ---------- */
