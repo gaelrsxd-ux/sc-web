@@ -120,7 +120,7 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 .in .w,.w.in{opacity:1;transform:none}
 
 /* ---------- HERO ---------- */
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:140px 0 90px}
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:140px 0 90px;--mx:0px;--my:0px}
 .hero-bg{position:absolute;inset:-6% 0;z-index:0;overflow:hidden;will-change:transform}
 /* Dos planos de la misma foto con máscaras complementarias: el lejano se queda
    con el cielo y la bruma, el cercano con los edificios del primer término.
@@ -130,31 +130,33 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 .hero-bg::after{transform-origin:50% 100%;-webkit-mask-image:linear-gradient(to bottom,transparent 55%,#000 78%);mask-image:linear-gradient(to bottom,transparent 55%,#000 78%)}
 #preloader.done ~ main .hero-bg::before{animation:entraLejos 5s cubic-bezier(.4,0,.2,1) both,dronLejos 36s linear 5s infinite}
 #preloader.done ~ main .hero-bg::after{animation:entraCerca 5s cubic-bezier(.4,0,.2,1) both,dronCerca 36s linear 5s infinite}
+/* --mx/--my los escribe el puntero. El plano lejano recibe un 35% del
+   desplazamiento y el cercano el 100%: esa diferencia es la profundidad. */
 @keyframes entraLejos{
-  from{transform:scale(1.26) translate3d(-1%,-.6%,0)}
-  to{transform:scale(1.06) translate3d(-1%,-.6%,0)}
+  from{transform:scale(1.26) translate3d(calc(-1% + var(--mx)*.35),calc(-.6% + var(--my)*.35),0)}
+  to{transform:scale(1.06) translate3d(calc(-1% + var(--mx)*.35),calc(-.6% + var(--my)*.35),0)}
 }
 @keyframes entraCerca{
-  from{transform:perspective(1200px) scale(1.62) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
-  to{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+  from{transform:perspective(1200px) scale(1.62) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
+  to{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
 }
 @keyframes dronLejos{
-  0%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
-  25%{transform:scale(1.09) translate3d(-.3%,-1%,0)}
-  50%{transform:scale(1.12) translate3d(1%,-.3%,0)}
-  75%{transform:scale(1.09) translate3d(.3%,.6%,0)}
-  100%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
+  0%{transform:scale(1.06) translate3d(calc(-1% + var(--mx)*.35),calc(-.6% + var(--my)*.35),0)}
+  25%{transform:scale(1.09) translate3d(calc(-.3% + var(--mx)*.35),calc(-1% + var(--my)*.35),0)}
+  50%{transform:scale(1.12) translate3d(calc(1% + var(--mx)*.35),calc(-.3% + var(--my)*.35),0)}
+  75%{transform:scale(1.09) translate3d(calc(.3% + var(--mx)*.35),calc(.6% + var(--my)*.35),0)}
+  100%{transform:scale(1.06) translate3d(calc(-1% + var(--mx)*.35),calc(-.6% + var(--my)*.35),0)}
 }
 @keyframes dronCerca{
-  0%{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
-  25%{transform:perspective(1200px) scale(1.24) translate3d(-.8%,-2.8%,0) rotateY(.5deg)}
-  50%{transform:perspective(1200px) scale(1.3) translate3d(3%,-.9%,0) rotateY(-1.2deg)}
-  75%{transform:perspective(1200px) scale(1.24) translate3d(1%,1.8%,0) rotateY(-.4deg)}
-  100%{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+  0%{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
+  25%{transform:perspective(1200px) scale(1.24) translate3d(calc(-.8% + var(--mx)),calc(-2.8% + var(--my)),0) rotateY(.5deg)}
+  50%{transform:perspective(1200px) scale(1.3) translate3d(calc(3% + var(--mx)),calc(-.9% + var(--my)),0) rotateY(-1.2deg)}
+  75%{transform:perspective(1200px) scale(1.24) translate3d(calc(1% + var(--mx)),calc(1.8% + var(--my)),0) rotateY(-.4deg)}
+  100%{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
 }
 /* El velo pasa a .hero para quedar por encima de los dos planos */
 .hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,var(--bg) 2%,transparent 32%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
-.hero-inner{position:relative;z-index:2;text-align:center}
+.hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(calc(var(--mx)*-.28),calc(var(--my)*-.28),0);will-change:transform}
 .hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
 @keyframes halo{from{opacity:.5}to{opacity:1}}
 .hero-inner .sec-tag{justify-content:center}
@@ -577,6 +579,31 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
     if(!vis||ticking)return;ticking=true;
     requestAnimationFrame(()=>{bg.style.transform='translate3d(0,'+(scrollY*0.22)+'px,0)';ticking=false;});
   },{passive:true});
+})();
+
+/* ---------- PROFUNDIDAD CON EL PUNTERO ----------
+   Escribe --mx/--my en .hero; el CSS reparte ese desplazamiento entre los dos
+   planos (35% el lejano, 100% el cercano) y el titular va en sentido contrario.
+   Solo custom properties: no toca el DOM ni compite con el parallax de scroll. */
+(()=>{
+  const hero=document.querySelector('.hero');
+  if(!hero||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const AMPX=30,AMPY=18;
+  let tx=0,ty=0,cx=0,cy=0,raf=0;
+  const paso=()=>{
+    cx+=(tx-cx)*.07;cy+=(ty-cy)*.07;
+    hero.style.setProperty('--mx',cx.toFixed(2)+'px');
+    hero.style.setProperty('--my',cy.toFixed(2)+'px');
+    raf=(Math.abs(tx-cx)>.05||Math.abs(ty-cy)>.05)?requestAnimationFrame(paso):0;
+  };
+  const arranca=()=>{if(!raf)raf=requestAnimationFrame(paso);};
+  hero.addEventListener('pointermove',e=>{
+    const r=hero.getBoundingClientRect();
+    tx=((e.clientX-r.left)/r.width-.5)*-2*AMPX;
+    ty=((e.clientY-r.top)/r.height-.5)*-2*AMPY;
+    arranca();
+  },{passive:true});
+  hero.addEventListener('pointerleave',()=>{tx=0;ty=0;arranca();},{passive:true});
 })();
 
 /* ---------- ZOOM ENTRE SECCIONES ---------- */
