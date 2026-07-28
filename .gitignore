@@ -1,0 +1,10 @@
+# Skills de agentes: ~700 KB de terceros, regenerables con
+#   npx skills add higgsfield-ai/skills
+# Lo que se versiona es skills-lock.json, no los archivos.
+.agents/
+
+# Symlinks a .agents/skills/ — Git en Windows los maneja mal
+.claude/skills/
+
+# Config local de Claude Code (permisos de esta máquina)
+.claude/settings.local.json
