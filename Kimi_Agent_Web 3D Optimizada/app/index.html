@@ -107,6 +107,10 @@ main{position:relative;z-index:2}
 #descenso{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;contain:strict}
 #descenso .esc{position:absolute;left:-4%;right:-4%;top:-16%;bottom:-16%;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;visibility:hidden;will-change:transform,opacity;backface-visibility:hidden}
 /* Veta de luz: el estrato que se atraviesa al cambiar de escena */
+/* Velo único. Su opacidad la mueve el scroll de forma continua (.80 arriba,
+   1 al descender), así que la página se oscurece de manera global y gradual
+   en vez de escalonarse sección a sección. */
+#velo{position:absolute;inset:0;opacity:.8;will-change:opacity;background:linear-gradient(100deg,rgba(10,11,14,.96) 16%,rgba(10,11,14,.885) 58%,rgba(10,11,14,.845))}
 /* Antes era una barra de luz que barría la pantalla; se leía como un efecto
    de edición. Ahora es una lumbre ancha y tenue que sólo calienta el cruce. */
 #veta{position:absolute;left:0;right:0;top:50%;height:78vh;margin-top:-39vh;opacity:0;will-change:transform,opacity;background:radial-gradient(ellipse 96% 52% at 50% 50%,rgba(200,169,106,.085),rgba(200,169,106,.025) 44%,transparent 76%)}
@@ -174,7 +178,9 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
   100%{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
 }
 /* El velo pasa a .hero para quedar por encima de los dos planos */
-.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,rgba(10,11,14,.72) 0%,rgba(10,11,14,.30) 12%,transparent 34%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
+/* El velo del hero desaparece: lo cubre el velo único del lienzo. Sólo queda
+   un oscurecido suave arriba, para que la barra de navegación se lea. */
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(10,11,14,.45),transparent 26%)}
 .hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(calc(var(--mx)*-.15),calc(var(--my)*-.15),0);will-change:transform}
 .hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
 @keyframes halo{from{opacity:.5}to{opacity:1}}
@@ -197,12 +203,8 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 /* El velo arranca casi opaco: el hero tiene fondo propio y se desplaza con el
    scroll, mientras el lienzo va fijo. Sin esta apertura gradual se vería la
    costura entre ambos como una línea horizontal. */
-/* Arranca en .72, el mismo valor con el que cierra el hero, y sube a .86 para
-   entregárselo a .bait. Sin escalón por arriba ni por abajo. */
-.manifesto{position:relative;text-align:center;background:radial-gradient(ellipse 72% 58% at 50% -6%,rgba(200,169,106,.13),transparent 66%),linear-gradient(180deg,rgba(10,11,14,.72) 0%,rgba(10,11,14,.82) 30%,rgba(10,11,14,.86) 100%);padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
-/* Hereda el velo direccional del hero y lo disuelve: si el patrón lateral
-   cambiara de golpe, la frontera se vería aunque la foto fuese la misma. */
-.manifesto::before{content:"";background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66));-webkit-mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.55) 24%,transparent 52%);mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.55) 24%,transparent 52%)}
+/* Sin fondo propio: lo aporta el velo único del lienzo. */
+.manifesto{position:relative;text-align:center;padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
 /* La bruma del hero desciende hasta aquí: la misma foto que ya está cacheada,
    ampliada y casi apagada. Encadena las dos secciones y cuesta 0 KB. */
 /* La bruma que antes se pintaba aquí la aporta ahora la escena 0 del lienzo */
@@ -215,11 +217,7 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .manifesto .sig{margin-top:32px;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--muted)}
 
 /* ---------- BAIT: mejor proyecto ---------- */
-.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(44px,5.5vw,80px);background:linear-gradient(180deg,rgba(10,11,14,.86),rgba(10,11,14,.87))}
-/* La retícula de plano técnico se retira: cuadrícula visible sobre una foto
-   lee como plantilla, no como marca premium. Queda una lumbre cálida baja,
-   que insinúa la luz de la sección siguiente sin dibujar nada. */
-.bait::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 92% 62% at 50% 118%,rgba(200,169,106,.10),rgba(200,169,106,.03) 42%,transparent 72%)}
+.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(44px,5.5vw,80px)}
 .bait .wrap{position:relative;z-index:1}
 .bait .q{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--muted);margin-bottom:34px}
 .bait-btn{position:relative;display:inline-flex}
@@ -234,12 +232,9 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 /* ---------- SERVICIOS ---------- */
 /* Las secciones ya no llevan su propia foto: solo el velo que hace legible el
    texto. La imagen la pone el lienzo del descenso, que va por detrás. */
-/* Velos encadenados: el valor final de cada sección es el inicial de la
-   siguiente, y todos sobre el mismo negro rgba(10,11,14). Sin bordes en las
-   fronteras: cualquier raya delata dónde acaba una sección. */
-#servicios{background:linear-gradient(180deg,rgba(10,11,14,.87),rgba(10,11,14,.84));padding-top:clamp(52px,6.5vw,92px)}
-#proyectos{background:linear-gradient(180deg,rgba(10,11,14,.855),rgba(10,11,14,.875))}
-#contacto{background:linear-gradient(180deg,rgba(10,11,14,.855),rgba(10,11,14,.90))}
+/* Ninguna sección lleva fondo: el velo único del lienzo cubre toda la pantalla
+   y por eso no puede existir ninguna frontera visible entre unas y otras. */
+#servicios{padding-top:clamp(52px,6.5vw,92px)}
 /* legibilidad reforzada en contacto */
 form.frame{background:rgba(12,14,19,.93)}
 .frame label{color:#CFC9BB}
@@ -268,9 +263,7 @@ form.frame{background:rgba(12,14,19,.93)}
 .dia{display:inline-block;width:8px;height:8px;background:currentColor;transform:rotate(45deg);flex-shrink:0}
 
 /* ---------- CIFRAS ---------- */
-/* La banda de cifras no tenía fondo: el lienzo asomaba a plena intensidad y
-   se veía más clara que sus vecinas. Ahora entra en la cadena de velos. */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);background:linear-gradient(180deg,rgba(10,11,14,.84),rgba(10,11,14,.855))}
+.stats{display:grid;grid-template-columns:repeat(4,1fr)}
 @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
 .stat{padding:clamp(36px,4.5vw,64px) 18px;text-align:center;border-left:1px solid var(--line-soft)}
 .stat:first-child{border-left:none}
@@ -294,12 +287,7 @@ form.frame{background:rgba(12,14,19,.93)}
 .work .res span{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
 
 /* ---------- RESEÑAS ---------- */
-/* Antes usaba --bg2 (#111318), más azul que el resto: ese era el cambio de
-   color que se notaba al entrar en esta sección. Ahora comparte el negro. */
-#resenas{background:linear-gradient(180deg,rgba(10,11,14,.875),rgba(10,11,14,.855));overflow:hidden}
-/* Llevaba un repeating-conic-gradient que dibujaba rayos desde un punto: en
-   una web sobria leía como efecto de ciencia ficción. Sólo luz difusa. */
-#resenas::before{content:"";background:radial-gradient(ellipse 58% 64% at 50% 46%,rgba(200,169,106,.09),rgba(200,169,106,.03) 45%,transparent 74%)}
+#resenas{overflow:hidden}
 /* comilla gigante en contorno */
 #resenas::after{content:"“";position:absolute;left:-2vw;top:6%;font-family:var(--serif);font-size:clamp(260px,34vw,520px);line-height:.8;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.11);pointer-events:none;z-index:0}
 #resenas .wrap,#resenas .reviews{position:relative;z-index:1}
@@ -335,7 +323,7 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
 .form-msg.show{opacity:1}
 
 /* ---------- FOOTER ---------- */
-footer{position:relative;z-index:2;padding:clamp(56px,7vw,90px) 0 36px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05)),linear-gradient(180deg,rgba(10,11,14,.90),rgba(10,11,14,.985))}
+footer{position:relative;z-index:2;padding:clamp(56px,7vw,90px) 0 36px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05))}
 footer .wordmark{font-family:var(--serif);font-size:clamp(34px,4.4vw,54px);font-weight:600;line-height:1}
 footer .wordmark em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 footer .motto{margin:20px 0 8px;font-size:10px;letter-spacing:7px;text-transform:uppercase;color:var(--muted)}
@@ -370,6 +358,10 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
   <div class="esc" data-src="assets/bg-servicios.webp" data-ancla="#servicios"></div>
   <div class="esc" data-src="assets/bg-proyectos.webp" data-ancla="#proyectos"></div>
   <div class="esc" data-src="assets/bg-contacto.webp"  data-ancla="#contacto"></div>
+  <!-- Velo ÚNICO de toda la página. Antes cada sección pintaba el suyo, y por
+       muy encadenados que estuviesen los valores siempre quedaba el borde
+       entre dos elementos distintos. Con uno solo no hay frontera posible. -->
+  <div id="velo"></div>
   <div id="veta"></div>
 </div>
 
@@ -705,6 +697,7 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
     .filter(o=>o.ancla);
   const n=esc.length; if(!n)return;
   const veta=document.getElementById('veta');
+  const velo=document.getElementById('velo');
   const heroBg=document.getElementById('heroBg');
   const hero=document.querySelector('.hero');
   const K=.18;               /* recorrido de la cámara por escena */
@@ -750,6 +743,10 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
       veta.style.opacity=(4*fr*(1-fr)*.9).toFixed(3);
       veta.style.transform='translate3d(0,'+((.5-fr)*90).toFixed(1)+'vh,0)';
     }
+    /* El velo se cierra de forma continua al descender: .80 arriba, 1 abajo.
+       Al ser un único elemento global, ese oscurecido no puede producir
+       ninguna frontera entre secciones. */
+    if(velo)velo.style.opacity=(.8+.2*Math.min(1,y/(vh*1.15))).toFixed(3);
   }
   const pide=()=>{if(!pend){pend=true;requestAnimationFrame(pinta);}};
   addEventListener('scroll',pide,{passive:true});
