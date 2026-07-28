@@ -120,7 +120,10 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .zoomsec{opacity:0;transform:scale(.8) translateY(70px);transform-origin:center 30%;transition:opacity 1.15s ease,transform 1.15s cubic-bezier(.16,.8,.24,1);will-change:transform,opacity}
 .zoomsec.zin{opacity:1;transform:scale(1) translateY(0)}
 /* el navegador no renderiza lo que está fuera de pantalla hasta que te acercas */
-main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
+/* content-visibility:auto estimaba las secciones en 900px hasta pintarlas. Al
+   pulsar un ancla lejano, las alturas reales iban sustituyendo a la estimación
+   durante el trayecto, el destino se movía y el navegador abortaba el scroll
+   suave. Con el margen de rendimiento que hay (300+ fps) no compensa. */
 .w{display:inline-block;opacity:0;transform:translateY(.5em);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
 .in .w,.w.in{opacity:1;transform:none}
 
@@ -160,7 +163,7 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
   100%{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
 }
 /* El velo pasa a .hero para quedar por encima de los dos planos */
-.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,var(--bg) 9%,rgba(10,11,14,.86) 20%,transparent 46%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,rgba(10,11,14,.72) 0%,rgba(10,11,14,.30) 12%,transparent 34%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
 .hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(calc(var(--mx)*-.15),calc(var(--my)*-.15),0);will-change:transform}
 .hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
 @keyframes halo{from{opacity:.5}to{opacity:1}}
@@ -183,7 +186,12 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 /* El velo arranca casi opaco: el hero tiene fondo propio y se desplaza con el
    scroll, mientras el lienzo va fijo. Sin esta apertura gradual se vería la
    costura entre ambos como una línea horizontal. */
-.manifesto{position:relative;text-align:center;background:radial-gradient(ellipse 72% 58% at 50% -6%,rgba(200,169,106,.13),transparent 66%),linear-gradient(180deg,rgba(10,11,14,.995) 0%,rgba(10,11,14,.96) 14%,rgba(10,11,14,.89) 48%,rgba(10,11,14,.86) 100%);padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
+/* Arranca en .72, el mismo valor con el que cierra el hero, y sube a .86 para
+   entregárselo a .bait. Sin escalón por arriba ni por abajo. */
+.manifesto{position:relative;text-align:center;background:radial-gradient(ellipse 72% 58% at 50% -6%,rgba(200,169,106,.13),transparent 66%),linear-gradient(180deg,rgba(10,11,14,.72) 0%,rgba(10,11,14,.82) 30%,rgba(10,11,14,.86) 100%);padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
+/* Hereda el velo direccional del hero y lo disuelve: si el patrón lateral
+   cambiara de golpe, la frontera se vería aunque la foto fuese la misma. */
+.manifesto::before{content:"";background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66));-webkit-mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.55) 24%,transparent 52%);mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.55) 24%,transparent 52%)}
 /* La bruma del hero desciende hasta aquí: la misma foto que ya está cacheada,
    ampliada y casi apagada. Encadena las dos secciones y cuesta 0 KB. */
 /* La bruma que antes se pintaba aquí la aporta ahora la escena 0 del lienzo */
@@ -674,16 +682,26 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
   const cont=document.getElementById('descenso');
   if(!cont)return;
   const esc=[...cont.querySelectorAll('.esc')]
-    .map(el=>({el,ancla:document.querySelector(el.dataset.ancla),lista:false}))
+    .map(el=>({el,ancla:document.querySelector(el.dataset.ancla),lista:false,top:0,alto:0}))
     .filter(o=>o.ancla);
   const n=esc.length; if(!n)return;
   const veta=document.getElementById('veta');
+  const heroBg=document.getElementById('heroBg');
+  const hero=document.querySelector('.hero');
   const K=.18;               /* recorrido de la cámara por escena */
-  let pend=false;
+  let pend=false,altoDoc=-1;
+  /* Posiciones cacheadas. Leer getBoundingClientRect en cada fotograma fuerza
+     un recálculo de maquetación y rompe el scroll suave de los anclas. */
+  function mide(){
+    const y=scrollY;
+    esc.forEach(o=>{const r=o.ancla.getBoundingClientRect();o.top=r.top+y;o.alto=r.height;});
+    altoDoc=document.body.scrollHeight;
+  }
   function pinta(){
     pend=false;
-    const vh=innerHeight;
-    const c=esc.map(o=>{const r=o.ancla.getBoundingClientRect();return r.top+r.height/2-vh/2;});
+    if(document.body.scrollHeight!==altoDoc)mide();
+    const vh=innerHeight,y=scrollY;
+    const c=esc.map(o=>o.top+o.alto/2-y-vh/2);
     let f=0;
     for(let i=0;i<n;i++){
       const d=c[i];
@@ -706,12 +724,21 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
       veta.style.opacity=(4*fr*(1-fr)*.9).toFixed(3);
       veta.style.transform='translate3d(0,'+((.5-fr)*90).toFixed(1)+'vh,0)';
     }
+    /* Relevo hero -> lienzo. El hero lleva fondo propio que se desplaza con el
+       scroll; el lienzo va fijo. Como ambos muestran LA MISMA foto, fundir uno
+       sobre otro hace invisible el cambio de modelo de movimiento: no hay
+       frontera, la imagen sencillamente sigue. */
+    if(heroBg&&hero){
+      const h=hero.offsetHeight||vh;
+      const p=Math.min(1,Math.max(0,(y-h*.18)/(h*.66)));
+      heroBg.style.opacity=(1-p).toFixed(3);
+    }
   }
   const pide=()=>{if(!pend){pend=true;requestAnimationFrame(pinta);}};
   addEventListener('scroll',pide,{passive:true});
-  addEventListener('resize',pide,{passive:true});
-  addEventListener('load',pide);
-  pinta();
+  addEventListener('resize',()=>{mide();pide();},{passive:true});
+  addEventListener('load',()=>{mide();pinta();});
+  mide();pinta();
 })();
 
 /* ---------- ZOOM ENTRE SECCIONES ---------- */
