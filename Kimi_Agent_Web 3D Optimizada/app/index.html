@@ -122,20 +122,38 @@ main section,footer{content-visibility:auto;contain-intrinsic-size:auto 900px}
 /* ---------- HERO ---------- */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:140px 0 90px}
 .hero-bg{position:absolute;inset:-6% 0;z-index:0;overflow:hidden;will-change:transform}
-.hero-bg::before{content:"";position:absolute;inset:0;background:url('assets/hero-bg.webp') center 38%/cover no-repeat;will-change:transform;backface-visibility:hidden}
-#preloader.done ~ main .hero-bg::before{animation:heroin 5s cubic-bezier(.4,0,.2,1) both,dron 36s linear 5s infinite}
-@keyframes heroin{
-  from{transform:perspective(1400px) scale(1.34) translate3d(-2%,-1%,0) rotateY(1.2deg) rotateZ(-.3deg)}
-  to{transform:perspective(1400px) scale(1.10) translate3d(-2%,-1%,0) rotateY(1.2deg) rotateZ(-.3deg)}
+/* Dos planos de la misma foto con máscaras complementarias: el lejano se queda
+   con el cielo y la bruma, el cercano con los edificios del primer término.
+   Al moverse a distinta velocidad producen paralaje real. */
+.hero-bg::before,.hero-bg::after{content:"";position:absolute;inset:0;background:url('assets/hero-bg.webp') center 38%/cover no-repeat;will-change:transform;backface-visibility:hidden}
+.hero-bg::before{transform-origin:50% 25%;-webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent 78%);mask-image:linear-gradient(to bottom,#000 55%,transparent 78%)}
+.hero-bg::after{transform-origin:50% 100%;-webkit-mask-image:linear-gradient(to bottom,transparent 55%,#000 78%);mask-image:linear-gradient(to bottom,transparent 55%,#000 78%)}
+#preloader.done ~ main .hero-bg::before{animation:entraLejos 5s cubic-bezier(.4,0,.2,1) both,dronLejos 36s linear 5s infinite}
+#preloader.done ~ main .hero-bg::after{animation:entraCerca 5s cubic-bezier(.4,0,.2,1) both,dronCerca 36s linear 5s infinite}
+@keyframes entraLejos{
+  from{transform:scale(1.26) translate3d(-1%,-.6%,0)}
+  to{transform:scale(1.06) translate3d(-1%,-.6%,0)}
 }
-@keyframes dron{
-  0%{transform:perspective(1400px) scale(1.10) translate3d(-2%,-1%,0) rotateY(1.2deg) rotateZ(-.3deg)}
-  25%{transform:perspective(1400px) scale(1.16) translate3d(-.5%,-1.9%,0) rotateY(.4deg) rotateZ(-.1deg)}
-  50%{transform:perspective(1400px) scale(1.22) translate3d(1.9%,-.6%,0) rotateY(-.9deg) rotateZ(.25deg)}
-  75%{transform:perspective(1400px) scale(1.15) translate3d(.6%,1.2%,0) rotateY(-.3deg) rotateZ(.1deg)}
-  100%{transform:perspective(1400px) scale(1.10) translate3d(-2%,-1%,0) rotateY(1.2deg) rotateZ(-.3deg)}
+@keyframes entraCerca{
+  from{transform:perspective(1200px) scale(1.62) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+  to{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
 }
-.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,var(--bg) 2%,transparent 32%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
+@keyframes dronLejos{
+  0%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
+  25%{transform:scale(1.09) translate3d(-.3%,-1%,0)}
+  50%{transform:scale(1.12) translate3d(1%,-.3%,0)}
+  75%{transform:scale(1.09) translate3d(.3%,.6%,0)}
+  100%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
+}
+@keyframes dronCerca{
+  0%{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+  25%{transform:perspective(1200px) scale(1.24) translate3d(-.8%,-2.8%,0) rotateY(.5deg)}
+  50%{transform:perspective(1200px) scale(1.3) translate3d(3%,-.9%,0) rotateY(-1.2deg)}
+  75%{transform:perspective(1200px) scale(1.24) translate3d(1%,1.8%,0) rotateY(-.4deg)}
+  100%{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+}
+/* El velo pasa a .hero para quedar por encima de los dos planos */
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(10,11,14,.92) 18%,rgba(10,11,14,.72) 55%,rgba(10,11,14,.66)),linear-gradient(0deg,var(--bg) 2%,transparent 32%),linear-gradient(180deg,rgba(10,11,14,.55),transparent 30%)}
 .hero-inner{position:relative;z-index:2;text-align:center}
 .hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
 @keyframes halo{from{opacity:.5}to{opacity:1}}
