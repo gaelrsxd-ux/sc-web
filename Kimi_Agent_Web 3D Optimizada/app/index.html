@@ -276,12 +276,19 @@ main{position:relative;z-index:2}
    Sólo se aplica en pantallas anchas, que son las que lo necesitan; en móvil el
    lienzo sigue a resolución nativa porque allí ya iba sobrado.
    Para volver atrás basta con poner --desc-esc a 1. */
+/* El lienzo va a resolución nativa. Este mecanismo se dejó en su día para
+   rasterizarlo reducido y ahorrar relleno de píxeles, y aquí queda documentado
+   el motivo por el que ya no hace falta.
+   La lentitud no venía de la página: el navegador del equipo tenía la
+   aceleración por hardware desactivada por una política del sistema
+   (HardwareAccelerationModeEnabled=0, puesta por una utilidad de "optimización"
+   de Windows), así que dibujaba cada píxel con el procesador y dejaba la tarjeta
+   gráfica sin usar. Reducir resolución sólo aliviaba el síntoma.
+   Si alguna vez hay que volver a aliviarlo —un equipo sin aceleración, un
+   portátil muy justo—, basta con subir este valor: a 1.4285714 rasteriza al 70%
+   y ahorra la mitad del relleno; a 1.6666667, al 60% y ahorra dos tercios. La
+   veta ya está preparada para cualquier valor. */
 :root{--desc-esc:1}
-@media(min-width:1100px){:root{--desc-esc:1.4285714}}   /* 0.70 -> 51% menos relleno */
-/* Cuanto más grande es la pantalla, más píxeles hay que mezclar y menos se nota
-   el suavizado, porque el mismo detalle se reparte entre más puntos. En un
-   monitor de 2552 px esto rasteriza el fondo a 1531 y ahorra dos tercios. */
-@media(min-width:1800px){:root{--desc-esc:1.6666667}}   /* 0.60 -> 64% menos */
 #descenso{position:fixed;top:0;left:0;
   width:calc(100% / var(--desc-esc));height:calc(100% / var(--desc-esc));
   transform:scale(var(--desc-esc));transform-origin:0 0;
@@ -365,23 +372,19 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .esc.ciudad::before,.esc.ciudad::after{content:"";position:absolute;inset:0;background:url('assets/hero-bg.webp') center 38%/cover no-repeat;will-change:transform;backface-visibility:hidden}
 .esc.ciudad::before{transform-origin:50% 25%;-webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent 78%);mask-image:linear-gradient(to bottom,#000 55%,transparent 78%)}
 .esc.ciudad::after{transform-origin:50% 100%;-webkit-mask-image:linear-gradient(to bottom,transparent 55%,#000 78%);mask-image:linear-gradient(to bottom,transparent 55%,#000 78%)}
-/* El vuelo de dron continuo (dronLejos/dronCerca, 36 s en bucle) está retirado
-   a propósito, y es el único recorte de animación de toda la página.
-   Medido en una pantalla de 2552 px: la web va a 22 fps en régimen estable, y
-   estos dos planos concentran el 90% del área animada —6,7 millones de px²
-   frente a los 282.000 del rombo—. Animaban scale() y rotateY() sobre imágenes
-   con máscara, y eso obliga al navegador a redibujar la capa completa en cada
-   fotograma en lugar de componerla tal cual: el gesto más caro de la página con
-   diferencia.
-   No se pierde el movimiento del fondo. El paralaje al desplazarse lo aplica el
-   módulo del descenso sobre el elemento padre, y el desplazamiento del puntero
-   sigue entrando por translate. Lo que se detiene es sólo el zoom lentísimo de
-   reposo, que a 36 segundos por ciclo es lo menos perceptible que había.
-   El encuadre no cambia: entraLejos/entraCerca llevan "both", así que mantienen
-   su estado final (scale 1.06 y 1.18) exactamente donde lo dejaba el dron.
-   Para recuperarlo, añadir de nuevo ",dronLejos 36s linear 5s infinite". */
-#preloader.done ~ #descenso .esc.ciudad::before{animation:entraLejos 5s cubic-bezier(.4,0,.2,1) both}
-#preloader.done ~ #descenso .esc.ciudad::after{animation:entraCerca 5s cubic-bezier(.4,0,.2,1) both}
+/* El vuelo de dron: los dos planos siguen derivando en un ciclo de 36 segundos
+   después de la entrada, y esa deriva lentísima es lo que hace que la ciudad
+   parezca filmada y no una foto pegada.
+   Estuvo retirado un rato mientras se buscaba la causa de los tirones en
+   escritorio, porque es el gesto que más área mueve de toda la página. No era
+   eso: el navegador tenía la aceleración por hardware apagada por una política
+   del sistema y componía a pulso de procesador. Con la gráfica trabajando, esto
+   se compone sin coste apreciable.
+   Los fotogramas clave sólo llevan números literales —el desplazamiento del
+   puntero entra aparte, por la propiedad translate—, y así la animación puede
+   vivir en la GPU en vez de recalcularse a mano en cada fotograma. */
+#preloader.done ~ #descenso .esc.ciudad::before{animation:entraLejos 5s cubic-bezier(.4,0,.2,1) both,dronLejos 36s linear 5s infinite}
+#preloader.done ~ #descenso .esc.ciudad::after{animation:entraCerca 5s cubic-bezier(.4,0,.2,1) both,dronCerca 36s linear 5s infinite}
 /* --mx/--my los escribe el puntero. El plano lejano recibe un 35% del
    desplazamiento y el cercano el 100%: esa diferencia es la profundidad.
    Van en la propiedad translate, NO dentro de transform, y esa separación es
