@@ -1711,14 +1711,20 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
 })();
 
 /* ---------- PAUSA DE LO QUE NO SE VE ----------
-   Marca .quieto en cada sección que queda fuera de pantalla; el CSS detiene ahí
-   dentro toda animación. El margen de una pantalla completa hace que nada
-   arranque a destiempo: para cuando la sección asoma, ya lleva rato corriendo.
-   Es un observador pasivo, no cuesta nada por fotograma. */
+   Marca .quieto en cada sección fuera de pantalla; el CSS detiene ahí toda
+   animación y suelta su capa de GPU. La medición dejó claro que el conjunto de
+   animaciones es el mayor costo de la página (quitarlas todas triplica los
+   fotogramas), así que lo que de verdad ayuda es que corran las menos posibles
+   a la vez.
+   El margen era de una pantalla completa: al desplazar se animaban secciones
+   hasta un viewport por encima y por debajo —hasta tres pantallas de trabajo
+   que nadie ve—. Un margen pequeño deja activas sólo las que se asoman. Es
+   invisible: las animaciones de fondo son lentas y no tienen un instante de
+   arranque perceptible, así que reanudarlas justo al entrar no se nota. */
 (()=>{
   const obs=new IntersectionObserver(es=>{
     es.forEach(e=>e.target.classList.toggle('quieto',!e.isIntersecting));
-  },{rootMargin:'100% 0px'});
+  },{rootMargin:'8% 0px'});
   /* main > * y no "main section": el hero es un <header>, y es justo el que
      lleva el halo de 160.000 px². */
   document.querySelectorAll('main > *,body > footer').forEach(el=>obs.observe(el));
