@@ -120,6 +120,64 @@ servidor, build, ni dependencias. El JS es 100% vanilla (sin librerías).
   Formspree, EmailJS, o webhook (n8n/Zapier) según el stack que elijan
 - **Canonical/OG URL:** `https://sycsolutions.company/` → dominio final
 
+## 8 bis. Añadido en julio de 2026
+
+Archivos nuevos fuera de `app/index.html`:
+
+```
+app/robots.txt          app/sitemap.xml          app/assets/certs/
+cloudflare/seo-audit.js cloudflare/wrangler.toml cloudflare/README.md
+```
+
+Secciones nuevas y renumeración: **01 Sobre nosotros** (entre el hero y el
+manifiesto) y **03 Diagnóstico** (tras servicios). Servicios pasó de 01 a 02,
+proyectos de 02 a 04, reseñas de 03 a 05 y contacto de 04 a 06.
+
+- **Sobre nosotros** abre con la antesala de certificados, que se ve antes que
+  el titular: la sección se presenta con la prueba y no con la promesa. El
+  sello es SVG y tipografía, cero peso en imágenes.
+- **Diagnóstico** audita la web que le indiquen. El análisis lo hace el Worker
+  de `cloudflare/`; ver su README. El único valor a tocar es `SYC_AUDITOR`.
+- **Música ambiente**: sintetizada con Web Audio, sin archivos. Cuatro voces de
+  dos osciladores desafinados, cada una con su vaivén a una velocidad distinta
+  y prima con las demás: como nunca vuelven a coincidir, no hay punto de
+  repetición. El acorde se desliza al siguiente cada 26 s. Arranca **encendida**
+  y solo calla si se apagó en una visita anterior (`localStorage`).
+  Ningún navegador permite sonar antes de que el visitante interactúe —política
+  de autoplay, no se puede rodear—, así que el grafo se monta a volumen cero y
+  sube en el primer gesto (rueda, scroll, tecla o toque).
+- **Índice del recorrido**: el riel izquierdo numera los seis tramos, enciende
+  el actual y deja encendidos los ya vistos. Es `<nav>`, por eso el bloque de
+  la barra superior usa `nav:not(.rail)`: sin ese `:not` le caía encima la
+  altura de 82 px y el índice se salía por arriba.
+- **Casos con resultado tapado**: la cifra está en el HTML desde el principio
+  —solo desenfocada por CSS—, así que Google la indexa igual.
+
+### Certificados
+
+Cuatro, todos de 2026, **26 horas** en total. Los datos salen de los diplomas
+originales y están en el JSON-LD como `hasCredential` de Gael:
+
+| Curso | Emisor | Horas | Fecha |
+|---|---|---:|---|
+| Curso de IA. De 0 a Agentes | BIG school · Jon Hernández | 6 | 21.07.2026 |
+| Inmersión IA en la Práctica | Daxus Latam · Zaira Hurtado | 8 | 16.07.2026 |
+| Iniciación al Desarrollo con IA | BIG school · Brais Moure | 6 | 30.05.2026 |
+| Vibe Coding y Automatizaciones | BIG school · Jon Hernández | 6 | 17.04.2026 |
+
+Cada tarjeta declara su diploma en `data-img`. El JS **precarga la imagen y solo
+si existe** añade la clase `tiene`, que es la que muestra «Ver certificado» y
+abre el visor. Una tarjeta sin imagen se queda informativa en vez de prometer
+algo que no puede cumplir. Para activarlas basta con dejar los cuatro archivos
+en `app/assets/certs/` con estos nombres exactos:
+
+```
+de-cero-a-agentes-bigschool.jpg     inmersion-ia-daxus.jpg
+desarrollo-con-ia-bigschool.jpg     curso-ia-2026-bigschool.jpg
+```
+
+Pendiente de datos reales: la bio de Bruno Damián Martínez.
+
 ## 9. Prompt maestro original (por si quieres regenerar o crear variaciones)
 
 Crear sitio one-page en español para agencia de webs/IA/CRM. Estilo: lujo

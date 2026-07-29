@@ -8,3 +8,11 @@
 
 # Config local de Claude Code (permisos de esta máquina)
 .claude/settings.local.json
+
+# Rutas de servidores de prueba: apuntan a directorios temporales que solo
+# existen en la sesión que los creó, así que no sirven en otra máquina.
+.claude/launch.json
+
+# Caché de Wrangler. Incluye wrangler-account.json, que guarda la cuenta de
+# Cloudflare: no tiene por qué acabar en el repositorio.
+.wrangler/

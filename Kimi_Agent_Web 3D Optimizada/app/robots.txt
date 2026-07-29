@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Los PDF de certificados se sirven para consulta humana, no para indexar
+Disallow: /assets/certs/
+
+Sitemap: https://sycsolutions.company/sitemap.xml

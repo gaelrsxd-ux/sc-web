@@ -11,29 +11,113 @@
 <link rel="canonical" href="https://sycsolutions.company/">
 <meta name="theme-color" content="#0A0B0E">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="S&C Solutions Company">
+<meta property="og:url" content="https://sycsolutions.company/">
 <meta property="og:title" content="S&C Solutions Company — Ambición · Estrategia · Resultados">
 <meta property="og:description" content="Webs premium, automatización con IA, CRM y datos para negocios que piensan en grande.">
-<meta property="og:image" content="assets/hero-og.jpg">
+<meta property="og:image" content="https://sycsolutions.company/assets/hero-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="S&C Solutions Company — Ambición, Estrategia, Resultados">
 <meta property="og:locale" content="es_ES">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="S&C Solutions Company">
 <meta name="twitter:description" content="Construimos negocios que se ven tan bien como funcionan.">
-<meta name="twitter:image" content="assets/hero-og.jpg">
+<meta name="twitter:image" content="https://sycsolutions.company/assets/hero-og.jpg">
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<!-- El grafo enlaza Organization ← founder → Person y las ofertas de servicio.
+     Los @id permiten que Google resuelva las referencias entre nodos en vez de
+     tratarlos como entidades sueltas: es lo que alimenta el panel de marca. -->
 <script type="application/ld+json">
 {
  "@context":"https://schema.org",
- "@type":"Organization",
- "name":"S&C Solutions Company",
- "slogan":"Ambición · Estrategia · Resultados",
- "description":"Sitios web premium, automatizaciones con IA, CRM y datos inteligentes para negocios.",
- "logo":"assets/logo.svg",
- "sameAs":[],
- "makesOffer":[
-  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Sitios web premium"}},
-  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización con IA"}},
-  {"@type":"Offer","itemOffered":{"@type":"Service","name":"CRM a medida"}},
-  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Datos y dashboards"}}
+ "@graph":[
+  {
+   "@type":["Organization","ProfessionalService"],
+   "@id":"https://sycsolutions.company/#organizacion",
+   "name":"S&C Solutions Company",
+   "url":"https://sycsolutions.company/",
+   "slogan":"Ambición · Estrategia · Resultados",
+   "description":"Sitios web premium, automatizaciones con IA, CRM y datos inteligentes para negocios.",
+   "logo":{"@type":"ImageObject","url":"https://sycsolutions.company/assets/logo.svg"},
+   "image":"https://sycsolutions.company/assets/hero-og.jpg",
+   "foundingDate":"2026",
+   "email":"hola@sycsolutions.company",
+   "areaServed":{"@type":"Country","name":"México"},
+   "address":{"@type":"PostalAddress","addressCountry":"MX"},
+   "knowsAbout":["Diseño web","Inteligencia artificial","Automatización de procesos","CRM","Análisis de datos"],
+   "founder":[
+    {"@id":"https://sycsolutions.company/#gael"},
+    {"@id":"https://sycsolutions.company/#bruno"}
+   ],
+   "sameAs":[],
+   "makesOffer":[
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Sitios web premium","serviceType":"Diseño y desarrollo web"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización con IA","serviceType":"Automatización de procesos con inteligencia artificial"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"CRM a medida","serviceType":"Desarrollo de CRM"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Datos y dashboards","serviceType":"Analítica de datos"}}
+   ]
+  },
+  {
+   "@type":"Person",
+   "@id":"https://sycsolutions.company/#gael",
+   "name":"Gael Ramírez Santiago",
+   "jobTitle":"Cofundador",
+   "worksFor":{"@id":"https://sycsolutions.company/#organizacion"},
+   "knowsAbout":["Inteligencia artificial","Agentes de IA","Automatización de procesos","Desarrollo web","Vibe Coding"],
+   "hasCredential":[
+    {
+     "@type":"EducationalOccupationalCredential",
+     "name":"Curso de IA. De 0 a Agentes",
+     "description":"Domina la IA, gana competitividad y aprende cómo los agentes trabajan por ti. 6 horas.",
+     "credentialCategory":"certificate",
+     "recognizedBy":{"@type":"Organization","name":"BIG school"},
+     "dateCreated":"2026-07-21"
+    },
+    {
+     "@type":"EducationalOccupationalCredential",
+     "name":"Inmersión Inteligencia Artificial en la Práctica",
+     "description":"Evento formativo de 8 horas sobre aplicación práctica de la inteligencia artificial.",
+     "credentialCategory":"certificate",
+     "recognizedBy":{"@type":"Organization","name":"Daxus Latam"},
+     "dateCreated":"2026-07-16"
+    },
+    {
+     "@type":"EducationalOccupationalCredential",
+     "name":"Curso de Iniciación al Desarrollo con IA",
+     "description":"Jornadas formativas de desarrollo de software asistido por inteligencia artificial. 6 horas.",
+     "credentialCategory":"certificate",
+     "recognizedBy":{"@type":"Organization","name":"BIG school"},
+     "dateCreated":"2026-05-30"
+    },
+    {
+     "@type":"EducationalOccupationalCredential",
+     "name":"Curso de IA 2026 — Vibe Coding y Automatizaciones",
+     "description":"Jornadas de inteligencia artificial sobre Vibe Coding y automatizaciones. 6 horas.",
+     "credentialCategory":"certificate",
+     "recognizedBy":{"@type":"Organization","name":"BIG school"},
+     "dateCreated":"2026-04-17"
+    }
+   ],
+   "sameAs":[]
+  },
+  {
+   "@type":"Person",
+   "@id":"https://sycsolutions.company/#bruno",
+   "name":"Bruno Damián Martínez",
+   "jobTitle":"Cofundador",
+   "worksFor":{"@id":"https://sycsolutions.company/#organizacion"},
+   "knowsAbout":["Desarrollo backend","Bases de datos","Integraciones de sistemas","Infraestructura"],
+   "sameAs":[]
+  },
+  {
+   "@type":"WebSite",
+   "@id":"https://sycsolutions.company/#web",
+   "url":"https://sycsolutions.company/",
+   "name":"S&C Solutions Company",
+   "inLanguage":"es",
+   "publisher":{"@id":"https://sycsolutions.company/#organizacion"}
+  }
  ]
 }
 </script>
@@ -65,8 +149,52 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
 .rail{position:fixed;top:0;bottom:0;width:46px;z-index:40;pointer-events:none;display:flex;align-items:center;justify-content:center}
 .rail.l{left:0;border-right:1px solid var(--line-soft)}
 .rail.r{right:0;border-left:1px solid var(--line-soft)}
-.rail span{writing-mode:vertical-rl;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--dim)}
+.rail>span{writing-mode:vertical-rl;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--dim)}
 @media(max-width:920px){.rail{display:none}}
+
+/* ---------- BARRA DE AVANCE (fina, arriba) ----------
+   Un solo elemento con transform:scaleX. No lee maquetación ni pinta fondo:
+   el navegador lo resuelve en la capa de composición, así que su coste por
+   fotograma es el mismo tanto si la página mide 5 pantallas como cincuenta. */
+#avance{position:fixed;top:0;left:0;right:0;height:2px;z-index:60;pointer-events:none;
+  background:linear-gradient(90deg,var(--bronze),var(--bronze-hi));
+  transform:scaleX(0);transform-origin:0 50%;will-change:transform}
+/* El punto de luz que remata la barra: marca el borde exacto del avance sin
+   necesidad de un segundo cálculo, porque viaja pegado al extremo derecho. */
+#avance::after{content:"";position:absolute;right:0;top:-2px;width:6px;height:6px;
+  background:var(--bronze-hi);box-shadow:0 0 10px 2px rgba(228,205,154,.55)}
+
+/* ---------- ÍNDICE DEL RECORRIDO (riel izquierdo) ----------
+   Sustituye al rótulo vertical fijo: mismo espacio, pero ahora dice en qué
+   tramo va el visitante y cuánto ha recorrido. Los tramos ya vistos quedan
+   encendidos, así que el riel entero funciona como barra de progreso vertical. */
+/* El puntero se reactiva sólo en el índice, no en la columna entera: un riel
+   fijo de 46 px capturando clics de arriba abajo se comería el borde izquierdo
+   del contenido en las pantallas justas. */
+.idxr{display:flex;flex-direction:column;align-items:center;gap:clamp(14px,1.9vh,22px);pointer-events:auto}
+.idxr a{position:relative;display:flex;align-items:center;justify-content:center;
+  width:26px;height:20px;font-family:var(--serif);font-size:11px;font-style:italic;
+  color:#3C3A34;transition:color .45s ease}
+/* El trazo horizontal es el latido del índice: crece al llegar al tramo */
+.idxr a::before{content:"";position:absolute;left:50%;bottom:1px;width:7px;height:1px;
+  margin-left:-3.5px;background:currentColor;opacity:.5;
+  transition:width .45s cubic-bezier(.2,.7,.2,1),margin-left .45s cubic-bezier(.2,.7,.2,1),opacity .45s}
+.idxr a.visto{color:var(--dim)}
+.idxr a.aqui{color:var(--bronze-hi)}
+.idxr a.aqui::before{width:20px;margin-left:-10px;opacity:1}
+.idxr a:hover{color:var(--bronze)}
+/* Rótulo del tramo: sale del riel hacia la página, no lo tapa */
+.idxr b{position:absolute;left:calc(100% + 12px);top:50%;transform:translate(-6px,-50%);
+  white-space:nowrap;font-family:var(--sans);font-size:8.5px;font-weight:500;letter-spacing:3px;
+  text-transform:uppercase;color:var(--bronze-hi);background:rgba(10,11,14,.94);
+  border:1px solid var(--line);padding:6px 10px;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s}
+.idxr a:hover b,.idxr a:focus-visible b{opacity:1;transform:translate(0,-50%)}
+/* Sello de recorrido completo: aparece solo al pisar contacto. Es la única
+   recompensa de la página y por eso no puede verse antes de merecerla. */
+.idxr .sello{width:9px;height:9px;margin-top:4px;border:1px solid var(--line-soft);
+  transform:rotate(45deg) scale(.6);opacity:0;transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1),background-color .6s}
+.rail.l.fin .sello{opacity:1;transform:rotate(45deg) scale(1);background:var(--bronze-hi);border-color:var(--bronze-hi)}
 
 /* ---------- PRELOADER ---------- */
 #preloader{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;transition:opacity .8s ease,visibility .8s}
@@ -77,8 +205,12 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
 @keyframes load{to{transform:translateX(0)}}
 #preloader small{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--dim)}
 
-/* ---------- NAV ---------- */
-nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,58px);height:82px;background:linear-gradient(180deg,rgba(10,11,14,.94),rgba(10,11,14,.6) 75%,transparent);border-bottom:1px solid var(--line-soft)}
+/* ---------- NAV ----------
+   :not(.rail) es imprescindible desde que el riel izquierdo es también un
+   <nav>: sin él, la altura de 82 px y el relleno lateral de esta barra caían
+   sobre el riel, que mide toda la pantalla de alto y 46 px de ancho, y el
+   índice del recorrido acababa comprimido y saliéndose por arriba. */
+nav:not(.rail){position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,58px);height:82px;background:linear-gradient(180deg,rgba(10,11,14,.94),rgba(10,11,14,.6) 75%,transparent);border-bottom:1px solid var(--line-soft)}
 nav .brand{display:flex;align-items:center;gap:13px}
 nav .brand img{width:42px;height:42px;object-fit:contain}
 nav .brand .bt{font-family:var(--serif);font-size:19px;font-weight:600}
@@ -115,7 +247,13 @@ main{position:relative;z-index:2}
    de edición. Ahora es una lumbre ancha y tenue que sólo calienta el cruce. */
 #veta{position:absolute;left:0;right:0;top:50%;height:78vh;margin-top:-39vh;opacity:0;will-change:transform,opacity;background:radial-gradient(ellipse 96% 52% at 50% 50%,rgba(200,169,106,.085),rgba(200,169,106,.025) 44%,transparent 76%)}
 .wrap{max-width:1560px;margin:auto;padding:0 clamp(22px,4.5vw,72px)}
-section{padding:clamp(84px,10vw,140px) 0;position:relative}
+/* Ritmo vertical. Cada sección aporta su margen arriba y otro abajo, así que
+   el hueco entre dos es el doble de este valor: con los 84–140 px de antes se
+   llegaba a 202 px de vacío entre bloques —un 22% de la pantalla sin nada que
+   leer— y en móvil era peor, porque el mínimo de 84 px no bajaba nunca. Estos
+   valores dejan un respiro claro entre secciones sin que el visitante tenga
+   que atravesar una pantalla vacía para llegar a la siguiente. */
+section{padding:clamp(46px,5.2vw,78px) 0;position:relative}
 section::before{position:absolute;inset:0;pointer-events:none;z-index:0}
 .sec-tag{display:flex;align-items:center;gap:16px;font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--bronze);font-weight:500}
 .sec-tag::before{content:"";width:42px;height:1px;background:var(--bronze)}
@@ -204,7 +342,7 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    scroll, mientras el lienzo va fijo. Sin esta apertura gradual se vería la
    costura entre ambos como una línea horizontal. */
 /* Sin fondo propio: lo aporta el velo único del lienzo. */
-.manifesto{position:relative;text-align:center;padding-bottom:clamp(34px,4.5vw,64px);overflow:hidden}
+.manifesto{position:relative;text-align:center;padding-bottom:clamp(24px,3vw,44px);overflow:hidden}
 /* La bruma del hero desciende hasta aquí: la misma foto que ya está cacheada,
    ampliada y casi apagada. Encadena las dos secciones y cuesta 0 KB. */
 /* La bruma que antes se pintaba aquí la aporta ahora la escena 0 del lienzo */
@@ -217,7 +355,7 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .manifesto .sig{margin-top:32px;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--muted)}
 
 /* ---------- BAIT: mejor proyecto ---------- */
-.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(44px,5.5vw,80px)}
+.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(30px,3.6vw,54px)}
 .bait .wrap{position:relative;z-index:1}
 .bait .q{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--muted);margin-bottom:34px}
 .bait-btn{position:relative;display:inline-flex}
@@ -234,13 +372,13 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    texto. La imagen la pone el lienzo del descenso, que va por detrás. */
 /* Ninguna sección lleva fondo: el velo único del lienzo cubre toda la pantalla
    y por eso no puede existir ninguna frontera visible entre unas y otras. */
-#servicios{padding-top:clamp(52px,6.5vw,92px)}
+#servicios{padding-top:clamp(34px,3.8vw,56px)}
 /* legibilidad reforzada en contacto */
 form.frame{background:rgba(12,14,19,.93)}
 .frame label{color:#CFC9BB}
 .frame input,.frame textarea,.frame select{border-bottom:1px solid rgba(200,169,106,.5)}
 #contacto .c-item .v{text-shadow:0 2px 14px rgba(0,0,0,.7)}
-.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);margin-top:56px}
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
 @media(max-width:760px){.svc-grid{grid-template-columns:1fr}}
 .svc{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
 .svc:hover{background:var(--panel)}
@@ -262,18 +400,67 @@ form.frame{background:rgba(12,14,19,.93)}
 .svc-btn:hover::before{animation:none;opacity:0}
 .dia{display:inline-block;width:8px;height:8px;background:currentColor;transform:rotate(45deg);flex-shrink:0}
 
+/* Relieve de las tarjetas de servicio. La fuga vive en la rejilla y no en cada
+   tarjeta: así las cuatro giran respecto al mismo punto de vista y el bloque se
+   lee como una sola superficie inclinándose, no como cuatro efectos sueltos.
+   Sólo con puntero fino: en táctil no hay hover que seguir y el giro sería un
+   coste de GPU a cambio de nada. */
+@media(hover:hover) and (pointer:fine){
+  .svc-grid{perspective:1500px}
+  .svc{transform-style:preserve-3d;
+    transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(var(--tz,0px));
+    transition:background .4s,transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s ease}
+  /* Mientras el puntero está encima el seguimiento es casi directo: 120 ms de
+     interpolación bastan para quitar el temblor sin que se note retraso. */
+  .svc.tilt{transition:background .4s,transform .12s linear,box-shadow .5s ease;
+    z-index:2;will-change:transform;box-shadow:0 30px 64px -34px rgba(0,0,0,.9)}
+  /* Lumbre que sigue al puntero: es lo que convierte el giro en materia. Va en
+     una capa propia por debajo del texto para no bajarle el contraste. */
+  .svc::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;
+    transition:opacity .45s ease;
+    background:radial-gradient(360px circle at var(--gx,50%) var(--gy,50%),rgba(200,169,106,.15),transparent 66%)}
+  .svc.tilt::before{opacity:1}
+  .svc>*{position:relative;z-index:1}
+}
+
 /* ---------- CIFRAS ---------- */
 .stats{display:grid;grid-template-columns:repeat(4,1fr)}
 @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{padding:clamp(36px,4.5vw,64px) 18px;text-align:center;border-left:1px solid var(--line-soft)}
+.stat{padding:clamp(28px,3.4vw,48px) 18px;text-align:center;border-left:1px solid var(--line-soft)}
 .stat:first-child{border-left:none}
 @media(max-width:760px){.stat:nth-child(3){border-left:none}.stat{border-top:1px solid var(--line-soft)}.stat:nth-child(-n+2){border-top:none}}
-.stat .n{font-family:var(--serif);font-size:clamp(42px,5vw,66px);font-weight:600;color:var(--ink);line-height:1}
+.stat .n{font-family:var(--serif);font-size:clamp(42px,5vw,66px);font-weight:600;color:var(--ink);line-height:1;
+  display:inline-flex;align-items:baseline;position:relative}
 .stat .n em{font-style:italic;color:var(--bronze)}
 .stat .l{margin-top:12px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted)}
+/* Las cifras se descubren con una banda de luz que las recorre de izquierda a
+   derecha mientras suben. Antes aparecían ya puestas y el conteo se perdía:
+   el barrido obliga al ojo a seguir el número justo cuando está cambiando. */
+.stat .n::after{content:"";position:absolute;left:-6%;right:-6%;top:-8%;bottom:-8%;pointer-events:none;
+  background:linear-gradient(100deg,transparent 38%,rgba(228,205,154,.22) 50%,transparent 62%);
+  transform:translateX(-115%)}
+.stat.corre .n::after{animation:cifraBarre 1.5s cubic-bezier(.35,0,.25,1) forwards}
+@keyframes cifraBarre{to{transform:translateX(115%)}}
+.stat.corre .n{animation:cifraLatido 1.8s cubic-bezier(.2,.7,.2,1)}
+@keyframes cifraLatido{0%{letter-spacing:.06em}55%{letter-spacing:0}100%{letter-spacing:0}}
+
+/* ---------- BANDA VIVA ----------
+   Una sola línea bajo las cifras que va rotando datos comprobables del propio
+   sitio. Cuando el visitante ya ha usado el diagnóstico, el primer dato es el
+   suyo: ahí deja de ser un rótulo y pasa a ser su expediente abierto. */
+.viva{border-top:1px solid var(--line-soft);padding:18px clamp(22px,4.5vw,72px);
+  display:flex;align-items:center;justify-content:center;gap:14px;min-height:56px;text-align:center}
+.viva .pt{width:6px;height:6px;flex-shrink:0;background:var(--bronze);transform:rotate(45deg);
+  animation:vivaLate 2.4s ease-in-out infinite}
+@keyframes vivaLate{0%,100%{opacity:.35;transform:rotate(45deg) scale(.8)}50%{opacity:1;transform:rotate(45deg) scale(1.15)}}
+.viva p{font-size:10px;letter-spacing:3.4px;text-transform:uppercase;color:var(--muted);
+  line-height:1.7;transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
+.viva p.va{opacity:0;transform:translateY(-7px)}
+.viva p b{color:var(--bronze-hi);font-weight:500}
+@media(max-width:560px){.viva{padding:16px 20px}.viva p{letter-spacing:2.4px;font-size:9.5px}}
 
 /* ---------- PROYECTOS ---------- */
-.works{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(18px,2.4vw,30px);margin-top:56px}
+.works{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(18px,2.4vw,30px);margin-top:clamp(32px,3.6vw,50px)}
 @media(max-width:760px){.works{grid-template-columns:1fr}}
 .work{border:1px solid var(--line-soft);background:linear-gradient(165deg,var(--panel),var(--bg));padding:clamp(28px,3.2vw,44px);position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.2,.7,.2,1),border-color .4s}
 .work:hover{transform:translateY(-7px);border-color:var(--line)}
@@ -282,29 +469,148 @@ form.frame{background:rgba(12,14,19,.93)}
 .work h3{font-size:clamp(26px,2.8vw,36px);margin:16px 0 4px}
 .work h3 em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .work p{color:var(--muted);font-size:15px;line-height:1.8;margin-top:14px;max-width:540px}
-.work .res{display:flex;align-items:baseline;gap:14px;margin-top:26px;padding-top:20px;border-top:1px solid var(--line-soft)}
+/* El resultado llega tapado. Un caso que enseña la cifra de entrada se lee de
+   un vistazo y se olvida igual de rápido; obligando a destaparlo, el visitante
+   deja de mirar la página y empieza a usarla. La cifra sigue en el HTML —sólo
+   está desenfocada por CSS— así que Google la lee igual que antes. */
+.work .res{position:relative;margin-top:26px;padding-top:20px;border-top:1px solid var(--line-soft)}
+.work .res-dato{display:flex;align-items:baseline;gap:14px;
+  filter:blur(9px);opacity:.26;transform:translateY(6px);
+  transition:filter .8s cubic-bezier(.2,.7,.2,1),opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+.work .res.abierto .res-dato{filter:none;opacity:1;transform:none}
 .work .res b{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(22px,2.2vw,30px);color:var(--bronze-hi)}
 .work .res span{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+.work .res-tapa{position:absolute;left:0;right:0;top:20px;bottom:0;display:flex;align-items:center;gap:11px;
+  background:none;border:none;padding:0;font-family:var(--sans);font-size:9.5px;letter-spacing:3.4px;
+  text-transform:uppercase;font-weight:500;color:var(--bronze);cursor:pointer;text-align:left;
+  transition:opacity .5s ease,color .35s,letter-spacing .35s}
+.work .res-tapa .dia{width:7px;height:7px;transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+/* El rótulo mide 26 px de alto y eso es media diana para un pulgar. El área
+   pulsable se estira diez píxeles por arriba y por abajo con un pseudo-elemento
+   en vez de con min-height: así llega a los 46 px cómodos sin desplazar el
+   texto respecto a la cifra que está tapando. */
+.work .res-tapa::after{content:"";position:absolute;left:0;right:0;top:-10px;bottom:-10px}
+/* En táctil no hay hover que invite, así que el rombo respira solo hasta que
+   se toca. En escritorio se queda quieto y reacciona al puntero. */
+@media(hover:none){.work .res-tapa .dia{animation:tapaLate 2.6s ease-in-out infinite}}
+@keyframes tapaLate{0%,100%{transform:rotate(45deg) scale(1);opacity:.7}50%{transform:rotate(45deg) scale(1.4);opacity:1}}
+.work:hover .res-tapa{color:var(--bronze-hi);letter-spacing:4.4px}
+.work:hover .res-tapa .dia{transform:rotate(225deg)}
+.work .res-tapa:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
+.work .res.abierto .res-tapa{opacity:0;pointer-events:none}
+/* Recompensa por destaparlos todos: la única frase de la página que hay que
+   ganarse. Quien llega aquí ya ha invertido cuatro gestos en los casos. */
+.works-fin{margin-top:clamp(26px,3vw,38px);text-align:center;opacity:0;transform:translateY(12px);
+  transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.works-fin.on{opacity:1;transform:none;pointer-events:auto}
+.works-fin p{font-family:var(--serif);font-style:italic;font-size:clamp(19px,2vw,25px);color:var(--muted)}
+.works-fin p em{font-style:italic;color:var(--bronze-hi)}
+.works-fin a{display:inline-flex;align-items:center;gap:10px;margin-top:16px;font-size:10px;
+  letter-spacing:3.4px;text-transform:uppercase;font-weight:500;color:var(--bronze-hi);
+  border-bottom:1px solid var(--line);padding-bottom:7px;transition:border-color .35s,color .35s}
+.works-fin a:hover{color:var(--bronze);border-color:var(--bronze)}
 
 /* ---------- RESEÑAS ---------- */
 #resenas{overflow:hidden}
-/* comilla gigante en contorno */
-#resenas::after{content:"“";position:absolute;left:-2vw;top:6%;font-family:var(--serif);font-size:clamp(260px,34vw,520px);line-height:.8;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.11);pointer-events:none;z-index:0}
+/* Antes había dos comillas tipográficas gigantes, una en contorno al fondo y
+   otra en bronce sobre la cita. Una comilla enorme es el recurso por defecto
+   de cualquier plantilla de testimonios: se lee como decoración de relleno y
+   además compite con el propio texto entrecomillado. La sustituye el rombo de
+   la marca, que ya es el motivo que aparece en botones y sellos. */
+#resenas::after{content:"";position:absolute;right:-7vw;top:50%;
+  width:clamp(300px,34vw,540px);height:clamp(300px,34vw,540px);
+  border:1px solid rgba(200,169,106,.085);pointer-events:none;z-index:0;
+  will-change:transform;animation:rombRespira 34s ease-in-out infinite alternate}
+@keyframes rombRespira{
+  from{transform:translateY(-50%) rotate(45deg) scale(.97)}
+  to{transform:translateY(-50%) rotate(51deg) scale(1.03)}
+}
 #resenas .wrap,#resenas .reviews{position:relative;z-index:1}
-.reviews{max-width:840px;margin:52px auto 0;text-align:center}
-.reviews::before{content:"“";font-family:var(--serif);font-size:clamp(100px,14vw,170px);line-height:.5;color:rgba(200,169,106,.18);display:block;margin-bottom:6px}
-.review{display:none;animation:rin .7s ease}
-.review.on{display:block}
-@keyframes rin{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.review q{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(20px,2.5vw,29px);line-height:1.65;color:var(--ink);quotes:none}
-.review .who{margin-top:28px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
-.review .stars{color:var(--bronze-hi);letter-spacing:8px;margin-top:12px;font-size:13px}
-.dots{display:flex;gap:10px;justify-content:center;margin-top:34px}
-.dot{width:34px;height:1px;background:var(--line);border:none;transition:.3s;padding:0}
-.dot.on{background:var(--bronze-hi)}
+/* El bloque de reseñas vive fuera de .wrap, así que no heredaba su margen
+   lateral: en móvil las escuadras del marco quedaban pegadas al borde de la
+   pantalla. Se le da el mismo respiro que al resto de secciones. */
+.reviews{max-width:1064px;margin:clamp(32px,3.6vw,50px) auto 0;padding:0 clamp(22px,4.5vw,72px)}
+
+/* Las tres actas se apilan en la misma celda de rejilla. Con display:none el
+   alto saltaba al cambiar de reseña porque cada texto mide distinto; apiladas,
+   el contenedor mide siempre lo que la más larga y el cruce es limpio. */
+.rev-pista{display:grid}
+.review{grid-area:1/1;opacity:0;visibility:hidden;transform:translateY(16px);
+  transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1),visibility .6s}
+.review.on{opacity:1;visibility:visible;transform:none}
+
+/* Marco de acta: dos escuadras opuestas en vez de un recuadro cerrado. El
+   recuadro completo encajona; la escuadra sugiere el documento y deja respirar. */
+.rev-marco{position:relative;padding:clamp(36px,4.4vw,68px) clamp(26px,4.4vw,74px);text-align:center}
+.rev-marco::before,.rev-marco::after{content:"";position:absolute;
+  width:clamp(26px,3vw,44px);height:clamp(26px,3vw,44px);border:1px solid var(--bronze);
+  opacity:.55;transition:opacity .6s ease,width .6s ease,height .6s ease}
+.rev-marco::before{top:0;left:0;border-right:none;border-bottom:none}
+.rev-marco::after{bottom:0;right:0;border-left:none;border-top:none}
+.review.on .rev-marco::before,.review.on .rev-marco::after{opacity:1}
+
+/* Calificación con el rombo de la marca. Las estrellas ★ del sistema se
+   renderizan distinto en cada plataforma y siempre se ven baratas. */
+.rev-cal{display:flex;gap:9px;justify-content:center;margin-bottom:clamp(24px,2.6vw,34px)}
+.rev-cal span{width:7px;height:7px;background:var(--bronze-hi);transform:rotate(45deg)}
+/* Medido en píxeles y no en ch: la ch de una Garamond itálica es tan estrecha
+   que 30ch daban 437px dentro de un marco de 1000px, y la cita caía en seis
+   líneas altísimas. A 760px entra en tres o cuatro, que es lo que se lee de
+   una pasada. */
+.review blockquote{font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:clamp(21px,2.7vw,33px);line-height:1.5;color:var(--ink);
+  max-width:min(760px,100%);margin:auto}
+.rev-pie{margin-top:clamp(28px,3vw,40px)}
+.rev-rayo{width:52px;height:1px;background:var(--line);margin:0 auto clamp(20px,2.2vw,26px)}
+.rev-quien{display:block;font-family:var(--serif);font-size:clamp(19px,1.9vw,23px);
+  font-weight:600;color:var(--bronze-hi)}
+.rev-que{display:block;margin-top:9px;font-size:9px;letter-spacing:4px;
+  text-transform:uppercase;color:var(--dim)}
+
+/* Índice numerado con barra de avance: sustituye a los tres guiones sueltos y
+   además enseña cuánto falta para el siguiente, que era información invisible. */
+.rev-idx{display:flex;gap:clamp(18px,2.4vw,34px);justify-content:center;margin-top:clamp(34px,3.6vw,48px)}
+.rev-b{position:relative;background:none;border:none;padding:0 0 11px;cursor:pointer;
+  font-family:var(--serif);font-size:15px;font-style:italic;color:var(--dim);
+  transition:color .4s;line-height:1}
+.rev-b:hover{color:var(--bronze)}
+.rev-b.on{color:var(--bronze-hi)}
+.rev-b::before{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--line-soft)}
+.rev-b i{position:absolute;left:0;bottom:0;height:1px;width:0;background:var(--bronze-hi)}
+.rev-b.on i{animation:revAvance var(--rev-dur,6s) linear forwards}
+.rev-idx.quieto .rev-b.on i{animation-play-state:paused}
+@keyframes revAvance{to{width:100%}}
+@media(prefers-reduced-motion:reduce){.rev-b.on i{width:100%;animation:none}}
+
+/* Arrastre lateral. En móvil los índices numerados son dianas de 15 px: el
+   gesto natural ahí es deslizar, y sin él la mitad de las reseñas no se leen
+   nunca. pan-y deja intacto el desplazamiento vertical de la página. */
+.rev-pista{touch-action:pan-y}
+@media(hover:hover) and (pointer:fine){.rev-pista{cursor:grab}.rev-pista.tira{cursor:grabbing}}
+.review.tirando{transition:none}
+
+/* ---------- BANDA DE FIRMANTES ----------
+   Los mismos negocios que ya aparecen en reseñas y en casos, en movimiento
+   continuo. Un bloque quieto se lee como un adorno; uno que avanza se lee como
+   una lista que no cabe entera, que es justo la lectura que interesa. */
+.firmas{margin-top:clamp(46px,5.4vw,74px);border-top:1px solid var(--line-soft);
+  border-bottom:1px solid var(--line-soft);padding:clamp(15px,1.7vw,21px) 0;overflow:hidden;position:relative;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.firmas-pista{display:flex;width:max-content;animation:firmasCorre 52s linear infinite}
+.firmas-mitad{display:flex;flex-shrink:0}
+/* Se congela al pasar por encima —para poder leerlas— y también fuera de
+   pantalla: una animación infinita invisible sigue costando compositor. */
+.firmas:hover .firmas-pista,.firmas-pista.quieta{animation-play-state:paused}
+@keyframes firmasCorre{to{transform:translateX(-50%)}}
+.firmas-mitad i{display:inline-flex;align-items:center;gap:clamp(18px,2.2vw,30px);
+  padding:0 clamp(18px,2.2vw,30px);font-family:var(--serif);font-style:normal;
+  font-size:clamp(15px,1.5vw,20px);color:var(--muted);white-space:nowrap;letter-spacing:.4px}
+.firmas-mitad i::after{content:"";width:5px;height:5px;background:var(--bronze);
+  transform:rotate(45deg);opacity:.55;flex-shrink:0}
 
 /* ---------- CONTACTO ---------- */
-.contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,6vw,84px);margin-top:54px;align-items:start}
+.contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,6vw,84px);margin-top:clamp(32px,3.6vw,50px);align-items:start}
 @media(max-width:900px){.contact-grid{grid-template-columns:1fr}}
 .c-item{padding:24px 0;border-bottom:1px solid var(--line-soft)}
 .c-item .k{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
@@ -323,7 +629,7 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
 .form-msg.show{opacity:1}
 
 /* ---------- FOOTER ---------- */
-footer{position:relative;z-index:2;padding:clamp(56px,7vw,90px) 0 36px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05))}
+footer{position:relative;z-index:2;padding:clamp(40px,4.6vw,64px) 0 34px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05))}
 footer .wordmark{font-family:var(--serif);font-size:clamp(34px,4.4vw,54px);font-weight:600;line-height:1}
 footer .wordmark em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 footer .motto{margin:20px 0 8px;font-size:10px;letter-spacing:7px;text-transform:uppercase;color:var(--muted)}
@@ -332,9 +638,224 @@ footer .fl a{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:va
 footer .fl a:hover{color:var(--bronze-hi)}
 footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
 
+/* ---------- SONIDO ---------- */
+.snd{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid var(--line-soft);
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);background:none;
+  font-family:var(--sans);font-weight:500;transition:color .3s,border-color .3s}
+.snd:hover{color:var(--bronze-hi);border-color:var(--line)}
+.snd[aria-pressed="true"]{color:var(--bronze-hi);border-color:var(--line)}
+/* Tres barras que sólo ondean cuando el sonido está activo */
+.snd .eq{display:flex;align-items:flex-end;gap:2px;height:11px}
+.snd .eq i{width:2px;height:3px;background:currentColor;transition:height .3s}
+.snd[aria-pressed="true"] .eq i{animation:eqb .9s ease-in-out infinite alternate}
+.snd[aria-pressed="true"] .eq i:nth-child(2){animation-delay:.18s}
+.snd[aria-pressed="true"] .eq i:nth-child(3){animation-delay:.36s}
+@keyframes eqb{from{height:3px}to{height:11px}}
+@media(max-width:840px){.snd .snd-t{display:none}.snd{padding:9px 11px}}
+
+/* ---------- SOBRE NOSOTROS ---------- */
+#nosotros{padding-top:clamp(38px,4.2vw,62px)}
+
+/* Antes esta sección eran cuatro tarjetas de certificado a página completa más
+   los dos perfiles: en móvil se apilaba todo y el visitante tenía que recorrer
+   nueve bloques antes de llegar al manifiesto. Las credenciales pasan a ser una
+   franja de sellos al pie de la sección: siguen visibles de entrada —no hay
+   acordeón ni pantalla intermedia— pero una fila de círculos mide lo mismo haya
+   cuatro certificados o diez. El detalle completo lo da el visor, que ya
+   existía. */
+.creds{margin-top:clamp(40px,4.4vw,60px);border:1px solid var(--line-soft);
+  background:rgba(17,19,24,.55);padding:clamp(20px,2.4vw,28px) clamp(18px,2.4vw,32px);
+  display:flex;align-items:center;gap:clamp(18px,2.6vw,36px);flex-wrap:wrap;justify-content:center}
+.creds-txt{flex:1 1 260px;min-width:0}
+.creds-suma{font-family:var(--serif);font-size:clamp(21px,2.2vw,28px);font-weight:600;line-height:1.25}
+.creds-suma em{font-style:italic;color:var(--bronze-hi);font-weight:500}
+.creds-k{margin-top:7px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim)}
+.creds-row{display:flex;gap:clamp(10px,1.4vw,16px);flex-wrap:wrap;justify-content:center}
+
+/* Cada sello es el certificado entero reducido a un disco. El área táctil son
+   los 46px completos, por encima del mínimo cómodo para el pulgar. */
+.cred{position:relative;width:46px;height:46px;flex-shrink:0;padding:0;border:none;
+  background:none;font:inherit;color:inherit;display:block;transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+.cred svg{width:100%;height:100%;display:block}
+.cred .ring{transform-origin:50% 50%;animation:sello 26s linear infinite}
+@keyframes sello{to{transform:rotate(360deg)}}
+.cred.tiene{cursor:pointer}
+.cred.tiene:hover,.cred.tiene:focus-visible{transform:translateY(-4px) scale(1.06)}
+.cred .astro{transition:fill .35s}
+.cred.tiene:hover .astro{fill:var(--bronze-hi)}
+/* Rótulo al pasar por encima: en móvil no se muestra —no hay hover— y ahí el
+   sello se toca directamente, que es más rápido que leer una etiqueta. */
+.cred-tip{position:absolute;bottom:calc(100% + 11px);left:50%;transform:translateX(-50%) translateY(4px);
+  white-space:nowrap;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
+  background:rgba(10,11,14,.96);border:1px solid var(--line);padding:7px 12px;pointer-events:none;
+  opacity:0;transition:opacity .3s,transform .3s;z-index:3}
+.cred.tiene:hover .cred-tip,.cred.tiene:focus-visible .cred-tip{opacity:1;transform:translateX(-50%)}
+@media(hover:none){.cred-tip{display:none}}
+@media(max-width:560px){
+  .creds{flex-direction:column;text-align:center;gap:20px}
+  .creds-txt{flex:none}
+}
+
+/* Visor de certificados */
+#visor{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;
+  padding:clamp(20px,4vw,56px);background:rgba(6,7,9,.94);opacity:0;visibility:hidden;
+  transition:opacity .45s ease,visibility .45s}
+#visor.on{opacity:1;visibility:visible}
+/* Sin esto, el display:flex de arriba gana al atributo hidden del navegador y
+   el diálogo queda "oculto" solo por la opacidad: el atributo dejaría de decir
+   la verdad y el nodo seguiría ocupando su capa. */
+#visor[hidden]{display:none}
+#visor figure{max-width:1080px;width:100%;text-align:center;transform:translateY(18px) scale(.985);
+  transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+#visor.on figure{transform:none}
+#visor img{width:100%;height:auto;max-height:76vh;object-fit:contain;border:1px solid var(--line)}
+#visor figcaption{margin-top:20px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted)}
+#visor .cerrar{position:absolute;top:clamp(16px,2.4vw,30px);right:clamp(16px,2.4vw,30px);
+  width:46px;height:46px;border:1px solid var(--line);background:none;color:var(--bronze-hi);
+  font-family:var(--serif);font-size:23px;line-height:1;cursor:pointer;transition:.35s}
+#visor .cerrar:hover{background:var(--bronze);color:#0A0B0E;border-color:var(--bronze)}
+/* Perfiles */
+.team{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);
+  border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
+@media(max-width:760px){.team{grid-template-columns:1fr}}
+.member{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
+.member:hover{background:var(--panel)}
+.member::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);
+  transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.7,0,.2,1)}
+.member:hover::after{transform:scaleX(1)}
+/* Monograma: se sustituye por <img> cuando haya retrato, sin tocar el resto */
+.m-face{width:clamp(78px,8vw,104px);height:clamp(78px,8vw,104px);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;
+  font-size:clamp(26px,2.8vw,34px);color:var(--bronze-hi);object-fit:cover;flex-shrink:0}
+.m-head{display:flex;align-items:center;gap:clamp(18px,2vw,26px)}
+.m-role{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
+.member h3{font-size:clamp(23px,2.4vw,31px);margin:9px 0 0;transition:color .35s}
+.member:hover h3{color:var(--bronze-hi)}
+.m-bio{color:var(--muted);font-size:15px;line-height:1.8;margin-top:24px}
+.m-tags{list-style:none;margin-top:22px;display:flex;flex-wrap:wrap;gap:9px}
+.m-tags li{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
+  border:1px solid var(--line);padding:7px 13px}
+
+/* ---------- DIAGNÓSTICO (auditor SEO) ---------- */
+.aud-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(40px,6vw,84px);margin-top:clamp(32px,3.6vw,50px);align-items:start}
+@media(max-width:960px){.aud-grid{grid-template-columns:1fr}}
+.aud-form{display:flex;gap:0;border-bottom:1px solid var(--line);margin-top:34px}
+.aud-form input{flex:1;min-width:0;background:transparent;border:none;color:var(--ink);
+  font-family:var(--serif);font-size:clamp(18px,1.9vw,23px);padding:12px 2px;outline:none;border-radius:0}
+.aud-form input::placeholder{color:var(--dim)}
+.aud-form button{flex-shrink:0;border:none;background:none;color:var(--bronze);cursor:pointer;
+  font-family:var(--sans);font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:500;
+  padding:0 4px 0 18px;transition:color .3s}
+.aud-form button:hover:not(:disabled){color:var(--bronze-hi)}
+.aud-form button:disabled{color:var(--dim);cursor:default}
+.aud-note{margin-top:14px;font-size:11px;letter-spacing:1px;color:var(--dim);line-height:1.7}
+/* Panel de resultados */
+.aud-out{border:1px solid var(--line-soft);background:rgba(12,14,19,.9);padding:clamp(26px,3.2vw,42px);
+  min-height:290px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.aud-out::before{content:"";position:absolute;inset:7px;border:1px solid var(--line-soft);pointer-events:none}
+.aud-idle{text-align:center;color:var(--dim);font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.7}
+/* Progreso del análisis. Cada línea nombra un trabajo que el Worker hace de
+   verdad —pedir la página, leer lo que ve Google, medir el tiempo, comprobar
+   robots y sitemap—, así que el visitante no espera delante de una barra muda:
+   ve el expediente formándose. El último paso no se marca hasta que llega la
+   respuesta real, porque ahí sí terminaría mintiendo. */
+.aud-busy{text-align:left;width:100%}
+.aud-busy .bar{width:100%;height:1px;background:#22252C;margin:0 0 24px;position:relative;overflow:hidden}
+.aud-busy .bar i{position:absolute;inset:0;background:var(--bronze);transform:translateX(-100%);
+  animation:audload 1.15s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes audload{to{transform:translateX(100%)}}
+.aud-pasos{list-style:none;display:flex;flex-direction:column;gap:13px}
+.aud-pasos li{display:flex;align-items:center;gap:13px;font-size:11px;letter-spacing:2.6px;
+  text-transform:uppercase;color:#33363D;transition:color .5s ease}
+.aud-pasos li .mk{width:6px;height:6px;flex-shrink:0;border:1px solid #33363D;transform:rotate(45deg);
+  transition:background-color .5s,border-color .5s,transform .5s cubic-bezier(.2,.7,.2,1)}
+.aud-pasos li.hecho{color:var(--dim)}
+.aud-pasos li.hecho .mk{background:var(--dim);border-color:var(--dim)}
+.aud-pasos li.ahora{color:var(--bronze-hi)}
+.aud-pasos li.ahora .mk{background:var(--bronze-hi);border-color:var(--bronze-hi);
+  transform:rotate(45deg) scale(1.45);animation:pasoLate 1.1s ease-in-out infinite}
+@keyframes pasoLate{0%,100%{opacity:.45}50%{opacity:1}}
+@media(max-width:400px){.aud-pasos li{letter-spacing:1.8px;font-size:10px}}
+/* Nota global */
+.aud-score{display:flex;align-items:center;gap:clamp(20px,2.6vw,32px);
+  padding-bottom:24px;border-bottom:1px solid var(--line-soft)}
+.aud-ring{width:96px;height:96px;flex-shrink:0;position:relative}
+.aud-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.aud-ring circle{fill:none;stroke-width:2}
+.aud-ring .bgc{stroke:#22252C}
+.aud-ring .fgc{stroke:var(--bronze);stroke-linecap:round;transition:stroke-dashoffset 1.3s cubic-bezier(.2,.7,.2,1)}
+.aud-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:31px;font-weight:600;color:var(--ink)}
+.aud-verdict .t{font-family:var(--serif);font-size:clamp(21px,2.2vw,27px);font-weight:600;line-height:1.3}
+.aud-verdict .t em{font-style:italic;color:var(--bronze-hi);font-weight:500}
+.aud-verdict .u{font-size:10px;letter-spacing:2px;color:var(--dim);margin-top:9px;word-break:break-all}
+/* Lista de hallazgos */
+.aud-list{list-style:none;margin-top:22px;max-height:266px;overflow-y:auto;padding-right:6px}
+.aud-list::-webkit-scrollbar{width:2px}
+.aud-list::-webkit-scrollbar-thumb{background:var(--line)}
+.aud-list li{display:flex;gap:13px;align-items:flex-start;padding:11px 0;border-bottom:1px solid rgba(200,169,106,.07);
+  font-size:13.5px;line-height:1.65;color:var(--muted)}
+.aud-list li:last-child{border-bottom:none}
+.aud-list .mk{flex-shrink:0;width:7px;height:7px;margin-top:6px;transform:rotate(45deg)}
+.aud-list .ok .mk{background:var(--bronze)}
+.aud-list .warn .mk{background:#8A7A4E}
+.aud-list .bad .mk{background:transparent;border:1px solid #6B6355}
+.aud-list li b{color:var(--ink);font-weight:500}
+.aud-cta{margin-top:24px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.aud-err{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--muted);text-align:center;line-height:1.7}
+
+/* Traducción al idioma del dueño del negocio. El hallazgo técnico se queda en
+   la línea de arriba; esta dice qué le cuesta. Sólo aparece en lo que está mal
+   o a medias: repetirla en lo que ya funciona convertiría la lista en ruido. */
+.aud-list .porque{display:block;margin-top:7px;padding-left:1px;font-size:12.5px;line-height:1.65;
+  color:var(--bronze-hi);opacity:.86;font-style:italic;font-family:var(--serif)}
+/* Resumen de impacto: la única línea que la mayoría va a leer entera */
+.aud-resumen{margin-top:20px;padding:15px 17px;border:1px solid var(--line-soft);
+  background:rgba(200,169,106,.045);font-size:13.5px;line-height:1.7;color:var(--muted)}
+.aud-resumen b{color:var(--bronze-hi);font-weight:500}
+/* Compartir. Abre WhatsApp con el texto ya escrito: el visitante decide si lo
+   envía y a quién. Nada sale de aquí sin que él pulse enviar en su propio
+   teléfono. El botón de copiar cubre el escritorio sin WhatsApp instalado. */
+.aud-comp{display:inline-flex;align-items:center;gap:9px;padding:12px 20px;font-family:var(--sans);
+  font-size:9.5px;letter-spacing:3px;text-transform:uppercase;font-weight:500;color:var(--bronze-hi);
+  border:1px solid var(--line);background:none;cursor:pointer;transition:.35s}
+.aud-comp:hover{background:var(--bronze);color:#0A0B0E;border-color:var(--bronze)}
+.aud-comp svg{width:13px;height:13px;flex-shrink:0;fill:currentColor}
+.aud-comp.ok{color:var(--bronze);border-color:var(--bronze)}
+
+/* ---------- PUENTE DIAGNÓSTICO → CONTACTO ----------
+   Quien ya se ha auditado llega al formulario con un dato suyo encima de la
+   mesa. Sin esto, el diagnóstico y el contacto eran dos páginas distintas
+   compartiendo dominio. */
+.puente{border:1px solid var(--line);background:rgba(200,169,106,.05);padding:18px 20px;margin-bottom:26px;
+  position:relative;overflow:hidden}
+.puente::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--bronze)}
+.puente .pk{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze);margin-bottom:9px}
+.puente .pv{font-family:var(--serif);font-size:clamp(17px,1.8vw,21px);line-height:1.45;color:var(--ink)}
+.puente .pv b{font-style:italic;font-weight:600;color:var(--bronze-hi)}
+.puente .pu{margin-top:8px;font-size:10px;letter-spacing:1.6px;color:var(--dim);word-break:break-all}
+
+/* ---------- MODO ORO ----------
+   No hay pista de que exista: quien lo encuentra es porque lo buscó. Dura unos
+   segundos, no persiste y ninguna función de la página depende de él. Es una
+   nota al pie para quien abre la consola, no una característica. */
+html.oro{--bronze:#E7C778;--bronze-hi:#FFF3CE;--line:rgba(231,199,120,.42);--line-soft:rgba(231,199,120,.2)}
+html.oro body{filter:saturate(1.22) contrast(1.03)}
+.oro-aviso{position:fixed;left:50%;bottom:32px;transform:translate(-50%,18px);z-index:96;
+  display:flex;align-items:center;gap:12px;padding:14px 24px;background:rgba(10,11,14,.96);
+  border:1px solid var(--bronze);font-size:9.5px;letter-spacing:3.4px;text-transform:uppercase;
+  color:var(--bronze-hi);opacity:0;pointer-events:none;
+  transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
+.oro-aviso.on{opacity:1;transform:translate(-50%,0)}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv,.w,.zoomsec{opacity:1!important;transform:none!important}
+  /* Sin movimiento el tapado no tiene gracia y sólo estorba: los resultados de
+     los casos se muestran puestos desde el principio. */
+  .work .res-dato{filter:none;opacity:1;transform:none}
+  .work .res-tapa{display:none}
+  .works-fin{opacity:1;transform:none;pointer-events:auto}
 }
 </style>
 </head>
@@ -365,21 +886,59 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
   <div id="veta"></div>
 </div>
 
-<div class="rail l"><span>S&amp;C — Solutions Company</span></div>
+<!-- Avance de lectura. Va fuera de main para que ninguna transformación de
+     sección lo arrastre, y por encima de la barra de navegación: dos píxeles
+     que dicen cuánto queda son la diferencia entre bajar y abandonar. -->
+<div id="avance" aria-hidden="true"></div>
+
+<!-- El riel izquierdo deja de ser un rótulo y pasa a ser el índice del
+     recorrido: numera los seis tramos, enciende el que se está leyendo y deja
+     encendidos los ya vistos. Es navegación y barra de progreso a la vez, y no
+     ocupa ni un píxel más que el rótulo al que sustituye. -->
+<nav class="rail l" id="riel" aria-label="Índice del recorrido">
+  <div class="idxr">
+    <a href="#nosotros"   data-sec="nosotros">01<b>Sobre nosotros</b></a>
+    <a href="#servicios"  data-sec="servicios">02<b>Servicios</b></a>
+    <a href="#diagnostico" data-sec="diagnostico">03<b>Diagnóstico</b></a>
+    <a href="#proyectos"  data-sec="proyectos">04<b>Proyectos</b></a>
+    <a href="#resenas"    data-sec="resenas">05<b>Reseñas</b></a>
+    <a href="#contacto"   data-sec="contacto">06<b>Contacto</b></a>
+    <span class="sello" aria-hidden="true"></span>
+  </div>
+</nav>
 <div class="rail r"><span>Est. MMXXVI — Hecho con precisión</span></div>
 
-<nav>
+<!-- Visor de certificados -->
+<div id="visor" role="dialog" aria-modal="true" aria-label="Certificado" hidden>
+  <button class="cerrar" type="button" aria-label="Cerrar el certificado">&#10005;</button>
+  <figure>
+    <img id="visor-img" src="" alt="">
+    <figcaption id="visor-pie"></figcaption>
+  </figure>
+</div>
+
+<!-- Con el riel izquierdo convertido en índice ya hay dos navegaciones en la
+     página: cada una necesita su rótulo para que un lector de pantalla pueda
+     distinguirlas al saltar entre puntos de referencia. -->
+<nav aria-label="Principal">
   <a class="brand" href="#top">
     <img src="assets/logo.svg" alt="Logo S&C Solutions Company">
     <span class="bt">S&amp;C <em>Solutions</em><span class="bs">Company</span></span>
   </a>
   <ul>
+    <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#diagnostico">Diagnóstico</a></li>
     <li><a href="#proyectos">Proyectos</a></li>
-    <li><a href="#resenas">Reseñas</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
-  <a href="#contacto" class="btn solid" style="padding:13px 26px">Hablemos</a>
+  <div style="display:flex;align-items:center;gap:14px">
+    <button class="snd" id="snd" type="button" aria-pressed="false" aria-label="Activar sonido de la página">
+      <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="snd-t">Sonido</span>
+    </button>
+    <a href="#contacto" class="btn solid" style="padding:13px 26px">Hablemos</a>
+  </div>
 </nav>
 
 <main id="top">
@@ -407,6 +966,126 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
   </div>
 </header>
 
+<!-- ============ SOBRE NOSOTROS ============
+     Va inmediatamente después del hero y antes del manifiesto: quien acaba de
+     leer "tu competencia ya nos llamó" necesita saber quién lo dice antes de
+     que le vendan nada. La antesala de credenciales se ve primero que el
+     titular, así que la sección se presenta con la prueba, no con la promesa.
+     El lienzo del descenso no necesita ancla nueva: la escena "ciudad" se
+     mantiene entera mientras el manifiesto siga por debajo del centro. -->
+<section id="nosotros">
+  <div class="wrap">
+
+    <span class="sec-tag rv"><span class="n">01 —</span> Sobre nosotros</span>
+    <h2 class="title" data-split>¿Quién <em>construye</em> tu proyecto?</h2>
+    <p class="lead rv" style="margin-top:26px">Somos dos. No una agencia con veinte intermediarios entre tu
+      idea y quien la escribe. Hablas con quien construye, y eso cambia el resultado.</p>
+
+    <div class="team">
+      <article class="member rv">
+        <div class="m-head">
+          <div class="m-face" aria-hidden="true">GR</div>
+          <div>
+            <p class="m-role">Cofundador</p>
+            <h3>Gael Ramírez Santiago</h3>
+          </div>
+        </div>
+        <p class="m-bio">Se formó con quienes enseñan IA a los demás — Jon Hernández y Brais Moure
+          en BIG school, Zaira Hurtado en Daxus Latam — y reunió veintiséis horas certificadas en un
+          solo año, mientras buena parte del sector seguía discutiendo si esto era una moda.
+          Construye agentes que trabajan solos, automatizaciones que eliminan el trabajo repetitivo y
+          webs que cargan antes de que el visitante se plantee irse. Escribe el código a mano: en esta
+          web no hay una sola librería externa, y por eso pesa lo que pesa.</p>
+        <ul class="m-tags">
+          <li>Agentes de IA</li>
+          <li>Automatización</li>
+          <li>Desarrollo web</li>
+          <li>Vibe Coding</li>
+        </ul>
+      </article>
+
+      <article class="member rv">
+        <div class="m-head">
+          <div class="m-face" aria-hidden="true">BM</div>
+          <div>
+            <p class="m-role">Cofundador</p>
+            <h3>Bruno Damián Martínez</h3>
+          </div>
+        </div>
+        <p class="m-bio">Donde Gael construye lo que se ve, Bruno sostiene lo que lo aguanta: la
+          base de datos, las integraciones y la infraestructura que no puede caerse un martes a las
+          tres de la tarde. Es el que pregunta «¿y esto qué pasa cuando entren mil a la vez?» antes de
+          que entren mil a la vez. Un sistema no vale por lo bien que funciona el día que se entrega,
+          sino por lo poco que hay que tocarlo el resto del año.</p>
+        <ul class="m-tags">
+          <li>Backend</li>
+          <li>Bases de datos</li>
+          <li>Integraciones</li>
+          <li>Infraestructura</li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- Franja de credenciales. Cada sello lleva su diploma en data-img; el JS
+         precarga la imagen y sólo si existe de verdad vuelve el sello pulsable,
+         para no ofrecer un visor vacío. -->
+    <div class="creds rv">
+      <div class="creds-txt">
+        <p class="creds-suma"><em>26 horas</em> de formación certificada en IA</p>
+        <p class="creds-k">Cuatro certificados · 2026</p>
+      </div>
+      <div class="creds-row">
+
+        <button class="cred" type="button" data-img="assets/certs/de-cero-a-agentes-bigschool.jpg"
+                data-cert="Curso de IA. De 0 a Agentes — BIG school, 21 de julio de 2026"
+                data-corto="De 0 a Agentes · 6 h">
+          <span class="cred-tip" aria-hidden="true">De 0 a Agentes · 6 h</span>
+          <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
+            <circle class="ring" cx="23" cy="23" r="21.5" stroke="rgba(200,169,106,.42)" stroke-width="1" stroke-dasharray="3 6"/>
+            <circle cx="23" cy="23" r="17" stroke="rgba(200,169,106,.28)" stroke-width="1"/>
+            <path class="astro" d="M23 13.5l2.5 6.2 6.6.5-5 4.3 1.5 6.5L23 27.7l-5.6 3.3 1.5-6.5-5-4.3 6.6-.5z" fill="rgba(228,205,154,.9)"/>
+          </svg>
+        </button>
+
+        <button class="cred" type="button" data-img="assets/certs/inmersion-ia-daxus.jpg"
+                data-cert="Inmersión Inteligencia Artificial en la Práctica — Daxus Latam, 16 de julio de 2026"
+                data-corto="Inmersión IA · 8 h">
+          <span class="cred-tip" aria-hidden="true">Inmersión IA · 8 h</span>
+          <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
+            <circle class="ring" cx="23" cy="23" r="21.5" stroke="rgba(200,169,106,.42)" stroke-width="1" stroke-dasharray="3 6"/>
+            <circle cx="23" cy="23" r="17" stroke="rgba(200,169,106,.28)" stroke-width="1"/>
+            <path class="astro" d="M23 13.5l2.5 6.2 6.6.5-5 4.3 1.5 6.5L23 27.7l-5.6 3.3 1.5-6.5-5-4.3 6.6-.5z" fill="rgba(228,205,154,.9)"/>
+          </svg>
+        </button>
+
+        <button class="cred" type="button" data-img="assets/certs/desarrollo-con-ia-bigschool.jpg"
+                data-cert="Curso de Iniciación al Desarrollo con IA — BIG school, 30 de mayo de 2026"
+                data-corto="Desarrollo con IA · 6 h">
+          <span class="cred-tip" aria-hidden="true">Desarrollo con IA · 6 h</span>
+          <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
+            <circle class="ring" cx="23" cy="23" r="21.5" stroke="rgba(200,169,106,.42)" stroke-width="1" stroke-dasharray="3 6"/>
+            <circle cx="23" cy="23" r="17" stroke="rgba(200,169,106,.28)" stroke-width="1"/>
+            <path class="astro" d="M23 13.5l2.5 6.2 6.6.5-5 4.3 1.5 6.5L23 27.7l-5.6 3.3 1.5-6.5-5-4.3 6.6-.5z" fill="rgba(228,205,154,.9)"/>
+          </svg>
+        </button>
+
+        <button class="cred" type="button" data-img="assets/certs/curso-ia-2026-bigschool.jpg"
+                data-cert="Curso de IA 2026, Vibe Coding y Automatizaciones — BIG school, 17 de abril de 2026"
+                data-corto="Vibe Coding · 6 h">
+          <span class="cred-tip" aria-hidden="true">Vibe Coding · 6 h</span>
+          <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
+            <circle class="ring" cx="23" cy="23" r="21.5" stroke="rgba(200,169,106,.42)" stroke-width="1" stroke-dasharray="3 6"/>
+            <circle cx="23" cy="23" r="17" stroke="rgba(200,169,106,.28)" stroke-width="1"/>
+            <path class="astro" d="M23 13.5l2.5 6.2 6.6.5-5 4.3 1.5 6.5L23 27.7l-5.6 3.3 1.5-6.5-5-4.3 6.6-.5z" fill="rgba(228,205,154,.9)"/>
+          </svg>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- ============ MANIFIESTO ============ -->
 <section class="manifesto">
   <div class="wrap">
@@ -428,7 +1107,7 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
 <!-- ============ SERVICIOS ============ -->
 <section id="servicios">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">01 —</span> Servicios</span>
+    <span class="sec-tag"><span class="n">02 —</span> Servicios</span>
     <h2 class="title" data-split>Lo que <em>dominamos</em></h2>
     <div class="svc-grid">
       <article class="svc rv">
@@ -475,38 +1154,98 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
     <div class="stat rv"><div class="n"><span data-count="1200">0</span><em>+</em></div><div class="l">Horas automatizadas</div></div>
     <div class="stat rv"><div class="n">24<em>/7</em></div><div class="l">Soporte y monitoreo</div></div>
   </div>
+  <!-- Banda viva: rota datos comprobables de este mismo sitio. Si el visitante
+       ya pasó por el diagnóstico, el primero es su propio resultado con la hora
+       real a la que lo hizo. Ningún dato de aquí se inventa ni se simula. -->
+  <div class="viva" id="viva">
+    <span class="pt" aria-hidden="true"></span>
+    <p id="viva-t">Diagnóstico SEO gratuito · <b>sin registro y sin coste</b></p>
+  </div>
+</section>
+
+<!-- ============ DIAGNÓSTICO ============
+     Va justo después de servicios: el visitante acaba de leer lo que hacemos y
+     aquí lo demostramos sobre su propia web en lugar de pedírselo de palabra.
+     El análisis lo hace un Worker de Cloudflare porque el navegador no puede
+     leer otro dominio (CORS); el endpoint se configura en AUDITOR abajo. -->
+<section id="diagnostico">
+  <div class="wrap">
+    <span class="sec-tag rv"><span class="n">03 —</span> Diagnóstico</span>
+    <h2 class="title" data-split>Tu web, <em>auditada</em> en 10 segundos</h2>
+    <div class="aud-grid">
+      <div class="rv">
+        <p class="lead">Pega la dirección de tu sitio. Revisamos lo que Google mira primero —título,
+          descripción, encabezados, datos estructurados, imágenes, sitemap— y te devolvemos la nota
+          junto a los fallos concretos. Sin registro y sin coste.</p>
+        <form class="aud-form" id="aud-form">
+          <label for="aud-url" class="sr-only"
+                 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dirección de tu web</label>
+          <input id="aud-url" type="url" inputmode="url" autocomplete="url" required
+                 placeholder="tuempresa.com">
+          <button type="submit" id="aud-go">Analizar</button>
+        </form>
+        <p class="aud-note">Analizamos únicamente la página pública que nos indiques. No guardamos la
+          dirección ni la compartimos.</p>
+      </div>
+
+      <div class="aud-out" id="aud-out" aria-live="polite">
+        <p class="aud-idle">El diagnóstico aparecerá aquí.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ============ PROYECTOS ============ -->
 <section id="proyectos">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">02 —</span> Proyectos</span>
+    <span class="sec-tag"><span class="n">04 —</span> Proyectos</span>
     <h2 class="title" data-split>Casos que <em>hablan solos</em></h2>
     <div class="works">
       <article class="work rv"><span class="ghost">01</span>
         <span class="cat">E-commerce</span>
         <h3>Joyería <em>Brava</em></h3>
         <p>Tienda online con checkout en un clic y recuperación automática de carritos por WhatsApp.</p>
-        <div class="res"><b>+212% ventas</b><span>Primer trimestre</span></div>
+        <div class="res">
+          <div class="res-dato" id="res-1"><b>+212% ventas</b><span>Primer trimestre</span></div>
+          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-1">
+            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
+        </div>
       </article>
       <article class="work rv"><span class="ghost">02</span>
         <span class="cat">Automatización IA</span>
         <h3>Logística <em>Nómada</em></h3>
         <p>Cotizaciones, rastreo y facturación automáticos. Lo que tomaba un equipo completo, ahora ocurre mientras duermen.</p>
-        <div class="res"><b>−30 h/semana</b><span>Trabajo manual</span></div>
+        <div class="res">
+          <div class="res-dato" id="res-2"><b>−30 h/semana</b><span>Trabajo manual</span></div>
+          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-2">
+            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
+        </div>
       </article>
       <article class="work rv"><span class="ghost">03</span>
         <span class="cat">CRM a medida</span>
         <h3>Grupo <em>Vetmar</em></h3>
         <p>CRM con historial de pacientes, recordatorios automáticos y métricas por sucursal. Cero olvidos.</p>
-        <div class="res"><b>3 sedes, 1 panel</b><span>Todo centralizado</span></div>
+        <div class="res">
+          <div class="res-dato" id="res-3"><b>3 sedes, 1 panel</b><span>Todo centralizado</span></div>
+          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-3">
+            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
+        </div>
       </article>
       <article class="work rv"><span class="ghost">04</span>
         <span class="cat">Web + SEO</span>
         <h3>Bufete <em>Aldana</em></h3>
         <p>Web editorial con blog optimizado. En 4 meses superaron al despacho más grande de su ciudad.</p>
-        <div class="res"><b>#1 en Google</b><span>Búsqueda local</span></div>
+        <div class="res">
+          <div class="res-dato" id="res-4"><b>#1 en Google</b><span>Búsqueda local</span></div>
+          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-4">
+            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
+        </div>
       </article>
+    </div>
+    <!-- Sólo aparece con los cuatro resultados destapados -->
+    <div class="works-fin" id="works-fin" aria-live="polite">
+      <p>Los cuatro empezaron con una web que no vendía. <em>El quinto puede ser el tuyo.</em></p>
+      <a href="#contacto"><span class="dia" aria-hidden="true"></span>Contar mi caso</a>
     </div>
   </div>
 </section>
@@ -514,33 +1253,81 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
 <!-- ============ RESEÑAS ============ -->
 <section id="resenas">
   <div class="wrap" style="text-align:center">
-    <span class="sec-tag" style="justify-content:center"><span class="n">03 —</span> Reseñas</span>
+    <span class="sec-tag" style="justify-content:center"><span class="n">05 —</span> Reseñas</span>
     <h2 class="title" data-split>Ellos ya <em>confiaron</em></h2>
   </div>
   <div class="reviews">
-    <div class="review on">
-      <q>Nos hicieron una web que parece de agencia internacional. Los clientes nos lo dicen cada semana, y la automatización de cotizaciones nos ahorra horas diarias.</q>
-      <div class="who">Mariana G. — Boutique Inmobiliaria</div>
-      <div class="stars">★★★★★</div>
+    <div class="rev-pista">
+
+      <figure class="review on">
+        <div class="rev-marco">
+          <div class="rev-cal" role="img" aria-label="Cinco de cinco">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <blockquote>Nos hicieron una web que parece de agencia internacional. Los clientes nos lo
+            dicen cada semana, y la automatización de cotizaciones nos ahorra horas diarias.</blockquote>
+          <figcaption class="rev-pie">
+            <div class="rev-rayo" aria-hidden="true"></div>
+            <span class="rev-quien">Mariana G.</span>
+            <span class="rev-que">Boutique Inmobiliaria</span>
+          </figcaption>
+        </div>
+      </figure>
+
+      <figure class="review">
+        <div class="rev-marco">
+          <div class="rev-cal" role="img" aria-label="Cinco de cinco">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <blockquote>El CRM que nos construyeron reemplazó tres herramientas de pago mensual.
+            Todo mi equipo vende más porque por fin vemos el pipeline completo.</blockquote>
+          <figcaption class="rev-pie">
+            <div class="rev-rayo" aria-hidden="true"></div>
+            <span class="rev-quien">Carlos R.</span>
+            <span class="rev-que">Distribuidora Industrial</span>
+          </figcaption>
+        </div>
+      </figure>
+
+      <figure class="review">
+        <div class="rev-marco">
+          <div class="rev-cal" role="img" aria-label="Cinco de cinco">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <blockquote>El chatbot con IA atiende el 80% de las preguntas solo. Mi equipo ahora se
+            enfoca en cerrar ventas, no en repetir respuestas. Mejor inversión del año.</blockquote>
+          <figcaption class="rev-pie">
+            <div class="rev-rayo" aria-hidden="true"></div>
+            <span class="rev-quien">Lucía M.</span>
+            <span class="rev-que">Clínica Estética</span>
+          </figcaption>
+        </div>
+      </figure>
+
     </div>
-    <div class="review">
-      <q>El CRM que nos construyeron reemplazó tres herramientas de pago mensual. Todo mi equipo vende más porque por fin vemos el pipeline completo.</q>
-      <div class="who">Carlos R. — Distribuidora Industrial</div>
-      <div class="stars">★★★★★</div>
+    <div class="rev-idx" id="dots" role="tablist" aria-label="Reseñas"></div>
+  </div>
+
+  <!-- Banda de firmantes: los mismos negocios que ya figuran arriba en reseñas
+       y abajo en casos. No hay ningún nombre aquí que no esté ya publicado en
+       la página. La segunda mitad es la copia exacta que permite el bucle sin
+       salto, y va oculta a lectores de pantalla para no leer todo dos veces. -->
+  <div class="firmas" id="firmas">
+    <div class="firmas-pista">
+      <div class="firmas-mitad">
+        <i>Boutique Inmobiliaria</i><i>Joyería Brava</i><i>Distribuidora Industrial</i><i>Logística Nómada</i><i>Clínica Estética</i><i>Grupo Vetmar</i><i>Bufete Aldana</i>
+      </div>
+      <div class="firmas-mitad" aria-hidden="true">
+        <i>Boutique Inmobiliaria</i><i>Joyería Brava</i><i>Distribuidora Industrial</i><i>Logística Nómada</i><i>Clínica Estética</i><i>Grupo Vetmar</i><i>Bufete Aldana</i>
+      </div>
     </div>
-    <div class="review">
-      <q>El chatbot con IA atiende el 80% de las preguntas solo. Mi equipo ahora se enfoca en cerrar ventas, no en repetir respuestas. Mejor inversión del año.</q>
-      <div class="who">Lucía M. — Clínica Estética</div>
-      <div class="stars">★★★★★</div>
-    </div>
-    <div class="dots" id="dots"></div>
   </div>
 </section>
 
 <!-- ============ CONTACTO ============ -->
 <section id="contacto">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">04 —</span> Contacto</span>
+    <span class="sec-tag"><span class="n">06 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
       <div class="rv">
@@ -553,6 +1340,15 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
         </div>
       </div>
       <form class="frame rv" id="form">
+        <!-- Puente desde el diagnóstico. Sólo se muestra si este navegador
+             guardó un análisis: el dato es del propio visitante y no sale de
+             su equipo. El JS lo rellena y lo destapa. -->
+        <div class="puente" id="puente" hidden>
+          <p class="pk">Tu diagnóstico</p>
+          <p class="pv">Tu web sacó <b id="puente-n">—</b>. Cuéntanos tu caso y te decimos
+            <b>qué arreglar primero</b>.</p>
+          <p class="pu" id="puente-u"></p>
+        </div>
         <label for="nombre">Nombre</label>
         <input id="nombre" type="text" required placeholder="¿Cómo te llamas?">
         <label for="email">Email</label>
@@ -580,7 +1376,9 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
   <div class="wordmark">S&amp;C <em>Solutions Company</em></div>
   <p class="motto">Ambición · Estrategia · Resultados</p>
   <div class="fl">
+    <a href="#nosotros">Nosotros</a>
     <a href="#servicios">Servicios</a>
+    <a href="#diagnostico">Diagnóstico</a>
     <a href="#proyectos">Proyectos</a>
     <a href="#resenas">Reseñas</a>
     <a href="#contacto">Contacto</a>
@@ -785,15 +1583,118 @@ document.querySelectorAll('[data-count]').forEach(el=>{
 
 /* ---------- RESEÑAS ---------- */
 (()=>{
-  const revs=document.querySelectorAll('.review'),dots=document.getElementById('dots');
-  let i=0,timer;
-  revs.forEach((_,n)=>{const b=document.createElement('button');b.className='dot'+(n?'':' on');
-    b.setAttribute('aria-label','Reseña '+(n+1));
-    b.onclick=()=>{go(n);reset();};dots.appendChild(b);});
-  function go(n){revs[i].classList.remove('on');dots.children[i].classList.remove('on');
-    i=n;revs[i].classList.add('on');dots.children[i].classList.add('on');}
-  function reset(){clearInterval(timer);timer=setInterval(()=>go((i+1)%revs.length),6000);}
-  reset();
+  const revs=[...document.querySelectorAll('.review')],idx=document.getElementById('dots');
+  if(!revs.length||!idx)return;
+  const DUR=6000;
+  let i=0,timer=0;
+
+  revs.forEach((_,n)=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='rev-b'+(n?'':' on');
+    b.setAttribute('role','tab');
+    b.setAttribute('aria-selected',n?'false':'true');
+    b.setAttribute('aria-label','Reseña '+(n+1)+' de '+revs.length);
+    /* El número es el índice visible; la <i> es la barra que lo va llenando */
+    b.innerHTML='0'+(n+1)+'<i></i>';
+    b.addEventListener('click',()=>{va(n);rearma();});
+    idx.appendChild(b);
+  });
+  idx.style.setProperty('--rev-dur',(DUR/1000)+'s');
+
+  function va(n){
+    if(n===i)return;
+    revs[i].classList.remove('on');
+    idx.children[i].classList.remove('on');
+    idx.children[i].setAttribute('aria-selected','false');
+    i=n;
+    revs[i].classList.add('on');
+    idx.children[i].setAttribute('aria-selected','true');
+    /* Reflujo forzado entre quitar y poner la clase: sin él el navegador
+       agrupa ambos cambios, no ve reinicio y la barra no vuelve a arrancar. */
+    const barra=idx.children[i].querySelector('i');
+    if(barra){barra.style.animation='none';barra.offsetWidth;barra.style.animation='';}
+    idx.children[i].classList.add('on');
+  }
+  function rearma(){clearInterval(timer);timer=setInterval(()=>va((i+1)%revs.length),DUR);}
+
+  /* ---- Arrastre lateral ----
+     En móvil los números del índice son dianas de quince píxeles y el gesto
+     natural es deslizar; sin esto, dos de cada tres reseñas no se leen nunca.
+     El eje se decide en el primer movimiento y ya no cambia: si el dedo empezó
+     bajando, el gesto es de la página y aquí no se toca nada. */
+  const pista=document.querySelector('.rev-pista');
+  if(pista){
+    const UMBRAL=46;
+    let id=null,x0=0,y0=0,dx=0,eje='';
+    pista.addEventListener('pointerdown',e=>{
+      if(e.pointerType==='mouse'&&e.button!==0)return;
+      id=e.pointerId;x0=e.clientX;y0=e.clientY;dx=0;eje='';
+      pista.classList.add('tira');
+    });
+    pista.addEventListener('pointermove',e=>{
+      if(e.pointerId!==id)return;
+      const ax=e.clientX-x0,ay=e.clientY-y0;
+      if(!eje){
+        if(Math.abs(ax)<6&&Math.abs(ay)<6)return;
+        eje=Math.abs(ax)>Math.abs(ay)?'x':'y';
+        if(eje==='x'){
+          para();
+          /* Sólo se captura el puntero cuando ya se sabe que el gesto es
+             horizontal: capturarlo antes secuestraría el scroll vertical. */
+          try{pista.setPointerCapture(id);}catch(_){}
+          revs[i].classList.add('tirando');
+        }
+      }
+      if(eje!=='x')return;
+      dx=ax;
+      /* Resistencia: el recorrido se frena al alejarse, así que el gesto tiene
+         tope y no se siente como una hoja suelta. */
+      revs[i].style.transform='translateX('+(dx*.42).toFixed(1)+'px)';
+      revs[i].style.opacity=Math.max(.35,1-Math.abs(dx)/380).toFixed(3);
+    },{passive:true});
+    const acaba=e=>{
+      if(id===null||(e&&e.pointerId!==undefined&&e.pointerId!==id))return;
+      const era=eje;
+      pista.classList.remove('tira');
+      revs[i].classList.remove('tirando');
+      revs[i].style.transform='';
+      revs[i].style.opacity='';
+      try{pista.releasePointerCapture(id);}catch(_){}
+      id=null;eje='';
+      if(era!=='x')return;
+      if(Math.abs(dx)>UMBRAL){
+        va(dx<0?(i+1)%revs.length:(i-1+revs.length)%revs.length);
+        SIG.clic();
+      }
+      rearma();
+    };
+    pista.addEventListener('pointerup',acaba);
+    pista.addEventListener('pointercancel',acaba);
+    /* Teclado: las flechas mueven el carrusel cuando el foco está en el índice */
+    idx.addEventListener('keydown',e=>{
+      if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
+      e.preventDefault();
+      va(e.key==='ArrowRight'?(i+1)%revs.length:(i-1+revs.length)%revs.length);
+      idx.children[i].focus();
+      rearma();
+    });
+  }
+
+  /* Al pasar por encima se congela: leer una reseña y que se cambie sola a
+     mitad de frase es la forma más rápida de que nadie las lea. */
+  const rev=document.getElementById('resenas');
+  const para=()=>{clearInterval(timer);idx.classList.add('quieto');};
+  const sigue=()=>{idx.classList.remove('quieto');rearma();};
+  rev.addEventListener('pointerenter',para);
+  rev.addEventListener('pointerleave',sigue);
+  rev.addEventListener('focusin',para);
+  rev.addEventListener('focusout',sigue);
+  /* Fuera de pantalla no tiene sentido gastar temporizador ni animación */
+  new IntersectionObserver(es=>{es[0].isIntersecting?rearma():clearInterval(timer);},
+    {threshold:0}).observe(rev);
+
+  rearma();
 })();
 
 /* ---------- SOLICITAR: pre-selecciona el servicio en el formulario ---------- */
@@ -809,7 +1710,782 @@ document.getElementById('form').addEventListener('submit',e=>{
   e.preventDefault();
   document.getElementById('form-msg').classList.add('show');
   e.target.querySelectorAll('input,textarea').forEach(i=>i.value='');
+  SIG.confirma();
 });
+
+/* ---------- FIRMA SONORA ----------
+   Sintetizada con Web Audio: cero archivos, cero peticiones y cero KB. Nace
+   apagada y recuerda la elección, porque un sonido no pedido es una molestia,
+   no una firma. El AudioContext sólo se crea tras un gesto del usuario, que es
+   lo que exigen las políticas de reproducción automática de los navegadores. */
+const SIG=(()=>{
+  const LLAVE='syc-sonido';
+  let ctx=null,mst=null,on=false;
+  function ctxOn(){
+    if(ctx)return ctx;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return null;
+    ctx=new AC();
+    mst=ctx.createGain();mst.gain.value=.5;mst.connect(ctx.destination);
+    return ctx;
+  }
+
+  /* ---------- AMBIENTE ----------
+     Un fondo armónico que no se repite nunca. No es un archivo en bucle: son
+     cuatro voces de dos osciladores desafinados entre sí, cada una con su
+     propio vaivén de volumen a una velocidad distinta y prima con las demás.
+     Como esos vaivenes nunca vuelven a coincidir, no existe el punto donde
+     "empieza otra vez", que es lo que cansa de la música de fondo en bucle.
+     Cada 26 segundos el acorde se desliza al siguiente en siete segundos, así
+     que hay movimiento armónico sin un solo corte.
+     Cero archivos, cero peticiones, cero KB: se sintetiza en el navegador. */
+  const ACORDES=[
+    [146.83,220.00,349.23,659.25],  /* Re menor novena  */
+    [174.61,261.63,440.00,659.25],  /* Fa mayor séptima */
+    [116.54,174.61,293.66,523.25],  /* Si bemol sexta   */
+    [110.00,164.81,261.63,392.00]   /* La menor séptima */
+  ];
+  let amb=null,ambG=null,acorde=0,relojAcorde=0;
+
+  function creaAmbiente(){
+    if(amb||!ctx)return;
+    ambG=ctx.createGain();ambG.gain.value=0;      /* entra con fundido */
+    /* Filtro cálido: recorta el brillo para que el fondo no compita con la
+       voz interior de quien está leyendo. */
+    const filtro=ctx.createBiquadFilter();
+    filtro.type='lowpass';filtro.frequency.value=760;filtro.Q.value=.55;
+    /* Vaivén lentísimo del corte: es lo que hace que el fondo "respire" */
+    const lfoF=ctx.createOscillator(),lfoFg=ctx.createGain();
+    lfoF.frequency.value=.021;lfoFg.gain.value=260;
+    lfoF.connect(lfoFg);lfoFg.connect(filtro.frequency);lfoF.start();
+    /* Eco largo y apagado: da el aire de sala sin necesitar ningún archivo de
+       reverberación. El filtro dentro de la realimentación evita que las
+       repeticiones se vuelvan metálicas al acumularse. */
+    const eco=ctx.createDelay(1),realim=ctx.createGain(),ecoF=ctx.createBiquadFilter();
+    eco.delayTime.value=.62;realim.gain.value=.34;
+    ecoF.type='lowpass';ecoF.frequency.value=1200;
+    eco.connect(ecoF);ecoF.connect(realim);realim.connect(eco);
+    const mezclaEco=ctx.createGain();mezclaEco.gain.value=.42;
+    filtro.connect(ambG);filtro.connect(eco);eco.connect(mezclaEco);mezclaEco.connect(ambG);
+    ambG.connect(mst);
+
+    const voces=ACORDES[0].map((f,i)=>{
+      const g=ctx.createGain();g.gain.value=.055;
+      /* Dos osciladores por voz, desafinados unos pocos céntimos: ese roce
+         entre ambos es lo que convierte un tono plano en algo con cuerpo. */
+      const a=ctx.createOscillator(),b=ctx.createOscillator();
+      a.type='sine';b.type='triangle';
+      a.frequency.value=f;b.frequency.value=f;
+      a.detune.value=-5;b.detune.value=6;
+      a.connect(g);b.connect(g);g.connect(filtro);
+      a.start();b.start();
+      /* Cada voz respira a su ritmo. Los períodos son distintos y no múltiplos
+         entre sí: por eso la combinación tarda horas en repetirse. */
+      const lfo=ctx.createOscillator(),lg=ctx.createGain();
+      lfo.frequency.value=.026+i*.011;
+      lg.gain.value=.03;
+      lfo.connect(lg);lg.connect(g.gain);lfo.start();
+      return {a,b};
+    });
+    amb={voces};
+    /* El cambio de acorde va por temporizador y no por audio: siete segundos
+       de deslizamiento es demasiado lento para programarlo por eventos. */
+    relojAcorde=setInterval(()=>{
+      if(!ctx||!amb)return;
+      acorde=(acorde+1)%ACORDES.length;
+      const t=ctx.currentTime;
+      ACORDES[acorde].forEach((f,i)=>{
+        const v=amb.voces[i];if(!v)return;
+        v.a.frequency.exponentialRampToValueAtTime(f,t+7);
+        v.b.frequency.exponentialRampToValueAtTime(f,t+7);
+      });
+    },26000);
+  }
+  /* Los fundidos son largos a propósito: un fondo que entra o sale de golpe
+     se nota, y lo que no se nota es justo lo que se agradece. */
+  function subeAmb(){
+    if(!ctx)return;
+    creaAmbiente();
+    if(!ambG)return;
+    const t=ctx.currentTime;
+    ambG.gain.cancelScheduledValues(t);
+    ambG.gain.setValueAtTime(ambG.gain.value,t);
+    ambG.gain.linearRampToValueAtTime(.5,t+5);
+  }
+  function bajaAmb(){
+    if(!ctx||!ambG)return;
+    const t=ctx.currentTime;
+    ambG.gain.cancelScheduledValues(t);
+    ambG.gain.setValueAtTime(ambG.gain.value,t);
+    ambG.gain.linearRampToValueAtTime(0,t+1.4);
+  }
+  /* Envolvente exponencial: el ataque corto y la caída larga son lo que hace
+     que un seno suene a metal templado y no a pitido de microondas. */
+  function tono(f,ret,dur,vol,tipo){
+    if(!ctx)return;
+    const t=ctx.currentTime+ret;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=tipo||'sine';o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol,t+.014);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g);g.connect(mst);o.start(t);o.stop(t+dur+.03);
+  }
+  const listo=()=>on&&ctx&&ctx.state==='running';
+
+  /* Enciende el contexto y sube el ambiente en cuanto el navegador lo permita.
+     resume() devuelve una promesa: comprobar ctx.state justo después todavía
+     diría "suspended" y el fondo no llegaría a sonar nunca. */
+  function arranca(){
+    if(!ctxOn())return;
+    const listo=()=>{if(on&&!document.hidden)subeAmb();};
+    if(ctx.state==='running'){listo();return;}
+    ctx.resume().then(listo).catch(()=>{});
+  }
+
+  /* Fuera de la pestaña se calla y, si sigue fuera, se suspende el contexto
+     entero: un fondo sonando en una pestaña que nadie mira es batería gastada
+     y, en un portátil, ventilador encendido sin motivo. */
+  let dormir=0;
+  addEventListener('visibilitychange',()=>{
+    if(!ctx)return;
+    clearTimeout(dormir);
+    if(document.hidden){
+      bajaAmb();
+      dormir=setTimeout(()=>{if(document.hidden&&ctx.state==='running')ctx.suspend();},1800);
+    }else if(on)arranca();
+  },{passive:true});
+
+  const api={
+    get activo(){return on;},
+    /* Roce: casi inaudible, sólo confirma que el puntero encontró algo */
+    roce(){if(listo())tono(1174.66,0,.055,.012);},
+    /* Pulsación: dos notas que suben, la respuesta a un clic */
+    clic(){if(!listo())return;tono(587.33,0,.09,.032);tono(880,.045,.13,.026);},
+    /* Confirmación: acorde breve al completar algo */
+    confirma(){if(!listo())return;[523.25,659.25,783.99].forEach((f,i)=>tono(f,i*.07,.5,.03));},
+    /* Firma de entrada: sol mayor abierto, lento, como un sello que se posa */
+    firma(){if(!listo())return;[196,293.66,392,493.88].forEach((f,i)=>tono(f,i*.13,2.1,.05));},
+    activa(v){
+      on=v;
+      try{localStorage.setItem(LLAVE,v?'1':'0');}catch(_){}
+      if(v)arranca();else bajaAmb();
+    },
+    /* Arranca solo, sin que nadie tenga que pulsar nada.
+       El único límite es ajeno: ningún navegador —Chrome, Safari, Firefox—
+       deja sonar audio antes de que el visitante interactúe con la página. No
+       es una opción que se pueda activar ni un permiso que se pueda pedir: es
+       una política de reproducción automática y no hay forma de rodearla.
+       Así que se deja todo montado y sonando a volumen cero, y se levanta en
+       el primer gesto que haga —mover la rueda, tocar la pantalla, pulsar una
+       tecla o simplemente desplazarse—, que ocurre en los primeros segundos.
+       Sólo se queda callada si el visitante la apagó en una visita anterior. */
+    inicia(){
+      let guardado=null;
+      try{guardado=localStorage.getItem(LLAVE);}catch(_){}
+      on=guardado!=='0';
+      if(!on)return false;
+      arranca();
+      const gestos=['pointerdown','keydown','wheel','touchstart','scroll'];
+      const despierta=()=>{
+        gestos.forEach(ev=>removeEventListener(ev,despierta));
+        arranca();
+      };
+      gestos.forEach(ev=>addEventListener(ev,despierta,{passive:true}));
+      return true;
+    }
+  };
+  return api;
+})();
+
+(()=>{
+  const b=document.getElementById('snd');
+  if(!b)return;
+  /* El botón deja de ser un interruptor de encendido y pasa a ser el de
+     silencio: la música ya viene puesta. Con audio que suena solo, el control
+     para callarlo tiene que estar a la vista desde el primer momento, y por
+     eso vive en la barra de navegación y no escondido en el pie. */
+  const pinta=v=>{
+    b.setAttribute('aria-pressed',v?'true':'false');
+    b.setAttribute('aria-label',v?'Silenciar la música de fondo':'Activar la música de fondo');
+    const t=b.querySelector('.snd-t');
+    if(t)t.textContent=v?'Sonido':'Silencio';
+  };
+  pinta(SIG.inicia());
+  b.addEventListener('click',()=>{
+    const nuevo=b.getAttribute('aria-pressed')!=='true';
+    pinta(nuevo);
+    SIG.activa(nuevo);
+    if(nuevo)setTimeout(()=>SIG.firma(),90);
+  });
+  /* Roce sobre lo pulsable y pulso al hacer clic. Delegado en el documento:
+     un solo par de escuchas para toda la página, incluidos los nodos que el
+     JS crea después (los puntos de las reseñas, por ejemplo). */
+  const PULSABLE='a,button,.svc-btn,.cred';
+  let ultimo=null;
+  document.addEventListener('pointerover',e=>{
+    if(e.pointerType!=='mouse')return;
+    const t=e.target.closest(PULSABLE);
+    if(t&&t!==ultimo){ultimo=t;SIG.roce();}
+    else if(!t)ultimo=null;
+  },{passive:true});
+  document.addEventListener('click',e=>{if(e.target.closest(PULSABLE))SIG.clic();},{passive:true});
+})();
+
+/* ---------- VISOR DE CERTIFICADOS ----------
+   Cada tarjeta declara su imagen en data-img. Se precarga: sólo si el archivo
+   existe de verdad la tarjeta se vuelve pulsable. Prometer "ver certificado" y
+   abrir un cuadro vacío destruye justo la confianza que la sección construye. */
+(()=>{
+  const visor=document.getElementById('visor');
+  if(!visor)return;
+  const img=document.getElementById('visor-img'),
+        pie=document.getElementById('visor-pie'),
+        cerrar=visor.querySelector('.cerrar');
+  let previo=null;
+
+  function abre(ruta,texto){
+    img.src=ruta;img.alt='Certificado: '+texto;pie.textContent=texto;
+    previo=document.activeElement;
+    visor.hidden=false;
+    visor.getBoundingClientRect();          /* reflujo: la transición arranca sin rAF */
+    visor.classList.add('on');
+    cerrar.focus();
+    document.body.style.overflow='hidden';
+  }
+  function tapa(){
+    visor.classList.remove('on');
+    document.body.style.overflow='';
+    setTimeout(()=>{visor.hidden=true;img.src='';},450);
+    if(previo&&previo.focus)previo.focus();
+  }
+  cerrar.addEventListener('click',tapa);
+  visor.addEventListener('click',e=>{if(e.target===visor)tapa();});
+  addEventListener('keydown',e=>{
+    if(visor.hidden)return;
+    if(e.key==='Escape')tapa();
+    /* Encierra el tabulador: con un solo control, devolverlo al botón basta */
+    else if(e.key==='Tab'){e.preventDefault();cerrar.focus();}
+  });
+
+  document.querySelectorAll('.cred[data-img]').forEach(t=>{
+    const ruta=t.dataset.img,texto=t.dataset.cert||'';
+    /* Los sellos son <button> nativos: ya reciben foco y ya emiten click con
+       Enter y con la barra espaciadora. Añadir aquí un keydown propio abriría
+       el visor dos veces por cada pulsación. */
+    t.setAttribute('aria-label','Ver el certificado: '+texto);
+    const prueba=new Image();
+    prueba.onload=()=>{
+      t.classList.add('tiene');
+      t.addEventListener('click',()=>abre(ruta,texto));
+    };
+    /* Sin imagen el sello sigue ahí como insignia, pero no promete abrir nada */
+    prueba.onerror=()=>{t.disabled=true;t.setAttribute('aria-label',texto);};
+    prueba.src=ruta;
+  });
+})();
+
+/* ---------- AVANCE DE LECTURA E ÍNDICE DEL RECORRIDO ----------
+   Dos indicadores servidos por un solo módulo. La barra superior sólo escribe
+   un transform, así que se resuelve en el compositor y no cuesta maquetación.
+   El tramo activo lo decide un IntersectionObserver con la banda central de la
+   pantalla, que es más barato y más estable que medir posiciones al desplazar:
+   nunca hay que leer getBoundingClientRect durante el scroll. */
+(()=>{
+  const barra=document.getElementById('avance');
+  const riel=document.getElementById('riel');
+  const enlaces=riel?[...riel.querySelectorAll('.idxr a')]:[];
+  const doc=document.documentElement;
+  let tope=1,pend=false;
+
+  function mide(){tope=Math.max(1,doc.scrollHeight-innerHeight);}
+  function pinta(){
+    pend=false;
+    if(barra)barra.style.transform='scaleX('+Math.min(1,scrollY/tope).toFixed(4)+')';
+  }
+  const pide=()=>{if(!pend){pend=true;requestAnimationFrame(pinta);}};
+  mide();pinta();
+  addEventListener('scroll',pide,{passive:true});
+  addEventListener('resize',()=>{mide();pide();},{passive:true});
+  /* Las fuentes al cargar, y sobre todo el panel del diagnóstico al llenarse,
+     cambian el alto del documento después del primer pintado. Sin volver a
+     medir, la barra llegaría al 100% mucho antes que el visitante al pie.
+     Se vigila con ResizeObserver y no leyendo scrollHeight en cada fotograma:
+     así el alto se recalcula sólo las dos o tres veces que de verdad cambia. */
+  addEventListener('load',()=>{mide();pinta();});
+  if(window.ResizeObserver)new ResizeObserver(()=>{mide();pide();}).observe(document.body);
+
+  if(!enlaces.length)return;
+  const secs=enlaces.map(a=>document.getElementById(a.dataset.sec)).filter(Boolean);
+  if(secs.length!==enlaces.length)return;
+  let actual=-1;
+  function marca(i){
+    if(i===actual)return;
+    actual=i;
+    enlaces.forEach((a,n)=>{
+      a.classList.toggle('aqui',n===i);
+      /* "Visto" no se retira al subir: es el registro de lo recorrido, no el
+         de dónde está la pantalla ahora mismo. */
+      if(n<=i)a.classList.add('visto');
+    });
+    /* El sello sólo se gana pisando el último tramo */
+    if(i===enlaces.length-1)riel.classList.add('fin');
+  }
+  /* La banda de -46% arriba y abajo deja activa la sección que cruza el centro
+     exacto de la pantalla: con secciones de alturas muy distintas es el único
+     criterio que no deja dos encendidas a la vez.
+     Cuando un mismo lote trae varias —al saltar por un ancla, o al desplazar
+     muy rápido— no vale quedarse con la última del array: el orden de las
+     entradas no dice nada de cuál se está mirando, y hacerlo así encendía el
+     último tramo y regalaba el sello del recorrido nada más entrar. Se elige
+     la que tenga el centro más cerca del centro de la pantalla. */
+  const so=new IntersectionObserver(es=>{
+    let mejor=-1,cerca=Infinity;
+    es.forEach(e=>{
+      if(!e.isIntersecting)return;
+      const c=e.boundingClientRect,
+            d=Math.abs(c.top+c.height/2-innerHeight/2);
+      if(d<cerca){cerca=d;mejor=secs.indexOf(e.target);}
+    });
+    if(mejor>=0)marca(mejor);
+  },{rootMargin:'-46% 0px -46% 0px',threshold:0});
+  secs.forEach(s=>so.observe(s));
+})();
+
+/* ---------- CIFRAS: BARRIDO DE LUZ AL CONTAR ----------
+   Separado del contador porque la cuarta cifra (24/7) no cuenta pero sí debe
+   descubrirse igual que las otras tres. */
+(()=>{
+  const co=new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.classList.add('corre');
+    co.unobserve(e.target);
+  }),{threshold:.45});
+  document.querySelectorAll('.stat').forEach(s=>co.observe(s));
+})();
+
+/* ---------- BANDA VIVA ----------
+   Rota hechos verificables de este mismo sitio. El primero, cuando existe, es
+   el diagnóstico que hizo este navegador: dato real, con su hora real. Nada
+   aquí simula actividad de terceros. */
+const DIAG=(()=>{
+  const LLAVE='syc-diag';
+  return {
+    lee(){
+      try{
+        const d=JSON.parse(localStorage.getItem(LLAVE)||'null');
+        if(!d||typeof d.n!=='number'||!d.u||!d.t)return null;
+        /* Caduca a la semana: un diagnóstico de hace un mes ya no describe
+           ninguna web, y presentarlo como actual sería falso. */
+        if(Date.now()-d.t>6048e5)return null;
+        return d;
+      }catch(_){return null;}
+    },
+    guarda(u,n){
+      try{localStorage.setItem(LLAVE,JSON.stringify({u,n,t:Date.now()}));}catch(_){}
+    }
+  };
+})();
+
+/* Antigüedad en palabras. Sin librerías: son cuatro tramos. */
+function haceQue(ms){
+  const m=Math.floor((Date.now()-ms)/6e4);
+  if(m<1)return'hace un momento';
+  if(m<60)return'hace '+m+' minuto'+(m>1?'s':'');
+  const h=Math.floor(m/60);
+  if(h<24)return'hace '+h+' hora'+(h>1?'s':'');
+  const d=Math.floor(h/24);
+  return'hace '+d+' día'+(d>1?'s':'');
+}
+
+(()=>{
+  const caja=document.getElementById('viva'),txt=document.getElementById('viva-t');
+  if(!caja||!txt)return;
+  const fijos=[
+    'Diagnóstico SEO gratuito · <b>sin registro y sin coste</b>',
+    'Escribe hoy y <b>respondemos en menos de 24 horas</b>',
+    '<b>26 horas certificadas</b> en inteligencia artificial · 2026',
+    'Esta web no usa <b>ni una sola librería externa</b> · por eso carga así'
+  ];
+  let i=0,timer=0,visible=false;
+  /* El diagnóstico propio se recalcula en cada vuelta para que la antigüedad
+     siga siendo cierta aunque la pestaña lleve media hora abierta. */
+  function lista(){
+    const d=DIAG.lee();
+    return d
+      ? ['Tu diagnóstico: <b>'+d.n+'/100</b> · '+haceQue(d.t)].concat(fijos)
+      : fijos;
+  }
+  function pasa(){
+    const L=lista();
+    i=(i+1)%L.length;
+    txt.classList.add('va');
+    setTimeout(()=>{txt.innerHTML=L[i];txt.classList.remove('va');},450);
+  }
+  const arranca=()=>{clearInterval(timer);timer=setInterval(pasa,4600);};
+  new IntersectionObserver(es=>{
+    visible=es[0].isIntersecting;
+    if(visible){
+      /* Al entrar en pantalla se refresca el texto por si el visitante acaba
+         de auditarse más abajo y ha vuelto a subir. */
+      const L=lista();i=0;txt.innerHTML=L[0];arranca();
+    }else clearInterval(timer);
+  },{threshold:0}).observe(caja);
+})();
+
+/* ---------- RELIEVE DE LAS TARJETAS DE SERVICIO ----------
+   Una sola escucha delegada en la rejilla, no cuatro. El puntero escribe tres
+   custom properties y el resto lo resuelve el CSS: no se toca el DOM ni se lee
+   maquetación en ningún fotograma. Fuera de puntero fino ni se registra. */
+(()=>{
+  const grid=document.querySelector('.svc-grid');
+  if(!grid)return;
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const GIRO=3.4;                 /* grados máximos: más que esto ya es un truco */
+  let tarjeta=null,caja=null,mx=0,my=0,raf=0;
+
+  function pinta(){
+    raf=0;
+    if(!tarjeta||!caja)return;
+    const px=(mx-caja.left)/caja.width,py=(my-caja.top)/caja.height;
+    tarjeta.style.setProperty('--ry',((px-.5)*2*GIRO).toFixed(2)+'deg');
+    tarjeta.style.setProperty('--rx',((.5-py)*2*GIRO).toFixed(2)+'deg');
+    tarjeta.style.setProperty('--tz','16px');
+    tarjeta.style.setProperty('--gx',(px*100).toFixed(1)+'%');
+    tarjeta.style.setProperty('--gy',(py*100).toFixed(1)+'%');
+  }
+  function suelta(){
+    if(!tarjeta)return;
+    tarjeta.classList.remove('tilt');
+    tarjeta.style.setProperty('--rx','0deg');
+    tarjeta.style.setProperty('--ry','0deg');
+    tarjeta.style.setProperty('--tz','0px');
+    /* will-change se retira con la clase: cuatro capas GPU permanentes por una
+       animación que sólo ocurre bajo el puntero no compensan. */
+    tarjeta=caja=null;
+  }
+  grid.addEventListener('pointermove',e=>{
+    if(e.pointerType!=='mouse')return;
+    const t=e.target.closest('.svc');
+    if(!t){suelta();return;}
+    if(t!==tarjeta){
+      suelta();
+      tarjeta=t;tarjeta.classList.add('tilt');
+    }
+    /* La caja se relee sólo al cambiar de tarjeta o al desplazar la página:
+       hacerlo en cada movimiento fuerza recálculo de maquetación. */
+    if(!caja)caja=tarjeta.getBoundingClientRect();
+    mx=e.clientX;my=e.clientY;
+    if(!raf)raf=requestAnimationFrame(pinta);
+  },{passive:true});
+  grid.addEventListener('pointerleave',suelta,{passive:true});
+  addEventListener('scroll',()=>{if(tarjeta)caja=tarjeta.getBoundingClientRect();},{passive:true});
+})();
+
+/* ---------- CASOS: DESTAPAR EL RESULTADO ----------
+   La cifra está en el HTML desde el principio —sólo desenfocada por CSS—, así
+   que Google la indexa igual y quien use lector de pantalla la oye sin tener
+   que pulsar nada: el botón anuncia con aria-expanded qué está haciendo. */
+(()=>{
+  const tapas=[...document.querySelectorAll('.work .res-tapa')];
+  if(!tapas.length)return;
+  const fin=document.getElementById('works-fin');
+  let abiertos=0;
+  tapas.forEach(b=>{
+    b.addEventListener('click',()=>{
+      const res=b.closest('.res');
+      if(!res||res.classList.contains('abierto'))return;
+      res.classList.add('abierto');
+      b.setAttribute('aria-expanded','true');
+      abiertos++;
+      if(abiertos===tapas.length&&fin){
+        /* El aviso llega con retraso deliberado: si aparece a la vez que el
+           cuarto dato, el visitante lo lee como parte del efecto y no como
+           conclusión de lo que acaba de hacer. */
+        setTimeout(()=>{fin.classList.add('on');SIG.confirma();},700);
+      }
+    });
+  });
+})();
+
+/* ---------- BANDA DE FIRMANTES: PARADA FUERA DE PANTALLA ----------
+   Una animación infinita invisible sigue ocupando al compositor en cada
+   fotograma. Parada fuera de vista, su coste real es cero. */
+(()=>{
+  const banda=document.getElementById('firmas');
+  if(!banda)return;
+  const pista=banda.querySelector('.firmas-pista');
+  if(!pista)return;
+  pista.classList.add('quieta');
+  new IntersectionObserver(es=>{
+    pista.classList.toggle('quieta',!es[0].isIntersecting);
+  },{threshold:0}).observe(banda);
+})();
+
+/* ---------- HUEVO DE PASCUA ----------
+   Dos capas: una nota en consola para quien abra las herramientas y el modo oro
+   para quien pruebe la secuencia clásica. Ninguna función de la página depende
+   de esto y no deja rastro al terminar. */
+(()=>{
+  const marca='color:#C8A96A;font:600 13px Georgia,serif';
+  const gris='color:#5E5A52;font:400 11px Inter,sans-serif';
+  console.log('%c◆ S&C Solutions Company','font:600 22px Georgia,serif;color:#E4CD9A');
+  console.log('%cCero librerías. Cero framework. Un archivo.%c\nSi has llegado hasta aquí, probablemente sepas lo que cuesta.\nEscríbenos: hola@sycsolutions.company','color:#F4F1EA;font:500 13px Inter,sans-serif',gris);
+  console.log('%c↑ ↑ ↓ ↓ ← → ← → B A','color:#3C3A34;font:400 11px monospace');
+
+  const CLAVE=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let paso=0,activo=false;
+  addEventListener('keydown',e=>{
+    /* Dentro de un campo de texto las flechas mueven el cursor: ahí la
+       secuencia no se escucha, o escribir "ba" en el formulario dispararía. */
+    const t=e.target;
+    if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'))return;
+    const k=e.key.length===1?e.key.toLowerCase():e.key;
+    paso=(k===CLAVE[paso])?paso+1:(k===CLAVE[0]?1:0);
+    if(paso<CLAVE.length||activo)return;
+    paso=0;activo=true;
+    const raiz=document.documentElement;
+    raiz.classList.add('oro');
+    const aviso=document.createElement('div');
+    aviso.className='oro-aviso';
+    aviso.innerHTML='<span class="dia" aria-hidden="true"></span>Modo oro · buen ojo';
+    document.body.appendChild(aviso);
+    requestAnimationFrame(()=>aviso.classList.add('on'));
+    SIG.firma();
+    setTimeout(()=>{
+      raiz.classList.remove('oro');
+      aviso.classList.remove('on');
+      setTimeout(()=>{aviso.remove();activo=false;},700);
+    },7000);
+  });
+})();
+
+/* ---------- DIAGNÓSTICO SEO ----------
+   El navegador no puede leer otro dominio: la política de origen cruzado lo
+   impide. El análisis lo hace el Worker de cloudflare/seo-audit.js y aquí sólo
+   se pinta. Si AUDITOR sigue vacío, el formulario lo dice en vez de fingir. */
+/* ── ÚNICO valor a tocar tras desplegar el Worker ───────────────────────────
+   Pega aquí la URL que devuelve `npx wrangler deploy`, por ejemplo:
+   window.SYC_AUDITOR='https://syc-seo-audit.TU-SUBDOMINIO.workers.dev';
+   Mientras siga vacío el formulario lo dice en lugar de fingir un análisis. */
+window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
+
+(()=>{
+  const f=document.getElementById('aud-form');
+  if(!f)return;
+  const campo=document.getElementById('aud-url'),
+        boton=document.getElementById('aud-go'),
+        salida=document.getElementById('aud-out');
+  let ocupado=false;
+
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  /* El veredicto habla el idioma de quien paga la web, no el del que la
+     programa. La nota y los hallazgos son los que devuelve el Worker: aquí no
+     se maquilla ningún número, sólo se dice qué significa para su negocio. */
+  function veredicto(n){
+    if(n>=90)return['Impecable',
+      'Tu web está en el grupo que <em>lo hace bien de verdad</em>. Ahora toca exprimirla.'];
+    if(n>=70)return['Buena base, con fugas',
+      'Funciona, pero hay <em>clientes que hoy no te encuentran</em> por detalles que se arreglan.'];
+    if(n>=45)return['Google te entiende a medias',
+      'Tu web rinde al <em>'+n+'% de lo que podría</em>. El resto se lo está llevando otro.'];
+    return['Prácticamente invisible',
+      'Quien te busca hoy <em>termina encontrando a tu competencia</em>. Y tiene arreglo.'];
+  }
+
+  /* Resumen de impacto en una línea. Cuenta lo que hay, sin inflarlo: el número
+     de fallos sale de la propia lista y cualquiera puede contarlos debajo. */
+  function resumen(checks){
+    const mal=checks.filter(c=>c.estado==='bad').length,
+          medio=checks.filter(c=>c.estado==='warn').length,
+          fallos='<b>'+mal+' fallo'+(mal>1?'s':'')+'</b>',
+          medias='<b>'+medio+' punto'+(medio>1?'s':'')+' a medias</b>',
+          arreglo='Casi todo son ajustes en el código que Google lee: se corrigen sin rehacer '+
+                  'el diseño.';
+    if(!mal&&!medio)return'No encontramos un solo punto que corregir. Es un sitio muy bien '+
+      'hecho, y eso es más raro de lo que parece.';
+    if(mal&&medio)return'Hay '+fallos+' y '+medias+' frenando tu web ahora mismo. '+arreglo;
+    if(mal)return'Hay '+fallos+' frenando tu web ahora mismo. '+arreglo;
+    /* La concordancia del verbo cambia con el número: "te queda 1" / "te quedan 2" */
+    return'Te qued'+(medio>1?'an ':'a ')+medias+'. Nada grave, pero es exactamente la '+
+      'distancia entre aparecer y aparecer el primero.';
+  }
+
+  function pinta(d){
+    const n=Math.max(0,Math.min(100,Math.round(d.score))),
+          [tit,frase]=veredicto(n),
+          checks=d.checks||[],
+          C=2*Math.PI*45;
+    /* La traducción al negocio sólo se imprime en lo que falla o va a medias.
+       Repetirla también en lo que ya funciona convertiría la lista en ruido y
+       enterraría justo lo que hay que leer. */
+    const filas=checks.map(c=>{
+      const est=c.estado==='ok'?'ok':c.estado==='warn'?'warn':'bad';
+      return '<li class="'+est+'">'+
+        '<span class="mk" aria-hidden="true"></span>'+
+        '<span><b>'+esc(c.titulo)+'</b> — '+esc(c.detalle)+
+        (c.porque&&est!=='ok'?'<span class="porque">'+esc(c.porque)+'</span>':'')+
+        '</span></li>';
+    }).join('');
+
+    const texto='Acabo de auditar '+d.url+' con el diagnóstico SEO gratuito de S&C Solutions: '+
+      n+'/100. Puedes probar el tuyo aquí: https://sycsolutions.company/#diagnostico';
+
+    salida.innerHTML=
+      '<div class="aud-score">'+
+        '<div class="aud-ring"><svg viewBox="0 0 96 96" aria-hidden="true">'+
+          '<circle class="bgc" cx="48" cy="48" r="45"/>'+
+          '<circle class="fgc" cx="48" cy="48" r="45" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+C.toFixed(1)+'"/>'+
+        '</svg><b>0</b></div>'+
+        '<div class="aud-verdict"><p class="t">'+tit+'. '+frase+'</p><p class="u">'+esc(d.url)+'</p></div>'+
+      '</div>'+
+      '<p class="aud-resumen">'+resumen(checks)+'</p>'+
+      '<ul class="aud-list">'+filas+'</ul>'+
+      '<div class="aud-cta">'+
+        '<a href="#contacto" class="btn solid" id="aud-fix" style="padding:13px 26px">Quiero que lo arreglen</a>'+
+        '<button class="aud-comp" type="button" id="aud-wa">'+
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.6.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.6-1.2a.5.5 0 0 0 0-.5c0-.1-.6-1.4-.8-1.9s-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 2.9 2.9 0 0 0-.9 2.2 5 5 0 0 0 1.1 2.7 11.5 11.5 0 0 0 4.4 3.9c1.6.6 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z"/></svg>'+
+          'Compartir</button>'+
+      '</div>';
+
+    const aro=salida.querySelector('.fgc'),num=salida.querySelector('.aud-ring b');
+    /* Forzar el reflujo, y no esperar a un fotograma, hace que la transición
+       del aro arranque igual con la pestaña en segundo plano: ahí rAF no corre
+       y el resultado se quedaba vacío hasta que el visitante volviera. */
+    aro.getBoundingClientRect();
+    aro.style.strokeDashoffset=(C*(1-n/100)).toFixed(1);
+    const t0=performance.now();
+    let fin=false;
+    (function sube(t){
+      const p=Math.min((t-t0)/1300,1);
+      num.textContent=Math.round(n*(1-Math.pow(1-p,3)));
+      if(p<1)requestAnimationFrame(sube);else fin=true;
+    })(t0);
+    /* Red de seguridad por lo mismo: la cifra acaba correcta haya o no rAF */
+    setTimeout(()=>{if(!fin)num.textContent=n;},1400);
+
+    /* Compartir: abre WhatsApp con el mensaje ya escrito. Quien pulsa enviar es
+       el visitante, en su propio teléfono y al destinatario que él elija; desde
+       aquí no sale nada. Si el navegador ofrece el diálogo nativo de compartir
+       se usa ese, que además cubre el escritorio. */
+    const wa=document.getElementById('aud-wa');
+    if(wa)wa.addEventListener('click',()=>{
+      if(navigator.share){
+        navigator.share({text:texto}).catch(()=>{});
+        return;
+      }
+      open('https://wa.me/?text='+encodeURIComponent(texto),'_blank','noopener');
+    });
+
+    /* Guardar el resultado en este navegador es lo que conecta el diagnóstico
+       con el formulario y con la banda viva. No sale del equipo del visitante. */
+    DIAG.guarda(d.url,n);
+    pintaPuente();
+    const fix=document.getElementById('aud-fix');
+    if(fix)fix.addEventListener('click',()=>pintaPuente(true));
+
+    SIG.confirma();
+  }
+
+  function error(msg){
+    salida.innerHTML='<p class="aud-err">'+esc(msg)+'</p>';
+  }
+
+  /* Cada línea nombra un trabajo que el Worker hace de verdad: pedir la página
+     siguiendo redirecciones, leer las etiquetas que mira Google, cronometrar la
+     respuesta, contar imágenes y Open Graph, y comprobar robots.txt y
+     sitemap.xml. Avanzan por tiempo porque una petición HTTP no informa de su
+     progreso, pero el último paso NO se cierra solo: se queda encendido hasta
+     que llega la respuesta real. Ahí es donde un cargador de adorno mentiría. */
+  const PASOS=[
+    'Conectando con tu sitio',
+    'Leyendo lo que ve Google',
+    'Cronometrando la carga',
+    'Revisando imágenes y vista previa',
+    'Buscando robots.txt y mapa del sitio',
+    'Calculando tu nota'
+  ];
+  function arrancaPasos(){
+    salida.innerHTML='<div class="aud-busy"><div class="bar"><i></i></div><ul class="aud-pasos">'+
+      PASOS.map((p,i)=>'<li class="'+(i?'':'ahora')+'"><span class="mk" aria-hidden="true"></span>'+
+        esc(p)+'</li>').join('')+'</ul></div>';
+    const li=[...salida.querySelectorAll('.aud-pasos li')];
+    let k=0;
+    const t=setInterval(()=>{
+      if(k>=li.length-1){clearInterval(t);return;}
+      li[k].classList.remove('ahora');li[k].classList.add('hecho');
+      li[++k].classList.add('ahora');
+    },820);
+    return()=>clearInterval(t);
+  }
+
+  f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(ocupado)return;
+    let u=campo.value.trim();
+    if(!u)return;
+    /* Anteponer https sólo si no hay esquema: comprobar únicamente http/https
+       convertía "ftp://sitio.com" en una URL válida con host "ftp". */
+    if(!/^[a-z][a-z0-9+.-]*:/i.test(u))u='https://'+u;
+    let dir;
+    try{dir=new URL(u);}catch(_){error('Esa dirección no es válida. Prueba con algo como tuempresa.com');return;}
+    if(dir.protocol!=='http:'&&dir.protocol!=='https:'){
+      error('Solo podemos analizar direcciones web (http o https).');return;
+    }
+    const punto=window.SYC_AUDITOR;
+    if(!punto){
+      error('El diagnóstico aún no está conectado. Escríbenos y lo hacemos a mano hoy mismo.');
+      return;
+    }
+    ocupado=true;boton.disabled=true;boton.textContent='Analizando';
+    const parar=arrancaPasos();
+    try{
+      const ctl=new AbortController(),
+            reloj=setTimeout(()=>ctl.abort(),20000),
+            r=await fetch(punto+'?url='+encodeURIComponent(u),{signal:ctl.signal});
+      clearTimeout(reloj);
+      const d=await r.json().catch(()=>null);
+      if(!r.ok||!d)throw new Error((d&&d.error)||'sin respuesta');
+      if(d.error)throw new Error(d.error);
+      pinta(d);
+    }catch(err){
+      error(err.name==='AbortError'
+        ? 'Tu sitio tardó demasiado en responder. Eso, en sí mismo, ya es un hallazgo.'
+        : 'No pudimos leer esa página: '+(err.message||'error desconocido')+'.');
+    }finally{
+      parar();
+      ocupado=false;boton.disabled=false;boton.textContent='Analizar';
+    }
+  });
+})();
+
+/* ---------- PUENTE DIAGNÓSTICO → CONTACTO ----------
+   Quien ya se auditó llega al formulario con su propio dato delante. El aviso
+   sale de localStorage, así que es información suya que nunca salió de su
+   equipo. El texto del mensaje sólo se rellena cuando viene pulsando "quiero
+   que lo arreglen": escribir en su nombre sin que lo haya pedido sería
+   presuponer demasiado. */
+function pintaPuente(rellena){
+  const caja=document.getElementById('puente');
+  if(!caja)return;
+  const d=DIAG.lee();
+  if(!d){caja.hidden=true;return;}
+  const nn=document.getElementById('puente-n'),uu=document.getElementById('puente-u');
+  if(nn)nn.textContent=d.n+'/100';
+  if(uu)uu.textContent=d.u+' · analizada '+haceQue(d.t);
+  caja.hidden=false;
+  if(!rellena)return;
+  const sel=document.getElementById('servicio'),msg=document.getElementById('msg');
+  if(sel)[...sel.options].forEach(o=>{if(o.text==='Sitio web premium')sel.value=o.text;});
+  if(msg&&!msg.value.trim()){
+    msg.value='Mi web es '+d.u+' y sacó '+d.n+'/100 en el diagnóstico. '+
+      'Quiero saber qué conviene arreglar primero.';
+  }
+}
+pintaPuente();
 </script>
 </body>
 </html>

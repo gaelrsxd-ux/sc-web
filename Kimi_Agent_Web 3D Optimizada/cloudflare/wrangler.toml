@@ -1,0 +1,9 @@
+name = "syc-seo-audit"
+main = "seo-audit.js"
+compatibility_date = "2026-07-01"
+
+# El Worker no guarda nada: lee la página, puntúa y responde. El único estado
+# es la caché de borde, que ya viene incluida sin declarar binding alguno.
+
+[observability]
+enabled = true
