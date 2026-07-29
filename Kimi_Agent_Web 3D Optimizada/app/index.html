@@ -285,16 +285,28 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    de las plantillas, y además dejaba el fondo desnudo a la vista mientras el
    contenido llegaba. Ahora sube 20px con un fundido breve. */
 .zoomsec{opacity:0;transform:translate3d(0,20px,0);transition:opacity .75s ease,transform .75s cubic-bezier(.16,.8,.24,1);will-change:transform,opacity}
-.zoomsec.zin{opacity:1;transform:none}
-/* ---------- NADA SE ANIMA FUERA DE LA PANTALLA ----------
+/* Terminada la entrada, la sección suelta su capa de GPU. will-change es una
+   promesa de que algo va a moverse, y el navegador reserva memoria de vídeo
+   para cumplirla; dejarlo puesto para siempre es el uso que la especificación
+   advierte que no se haga. Eran nueve secciones altas promocionadas de forma
+   permanente por una transición que ocurre una sola vez. */
+.zoomsec.zin{opacity:1;transform:none;will-change:auto}
+/* ---------- FUERA DE PANTALLA NO SE ANIMA NI SE RESERVA GPU ----------
    Había 16 animaciones infinitas cubriendo 1,7 pantallas completas, y todas
    corrían siempre: el rombo de reseñas (282.000 px²) se animaba mientras se
    miraba el hero. Ninguna de ellas se ve cuando su sección está fuera de vista,
    así que pausarlas no cambia nada visible y devuelve el hilo al scroll.
-   Se marca desde JS con IntersectionObserver; al volver, reanudan donde iban. */
+   Se marca desde JS con IntersectionObserver; al volver, reanudan donde iban.
+
+   Y además suelta la capa de vídeo. Entre las escenas del descenso, el velo,
+   la veta, las secciones, el "&" del manifiesto y el rombo había más de veinte
+   capas a pantalla completa reservadas de forma permanente. En un equipo con
+   gráficos integrados eso agota la memoria de vídeo y el compositor cae a
+   software, que es exactamente la sensación de ir a diez fotogramas. */
 .quieto,.quieto *,
 .quieto::before,.quieto::after,
-.quieto *::before,.quieto *::after{animation-play-state:paused!important}
+.quieto *::before,.quieto *::after{
+  animation-play-state:paused!important;will-change:auto!important}
 /* el navegador no renderiza lo que está fuera de pantalla hasta que te acercas */
 /* content-visibility:auto estimaba las secciones en 900px hasta pintarlas. Al
    pulsar un ancla lejano, las alturas reales iban sustituyendo a la estimación
@@ -2645,6 +2657,13 @@ function pintaPuente(rellena){
   }
 }
 pintaPuente();
+
+/* TEMPORAL — diagnóstico de fluidez. Sólo se activa abriendo la página con
+   ?fps al final de la dirección; para el visitante normal no existe ni se
+   descarga. Se quita borrando estas tres líneas y el archivo que cargan. */
+if(location.search.indexOf('fps')>-1){
+  const s=document.createElement('script');s.src='diagnostico-fps.js';document.head.appendChild(s);
+}
 </script>
 </body>
 </html>
