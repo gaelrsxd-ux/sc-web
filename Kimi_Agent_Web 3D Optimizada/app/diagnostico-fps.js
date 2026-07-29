@@ -1,157 +1,131 @@
-/* Diagnóstico de fluidez, segunda versión. TEMPORAL: se activa sólo con ?fps.
+/* Medidor de fluidez EN VIVO. TEMPORAL: se activa sólo con ?fps.
 
-   La primera versión medía las nueve pruebas seguidas en la misma carga y sus
-   datos salieron inservibles: la página se degrada con el uso, así que cada
-   prueba partía peor que la anterior y el deterioro tapaba por completo la
-   señal de cada componente.
-
-   Aquí cada prueba corre en una carga limpia y la página se recarga entre una
-   y otra. Además mide el deterioro a propósito: repite la prueba base al
-   final, después de haber recorrido la página entera, para poner número a
-   cuánto se pierde por el simple hecho de usarla. */
+   Las versiones anteriores medían por tramos y no captaron el deterioro con el
+   tiempo —el síntoma real en PC— porque la pestaña se iba a segundo plano.
+   Esta corre una sola vez, de forma continua: desplaza la página sola durante
+   60 s y muestra en pantalla, en vivo, los fotogramas por segundo, el mínimo,
+   la memoria y en qué punto va. Así se ve CUÁNDO cae y si la memoria crece.
+   No hay que hacer clic ni cambiar de pestaña: sólo mirar. */
 (() => {
-  const LLAVE = 'syc-diag-fps';
-  const esperar = ms => new Promise(r => setTimeout(r, ms));
+  const DURACION = 60;               /* segundos de medición */
+  const muestras = [];               /* {t, fps, heap, y} cada segundo */
 
-  const PRUEBAS = [
-    ['base — sin tocar nada', ''],
-    ['sin las capas del descenso', '#descenso{display:none!important}'],
-    ['sin los dos planos de la ciudad', '.esc.ciudad::before,.esc.ciudad::after{display:none!important}'],
-    ['sin las mascaras de la ciudad', '.esc.ciudad::before,.esc.ciudad::after{-webkit-mask-image:none!important;mask-image:none!important}'],
-    ['sin will-change (capas GPU)', '*{will-change:auto!important}'],
-    ['sin desenfoques', '*{filter:none!important;backdrop-filter:none!important}'],
-    ['sin ninguna animacion', '*,*::before,*::after{animation:none!important;transition:none!important}'],
-    ['sin el velo y la veta', '#velo,#veta{display:none!important}'],
-    ['sin relieve 3D en servicios', '.svc-grid{perspective:none!important}.svc{transform:none!important}'],
-    ['DETERIORO — base tras recorrer la pagina', '']
-  ];
+  /* Panel pequeño en una esquina: la página se ve y se mide por debajo */
+  const p = document.createElement('div');
+  p.style.cssText = 'position:fixed;top:12px;right:12px;z-index:99999;min-width:230px;' +
+    'background:rgba(10,11,14,.92);color:#F4F1EA;font:12px/1.5 Consolas,monospace;' +
+    'padding:14px 16px;border:1px solid #C8A96A;border-radius:8px;pointer-events:none';
+  p.innerHTML = '<div id="d-fps" style="font:700 30px/1 Consolas,monospace;color:#E4CD9A">— fps</div>' +
+    '<div id="d-info" style="margin-top:8px;color:#9A958A"></div>';
+  document.documentElement.appendChild(p);
+  const elFps = p.querySelector('#d-fps');
+  const elInfo = p.querySelector('#d-info');
 
-  let est;
-  try { est = JSON.parse(sessionStorage.getItem(LLAVE)) || null; } catch (e) { est = null; }
-  if (!est) est = { i: 0, res: [] };
-
-  const caja = document.createElement('div');
-  caja.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0A0B0E;color:#F4F1EA;' +
-    'font:14px/1.6 Consolas,monospace;padding:26px;overflow:auto';
-  document.documentElement.appendChild(caja);
-  const escribe = h => caja.innerHTML = h;
-
-  /* La caja tapa la página; se aparta mientras se mide para no falsear nada */
-  const tapa = v => caja.style.visibility = v ? 'visible' : 'hidden';
-
-  function medir(segundos, recorrerTodo) {
-    return new Promise(res => {
-      const t = [];
-      let ultimo = performance.now();
-      const inicio = ultimo;
-      let y = 0;
-      const alto = Math.max(1, document.body.scrollHeight - innerHeight);
-      /* recorrerTodo acelera el barrido para pasar por la página completa */
-      const salto = recorrerTodo ? 90 : 26;
-      const scroll = setInterval(() => {
-        y = (y + salto) % alto;
-        window.scrollTo({ top: y, behavior: 'instant' });
-      }, 16);
-      let hecho = false;
-      const corta = setTimeout(() => acabar(), segundos * 1000 + 2000);
-      function acabar() {
-        if (hecho) return; hecho = true;
-        clearTimeout(corta); clearInterval(scroll);
-        if (t.length < 6) return res({ fps: 0, peor: 0, lentos: 0, fallo: true });
-        t.shift();
-        const o = [...t].sort((a, b) => a - b);
-        res({
-          fps: +(1000 / (t.reduce((a, b) => a + b, 0) / t.length)).toFixed(1),
-          p50: +o[Math.floor(o.length * .5)].toFixed(1),
-          p95: +o[Math.floor(o.length * .95)].toFixed(1),
-          peor: +o[o.length - 1].toFixed(1),
-          lentos: t.filter(x => x > 32).length,
-          frames: t.length
-        });
-      }
-      (function paso(n) {
-        if (hecho) return;
-        t.push(n - ultimo); ultimo = n;
-        if (n - inicio < segundos * 1000) requestAnimationFrame(paso); else acabar();
-      })(performance.now());
+  const seccionEn = y => {
+    const secs = [...document.querySelectorAll('main > *[id],section[id]')];
+    let best = '—', bd = 1e9;
+    const mid = y + innerHeight / 2;
+    secs.forEach(s => {
+      const t = s.offsetTop, b = t + s.offsetHeight;
+      const d = mid < t ? t - mid : mid > b ? mid - b : 0;
+      if (d < bd) { bd = d; best = s.id; }
     });
-  }
+    return best;
+  };
 
-  (async () => {
-    /* ---- ya terminó: informe ---- */
-    if (est.i >= PRUEBAS.length) {
-      sessionStorage.removeItem(LLAVE);
-      const base = est.res[0].fps;
-      const deterioro = est.res[est.res.length - 1];
-      const comps = est.res.slice(1, -1).sort((a, b) => b.fps - a.fps);
+  let t0 = performance.now();
+  let ultimoSeg = t0;
+  let framesSeg = 0;
+  let ultimo = t0;
+  let minFps = 999;
+  let dir = 1, y = 0;
+  let pausadoPorOculto = false;
 
-      let enviado = false;
-      try {
-        await fetch('/resultado-fps', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            medido: new Date().toISOString(), version: 2,
-            base: base, pruebas: est.res,
-            entorno: {
-              navegador: navigator.userAgent, pantalla: innerWidth + 'x' + innerHeight,
-              densidad: devicePixelRatio, nucleos: navigator.hardwareConcurrency || null,
-              paginaAlto: document.body.scrollHeight,
-              memoriaJS: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB' : null
-            }
-          })
-        });
-        enviado = true;
-      } catch (e) { }
-
-      const fila = p => {
-        const d = (p.fps - base > 0 ? '+' : '') + (p.fps - base).toFixed(1);
-        const culpa = p.fps - base >= 10;
-        return '<tr style="' + (culpa ? 'color:#E4CD9A;font-weight:700' : '') + '">' +
-          '<td style="padding:6px 16px 6px 0">' + p.nombre + '</td>' +
-          '<td style="padding:6px 14px;text-align:right">' + (p.fallo ? 'sin datos' : p.fps) + '</td>' +
-          '<td style="padding:6px 14px;text-align:right">' + d + '</td>' +
-          '<td style="padding:6px 0;text-align:right;color:#9A958A">' + p.peor + ' ms</td></tr>';
-      };
-      escribe('<h2 style="font:600 21px/1.3 Georgia,serif;color:#E4CD9A;margin:0 0 4px">Resultado</h2>' +
-        '<p style="color:#9A958A;margin:0 0 20px">' + (enviado
-          ? 'Enviado. Vuelve al chat y escribe <b style="color:#F4F1EA">listo</b>.'
-          : 'No se pudo enviar: manda una foto de esta pantalla.') + '</p>' +
-        '<table style="border-collapse:collapse"><thead><tr style="color:#9A958A">' +
-        '<th style="text-align:left;padding:0 16px 8px 0">prueba</th>' +
-        '<th style="text-align:right;padding:0 14px 8px">fps</th>' +
-        '<th style="text-align:right;padding:0 14px 8px">gana</th>' +
-        '<th style="text-align:right;padding:0 0 8px">peor</th></tr></thead><tbody>' +
-        fila(est.res[0]) + comps.map(fila).join('') +
-        '<tr><td colspan="4" style="padding:10px 0 4px;color:#5E5A52">— — —</td></tr>' +
-        fila(deterioro) + '</tbody></table>' +
-        '<p style="margin:18px 0 0;color:#9A958A">Base ' + base + ' fps &rarr; tras recorrer la pagina ' +
-        deterioro.fps + ' fps (' + (deterioro.fps - base).toFixed(1) + ')</p>' +
-        '<p style="margin:16px 0 0"><a href="' + location.pathname + '" style="color:#E4CD9A">Volver a la web</a></p>');
+  function bucle(n) {
+    /* Si la pestaña se oculta, rAF se congela: se avisa y no se contamina */
+    if (document.hidden) {
+      pausadoPorOculto = true;
+      elFps.textContent = 'en pausa';
+      elInfo.innerHTML = 'Vuelve a esta pestaña<br>para seguir midiendo';
+      requestAnimationFrame(bucle);
       return;
     }
+    if (pausadoPorOculto) { pausadoPorOculto = false; ultimo = ultimoSeg = n; framesSeg = 0; }
 
-    /* ---- ejecuta la prueba que toca y recarga ---- */
-    const [nombre, css] = PRUEBAS[est.i];
-    const esDeterioro = est.i === PRUEBAS.length - 1;
-    escribe('<h2 style="font:600 21px/1.3 Georgia,serif;color:#E4CD9A;margin:0 0 4px">Midiendo</h2>' +
-      '<p style="color:#9A958A;margin:0">Prueba ' + (est.i + 1) + ' de ' + PRUEBAS.length + ': ' + nombre + '</p>' +
-      '<p style="color:#5E5A52;margin:14px 0 0">La pagina se recargara sola entre pruebas. No toques nada.</p>');
+    framesSeg++;
+    ultimo = n;
 
-    const hoja = document.createElement('style');
-    hoja.textContent = css;
-    document.head.appendChild(hoja);
-    await esperar(900);
+    /* Auto-scroll: baja y sube, recorriendo toda la página */
+    const alto = Math.max(1, document.body.scrollHeight - innerHeight);
+    y += dir * 22;
+    if (y >= alto) { y = alto; dir = -1; }
+    else if (y <= 0) { y = 0; dir = 1; }
+    window.scrollTo({ top: y, behavior: 'instant' });
 
-    /* Para la prueba de deterioro: recorrer toda la página antes de medir */
-    if (esDeterioro) { tapa(false); await medir(9, true); }
+    /* Cada segundo: registra y pinta */
+    if (n - ultimoSeg >= 1000) {
+      const fps = Math.round(framesSeg * 1000 / (n - ultimoSeg));
+      const heap = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null;
+      const seg = Math.round((n - t0) / 1000);
+      muestras.push({ t: seg, fps, heap, y: Math.round(y), sec: seccionEn(y) });
+      if (fps < minFps) minFps = fps;
+      elFps.textContent = fps + ' fps';
+      elFps.style.color = fps < 30 ? '#E06A5A' : fps < 50 ? '#E4CD9A' : '#8FBF7F';
+      elInfo.innerHTML = 'min ' + minFps + ' fps &middot; ' + seg + '/' + DURACION + ' s<br>' +
+        (heap != null ? 'memoria ' + heap + ' MB<br>' : '') + 'seccion: ' + muestras[muestras.length - 1].sec;
+      ultimoSeg = n;
+      framesSeg = 0;
+    }
 
-    tapa(false);
-    const m = await medir(3);
-    tapa(true);
+    if (n - t0 < DURACION * 1000) requestAnimationFrame(bucle);
+    else finaliza();
+  }
 
-    est.res.push({ nombre, ...m });
-    est.i++;
-    sessionStorage.setItem(LLAVE, JSON.stringify(est));
-    location.replace(location.pathname + '?fps');
-  })();
+  async function finaliza() {
+    const fps = muestras.map(m => m.fps);
+    const heaps = muestras.map(m => m.heap).filter(h => h != null);
+    const inicio = Math.round(fps.slice(0, 5).reduce((a, b) => a + b, 0) / Math.min(5, fps.length));
+    const final = Math.round(fps.slice(-5).reduce((a, b) => a + b, 0) / Math.min(5, fps.length));
+    const resumen = {
+      medido: new Date().toISOString(), tipo: 'vivo',
+      inicio_fps: inicio, final_fps: final, min_fps: Math.min(...fps),
+      cayo: inicio - final,
+      heap_inicial: heaps[0] || null, heap_final: heaps[heaps.length - 1] || null,
+      serie: muestras,
+      entorno: {
+        navegador: navigator.userAgent, pantalla: innerWidth + 'x' + innerHeight,
+        densidad: devicePixelRatio, nucleos: navigator.hardwareConcurrency || null,
+        paginaAlto: document.body.scrollHeight
+      }
+    };
+    let enviado = false;
+    try {
+      await fetch('/resultado-fps', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(resumen)
+      });
+      enviado = true;
+    } catch (e) { }
+
+    p.style.pointerEvents = 'auto';
+    p.style.minWidth = '300px';
+    const filas = muestras.filter((m, i) => i % 5 === 0 || i === muestras.length - 1)
+      .map(m => '<tr><td style="padding:1px 10px 1px 0">' + m.t + ' s</td>' +
+        '<td style="padding:1px 10px;text-align:right;color:' +
+        (m.fps < 30 ? '#E06A5A' : '#F4F1EA') + '">' + m.fps + ' fps</td>' +
+        '<td style="padding:1px 0;color:#9A958A">' + (m.heap != null ? m.heap + ' MB' : '') +
+        ' &middot; ' + m.sec + '</td></tr>').join('');
+    elFps.textContent = 'Listo';
+    elInfo.innerHTML =
+      '<div style="margin:8px 0;color:#F4F1EA">Empezó a <b>' + inicio + '</b> y terminó a <b>' + final +
+      '</b> fps.<br>Mínimo ' + Math.min(...fps) + '. ' +
+      (heaps.length ? 'Memoria ' + heaps[0] + '&rarr;' + heaps[heaps.length - 1] + ' MB.' : '') + '</div>' +
+      '<table style="border-collapse:collapse;margin-top:4px">' + filas + '</table>' +
+      '<div style="margin-top:10px;color:' + (enviado ? '#8FBF7F' : '#E4CD9A') + '">' +
+      (enviado ? 'Enviado. Vuelve al chat y escribe <b>listo</b>.'
+        : 'No se pudo enviar. Manda una foto de este panel.') + '</div>' +
+      '<div style="margin-top:8px"><a href="' + location.pathname + '" style="color:#E4CD9A">Volver a la web</a></div>';
+  }
+
+  requestAnimationFrame(bucle);
 })();
