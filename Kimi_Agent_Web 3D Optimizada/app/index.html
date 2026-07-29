@@ -111,6 +111,23 @@
    "sameAs":[]
   },
   {
+   "@type":"FAQPage",
+   "@id":"https://sycsolutions.company/#faq",
+   "isPartOf":{"@id":"https://sycsolutions.company/#web"},
+   "mainEntity":[
+    {"@type":"Question","name":"¿Cuánto cuesta el diagnóstico de mi web?",
+     "acceptedAnswer":{"@type":"Answer","text":"Nada, y no hace falta registrarse. Analizamos únicamente la página pública que nos indiques: no guardamos la dirección ni la compartimos. Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a tu negocio."}},
+    {"@type":"Question","name":"¿Trabajan solo con negocios de México?",
+     "acceptedAnswer":{"@type":"Answer","text":"Nuestra base está en México y trabajamos con todo el mundo. El trabajo es remoto de principio a fin, así que la ubicación no cambia nada del resultado."}},
+    {"@type":"Question","name":"¿Cuánto tardan en responderme?",
+     "acceptedAnswer":{"@type":"Answer","text":"Menos de 24 horas. Atendemos de lunes a sábado, de 9:00 a 19:00. Si escribes fuera de ese horario, tu mensaje entra igual y lo verás respondido al abrir el siguiente día hábil."}},
+    {"@type":"Question","name":"¿Qué hacen exactamente?",
+     "acceptedAnswer":{"@type":"Answer","text":"Cuatro cosas: sitios web premium, automatización de procesos con inteligencia artificial, CRM construidos a la medida de tu operación, y proyectos que no caben en ninguna de esas tres."}},
+    {"@type":"Question","name":"No sé qué necesito exactamente. ¿Puedo escribir igual?",
+     "acceptedAnswer":{"@type":"Answer","text":"Sí, es lo más habitual. En el formulario tienes la opción «No lo sé aún — asesórenme». Cuéntanos qué hace tu negocio y qué te gustaría conseguir, y te decimos qué haríamos y por dónde empezaríamos."}}
+   ]
+  },
+  {
    "@type":"WebSite",
    "@id":"https://sycsolutions.company/#web",
    "url":"https://sycsolutions.company/",
@@ -269,6 +286,15 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    contenido llegaba. Ahora sube 20px con un fundido breve. */
 .zoomsec{opacity:0;transform:translate3d(0,20px,0);transition:opacity .75s ease,transform .75s cubic-bezier(.16,.8,.24,1);will-change:transform,opacity}
 .zoomsec.zin{opacity:1;transform:none}
+/* ---------- NADA SE ANIMA FUERA DE LA PANTALLA ----------
+   Había 16 animaciones infinitas cubriendo 1,7 pantallas completas, y todas
+   corrían siempre: el rombo de reseñas (282.000 px²) se animaba mientras se
+   miraba el hero. Ninguna de ellas se ve cuando su sección está fuera de vista,
+   así que pausarlas no cambia nada visible y devuelve el hilo al scroll.
+   Se marca desde JS con IntersectionObserver; al volver, reanudan donde iban. */
+.quieto,.quieto *,
+.quieto::before,.quieto::after,
+.quieto *::before,.quieto *::after{animation-play-state:paused!important}
 /* el navegador no renderiza lo que está fuera de pantalla hasta que te acercas */
 /* content-visibility:auto estimaba las secciones en 900px hasta pintarlas. Al
    pulsar un ancla lejano, las alturas reales iban sustituyendo a la estimación
@@ -627,6 +653,52 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
 .frame .btn{margin-top:36px;border:none;font-family:var(--sans);cursor:pointer}
 .form-msg{margin-top:18px;font-family:var(--serif);font-style:italic;font-size:17px;color:var(--bronze-hi);opacity:0;transition:opacity .6s}
 .form-msg.show{opacity:1}
+
+/* ---------- PREGUNTAS FRECUENTES ----------
+   Vive dentro de contacto y no como sección propia: así no renumera los seis
+   tramos ni el índice del riel, y las objeciones se resuelven justo donde se
+   decide escribir. <details> nativo: abre sin JS, se navega con teclado y los
+   buscadores leen la respuesta aunque esté plegada. */
+.faq{margin:0 0 clamp(30px,3.4vw,44px);border-top:1px solid var(--line-soft)}
+.faq details{border-bottom:1px solid var(--line-soft)}
+.faq summary{list-style:none;cursor:pointer;position:relative;
+  padding:clamp(14px,1.7vw,19px) 38px clamp(14px,1.7vw,19px) 0;
+  font-family:var(--serif);font-size:clamp(16px,1.8vw,20px);color:var(--ink);
+  transition:color .3s}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover,.faq details[open] summary{color:var(--bronze-hi)}
+.faq summary:focus-visible{outline:1px solid var(--bronze);outline-offset:3px}
+/* Cheurón: gira al abrir. Sólo transform, sin reflujo. */
+.faq summary::after{content:"";position:absolute;right:8px;top:50%;width:8px;height:8px;
+  margin-top:-6px;border-right:1px solid var(--bronze);border-bottom:1px solid var(--bronze);
+  transform:rotate(45deg);transition:transform .35s ease}
+.faq details[open] summary::after{transform:rotate(-135deg);margin-top:-2px}
+.faq .faq-r{padding:0 38px clamp(15px,1.8vw,21px) 0;color:var(--muted);
+  font-size:15px;line-height:1.75}
+.faq .faq-r a{color:var(--bronze-hi);border-bottom:1px solid var(--line)}
+@media(max-width:620px){.faq .faq-r{font-size:14px;padding-right:8px}
+  .faq summary{padding-right:32px}}
+
+/* ---------- ÁREA TÁCTIL MÍNIMA (SÓLO DEDO) ----------
+   19 controles quedaban por debajo de 44 px y tres muy por debajo: los índices
+   de reseñas medían 11 px de ancho y los enlaces del pie 12 px de alto. Se
+   agranda únicamente la zona que responde al dedo, con un pseudo-elemento
+   transparente centrado: no se mueve ni un píxel del diseño.
+   Sólo con puntero grueso. Con ratón, una zona sensible mayor de lo que se ve
+   produce clics que el visitante no se explica.
+   Cada selector usa el pseudo-elemento que tenía libre: ::before en .res-tapa
+   y ::after en el resto, porque los contrarios ya llevan anillos y subrayados. */
+@media(pointer:coarse){
+  .snd,.btn,.svc-btn,.res-tapa,.works-fin a,.rev-b,footer .fl a{position:relative}
+  .snd::after,.btn::after,.svc-btn::after,.res-tapa::before,
+  .works-fin a::after,.rev-b::after,footer .fl a::after{
+    content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:max(100%,44px);height:max(100%,44px)}
+  /* Los índices de reseñas van a 18 px de distancia entre sí: llevarlos a 44
+     de ancho los solaparía y se pulsaría el vecino. 28 deja holgura y sigue
+     muy por encima del mínimo exigible. */
+  .rev-b::after{width:max(100%,28px)}
+}
 
 /* ---------- FOOTER ---------- */
 footer{position:relative;z-index:2;padding:clamp(40px,4.6vw,64px) 0 34px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05))}
@@ -1329,6 +1401,47 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wrap">
     <span class="sec-tag"><span class="n">06 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
+
+    <!-- Preguntas frecuentes. Cada respuesta sale de un dato ya publicado en
+         esta misma página (horario, base, plazo de respuesta, condiciones del
+         diagnóstico). No hay aquí precios, plazos de entrega ni garantías
+         porque nadie los ha fijado todavía: inventarlos sería prometer algo
+         que después habría que sostener. -->
+    <div class="faq rv">
+      <details>
+        <summary>¿Cuánto cuesta el diagnóstico de mi web?</summary>
+        <p class="faq-r">Nada, y no hace falta registrarse. Analizamos únicamente la
+          página pública que nos indiques: no guardamos la dirección ni la compartimos.
+          Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a
+          tu negocio.</p>
+      </details>
+      <details>
+        <summary>¿Trabajan solo con negocios de México?</summary>
+        <p class="faq-r">Nuestra base está en México y trabajamos con todo el mundo.
+          El trabajo es remoto de principio a fin, así que la ubicación no cambia nada
+          del resultado.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto tardan en responderme?</summary>
+        <p class="faq-r">Menos de 24 horas. Atendemos de lunes a sábado, de 9:00 a
+          19:00. Si escribes fuera de ese horario, tu mensaje entra igual y lo verás
+          respondido al abrir el siguiente día hábil.</p>
+      </details>
+      <details>
+        <summary>¿Qué hacen exactamente?</summary>
+        <p class="faq-r">Cuatro cosas: sitios web premium, automatización de procesos
+          con inteligencia artificial, CRM construidos a la medida de tu operación, y
+          proyectos que no caben en ninguna de esas tres. Puedes verlas con detalle en
+          <a href="#servicios">lo que dominamos</a>.</p>
+      </details>
+      <details>
+        <summary>No sé qué necesito exactamente. ¿Puedo escribir igual?</summary>
+        <p class="faq-r">Sí, es lo más habitual. En el formulario tienes la opción
+          «No lo sé aún — asesórenme». Cuéntanos qué hace tu negocio y qué te gustaría
+          conseguir, y te decimos qué haríamos y por dónde empezaríamos.</p>
+      </details>
+    </div>
+
     <div class="contact-grid">
       <div class="rv">
         <p class="lead">Cuéntanos tu idea. Respondemos en menos de 24 horas — la ambición no espera.</p>
@@ -1446,6 +1559,15 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
   const AMPX=62,AMPY=32,ESPERA=2200;
   let px=0,py=0,gx=0,gy=0,cx=0,cy=0;
   let ultPuntero=-1e9,ultGiro=-1e9,visible=true,raf=0;
+  /* Última pareja escrita y cuándo. Escribir --mx/--my en la raíz invalida el
+     estilo de los ~490 elementos de la página, y además los fotogramas clave
+     del vuelo de dron leen esas variables: mientras cambien, esa animación no
+     puede vivir en la GPU y se recalcula a mano en cada frame, sobre dos
+     imágenes a pantalla completa. Hacerlo 60 veces por segundo era el motivo
+     principal de que la página fuese a tirones.
+     La deriva es una sinusoide de 4,8 s: a 30 Hz se ve idéntica, y si el
+     movimiento no llega a medio píxel no se escribe nada en absoluto. */
+  let ex=1e9,ey=1e9,ultEsc=0;
   const lim=(v,m)=>Math.max(-m,Math.min(m,v));
   const arranca=()=>{if(!raf&&visible)raf=requestAnimationFrame(paso);};
   function paso(){
@@ -1457,8 +1579,11 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
     cx+=(dx-cx)*.06;cy+=(dy-cy)*.06;
     /* En la raíz, no en .hero: el lienzo del descenso es hermano de main y
        necesita heredarlas para mover los planos de la ciudad. */
-    document.documentElement.style.setProperty('--mx',cx.toFixed(2)+'px');
-    document.documentElement.style.setProperty('--my',cy.toFixed(2)+'px');
+    if(t-ultEsc>=32&&(Math.abs(cx-ex)>.5||Math.abs(cy-ey)>.5)){
+      ultEsc=t;ex=cx;ey=cy;
+      document.documentElement.style.setProperty('--mx',cx.toFixed(1)+'px');
+      document.documentElement.style.setProperty('--my',cy.toFixed(1)+'px');
+    }
     raf=visible?requestAnimationFrame(paso):0;
   }
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;arranca();},{threshold:0}).observe(hero);
@@ -1523,7 +1648,7 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
       const w=(o.fija&&d>0)?1:Math.max(0,1-Math.abs(d)/g);
       if(w>.004){
         if(!o.lista&&o.el.dataset.src){o.el.style.backgroundImage="url('"+o.el.dataset.src+"')";o.lista=true;}
-        if(o.el.style.visibility!=='visible')o.el.style.visibility='visible';
+        if(o.el.style.visibility!=='visible'){o.el.style.visibility='visible';o.el.classList.remove('quieto');}
         /* Elevar el peso hace que en el cruce las dos escenas sumen menos de 1
            y el paso ocurra a través de la penumbra, como un fundido de cine.
            Superponer dos fotos al 50% es lo que daba aspecto de plantilla. */
@@ -1532,7 +1657,10 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
           ?'translate3d(0,'+(-y*.06).toFixed(1)+'px,0)'
           :'translate3d(0,'+(d*K).toFixed(1)+'px,0) scale('+(1.12-w*.05).toFixed(3)+')';
       }else if(o.el.style.visibility!=='hidden'){
-        o.el.style.visibility='hidden';o.el.style.opacity='0';
+        /* .quieto detiene aquí el vuelo de dron de los dos planos de la ciudad:
+           son dos imágenes a pantalla completa con máscara y escala variable,
+           lo más caro de la página, y seguían animándose invisibles. */
+        o.el.style.visibility='hidden';o.el.style.opacity='0';o.el.classList.add('quieto');
       }
       f+=i*w;
     }
@@ -1551,6 +1679,20 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
   addEventListener('resize',()=>{mide();pide();},{passive:true});
   addEventListener('load',()=>{mide();pinta();});
   mide();pinta();
+})();
+
+/* ---------- PAUSA DE LO QUE NO SE VE ----------
+   Marca .quieto en cada sección que queda fuera de pantalla; el CSS detiene ahí
+   dentro toda animación. El margen de una pantalla completa hace que nada
+   arranque a destiempo: para cuando la sección asoma, ya lleva rato corriendo.
+   Es un observador pasivo, no cuesta nada por fotograma. */
+(()=>{
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>e.target.classList.toggle('quieto',!e.isIntersecting));
+  },{rootMargin:'100% 0px'});
+  /* main > * y no "main section": el hero es un <header>, y es justo el que
+     lleva el halo de 160.000 px². */
+  document.querySelectorAll('main > *,body > footer').forEach(el=>obs.observe(el));
 })();
 
 /* ---------- ENTRADA DE SECCIONES ----------
