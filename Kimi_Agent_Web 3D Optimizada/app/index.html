@@ -318,28 +318,39 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 #preloader.done ~ #descenso .esc.ciudad::before{animation:entraLejos 5s cubic-bezier(.4,0,.2,1) both,dronLejos 36s linear 5s infinite}
 #preloader.done ~ #descenso .esc.ciudad::after{animation:entraCerca 5s cubic-bezier(.4,0,.2,1) both,dronCerca 36s linear 5s infinite}
 /* --mx/--my los escribe el puntero. El plano lejano recibe un 35% del
-   desplazamiento y el cercano el 100%: esa diferencia es la profundidad. */
+   desplazamiento y el cercano el 100%: esa diferencia es la profundidad.
+   Van en la propiedad translate, NO dentro de transform, y esa separación es
+   la diferencia entre una página fluida y una atascada:
+   una animación cuyos fotogramas clave leen una variable no se puede delegar
+   a la GPU, porque sus valores no se conocen de antemano. Estando --mx dentro
+   de transform, cada movimiento del ratón obligaba a recalcular a mano, en el
+   hilo principal, dos imágenes a pantalla completa con máscara y perspectiva.
+   Por eso en el móvil iba fina —ahí no hay ratón que mover— y en el escritorio
+   se arrastraba. Ahora transform sólo lleva números literales y vive en la GPU;
+   el desplazamiento del puntero entra por translate, que se compone aparte. */
+.esc.ciudad::before{translate:calc(var(--mx)*.35) calc(var(--my)*.35)}
+.esc.ciudad::after{translate:var(--mx) var(--my)}
 @keyframes entraLejos{
-  from{transform:scale(1.26) translate3d(calc(-1% + var(--mx)*.35),calc(-.6% + var(--my)*.35),0)}
-  to{transform:scale(1.06) translate3d(calc(-1% + var(--mx)*.35),calc(-.6% + var(--my)*.35),0)}
+  from{transform:scale(1.26) translate3d(-1%,-.6%,0)}
+  to{transform:scale(1.06) translate3d(-1%,-.6%,0)}
 }
 @keyframes entraCerca{
-  from{transform:perspective(1200px) scale(1.62) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
-  to{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
+  from{transform:perspective(1200px) scale(1.62) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+  to{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
 }
 @keyframes dronLejos{
-  0%{transform:scale(1.06) translate3d(calc(-1% + var(--mx)*.35),calc(-.6% + var(--my)*.35),0)}
-  25%{transform:scale(1.09) translate3d(calc(-.3% + var(--mx)*.35),calc(-1% + var(--my)*.35),0)}
-  50%{transform:scale(1.12) translate3d(calc(1% + var(--mx)*.35),calc(-.3% + var(--my)*.35),0)}
-  75%{transform:scale(1.09) translate3d(calc(.3% + var(--mx)*.35),calc(.6% + var(--my)*.35),0)}
-  100%{transform:scale(1.06) translate3d(calc(-1% + var(--mx)*.35),calc(-.6% + var(--my)*.35),0)}
+  0%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
+  25%{transform:scale(1.09) translate3d(-.3%,-1%,0)}
+  50%{transform:scale(1.12) translate3d(1%,-.3%,0)}
+  75%{transform:scale(1.09) translate3d(.3%,.6%,0)}
+  100%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
 }
 @keyframes dronCerca{
-  0%{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
-  25%{transform:perspective(1200px) scale(1.24) translate3d(calc(-.8% + var(--mx)),calc(-2.8% + var(--my)),0) rotateY(.5deg)}
-  50%{transform:perspective(1200px) scale(1.3) translate3d(calc(3% + var(--mx)),calc(-.9% + var(--my)),0) rotateY(-1.2deg)}
-  75%{transform:perspective(1200px) scale(1.24) translate3d(calc(1% + var(--mx)),calc(1.8% + var(--my)),0) rotateY(-.4deg)}
-  100%{transform:perspective(1200px) scale(1.18) translate3d(calc(-3% + var(--mx)),calc(-1.6% + var(--my)),0) rotateY(1.6deg)}
+  0%{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+  25%{transform:perspective(1200px) scale(1.24) translate3d(-.8%,-2.8%,0) rotateY(.5deg)}
+  50%{transform:perspective(1200px) scale(1.3) translate3d(3%,-.9%,0) rotateY(-1.2deg)}
+  75%{transform:perspective(1200px) scale(1.24) translate3d(1%,1.8%,0) rotateY(-.4deg)}
+  100%{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
 }
 /* El velo pasa a .hero para quedar por encima de los dos planos */
 /* El velo del hero desaparece: lo cubre el velo único del lienzo. Sólo queda
@@ -659,7 +670,9 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
    tramos ni el índice del riel, y las objeciones se resuelven justo donde se
    decide escribir. <details> nativo: abre sin JS, se navega con teclado y los
    buscadores leen la respuesta aunque esté plegada. */
-.faq{margin:0 0 clamp(30px,3.4vw,44px);border-top:1px solid var(--line-soft)}
+.faq{margin:clamp(44px,5vw,72px) 0 0;border-top:1px solid var(--line-soft)}
+.faq-k{padding:clamp(20px,2.2vw,28px) 0 4px;font-size:9px;letter-spacing:4px;
+  text-transform:uppercase;color:var(--dim)}
 .faq details{border-bottom:1px solid var(--line-soft)}
 .faq summary{list-style:none;cursor:pointer;position:relative;
   padding:clamp(14px,1.7vw,19px) 38px clamp(14px,1.7vw,19px) 0;
@@ -1401,47 +1414,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wrap">
     <span class="sec-tag"><span class="n">06 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
-
-    <!-- Preguntas frecuentes. Cada respuesta sale de un dato ya publicado en
-         esta misma página (horario, base, plazo de respuesta, condiciones del
-         diagnóstico). No hay aquí precios, plazos de entrega ni garantías
-         porque nadie los ha fijado todavía: inventarlos sería prometer algo
-         que después habría que sostener. -->
-    <div class="faq rv">
-      <details>
-        <summary>¿Cuánto cuesta el diagnóstico de mi web?</summary>
-        <p class="faq-r">Nada, y no hace falta registrarse. Analizamos únicamente la
-          página pública que nos indiques: no guardamos la dirección ni la compartimos.
-          Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a
-          tu negocio.</p>
-      </details>
-      <details>
-        <summary>¿Trabajan solo con negocios de México?</summary>
-        <p class="faq-r">Nuestra base está en México y trabajamos con todo el mundo.
-          El trabajo es remoto de principio a fin, así que la ubicación no cambia nada
-          del resultado.</p>
-      </details>
-      <details>
-        <summary>¿Cuánto tardan en responderme?</summary>
-        <p class="faq-r">Menos de 24 horas. Atendemos de lunes a sábado, de 9:00 a
-          19:00. Si escribes fuera de ese horario, tu mensaje entra igual y lo verás
-          respondido al abrir el siguiente día hábil.</p>
-      </details>
-      <details>
-        <summary>¿Qué hacen exactamente?</summary>
-        <p class="faq-r">Cuatro cosas: sitios web premium, automatización de procesos
-          con inteligencia artificial, CRM construidos a la medida de tu operación, y
-          proyectos que no caben en ninguna de esas tres. Puedes verlas con detalle en
-          <a href="#servicios">lo que dominamos</a>.</p>
-      </details>
-      <details>
-        <summary>No sé qué necesito exactamente. ¿Puedo escribir igual?</summary>
-        <p class="faq-r">Sí, es lo más habitual. En el formulario tienes la opción
-          «No lo sé aún — asesórenme». Cuéntanos qué hace tu negocio y qué te gustaría
-          conseguir, y te decimos qué haríamos y por dónde empezaríamos.</p>
-      </details>
-    </div>
-
     <div class="contact-grid">
       <div class="rv">
         <p class="lead">Cuéntanos tu idea. Respondemos en menos de 24 horas — la ambición no espera.</p>
@@ -1479,6 +1451,51 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <button type="submit" class="btn solid">Enviar mensaje</button>
         <p class="form-msg" id="form-msg">◆ Recibido. Te contactamos en menos de 24 horas.</p>
       </form>
+    </div>
+
+    <!-- Preguntas frecuentes. Van DESPUÉS del formulario a propósito: plegadas
+         ocupan 266 px, y puestas antes obligaban a rodearlas para llegar a la
+         única acción de la página. Quien ya decidió escribe sin estorbo; quien
+         duda las encuentra justo al pasar de largo, que es cuando pregunta.
+         Cada respuesta sale de un dato ya publicado en esta misma página
+         —horario, base, plazo de respuesta, condiciones del diagnóstico—. No
+         hay precios, plazos de entrega ni garantías porque nadie los ha
+         fijado: inventarlos sería prometer algo que después habría que
+         sostener. -->
+    <div class="faq rv" id="faq">
+      <p class="faq-k">Antes de escribir</p>
+      <details>
+        <summary>¿Cuánto cuesta el diagnóstico de mi web?</summary>
+        <p class="faq-r">Nada, y no hace falta registrarse. Analizamos únicamente la
+          página pública que nos indiques: no guardamos la dirección ni la compartimos.
+          Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a
+          tu negocio. Puedes <a href="#diagnostico">probarlo ahora mismo</a>.</p>
+      </details>
+      <details>
+        <summary>¿Trabajan solo con negocios de México?</summary>
+        <p class="faq-r">Nuestra base está en México y trabajamos con todo el mundo.
+          El trabajo es remoto de principio a fin, así que la ubicación no cambia nada
+          del resultado.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto tardan en responderme?</summary>
+        <p class="faq-r">Menos de 24 horas. Atendemos de lunes a sábado, de 9:00 a
+          19:00. Si escribes fuera de ese horario, tu mensaje entra igual y lo verás
+          respondido al abrir el siguiente día hábil.</p>
+      </details>
+      <details>
+        <summary>¿Qué hacen exactamente?</summary>
+        <p class="faq-r">Cuatro cosas: sitios web premium, automatización de procesos
+          con inteligencia artificial, CRM construidos a la medida de tu operación, y
+          proyectos que no caben en ninguna de esas tres. Puedes verlas con detalle en
+          <a href="#servicios">lo que dominamos</a>.</p>
+      </details>
+      <details>
+        <summary>No sé qué necesito exactamente. ¿Puedo escribir igual?</summary>
+        <p class="faq-r">Sí, es lo más habitual. En el formulario tienes la opción
+          «No lo sé aún — asesórenme». Cuéntanos qué hace tu negocio y qué te gustaría
+          conseguir, y te decimos qué haríamos y por dónde empezaríamos.</p>
+      </details>
     </div>
   </div>
 </section>
