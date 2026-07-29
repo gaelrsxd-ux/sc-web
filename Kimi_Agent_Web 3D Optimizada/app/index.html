@@ -252,8 +252,40 @@ nav ul a:hover::after{width:100%}
 
 /* ---------- LAYOUT ---------- */
 main{position:relative;z-index:2}
-/* ---------- DESCENSO: lienzo fijo bajo toda la página ---------- */
-#descenso{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;contain:strict}
+/* ---------- DESCENSO: lienzo fijo bajo toda la página ----------
+
+   RESOLUCIÓN DE COMPOSICIÓN. Este bloque es la corrección de rendimiento más
+   importante de la página, y viene de una medición en la máquina del usuario:
+   22 fotogramas por segundo sostenidos en una pantalla de 2552 px, sin fuga de
+   memoria y sin ninguna sección culpable. Es decir, no sobra un componente:
+   sobran píxeles.
+
+   La cuenta: un móvil tiene unos 0,33 millones de píxeles y ese monitor 3,34
+   millones, diez veces más. Y aquí se superponen hasta cuatro capas a pantalla
+   completa por fotograma —la escena de fondo, los dos planos de la ciudad con
+   máscara, el velo y la veta—, todas mezclándose entre sí. Son del orden de
+   trece millones de píxeles por fotograma, y ninguna gráfica integrada da eso a
+   sesenta veces por segundo. Por eso el teléfono iba fino y el escritorio no.
+
+   La solución no quita nada: rasteriza el lienzo a una fracción del tamaño y
+   deja que la GPU lo estire, que es una operación gratuita para ella. Al 70%
+   se pintan 0,49 de los píxeles, o sea la mitad de relleno para las cuatro
+   capas de golpe. Sobre un fondo oscuro, velado y desenfocado no hay detalle
+   fino que perder: aquí no vive ningún texto ni ningún borde nítido.
+
+   Sólo se aplica en pantallas anchas, que son las que lo necesitan; en móvil el
+   lienzo sigue a resolución nativa porque allí ya iba sobrado.
+   Para volver atrás basta con poner --desc-esc a 1. */
+:root{--desc-esc:1}
+@media(min-width:1100px){:root{--desc-esc:1.4285714}}   /* 0.70 -> 51% menos relleno */
+/* Cuanto más grande es la pantalla, más píxeles hay que mezclar y menos se nota
+   el suavizado, porque el mismo detalle se reparte entre más puntos. En un
+   monitor de 2552 px esto rasteriza el fondo a 1531 y ahorra dos tercios. */
+@media(min-width:1800px){:root{--desc-esc:1.6666667}}   /* 0.60 -> 64% menos */
+#descenso{position:fixed;top:0;left:0;
+  width:calc(100% / var(--desc-esc));height:calc(100% / var(--desc-esc));
+  transform:scale(var(--desc-esc));transform-origin:0 0;
+  z-index:1;pointer-events:none;overflow:hidden;contain:strict}
 #descenso .esc{position:absolute;left:-4%;right:-4%;top:-16%;bottom:-16%;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;visibility:hidden;will-change:transform,opacity;backface-visibility:hidden}
 /* Veta de luz: el estrato que se atraviesa al cambiar de escena */
 /* Velo único. Su opacidad la mueve el scroll de forma continua (.80 arriba,
@@ -262,7 +294,13 @@ main{position:relative;z-index:2}
 #velo{position:absolute;inset:0;opacity:.8;will-change:opacity;background:linear-gradient(100deg,rgba(10,11,14,.96) 16%,rgba(10,11,14,.885) 58%,rgba(10,11,14,.845))}
 /* Antes era una barra de luz que barría la pantalla; se leía como un efecto
    de edición. Ahora es una lumbre ancha y tenue que sólo calienta el cruce. */
-#veta{position:absolute;left:0;right:0;top:50%;height:78vh;margin-top:-39vh;opacity:0;will-change:transform,opacity;background:radial-gradient(ellipse 96% 52% at 50% 50%,rgba(200,169,106,.085),rgba(200,169,106,.025) 44%,transparent 76%)}
+/* Las medidas se dividen por la escala del lienzo: vh es relativo a la pantalla,
+   no al contenedor, así que sin compensar la veta se vería un 43% más alta de lo
+   debido. Su desplazamiento va en % de su propia altura (ver el módulo del
+   descenso), y así queda correcto con cualquier valor de --desc-esc. */
+#veta{position:absolute;left:0;right:0;top:50%;
+  height:calc(78vh / var(--desc-esc));margin-top:calc(-39vh / var(--desc-esc));
+  opacity:0;will-change:transform,opacity;background:radial-gradient(ellipse 96% 52% at 50% 50%,rgba(200,169,106,.085),rgba(200,169,106,.025) 44%,transparent 76%)}
 .wrap{max-width:1560px;margin:auto;padding:0 clamp(22px,4.5vw,72px)}
 /* Ritmo vertical. Cada sección aporta su margen arriba y otro abajo, así que
    el hueco entre dos es el doble de este valor: con los 84–140 px de antes se
@@ -1711,7 +1749,11 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
     if(veta){
       const fr=f-Math.floor(f);
       veta.style.opacity=(4*fr*(1-fr)*.9).toFixed(3);
-      veta.style.transform='translate3d(0,'+((.5-fr)*90).toFixed(1)+'vh,0)';
+      /* En % de su propia altura y no en vh: la veta vive dentro del lienzo, que
+         en pantallas anchas se rasteriza reducido y se estira. Al ser relativo a
+         sí misma, el recorrido sale igual con cualquier escala. 115.38% de sus
+         78vh de alto son los 90vh de recorrido de siempre. */
+      veta.style.transform='translate3d(0,'+((.5-fr)*115.38).toFixed(1)+'%,0)';
     }
     /* El velo se cierra de forma continua al descender: .80 arriba, 1 abajo.
        Al ser un único elemento global, ese oscurecido no puede producir
