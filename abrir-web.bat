@@ -1,5 +1,5 @@
 @echo off
-title Servidor de la web S&C - NO CERRAR ESTA VENTANA
+title  *** SERVIDOR DE LA WEB - NO CERRES ESTA VENTANA ***
 cd /d "%~dp0"
 
 where node >nul 2>nul
@@ -12,23 +12,26 @@ if errorlevel 1 (
   exit /b 1
 )
 
+cls
 echo.
-echo   ============================================================
-echo     Arrancando el servidor de la web
-echo   ============================================================
+echo   ==================================================================
 echo.
-echo     La web se abrira sola en el navegador.
+echo      SERVIDOR ARRANCANDO...
 echo.
-echo     DEJA ESTA VENTANA ABIERTA mientras uses la web.
-echo     Si la cierras, la web deja de responder.
+echo      Cuando aparezca "Web servida", abre el navegador y entra a:
 echo.
-echo     Para parar el servidor: pulsa Ctrl+C, o cierra la ventana.
-echo   ============================================================
+echo               http://localhost:8090
+echo.
+echo      NO CIERRES ESTA VENTANA mientras uses la web.
+echo      Esta ventana ES el servidor: si la cierras, la web deja de
+echo      responder y veras "no se puede acceder".
+echo      Puedes minimizarla. Para parar: cierra la ventana.
+echo.
+echo   ==================================================================
 echo.
 
-start "" "http://localhost:8090"
 node servidor.js 8090
 
 echo.
-echo   El servidor se ha detenido.
+echo   El servidor se ha detenido. Doble clic en abrir-web para volver.
 pause
