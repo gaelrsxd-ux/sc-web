@@ -35,33 +35,7 @@ if (!fs.existsSync(path.join(raiz, 'index.html'))) {
   process.exit(1);
 }
 
-/* Buzón para el diagnóstico de fluidez: la página envía aquí su tabla y queda
-   en un archivo que se puede leer sin capturas de pantalla ni consola.
-   Es lo único que este servidor acepta escribir: un solo destino fijo, sólo
-   JSON, y con un tope de tamaño. TEMPORAL, igual que el diagnóstico. */
-const BUZON = path.join(__dirname, 'resultado-fps.json');
-
 const servidor = http.createServer((req, res) => {
-  if (req.method === 'POST' && req.url === '/resultado-fps') {
-    let cuerpo = '', excedido = false;
-    req.on('data', t => {
-      cuerpo += t;
-      if (cuerpo.length > 65536) { excedido = true; req.destroy(); }
-    });
-    req.on('end', () => {
-      if (excedido) return;
-      try {
-        JSON.parse(cuerpo);                      /* si no es JSON, no se guarda */
-        fs.writeFileSync(BUZON, cuerpo);
-        console.log('  Resultado del diagnóstico guardado en resultado-fps.json');
-        res.writeHead(204, { 'Access-Control-Allow-Origin': '*' }).end();
-      } catch (e) {
-        res.writeHead(400, { 'Access-Control-Allow-Origin': '*' }).end('no es JSON');
-      }
-    });
-    return;
-  }
-
   let rel = decodeURIComponent(req.url.split('?')[0]);
   if (rel === '/') rel = '/index.html';
   const destino = path.join(raiz, rel);

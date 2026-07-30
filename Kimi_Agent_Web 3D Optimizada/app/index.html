@@ -2723,13 +2723,6 @@ function pintaPuente(rellena){
   }
 }
 pintaPuente();
-
-/* TEMPORAL — diagnóstico de fluidez. Sólo se activa abriendo la página con
-   ?fps al final de la dirección; para el visitante normal no existe ni se
-   descarga. Se quita borrando estas tres líneas y el archivo que cargan. */
-if(location.search.indexOf('fps')>-1){
-  const s=document.createElement('script');s.src='diagnostico-fps.js';document.head.appendChild(s);
-}
 </script>
 </body>
 </html>
