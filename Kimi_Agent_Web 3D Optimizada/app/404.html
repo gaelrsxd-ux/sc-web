@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esta página no existe — S&amp;C Solutions Company</title>
+<!-- Sin esto, Cloudflare Pages devolvía el index con código 200 para cualquier
+     dirección inventada. Google lo lee como páginas duplicadas infinitas y lo
+     penaliza; con este archivo responde 404 de verdad. -->
+<meta name="robots" content="noindex, follow">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0B0E;--ink:#F4F1EA;--muted:#9A958A;--dim:#5E5A52;
+  --bronze:#C8A96A;--bronze-hi:#E4CD9A;--line:rgba(200,169,106,.28);
+  --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif}
+body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  display:flex;align-items:center;justify-content:center;padding:32px;
+  text-align:center;overflow-x:hidden}
+.halo{position:fixed;left:50%;top:44%;width:min(760px,90vw);height:min(760px,90vw);
+  transform:translate(-50%,-50%);pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(200,169,106,.11),transparent 68%)}
+main{position:relative;z-index:1;max-width:560px}
+.tag{display:flex;align-items:center;justify-content:center;gap:14px;
+  font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--bronze)}
+.tag::before,.tag::after{content:"";width:38px;height:1px;background:var(--bronze)}
+h1{font-family:var(--serif);font-weight:600;line-height:1.1;margin-top:26px;
+  font-size:clamp(38px,7vw,68px)}
+h1 em{font-style:italic;color:var(--bronze-hi);font-weight:500}
+p{color:var(--muted);font-size:clamp(15px,1.5vw,17px);line-height:1.8;
+  margin:22px auto 0;max-width:430px}
+.btn{display:inline-flex;align-items:center;gap:12px;margin-top:38px;
+  padding:16px 34px;font-size:11px;letter-spacing:3.5px;text-transform:uppercase;
+  font-weight:500;text-decoration:none;color:#0A0B0E;background:var(--bronze);
+  transition:background .35s}
+.btn:hover{background:var(--bronze-hi)}
+.otros{margin-top:34px;display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:center}
+.otros a{font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;transition:color .3s}
+.otros a:hover{color:var(--bronze)}
+.dia{color:var(--bronze);transform:rotate(45deg);display:inline-block;
+  width:7px;height:7px;background:currentColor}
+</style>
+</head>
+<body>
+<div class="halo" aria-hidden="true"></div>
+<main>
+  <p class="tag">Error 404</p>
+  <h1>Esta dirección <em>no existe</em></h1>
+  <p>Puede que el enlace esté mal escrito o que la página ya no esté aquí.
+     Lo que buscas seguramente sigue en la portada.</p>
+  <a class="btn" href="/"><span class="dia" aria-hidden="true"></span> Volver al inicio</a>
+  <nav class="otros" aria-label="Secciones">
+    <a href="/#nosotros">Nosotros</a>
+    <a href="/#servicios">Servicios</a>
+    <a href="/#diagnostico">Diagnóstico gratuito</a>
+    <a href="/#proyectos">Proyectos</a>
+    <a href="/#contacto">Contacto</a>
+  </nav>
+</main>
+</body>
+</html>

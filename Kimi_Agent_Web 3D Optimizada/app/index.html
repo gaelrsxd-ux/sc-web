@@ -156,6 +156,10 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
+/* La barra de navegación es fija y mide 82 px, así que un salto a #servicios
+   dejaba el antetítulo y parte del titular escondidos detrás de ella. Con esto
+   la sección se detiene por debajo, y el visitante ve dónde ha llegado. */
+section[id],header[id],main>[id]{scroll-margin-top:98px}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::selection{background:var(--bronze);color:#0A0B0E}
 a{color:inherit;text-decoration:none}
