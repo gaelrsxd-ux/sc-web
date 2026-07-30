@@ -308,7 +308,12 @@ main{position:relative;z-index:2}
 #veta{position:absolute;left:0;right:0;top:50%;
   height:calc(78vh / var(--desc-esc));margin-top:calc(-39vh / var(--desc-esc));
   opacity:0;will-change:transform,opacity;background:radial-gradient(ellipse 96% 52% at 50% 50%,rgba(200,169,106,.085),rgba(200,169,106,.025) 44%,transparent 76%)}
-.wrap{max-width:1560px;margin:auto;padding:0 clamp(22px,4.5vw,72px)}
+/* El sangrado lateral de la página, en una variable porque las barajas móviles
+   lo necesitan en negativo para llegar al borde de la pantalla. */
+:root{--wrap-pad:clamp(22px,4.5vw,72px)}
+.wrap{max-width:1560px;margin:auto;padding:0 var(--wrap-pad)}
+
+
 /* Ritmo vertical. Cada sección aporta su margen arriba y otro abajo, así que
    el hueco entre dos es el doble de este valor: con los 84–140 px de antes se
    llegaba a 202 px de vacío entre bloques —un 22% de la pantalla sin nada que
@@ -484,7 +489,8 @@ form.frame{background:rgba(12,14,19,.93)}
 .frame input,.frame textarea,.frame select{border-bottom:1px solid rgba(200,169,106,.5)}
 #contacto .c-item .v{text-shadow:0 2px 14px rgba(0,0,0,.7)}
 .svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
-@media(max-width:760px){.svc-grid{grid-template-columns:1fr}}
+/* En móvil no se apila: .svc-grid lleva también la clase baraja y pasa a
+   deslizarse de lado. Ver el bloque BARAJAS MÓVILES. */
 .svc{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
 .svc:hover{background:var(--panel)}
 .svc::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.7,0,.2,1)}
@@ -566,7 +572,9 @@ form.frame{background:rgba(12,14,19,.93)}
 
 /* ---------- PROYECTOS ---------- */
 .works{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(18px,2.4vw,30px);margin-top:clamp(32px,3.6vw,50px)}
-@media(max-width:760px){.works{grid-template-columns:1fr}}
+/* En móvil pasa a baraja deslizable. Encaja especialmente bien aquí: cada caso
+   tiene su resultado tapado, así que deslizar y destapar se vuelve un gesto
+   encadenado en vez de cuatro bloques que hay que atravesar. */
 .work{border:1px solid var(--line-soft);background:linear-gradient(165deg,var(--panel),var(--bg));padding:clamp(28px,3.2vw,44px);position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.2,.7,.2,1),border-color .4s}
 .work:hover{transform:translateY(-7px);border-color:var(--line)}
 .work .ghost{position:absolute;top:6px;right:22px;font-family:var(--serif);font-style:italic;font-size:clamp(60px,7vw,96px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.22)}
@@ -717,6 +725,32 @@ form.frame{background:rgba(12,14,19,.93)}
 /* ---------- CONTACTO ---------- */
 .contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,6vw,84px);margin-top:clamp(32px,3.6vw,50px);align-items:start}
 @media(max-width:900px){.contact-grid{grid-template-columns:1fr}}
+/* ---------- CONTACTO EN MÓVIL: LA ACCIÓN PRIMERO ----------
+   En escritorio los datos van a la izquierda y el formulario a la derecha, a la
+   vista los dos a la vez. Apilado, el visitante recorría email, WhatsApp,
+   horario y base —media pantalla— antes de poder escribir una letra: el único
+   sitio de la web donde se pide algo quedaba detrás de información de consulta.
+   Aquí se invierte: la frase de entrada, el formulario, y los datos después,
+   para quien prefiera escribir por su cuenta.
+   display:contents disuelve la caja del bloque de información para que sus dos
+   hijos puedan ordenarse por separado; por eso la animación de entrada vive en
+   ellos y no en el contenedor. */
+@media(max-width:760px){
+  /* Sin el combinador «>»: display:contents disuelve la caja para la maquetación,
+     pero no altera el árbol del DOM, así que .lead y .c-datos siguen siendo hijos
+     de .c-info a efectos de selector. Con «>» esta regla no encontraba nada. */
+  .c-info{display:contents}
+  .contact-grid .lead{order:1}
+  .contact-grid>form{order:2;margin-top:4px}
+  .contact-grid .c-datos{order:3;margin-top:clamp(30px,7vw,40px)}
+  /* Cuatro filas a lo alto para cuatro datos cortos era medio viewport. En dos
+     columnas ocupan la mitad y se leen de un vistazo. */
+  .c-datos{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(14px,4vw,22px)}
+  .c-item{padding:15px 0}
+  .c-item .v{font-size:16px}
+  /* El correo y la base no caben en media línea: fila entera. */
+  .c-item.ancho{grid-column:1/-1}
+}
 .c-item{padding:24px 0;border-bottom:1px solid var(--line-soft)}
 .c-item .k{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 .c-item .v{font-family:var(--serif);font-size:clamp(19px,2vw,24px);font-weight:500}
@@ -870,7 +904,8 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
 /* Perfiles */
 .team{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);
   border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
-@media(max-width:760px){.team{grid-template-columns:1fr}}
+/* En móvil pasa a baraja: Gael, deslizas, Bruno. Las dos biografías se leen
+   enteras sin recortar una palabra, y la sección baja de dos pantallas a una. */
 .member{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
 .member:hover{background:var(--panel)}
 .member::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);
@@ -1010,6 +1045,92 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .work .res-tapa{display:none}
   .works-fin{opacity:1;transform:none;pointer-events:auto}
 }
+
+/* ==================================================================
+   AJUSTES MÓVILES AL FINAL DE LA HOJA
+   Van aquí a propósito. Las rejillas de cada sección (.svc-grid, .works,
+   .team) se declaran más arriba con la misma especificidad que estas reglas,
+   así que puestas antes perdían por orden de cascada y la baraja no llegaba a
+   aplicarse nunca. Los ajustes responsivos van después de lo que ajustan.
+   ================================================================== */
+/* ---------- BARAJAS MÓVILES ----------
+   En escritorio estas tres secciones se componen: cuatro servicios en 2×2,
+   cuatro casos en 2×2, dos perfiles lado a lado. Apiladas en una columna esa
+   composición desaparece y hay que recorrer cuatro pantallas para entender que
+   hay cuatro cosas. Medido en un móvil de 402 px: servicios ocupaba 2,2
+   pantallas, los perfiles 2,0 y los casos 1,9.
+   Aquí pasan a barajas que se arrastran, ancladas por ficha. Se ve una ficha
+   entera y asoma la siguiente, y ese borde asomando es la única señal que dice
+   «hay más» sin gastar espacio ni pedir instrucciones. El gesto ya existía en
+   las reseñas, así que no se introduce un idioma nuevo: se extiende.
+   Nada de esto aplica por encima de 760 px. */
+.bar-idx{display:none}
+@media(max-width:760px){
+  .baraja{
+    display:flex;gap:12px;
+    /* A sangre hasta el borde. Una ficha con aire a los lados se lee como algo
+       recortado; llegando al borde se lee como algo que continúa. */
+    margin-inline:calc(var(--wrap-pad) * -1);
+    /* La primera ficha arranca en el mismo margen que el titular de la sección,
+       no centrada: alineada con el texto se lee como parte de la composición, y
+       centrada se lee como un elemento suelto flotando. El sobrante a la derecha
+       es el sitio donde asoma la siguiente. */
+    padding-inline:var(--wrap-pad) 16vw;
+    scroll-padding-inline-start:var(--wrap-pad);
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    /* Sin esto, arrastrar más allá del final dispara el gesto de «atrás» del
+       navegador y el visitante se sale de la página sin querer. */
+    overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    /* En escritorio la retícula de un píxel la dibuja el contenedor; aquí el
+       contorno lo lleva cada ficha. */
+    background:none;border:none;
+  }
+  .baraja::-webkit-scrollbar{display:none}
+  /* 84vw es el máximo posible: con el margen de la izquierda y doce píxeles de
+     hueco, es lo más ancha que puede ser la ficha dejando aún unos 26 px de la
+     siguiente a la vista. Y el relleno baja de 30 a ~22 px porque cada píxel de
+     relleno es un píxel menos de línea de texto: a este ancho la medida pasa de
+     33 a 36 caracteres, que ya se lee de corrido. */
+  .baraja>*{flex:0 0 84vw;scroll-snap-align:start;
+    border:1px solid var(--line-soft);padding:clamp(21px,5.8vw,26px)}
+
+  /* Las fichas nacen con la animación de entrada de la página, que las mantiene
+     invisibles hasta asomar por el viewport. En una baraja horizontal las que
+     esperan a la derecha nunca asoman, así que se quedarían en blanco: se
+     neutraliza en cada ficha y entra la baraja completa como un bloque.
+     La clase bar-listo la pone el JS, de modo que si el JS no corre nada queda
+     oculto. */
+  .baraja>.rv{opacity:1;transform:none;transition:none}
+  .baraja.bar-listo{opacity:0;transform:translateY(26px);
+    transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+  .baraja.bar-listo.entra{opacity:1;transform:none}
+
+  /* La ficha centrada recibe el mismo trato que la que está bajo el puntero en
+     escritorio. Es lo que hace que deslizar se sienta vivo en vez de parecer un
+     cambio de página. */
+  .svc.centro,.member.centro{background:var(--panel)}
+  .svc.centro::after,.member.centro::after{transform:scaleX(1)}
+  .svc.centro h3,.member.centro h3{color:var(--bronze-hi)}
+  .svc.centro .go{color:var(--bronze);transform:translate(4px,-4px)}
+  .work.centro{border-color:var(--line)}
+
+  /* Índice de posición: mismo numeral y mismo subrayado que se llena que el de
+     reseñas, para que la web siga sonando a una sola cosa. */
+  .bar-idx{display:flex;gap:clamp(16px,5.5vw,30px);justify-content:center;
+    margin-top:clamp(20px,5vw,28px)}
+  .bar-b{position:relative;background:none;border:none;padding:0 0 9px;cursor:pointer;
+    font-family:var(--sans);font-size:11px;letter-spacing:3px;color:var(--dim);
+    transition:color .35s}
+  .bar-b::before{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+    background:var(--line-soft)}
+  .bar-b::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
+    background:var(--bronze-hi);transition:width .45s cubic-bezier(.2,.7,.2,1)}
+  .bar-b.on{color:var(--bronze-hi)}
+  .bar-b.on::after{width:100%}
+}
 </style>
 </head>
 <body>
@@ -1134,7 +1255,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <p class="lead rv" style="margin-top:26px">Somos dos. No una agencia con veinte intermediarios entre tu
       idea y quien la escribe. Hablas con quien construye, y eso cambia el resultado.</p>
 
-    <div class="team">
+    <div class="team baraja" data-baraja="perfil">
       <article class="member rv">
         <div class="m-head">
           <div class="m-face" aria-hidden="true">GR</div>
@@ -1143,12 +1264,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
             <h3>Gael Ramírez Santiago</h3>
           </div>
         </div>
-        <p class="m-bio">Se formó con quienes enseñan IA a los demás — Jon Hernández y Brais Moure
-          en BIG school, Zaira Hurtado en Daxus Latam — y reunió veintiséis horas certificadas en un
-          solo año, mientras buena parte del sector seguía discutiendo si esto era una moda.
-          Construye agentes que trabajan solos, automatizaciones que eliminan el trabajo repetitivo y
-          webs que cargan antes de que el visitante se plantee irse. Escribe el código a mano: en esta
-          web no hay una sola librería externa, y por eso pesa lo que pesa.</p>
+        <p class="m-bio">Veintiséis horas certificadas en inteligencia artificial en un solo año, y
+          con quienes enseñan IA a los demás: Jon Hernández y Brais Moure en BIG school, Zaira
+          Hurtado en Daxus Latam. Construye agentes que trabajan solos y webs que cargan antes de
+          que al visitante le dé tiempo a arrepentirse. El código lo escribe a mano: aquí no hay ni
+          una librería externa, y por eso vuela.</p>
         <ul class="m-tags">
           <li>Agentes de IA</li>
           <li>Automatización</li>
@@ -1165,11 +1285,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
             <h3>Bruno Damián Martínez</h3>
           </div>
         </div>
-        <p class="m-bio">Donde Gael construye lo que se ve, Bruno sostiene lo que lo aguanta: la
-          base de datos, las integraciones y la infraestructura que no puede caerse un martes a las
-          tres de la tarde. Es el que pregunta «¿y esto qué pasa cuando entren mil a la vez?» antes de
-          que entren mil a la vez. Un sistema no vale por lo bien que funciona el día que se entrega,
-          sino por lo poco que hay que tocarlo el resto del año.</p>
+        <p class="m-bio">Gael construye lo que se ve; Bruno, lo que lo mantiene en pie: base de
+          datos, integraciones e infraestructura que no se cae un martes a las tres. Es el que
+          pregunta «¿y cuando entren mil a la vez?» antes de que entren mil a la vez. Un sistema no
+          se mide el día que se entrega, sino en lo poco que hay que tocarlo después.</p>
         <ul class="m-tags">
           <li>Backend</li>
           <li>Bases de datos</li>
@@ -1262,7 +1381,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wrap">
     <span class="sec-tag"><span class="n">02 —</span> Servicios</span>
     <h2 class="title" data-split>Lo que <em>dominamos</em></h2>
-    <div class="svc-grid">
+    <div class="svc-grid baraja" data-baraja="servicio">
       <article class="svc rv">
         <span class="go">↗</span>
         <span class="idx">/ 01</span>
@@ -1353,7 +1472,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wrap">
     <span class="sec-tag"><span class="n">04 —</span> Proyectos</span>
     <h2 class="title" data-split>Casos que <em>hablan solos</em></h2>
-    <div class="works">
+    <div class="works baraja" data-baraja="caso">
       <article class="work rv"><span class="ghost">01</span>
         <span class="cat">E-commerce</span>
         <h3>Joyería <em>Brava</em></h3>
@@ -1483,13 +1602,16 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <span class="sec-tag"><span class="n">06 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
-      <div class="rv">
-        <p class="lead">Cuéntanos tu idea. Respondemos en menos de 24 horas — la ambición no espera.</p>
-        <div style="margin-top:26px">
-          <div class="c-item"><div class="k">Email</div><div class="v"><em>hola@sycsolutions.company</em></div></div>
+      <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
+           entrada, el formulario y los datos puedan ordenarse por separado. La
+           animación de entrada va por eso en los hijos y no aquí. -->
+      <div class="c-info">
+        <p class="lead rv">Cuéntanos tu idea. Respondemos en menos de 24 horas — la ambición no espera.</p>
+        <div class="c-datos rv" style="margin-top:26px">
+          <div class="c-item ancho"><div class="k">Email</div><div class="v"><em>hola@sycsolutions.company</em></div></div>
           <div class="c-item"><div class="k">WhatsApp</div><div class="v">+52 000 000 0000</div></div>
           <div class="c-item"><div class="k">Horario</div><div class="v">Lun — Sáb · 9:00 a 19:00</div></div>
-          <div class="c-item"><div class="k">Base</div><div class="v">México · Trabajamos con todo el mundo</div></div>
+          <div class="c-item ancho"><div class="k">Base</div><div class="v">México · Trabajamos con todo el mundo</div></div>
         </div>
       </div>
       <form class="frame rv" id="form">
@@ -1788,6 +1910,80 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
   /* main > * y no "main section": el hero es un <header>, y es justo el que
      lleva el halo de 160.000 px². */
   document.querySelectorAll('main > *,body > footer').forEach(el=>obs.observe(el));
+})();
+
+/* ---------- BARAJAS MÓVILES ----------
+   Tres cosas: el índice numerado bajo cada baraja, la marca de la ficha centrada
+   —que le da el mismo trato que tiene la tarjeta bajo el puntero en escritorio—
+   y la entrada del conjunto.
+   Se comprueba scrollWidth y no el ancho de la ventana, porque lo que decide si
+   hay baraja es que el contenido desborde, no una medida arbitraria: en
+   escritorio la rejilla no desborda y el módulo se queda quieto. */
+(()=>{
+  const barajas=[...document.querySelectorAll('.baraja')];
+  if(!barajas.length)return;
+  const suave=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  barajas.forEach(pista=>{
+    const fichas=[...pista.children];
+    if(fichas.length<2)return;
+    const nombre=pista.dataset.baraja||'elemento';
+
+    const idx=document.createElement('div');
+    idx.className='bar-idx';
+    fichas.forEach((f,i)=>{
+      const b=document.createElement('button');
+      b.type='button';b.className='bar-b';
+      b.textContent=String(i+1).padStart(2,'0');
+      b.setAttribute('aria-label','Ver '+nombre+' '+(i+1)+' de '+fichas.length);
+      /* inline:'center' deja la ficha centrada igual que el anclaje del dedo;
+         block:'nearest' evita que además se mueva la página en vertical. */
+      b.addEventListener('click',()=>f.scrollIntoView(
+        {behavior:suave?'smooth':'auto',block:'nearest',inline:'center'}));
+      idx.appendChild(b);
+    });
+    pista.after(idx);
+    const botones=[...idx.children];
+
+    /* La baraja entra como bloque porque sus fichas tienen la entrada anulada:
+       las que esperan a la derecha nunca asomarían por el viewport. La clase la
+       pone el JS para que, si no corre, no haya nada oculto. */
+    pista.classList.add('bar-listo');
+    const destapa=()=>pista.classList.add('entra');
+    const obs=new IntersectionObserver((es,o)=>{
+      if(es[0].isIntersecting){destapa();o.disconnect();}
+    },{threshold:.12});
+    obs.observe(pista);
+    /* Red de seguridad. La baraja nace en opacidad cero y sólo el observador la
+       destapa: si por cualquier motivo no llega a dispararse, el contenido se
+       quedaría invisible para siempre. Peor una entrada sin animación que una
+       sección en blanco, así que a los tres segundos se destapa igual. */
+    setTimeout(()=>{destapa();obs.disconnect();},3000);
+
+    let pend=false;
+    function marca(){
+      pend=false;
+      if(pista.scrollWidth<=pista.clientWidth+4){       /* escritorio: no hay baraja */
+        fichas.forEach(f=>f.classList.remove('centro'));
+        botones.forEach(b=>b.classList.remove('on'));
+        return;
+      }
+      const r=pista.getBoundingClientRect();
+      const eje=r.left+r.width/2;
+      let cual=0,cerca=Infinity;
+      fichas.forEach((f,i)=>{
+        const fr=f.getBoundingClientRect();
+        const d=Math.abs(fr.left+fr.width/2-eje);
+        if(d<cerca){cerca=d;cual=i;}
+      });
+      fichas.forEach((f,i)=>f.classList.toggle('centro',i===cual));
+      botones.forEach((b,i)=>b.classList.toggle('on',i===cual));
+    }
+    const pide=()=>{if(!pend){pend=true;requestAnimationFrame(marca);}};
+    pista.addEventListener('scroll',pide,{passive:true});
+    addEventListener('resize',pide,{passive:true});
+    marca();
+  });
 })();
 
 /* ---------- ENTRADA DE SECCIONES ----------
