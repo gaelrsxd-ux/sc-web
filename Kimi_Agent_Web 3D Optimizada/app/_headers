@@ -1,0 +1,33 @@
+# Cabeceras de seguridad para Cloudflare Pages.
+# Este archivo no se publica como página: Pages lo lee al desplegar y aplica
+# estas cabeceras a las respuestas. Los cuatro primeros valores son los que
+# cualquier revisión de seguridad busca; la política de contenido es la que de
+# verdad limita el daño si algún día se cuela código ajeno en la página.
+
+/*
+  # Obliga a que el navegador use HTTPS durante un año, aunque alguien escriba
+  # la dirección con http:// o la intercepte por el camino.
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # Impide que el navegador "adivine" el tipo de un archivo y lo ejecute como
+  # algo que no es.
+  X-Content-Type-Options: nosniff
+  # Nadie puede meter esta web dentro de un iframe suyo para superponer botones
+  # invisibles encima. Es la defensa contra el secuestro de clics.
+  X-Frame-Options: DENY
+  # Al salir hacia otro sitio se envía sólo el dominio de origen, nunca la ruta
+  # ni los parámetros.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # La web no necesita cámara, micrófono, ubicación ni pagos: se renuncia a
+  # todo ello de forma explícita para que ningún script pueda pedirlo.
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  # Política de contenido. Cada origen listado está aquí porque la web lo usa de
+  # verdad: las tipografías de Google y el Worker del diagnóstico. Todo lo demás
+  # queda bloqueado. 'unsafe-inline' es imprescindible mientras el estilo y el
+  # script vivan dentro del propio index.html, que es justamente lo que hace que
+  # la página cargue en una sola petición.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://syc-seo-audit.gael-r-sxd.workers.dev; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# Aquí NO se toca la caché de /assets/*. Los fondos se llaman siempre igual
+# —hero-bg.webp, bg-servicios.webp…— y se han sustituido ya un par de veces:
+# marcarlos como inmutables dejaría a quien ya visitó la web mirando las fotos
+# antiguas durante un año. Sólo tendría sentido con nombres versionados.

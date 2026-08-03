@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S&C Solutions Company — Webs, Automatización e IA para Negocios</title>
-<meta name="description" content="Construimos negocios que se ven tan bien como funcionan: sitios web premium, automatización con IA, CRM a medida y datos inteligentes. S&C Solutions Company.">
-<meta name="keywords" content="diseño web premium, automatización con IA, CRM a medida, dashboards, inteligencia artificial para negocios">
+<meta name="description" content="Construimos negocios que se ven tan bien como funcionan: sitios web premium, agentes de IA, CRM empresarial, aplicaciones privadas y automatización de procesos. S&C Solutions Company.">
+<meta name="keywords" content="diseño web premium, agentes de IA, CRM empresarial, aplicaciones privadas a medida, automatización de procesos, inteligencia artificial para negocios">
 <meta name="author" content="S&C Solutions Company">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://sycsolutions.company/">
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="S&C Solutions Company">
 <meta property="og:url" content="https://sycsolutions.company/">
 <meta property="og:title" content="S&C Solutions Company — Ambición · Estrategia · Resultados">
-<meta property="og:description" content="Webs premium, automatización con IA, CRM y datos para negocios que piensan en grande.">
+<meta property="og:description" content="Webs premium, agentes de IA, CRM empresarial, apps privadas y automatización para negocios que piensan en grande.">
 <meta property="og:image" content="https://sycsolutions.company/assets/hero-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -38,7 +38,7 @@
    "name":"S&C Solutions Company",
    "url":"https://sycsolutions.company/",
    "slogan":"Ambición · Estrategia · Resultados",
-   "description":"Sitios web premium, automatizaciones con IA, CRM y datos inteligentes para negocios.",
+   "description":"Sitios web premium, agentes de IA, CRM empresarial, aplicaciones privadas y automatización de procesos para negocios.",
    "logo":{"@type":"ImageObject","url":"https://sycsolutions.company/assets/logo.svg"},
    "image":"https://sycsolutions.company/assets/hero-og.jpg",
    "foundingDate":"2026",
@@ -52,10 +52,11 @@
    ],
    "sameAs":[],
    "makesOffer":[
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Sitios web premium","serviceType":"Diseño y desarrollo web"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización con IA","serviceType":"Automatización de procesos con inteligencia artificial"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"CRM a medida","serviceType":"Desarrollo de CRM"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Datos y dashboards","serviceType":"Analítica de datos"}}
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Sitios Web Premium para tu Negocio","serviceType":"Diseño y desarrollo web"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Agentes de IA para tu Negocio","serviceType":"Agentes conversacionales con inteligencia artificial"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"CRM Empresarial","serviceType":"Desarrollo de CRM"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Aplicación Privada para tu Negocio","serviceType":"Desarrollo de software interno a medida"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización de Procesos en tu Negocio","serviceType":"Automatización de procesos"}}
    ]
   },
   {
@@ -122,7 +123,7 @@
     {"@type":"Question","name":"¿Cuánto tardan en responderme?",
      "acceptedAnswer":{"@type":"Answer","text":"Menos de 24 horas. Atendemos de lunes a sábado, de 9:00 a 19:00. Si escribes fuera de ese horario, tu mensaje entra igual y lo verás respondido al abrir el siguiente día hábil."}},
     {"@type":"Question","name":"¿Qué hacen exactamente?",
-     "acceptedAnswer":{"@type":"Answer","text":"Cuatro cosas: sitios web premium, automatización de procesos con inteligencia artificial, CRM construidos a la medida de tu operación, y proyectos que no caben en ninguna de esas tres."}},
+     "acceptedAnswer":{"@type":"Answer","text":"Cinco cosas: sitios web premium, agentes de IA que atienden a tus clientes, CRM empresarial construido a la medida de tu operación, aplicaciones privadas para tu equipo y automatización de procesos."}},
     {"@type":"Question","name":"No sé qué necesito exactamente. ¿Puedo escribir igual?",
      "acceptedAnswer":{"@type":"Answer","text":"Sí, es lo más habitual. En el formulario tienes la opción «No lo sé aún — asesórenme». Cuéntanos qué hace tu negocio y qué te gustaría conseguir, y te decimos qué haríamos y por dónde empezaríamos."}}
    ]
@@ -145,7 +146,14 @@
 <style>
 :root{
   --bg:#0A0B0E; --bg2:#111318; --panel:#13161C;
-  --ink:#F4F1EA; --muted:#9A958A; --dim:#5E5A52;
+  /* --dim subió de #5E5A52 a este valor. El anterior daba 2,9 de contraste
+     contra el fondo, y lo mínimo legible es 4,5: con él, los veinte y pico
+     rótulos pequeños de la página —"Email", "Antes de escribir", los números de
+     sección, las unidades de la calculadora— se leían apagados y costaba
+     enfocarlos. Ahora dan 4,9 y siguen estando claramente por debajo de --muted,
+     así que la jerarquía de tonos no cambia; sólo deja de perderse el escalón
+     más bajo. Medido, no estimado. */
+  --ink:#F4F1EA; --muted:#9A958A; --dim:#858075;
   --bronze:#C8A96A; --bronze-hi:#E4CD9A;
   --line:rgba(200,169,106,.22); --line-soft:rgba(200,169,106,.11);
   --serif:'Cormorant Garamond',Georgia,serif;
@@ -160,7 +168,15 @@ html{scroll-behavior:smooth}
    dejaba el antetítulo y parte del titular escondidos detrás de ella. Con esto
    la sección se detiene por debajo, y el visitante ve dónde ha llegado. */
 section[id],header[id],main>[id]{scroll-margin-top:98px}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+/* Aquí había -webkit-font-smoothing:antialiased. Es una costumbre heredada de
+   macOS, donde adelgaza un texto que el sistema pinta demasiado grueso. En
+   Windows hace justo lo contrario de lo que promete: apaga ClearType —el
+   suavizado por subpíxeles, que es lo que da el filo a las letras— y las deja
+   en escala de grises, más finas y más apagadas. Es exactamente el aspecto de
+   "baja calidad, gris" del que hablamos. Quitándolo, cada sistema pinta el
+   texto con su mejor método: ClearType en Windows, el suyo en Mac.
+   Si algún día se quiere el trazo más fino de Mac, se vuelve a añadir aquí. */
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden}
 ::selection{background:var(--bronze);color:#0A0B0E}
 a{color:inherit;text-decoration:none}
 img{max-width:100%}
@@ -195,7 +211,11 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
 .idxr{display:flex;flex-direction:column;align-items:center;gap:clamp(14px,1.9vh,22px);pointer-events:auto}
 .idxr a{position:relative;display:flex;align-items:center;justify-content:center;
   width:26px;height:20px;font-family:var(--serif);font-size:11px;font-style:italic;
-  color:#3C3A34;transition:color .45s ease}
+  /* El tramo aún no visitado: el único tono de la página por debajo del mínimo
+     de lectura, y a propósito. Son numerales de dos cifras con su rótulo
+     emergente al lado, y su trabajo es apagarse para que se distinga el tramo
+     donde estás. Aun así sube de 1,7 a 3,6 de contraste: se ven. */
+  color:#6F6A60;transition:color .45s ease}
 /* El trazo horizontal es el latido del índice: crece al llegar al tramo */
 .idxr a::before{content:"";position:absolute;left:50%;bottom:1px;width:7px;height:1px;
   margin-left:-3.5px;background:currentColor;opacity:.5;
@@ -215,6 +235,9 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
    recompensa de la página y por eso no puede verse antes de merecerla. */
 .idxr .sello{width:9px;height:9px;margin-top:4px;border:1px solid var(--line-soft);
   transform:rotate(45deg) scale(.6);opacity:0;transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1),background-color .6s}
+/* Recorrida entera pero sin usar nada: el sello asoma en contorno. Hay algo
+   que ganar y todavía no está ganado. */
+.rail.l.casi .sello{opacity:.55;transform:rotate(45deg) scale(.86);border-color:var(--line)}
 .rail.l.fin .sello{opacity:1;transform:rotate(45deg) scale(1);background:var(--bronze-hi);border-color:var(--bronze-hi)}
 
 /* ---------- PRELOADER ---------- */
@@ -299,10 +322,13 @@ main{position:relative;z-index:2}
   z-index:1;pointer-events:none;overflow:hidden;contain:strict}
 #descenso .esc{position:absolute;left:-4%;right:-4%;top:-16%;bottom:-16%;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;visibility:hidden;will-change:transform,opacity;backface-visibility:hidden}
 /* Veta de luz: el estrato que se atraviesa al cambiar de escena */
-/* Velo único. Su opacidad la mueve el scroll de forma continua (.80 arriba,
+/* Velo único. Su opacidad la mueve el scroll de forma continua (.72 arriba,
    1 al descender), así que la página se oscurece de manera global y gradual
-   en vez de escalonarse sección a sección. */
-#velo{position:absolute;inset:0;opacity:.8;will-change:opacity;background:linear-gradient(100deg,rgba(10,11,14,.96) 16%,rgba(10,11,14,.885) 58%,rgba(10,11,14,.845))}
+   en vez de escalonarse sección a sección.
+   Se aclaró al cambiar los fondos: con fotos de ciudad daba igual, pero el
+   turquesa del mar se comía entero y el cambio no se notaba. Arriba deja pasar
+   el color y abajo se cierra, que es donde vive el texto largo. */
+#velo{position:absolute;inset:0;opacity:.72;will-change:opacity;background:linear-gradient(100deg,rgba(10,11,14,.92) 16%,rgba(10,11,14,.84) 58%,rgba(10,11,14,.8))}
 /* Antes era una barra de luz que barría la pantalla; se leía como un efecto
    de edición. Ahora es una lumbre ancha y tenue que sólo calienta el cruce. */
 /* Las medidas se dividen por la escala del lienzo: vh es relativo a la pantalla,
@@ -334,6 +360,15 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .lead{color:var(--muted);font-size:clamp(15px,1.4vw,17px);line-height:1.8;max-width:540px}
 .rv{opacity:0;transform:translateY(38px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
 .rv.in{opacity:1;transform:none}
+/* Segunda pasada, al volver a subir. La entrada de bajada se ve una sola vez y
+   quien se distrajo ya no la recupera; ésta le da otra oportunidad.
+   Va deliberadamente más floja: la mitad de recorrido, en sentido contrario y
+   casi el doble de rápida. Repetir el mismo golpe cada vez que alguien sube a
+   releer un párrafo se siente como si la página se recargara sola. */
+.rv.sube:not(.in){transform:translateY(-16px)}
+.rv.sube{transition-duration:.55s}
+.sube:not(.in) .w{transform:translateY(-.3em)}
+.sube .w{transition-duration:.5s}
 /* zoom de secciones: entran ampliándose desde lejos (solo transform/opacity, GPU) */
 /* Antes entraba con scale(.8) y 70px de salto: un zoom tan marcado es el sello
    de las plantillas, y además dejaba el fondo desnudo a la vista mientras el
@@ -411,9 +446,15 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
   from{transform:scale(1.26) translate3d(-1%,-.6%,0)}
   to{transform:scale(1.06) translate3d(-1%,-.6%,0)}
 }
+/* El plano cercano llegaba a escala 1.3 mientras el lejano se quedaba en 1.12.
+   Con una fotografía de rascacielos daba igual —es textura repetida—, pero la
+   foto de la costa tiene una línea de horizonte: esa diferencia de aumento la
+   partía en dos y además dejaba fuera del encuadre el mar y la ciudad. Ahora
+   los dos planos vuelan casi al mismo aumento; se pierde algo de paralaje y se
+   gana la fotografía entera. */
 @keyframes entraCerca{
-  from{transform:perspective(1200px) scale(1.62) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
-  to{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+  from{transform:perspective(1200px) scale(1.42) translate3d(-1.6%,-1%,0) rotateY(1.2deg)}
+  to{transform:perspective(1200px) scale(1.09) translate3d(-1.6%,-1%,0) rotateY(1.2deg)}
 }
 @keyframes dronLejos{
   0%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
@@ -423,17 +464,20 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
   100%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
 }
 @keyframes dronCerca{
-  0%{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
-  25%{transform:perspective(1200px) scale(1.24) translate3d(-.8%,-2.8%,0) rotateY(.5deg)}
-  50%{transform:perspective(1200px) scale(1.3) translate3d(3%,-.9%,0) rotateY(-1.2deg)}
-  75%{transform:perspective(1200px) scale(1.24) translate3d(1%,1.8%,0) rotateY(-.4deg)}
-  100%{transform:perspective(1200px) scale(1.18) translate3d(-3%,-1.6%,0) rotateY(1.6deg)}
+  0%{transform:perspective(1200px) scale(1.09) translate3d(-1.6%,-1%,0) rotateY(1.2deg)}
+  25%{transform:perspective(1200px) scale(1.13) translate3d(-.5%,-1.8%,0) rotateY(.4deg)}
+  50%{transform:perspective(1200px) scale(1.16) translate3d(1.6%,-.6%,0) rotateY(-.9deg)}
+  75%{transform:perspective(1200px) scale(1.13) translate3d(.6%,1.1%,0) rotateY(-.3deg)}
+  100%{transform:perspective(1200px) scale(1.09) translate3d(-1.6%,-1%,0) rotateY(1.2deg)}
 }
 /* El velo pasa a .hero para quedar por encima de los dos planos */
 /* El velo del hero desaparece: lo cubre el velo único del lienzo. Sólo queda
    un oscurecido suave arriba, para que la barra de navegación se lea. */
 .hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(10,11,14,.45),transparent 26%)}
-.hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(calc(var(--mx)*-.15),calc(var(--my)*-.15),0);will-change:transform}
+/* --hx/--hy en vez de calcular aquí a partir de --mx: ver el módulo del puntero.
+   Llegan ya redondeadas a píxel entero para que el titular no quede a medio
+   píxel y se vea borroso. */
+.hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(var(--hx,0px),var(--hy,0px),0);will-change:transform}
 .hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
 @keyframes halo{from{opacity:.5}to{opacity:1}}
 .hero-inner .sec-tag{justify-content:center}
@@ -460,9 +504,10 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 /* La bruma del hero desciende hasta aquí: la misma foto que ya está cacheada,
    ampliada y casi apagada. Encadena las dos secciones y cuesta 0 KB. */
 /* La bruma que antes se pintaba aquí la aporta ahora la escena 0 del lienzo */
-/* marca de agua "&" gigante en contorno — puro texto, cero peso */
-.manifesto::after{content:"&";position:absolute;right:-3vw;top:50%;transform:translateY(-50%);font-family:var(--serif);font-style:italic;font-size:clamp(300px,40vw,620px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.11);pointer-events:none;z-index:0;will-change:transform;animation:ampRespira 30s ease-in-out infinite alternate}
-@keyframes ampRespira{from{transform:translateY(-50%) translate3d(0,-16px,0) rotate(-1.1deg)}to{transform:translateY(-50%) translate3d(0,16px,0) rotate(1.1deg)}}
+/* Aquí había una marca de agua: un "&" gigante en contorno, en Garamond
+   itálica. A 620 px y recortado por el borde derecho no se leía como la
+   ampersand de la marca sino como una clave de sol, así que se retira. El
+   fondo del lienzo ya da profundidad de sobra a la sección. */
 .manifesto .wrap{position:relative;z-index:1}
 .manifesto blockquote{font-family:var(--serif);font-size:clamp(28px,4.6vw,66px);line-height:1.35;font-weight:500;max-width:1220px;margin:auto}
 .manifesto blockquote em{font-style:italic;color:var(--bronze-hi)}
@@ -472,6 +517,9 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(30px,3.6vw,54px)}
 .bait .wrap{position:relative;z-index:1}
 .bait .q{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--muted);margin-bottom:34px}
+/* El hueco entre los dos renglones es de línea, no de bloque: son una sola
+   frase partida en dos y separarlos 34 px los volvería dos ideas sueltas. */
+.bait .q:not(:last-of-type){margin-bottom:clamp(4px,.5vw,8px)}
 .bait-btn{position:relative;display:inline-flex}
 .bait-btn .btn{padding:20px 46px;font-size:12px;gap:14px}
 .bait-btn .arr{display:inline-block;animation:bob 1.6s ease-in-out infinite}
@@ -493,6 +541,30 @@ form.frame{background:rgba(12,14,19,.93)}
 .frame input,.frame textarea,.frame select{border-bottom:1px solid rgba(200,169,106,.5)}
 #contacto .c-item .v{text-shadow:0 2px 14px rgba(0,0,0,.7)}
 .svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
+
+/* ---------- LAS CELDAS VACÍAS NO SON UNA VENTANA AL FONDO ----------
+   Las retículas de un píxel de esta página se dibujan al revés de lo normal: el
+   contenedor pinta el color de la línea y las fichas, opacas, lo tapan todo
+   menos el hueco de un píxel que queda entre ellas. Cuesta cero elementos y en
+   estado final es impecable, pero tenía una consecuencia que sólo se veía al
+   bajar: las fichas entran con opacidad cero, y mientras dura esa entrada su
+   celda no tapa nada. Por el hueco se veía la foto del lienzo —arena, oleaje—
+   recortada dentro del marco de la rejilla: un rectángulo claro que aparecía
+   unos milisegundos justo antes de la sección, y que además cambiaba de color
+   según por dónde fuera la escena del fondo.
+   La solución es que el panel sea opaco desde el principio y del mismo tono que
+   las fichas. Así, una celda todavía vacía se ve como un panel vacío —que es
+   exactamente su aspecto final— en vez de como un agujero. El color de la línea
+   se conserva encima, en una capa de imagen, con el mismo valor de siempre: es
+   justo lo que se veía antes en los tramos oscuros de la foto, así que la línea
+   no cambia de aspecto y ahora además deja de depender de por dónde vaya la
+   escena del fondo. Subirlo dibujaba mejor la línea pero hacía visible el panel
+   vacío, que es exactamente lo que se venía a quitar. */
+.svc-grid{background-color:var(--bg2);
+  background-image:linear-gradient(var(--line-soft),var(--line-soft))}
+/* Servicio impar: cierra la rejilla ocupando las dos columnas. En móvil la
+   baraja es flex y esta regla no aplica: todas las fichas miden igual. */
+.svc.ancha{grid-column:1 / -1}
 /* En móvil no se apila: .svc-grid lleva también la clase baraja y pasa a
    deslizarse de lado. Ver el bloque BARAJAS MÓVILES. */
 .svc{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
@@ -500,9 +572,18 @@ form.frame{background:rgba(12,14,19,.93)}
 .svc::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.7,0,.2,1)}
 .svc:hover::after{transform:scaleX(1)}
 .svc .idx{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--bronze);letter-spacing:1px}
-.svc h3{font-size:clamp(25px,2.6vw,34px);margin:20px 0 14px;transition:color .35s}
+/* Los cinco títulos van dorados de entrada, no sólo bajo el puntero. En un
+   móvil no hay puntero, así que el dorado no llegaba nunca salvo en la ficha
+   centrada, y son la palabra clave de cada servicio.
+   El de reposo es el bronce medio y el de hover el claro: así el título se ve
+   siempre y el gesto de señalarlo sigue teniendo respuesta. */
+.svc h3{font-size:clamp(25px,2.6vw,34px);margin:20px 0 14px;color:var(--bronze);transition:color .35s}
 .svc:hover h3{color:var(--bronze-hi)}
 .svc p{color:var(--muted);font-size:15px;line-height:1.8;max-width:540px}
+/* La frase que duele va en blanco hueso, no en dorado: el dorado es de los
+   títulos, y una frase entera en dorado se los come. Contra el gris del párrafo
+   el blanco ya la separa. */
+.svc p b{color:var(--ink);font-weight:500}
 .svc ul{list-style:none;margin-top:20px;display:flex;flex-wrap:wrap;gap:9px}
 .svc li{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);border:1px solid var(--line);padding:7px 13px}
 .svc .go{position:absolute;top:clamp(30px,3.4vw,48px);right:clamp(30px,3.4vw,48px);color:var(--dim);font-size:18px;transition:.4s}
@@ -522,12 +603,22 @@ form.frame{background:rgba(12,14,19,.93)}
    coste de GPU a cambio de nada. */
 @media(hover:hover) and (pointer:fine){
   .svc-grid{perspective:1500px}
-  .svc{transform-style:preserve-3d;
-    transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(var(--tz,0px));
-    transition:background .4s,transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s ease}
+  /* El espacio 3D y el giro SÓLO existen mientras el puntero está encima.
+     Antes se declaraban siempre, con los ángulos a cero, y eso tenía un precio
+     que no se veía en Mac pero sí en Windows: una tarjeta con transform-style
+     3D vive permanentemente en una capa de la GPU, y el texto de una capa se
+     rasteriza sin el suavizado por subpíxeles del sistema. Resultado: las cinco
+     tarjetas se leían perpetuamente más blandas que el resto de la página, como
+     si estuvieran a menos resolución. En reposo el texto vuelve a pintarlo el
+     navegador con su calidad normal, y la capa sólo aparece durante el giro.
+     La vuelta sigue siendo suave: al quitar la clase, el navegador interpola
+     desde el giro actual hasta la ausencia de transformación. */
+  .svc{transition:background .4s,transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s ease}
   /* Mientras el puntero está encima el seguimiento es casi directo: 120 ms de
      interpolación bastan para quitar el temblor sin que se note retraso. */
-  .svc.tilt{transition:background .4s,transform .12s linear,box-shadow .5s ease;
+  .svc.tilt{transform-style:preserve-3d;
+    transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(var(--tz,0px));
+    transition:background .4s,transform .12s linear,box-shadow .5s ease;
     z-index:2;will-change:transform;box-shadow:0 30px 64px -34px rgba(0,0,0,.9)}
   /* Lumbre que sigue al puntero: es lo que convierte el giro en materia. Va en
      una capa propia por debajo del texto para no bajarle el contraste. */
@@ -574,13 +665,61 @@ form.frame{background:rgba(12,14,19,.93)}
 .viva p b{color:var(--bronze-hi);font-weight:500}
 @media(max-width:560px){.viva{padding:16px 20px}.viva p{letter-spacing:2.4px;font-size:9.5px}}
 
-/* ---------- PROYECTOS ---------- */
+/* ---------- RESEÑAS · CASOS ----------
+   La sección heredó el nombre de las reseñas que había debajo y también su
+   lenguaje: cabecera centrada, rombo que respira al fondo y fichas sin panel
+   propio, con dos escuadras opuestas en lugar de un recuadro cerrado. El panel
+   opaco de antes tapaba la foto del descenso justo en el tramo donde la escena
+   cambia; sin él, el fondo se ve a través de los cuatro casos. */
+#proyectos{overflow:hidden}
+/* El rombo enorme y lentísimo era el motivo de las reseñas y se queda con la
+   sección que las sustituye: es lo que hace que el bloque respire sin pintar
+   una sola caja más. */
+#proyectos::after{content:"";position:absolute;right:-7vw;top:50%;
+  width:clamp(300px,34vw,540px);height:clamp(300px,34vw,540px);
+  border:1px solid rgba(200,169,106,.085);pointer-events:none;z-index:0;
+  will-change:transform;animation:rombRespira 34s ease-in-out infinite alternate}
+@keyframes rombRespira{
+  from{transform:translateY(-50%) rotate(45deg) scale(.97)}
+  to{transform:translateY(-50%) rotate(51deg) scale(1.03)}
+}
+#proyectos .wrap{position:relative;z-index:1}
+/* Cabecera centrada. Va en su propia caja y no en el .wrap entero, porque
+   centrar el contenedor arrastraría también el texto de las cuatro fichas. */
+.sec-cab{text-align:center}
+.sec-cab .sec-tag{justify-content:center}
+/* El ancla heredada de la sección retirada: no ocupa nada y sólo existe para
+   que un enlace a #resenas siga aterrizando aquí. */
+.ancla{display:block;height:0;overflow:hidden}
+
 .works{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(18px,2.4vw,30px);margin-top:clamp(32px,3.6vw,50px)}
 /* En móvil pasa a baraja deslizable. Encaja especialmente bien aquí: cada caso
    tiene su resultado tapado, así que deslizar y destapar se vuelve un gesto
    encadenado en vez de cuatro bloques que hay que atravesar. */
-.work{border:1px solid var(--line-soft);background:linear-gradient(165deg,var(--panel),var(--bg));padding:clamp(28px,3.2vw,44px);position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.2,.7,.2,1),border-color .4s}
-.work:hover{transform:translateY(-7px);border-color:var(--line)}
+/* Sin borde y casi sin fondo: el velo del descenso ya oscurece la foto lo
+   suficiente, así que basta una veladura mínima para sostener el texto de 15 px
+   sin llegar a tapar la escena. Al pasar por encima se cierra un poco más, que
+   es lo que sustituye al antiguo cambio de color del borde. */
+.work{border:none;position:relative;overflow:hidden;
+  padding:clamp(30px,3.4vw,48px) clamp(28px,3.2vw,46px);
+  background:linear-gradient(165deg,rgba(19,22,28,.34),rgba(10,11,14,.12));
+  transition:transform .5s cubic-bezier(.2,.7,.2,1),background .5s ease}
+.work:hover{transform:translateY(-7px);
+  background:linear-gradient(165deg,rgba(19,22,28,.52),rgba(10,11,14,.24))}
+/* Escuadras de acta: el mismo trazo que enmarcaba las reseñas. Un recuadro
+   completo encajona y además vuelve a dibujar una caja sobre la foto; la
+   escuadra sugiere el documento y deja pasar el fondo por los cuatro lados.
+   Crecen al pasar por encima: sin borde ni panel, es la única señal de relieve
+   que le queda a la ficha. */
+.work::before,.work::after{content:"";position:absolute;pointer-events:none;z-index:1;
+  width:clamp(22px,2.4vw,36px);height:clamp(22px,2.4vw,36px);
+  border:1px solid var(--bronze);opacity:.5;
+  transition:opacity .5s ease,width .55s cubic-bezier(.2,.7,.2,1),height .55s cubic-bezier(.2,.7,.2,1)}
+.work::before{top:0;left:0;border-right:none;border-bottom:none}
+.work::after{bottom:0;right:0;border-left:none;border-top:none}
+.work:hover::before,.work:hover::after{opacity:1;
+  width:clamp(30px,3.4vw,52px);height:clamp(30px,3.4vw,52px)}
+.work>*{position:relative;z-index:2}
 .work .ghost{position:absolute;top:6px;right:22px;font-family:var(--serif);font-style:italic;font-size:clamp(60px,7vw,96px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.22)}
 .work .cat{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
 .work h3{font-size:clamp(26px,2.8vw,36px);margin:16px 0 4px}
@@ -590,7 +729,13 @@ form.frame{background:rgba(12,14,19,.93)}
    un vistazo y se olvida igual de rápido; obligando a destaparlo, el visitante
    deja de mirar la página y empieza a usarla. La cifra sigue en el HTML —sólo
    está desenfocada por CSS— así que Google la lee igual que antes. */
-.work .res{position:relative;margin-top:26px;padding-top:20px;border-top:1px solid var(--line-soft)}
+/* La regla que separa el caso de su resultado deja de cruzar la ficha entera:
+   es el mismo filete corto que firmaba las reseñas. Una línea a todo lo ancho
+   volvía a dibujar el borde que se acaba de quitar. */
+.work .res{position:relative;margin-top:26px;padding-top:20px}
+.work .res::before{content:"";position:absolute;top:0;left:0;width:52px;height:1px;
+  background:var(--line);transition:width .55s cubic-bezier(.2,.7,.2,1)}
+.work:hover .res::before{width:88px}
 .work .res-dato{display:flex;align-items:baseline;gap:14px;
   filter:blur(9px);opacity:.26;transform:translateY(6px);
   transition:filter .8s cubic-bezier(.2,.7,.2,1),opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
@@ -627,87 +772,8 @@ form.frame{background:rgba(12,14,19,.93)}
   border-bottom:1px solid var(--line);padding-bottom:7px;transition:border-color .35s,color .35s}
 .works-fin a:hover{color:var(--bronze);border-color:var(--bronze)}
 
-/* ---------- RESEÑAS ---------- */
-#resenas{overflow:hidden}
-/* Antes había dos comillas tipográficas gigantes, una en contorno al fondo y
-   otra en bronce sobre la cita. Una comilla enorme es el recurso por defecto
-   de cualquier plantilla de testimonios: se lee como decoración de relleno y
-   además compite con el propio texto entrecomillado. La sustituye el rombo de
-   la marca, que ya es el motivo que aparece en botones y sellos. */
-#resenas::after{content:"";position:absolute;right:-7vw;top:50%;
-  width:clamp(300px,34vw,540px);height:clamp(300px,34vw,540px);
-  border:1px solid rgba(200,169,106,.085);pointer-events:none;z-index:0;
-  will-change:transform;animation:rombRespira 34s ease-in-out infinite alternate}
-@keyframes rombRespira{
-  from{transform:translateY(-50%) rotate(45deg) scale(.97)}
-  to{transform:translateY(-50%) rotate(51deg) scale(1.03)}
-}
-#resenas .wrap,#resenas .reviews{position:relative;z-index:1}
-/* El bloque de reseñas vive fuera de .wrap, así que no heredaba su margen
-   lateral: en móvil las escuadras del marco quedaban pegadas al borde de la
-   pantalla. Se le da el mismo respiro que al resto de secciones. */
-.reviews{max-width:1064px;margin:clamp(32px,3.6vw,50px) auto 0;padding:0 clamp(22px,4.5vw,72px)}
-
-/* Las tres actas se apilan en la misma celda de rejilla. Con display:none el
-   alto saltaba al cambiar de reseña porque cada texto mide distinto; apiladas,
-   el contenedor mide siempre lo que la más larga y el cruce es limpio. */
-.rev-pista{display:grid}
-.review{grid-area:1/1;opacity:0;visibility:hidden;transform:translateY(16px);
-  transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1),visibility .6s}
-.review.on{opacity:1;visibility:visible;transform:none}
-
-/* Marco de acta: dos escuadras opuestas en vez de un recuadro cerrado. El
-   recuadro completo encajona; la escuadra sugiere el documento y deja respirar. */
-.rev-marco{position:relative;padding:clamp(36px,4.4vw,68px) clamp(26px,4.4vw,74px);text-align:center}
-.rev-marco::before,.rev-marco::after{content:"";position:absolute;
-  width:clamp(26px,3vw,44px);height:clamp(26px,3vw,44px);border:1px solid var(--bronze);
-  opacity:.55;transition:opacity .6s ease,width .6s ease,height .6s ease}
-.rev-marco::before{top:0;left:0;border-right:none;border-bottom:none}
-.rev-marco::after{bottom:0;right:0;border-left:none;border-top:none}
-.review.on .rev-marco::before,.review.on .rev-marco::after{opacity:1}
-
-/* Calificación con el rombo de la marca. Las estrellas ★ del sistema se
-   renderizan distinto en cada plataforma y siempre se ven baratas. */
-.rev-cal{display:flex;gap:9px;justify-content:center;margin-bottom:clamp(24px,2.6vw,34px)}
-.rev-cal span{width:7px;height:7px;background:var(--bronze-hi);transform:rotate(45deg)}
-/* Medido en píxeles y no en ch: la ch de una Garamond itálica es tan estrecha
-   que 30ch daban 437px dentro de un marco de 1000px, y la cita caía en seis
-   líneas altísimas. A 760px entra en tres o cuatro, que es lo que se lee de
-   una pasada. */
-.review blockquote{font-family:var(--serif);font-style:italic;font-weight:500;
-  font-size:clamp(21px,2.7vw,33px);line-height:1.5;color:var(--ink);
-  max-width:min(760px,100%);margin:auto}
-.rev-pie{margin-top:clamp(28px,3vw,40px)}
-.rev-rayo{width:52px;height:1px;background:var(--line);margin:0 auto clamp(20px,2.2vw,26px)}
-.rev-quien{display:block;font-family:var(--serif);font-size:clamp(19px,1.9vw,23px);
-  font-weight:600;color:var(--bronze-hi)}
-.rev-que{display:block;margin-top:9px;font-size:9px;letter-spacing:4px;
-  text-transform:uppercase;color:var(--dim)}
-
-/* Índice numerado con barra de avance: sustituye a los tres guiones sueltos y
-   además enseña cuánto falta para el siguiente, que era información invisible. */
-.rev-idx{display:flex;gap:clamp(18px,2.4vw,34px);justify-content:center;margin-top:clamp(34px,3.6vw,48px)}
-.rev-b{position:relative;background:none;border:none;padding:0 0 11px;cursor:pointer;
-  font-family:var(--serif);font-size:15px;font-style:italic;color:var(--dim);
-  transition:color .4s;line-height:1}
-.rev-b:hover{color:var(--bronze)}
-.rev-b.on{color:var(--bronze-hi)}
-.rev-b::before{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--line-soft)}
-.rev-b i{position:absolute;left:0;bottom:0;height:1px;width:0;background:var(--bronze-hi)}
-.rev-b.on i{animation:revAvance var(--rev-dur,6s) linear forwards}
-.rev-idx.quieto .rev-b.on i{animation-play-state:paused}
-@keyframes revAvance{to{width:100%}}
-@media(prefers-reduced-motion:reduce){.rev-b.on i{width:100%;animation:none}}
-
-/* Arrastre lateral. En móvil los índices numerados son dianas de 15 px: el
-   gesto natural ahí es deslizar, y sin él la mitad de las reseñas no se leen
-   nunca. pan-y deja intacto el desplazamiento vertical de la página. */
-.rev-pista{touch-action:pan-y}
-@media(hover:hover) and (pointer:fine){.rev-pista{cursor:grab}.rev-pista.tira{cursor:grabbing}}
-.review.tirando{transition:none}
-
 /* ---------- BANDA DE FIRMANTES ----------
-   Los mismos negocios que ya aparecen en reseñas y en casos, en movimiento
+   Los mismos cuatro negocios de los casos, en movimiento
    continuo. Un bloque quieto se lee como un adorno; uno que avanza se lee como
    una lista que no cabe entera, que es justo la lectura que interesa. */
 .firmas{margin-top:clamp(46px,5.4vw,74px);border-top:1px solid var(--line-soft);
@@ -799,8 +865,7 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
   .faq summary{padding-right:32px}}
 
 /* ---------- ÁREA TÁCTIL MÍNIMA (SÓLO DEDO) ----------
-   19 controles quedaban por debajo de 44 px y tres muy por debajo: los índices
-   de reseñas medían 11 px de ancho y los enlaces del pie 12 px de alto. Se
+   19 controles quedaban por debajo de 44 px y los enlaces del pie 12 px de alto. Se
    agranda únicamente la zona que responde al dedo, con un pseudo-elemento
    transparente centrado: no se mueve ni un píxel del diseño.
    Sólo con puntero grueso. Con ratón, una zona sensible mayor de lo que se ve
@@ -808,15 +873,11 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
    Cada selector usa el pseudo-elemento que tenía libre: ::before en .res-tapa
    y ::after en el resto, porque los contrarios ya llevan anillos y subrayados. */
 @media(pointer:coarse){
-  .snd,.btn,.svc-btn,.res-tapa,.works-fin a,.rev-b,footer .fl a{position:relative}
+  .snd,.btn,.svc-btn,.res-tapa,.works-fin a,footer .fl a{position:relative}
   .snd::after,.btn::after,.svc-btn::after,.res-tapa::before,
-  .works-fin a::after,.rev-b::after,footer .fl a::after{
+  .works-fin a::after,footer .fl a::after{
     content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:max(100%,44px);height:max(100%,44px)}
-  /* Los índices de reseñas van a 18 px de distancia entre sí: llevarlos a 44
-     de ancho los solaparía y se pulsaría el vecino. 28 deja holgura y sigue
-     muy por encima del mínimo exigible. */
-  .rev-b::after{width:max(100%,28px)}
 }
 
 /* ---------- FOOTER ---------- */
@@ -827,7 +888,18 @@ footer .motto{margin:20px 0 8px;font-size:10px;letter-spacing:7px;text-transform
 footer .fl{display:flex;gap:28px;justify-content:center;margin:20px 0;flex-wrap:wrap}
 footer .fl a{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);transition:color .3s}
 footer .fl a:hover{color:var(--bronze-hi)}
-footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
+/* El aviso de copyright y los enlaces legales estaban en #3C3A34: 1,7 de
+   contraste, prácticamente invisibles. Son texto que alguien puede necesitar
+   leer —y los legales, por obligación—, así que pasan al tono de los demás
+   rótulos pequeños. */
+footer small{color:var(--dim);font-size:10px;letter-spacing:2px}
+/* Enlaces legales: en su propia línea y más apagados que los de navegación.
+   Tienen que estar accesibles desde cualquier página —lo exige la normativa de
+   protección de datos y lo espera cualquiera que busque con quién trata—, pero
+   no compiten con el recorrido comercial. */
+footer .legal{display:flex;gap:8px 22px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+footer .legal a{font-size:9.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--dim);transition:color .3s}
+footer .legal a:hover{color:var(--bronze)}
 
 /* ---------- SONIDO ---------- */
 .snd{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid var(--line-soft);
@@ -906,7 +978,12 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
   font-family:var(--serif);font-size:23px;line-height:1;cursor:pointer;transition:.35s}
 #visor .cerrar:hover{background:var(--bronze);color:#0A0B0E;border-color:var(--bronze)}
 /* Perfiles */
-.team{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);
+/* Mismo panel opaco que la rejilla de servicios y por el mismo motivo: mientras
+   los dos perfiles entran, su celda no puede ser una ventana a la foto del
+   fondo. Va escrito aquí y no arriba junto al de servicios porque esta regla es
+   posterior en la hoja y el atajo «background» de antes lo pisaba entero. */
+.team{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+  background-color:var(--bg2);background-image:linear-gradient(var(--line-soft),var(--line-soft));
   border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
 /* En móvil pasa a baraja: Gael, deslizas, Bruno. Las dos biografías se leen
    enteras sin recortar una palabra, y la sección baja de dos pantallas a una. */
@@ -1026,6 +1103,132 @@ footer small{color:#3C3A34;font-size:10px;letter-spacing:2px}
 .puente .pv{font-family:var(--serif);font-size:clamp(17px,1.8vw,21px);line-height:1.45;color:var(--ink)}
 .puente .pv b{font-style:italic;font-weight:600;color:var(--bronze-hi)}
 .puente .pu{margin-top:8px;font-size:10px;letter-spacing:1.6px;color:var(--dim);word-break:break-all}
+/* Los fallos concretos dentro del puente. Sin ellos el aviso decía una nota y
+   nada más; con ellos el visitante ve, antes de escribir, exactamente de qué
+   va a ir la conversación. */
+.puente .pf{list-style:none;margin-top:12px;display:flex;flex-wrap:wrap;gap:7px}
+.puente .pf li{font-size:9px;letter-spacing:2.4px;text-transform:uppercase;color:var(--bronze-hi);
+  border:1px solid var(--line-soft);padding:5px 10px}
+
+/* ---------- COMPARATIVA CONTRA LA COMPETENCIA ----------
+   El segundo campo no está desde el principio: aparece cuando ya hay un
+   resultado. Antes de tener nota propia, comparar no significa nada, y el
+   formulario de entrada tiene que pedir una sola cosa. */
+.aud-rival{margin-top:22px;padding-top:20px;border-top:1px solid var(--line-soft)}
+.aud-rival .rk{font-size:9px;letter-spacing:3.4px;text-transform:uppercase;color:var(--bronze);margin-bottom:11px}
+.aud-rival form{display:flex;border-bottom:1px solid var(--line)}
+.aud-rival input{flex:1;min-width:0;background:transparent;border:none;color:var(--ink);
+  font-family:var(--serif);font-size:17px;padding:9px 2px;outline:none}
+.aud-rival input::placeholder{color:var(--dim)}
+.aud-rival button{flex-shrink:0;border:none;background:none;color:var(--bronze);cursor:pointer;
+  font-family:var(--sans);font-size:9.5px;letter-spacing:3px;text-transform:uppercase;
+  font-weight:500;padding:0 4px 0 16px;transition:color .3s}
+.aud-rival button:hover:not(:disabled){color:var(--bronze-hi)}
+.aud-rival button:disabled{color:var(--dim);cursor:default}
+
+/* Las dos notas enfrentadas. El rombo del centro hace de "contra": es el mismo
+   motivo de la marca y evita escribir "VS", que abarata cualquier cosa. */
+.aud-vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  gap:clamp(10px,1.6vw,22px);margin-bottom:22px}
+.vs-lado{text-align:center;min-width:0}
+.vs-lado .aud-ring{margin:0 auto}
+.vs-lado .q{margin-top:12px;font-size:9px;letter-spacing:3.4px;text-transform:uppercase;color:var(--bronze)}
+.vs-lado .u{margin-top:6px;font-size:10px;letter-spacing:1.2px;color:var(--dim);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs-lado.pierde .aud-ring .fgc{stroke:#6B6355}
+.vs-lado.pierde .q{color:var(--dim)}
+.vs-sep{width:9px;height:9px;background:var(--line);transform:rotate(45deg)}
+/* El reparto de puntos: en qué te gana y en qué le ganas. Dos columnas para que
+   se lean como un marcador y no como dos listas independientes. */
+.vs-reparto{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,26px);margin-top:20px}
+@media(max-width:520px){.vs-reparto{grid-template-columns:1fr}}
+.vs-reparto h4{font-size:9px;letter-spacing:3px;text-transform:uppercase;font-family:var(--sans);
+  font-weight:500;color:var(--muted);margin-bottom:11px}
+.vs-reparto ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.vs-reparto li{font-size:12.5px;line-height:1.55;color:var(--muted);display:flex;gap:10px}
+.vs-reparto li::before{content:"";width:5px;height:5px;flex-shrink:0;margin-top:6px;transform:rotate(45deg)}
+.vs-gana li::before{background:var(--bronze)}
+.vs-pierde li::before{background:transparent;border:1px solid #6B6355}
+.vs-nada{font-size:12.5px;line-height:1.6;color:var(--dim);font-style:italic;font-family:var(--serif)}
+
+/* ---------- CALCULADORA DEL TRABAJO MANUAL ----------
+   Va pegada a los servicios porque es la respuesta a la única objeción que
+   aparece siempre: "¿y esto para qué lo quiero?". El número lo pone el
+   visitante con sus propias horas; aquí no se estima nada por él. */
+.costo{margin-top:clamp(26px,3vw,38px);border:1px solid var(--line-soft);
+  background:rgba(12,14,19,.72);padding:clamp(24px,3vw,40px);position:relative}
+.costo::before{content:"";position:absolute;inset:7px;border:1px solid rgba(200,169,106,.06);pointer-events:none}
+.costo>*{position:relative}
+.costo .ck{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
+.costo h3{font-family:var(--serif);font-size:clamp(23px,2.5vw,32px);font-weight:600;margin-top:12px}
+.costo h3 em{font-style:italic;color:var(--bronze-hi);font-weight:500}
+.costo-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:clamp(20px,3vw,44px);
+  align-items:end;margin-top:clamp(22px,2.6vw,32px)}
+@media(max-width:860px){.costo-grid{grid-template-columns:1fr;gap:24px}}
+.costo-campo label{display:block;font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px}
+.costo-campo .val{font-family:var(--serif);font-size:clamp(24px,2.6vw,34px);color:var(--bronze-hi);
+  font-weight:600;line-height:1;margin-bottom:14px}
+.costo-campo .val small{font-family:var(--sans);font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--dim);font-weight:400;margin-left:8px}
+/* El deslizador se dibuja entero: el nativo trae el azul del sistema y rompe
+   la paleta en el único control de la página que se arrastra. */
+.costo input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;
+  background:var(--line);outline:none;cursor:pointer}
+.costo input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:15px;height:15px;background:var(--bronze-hi);transform:rotate(45deg);cursor:grab;
+  border:none;box-shadow:0 0 0 4px rgba(10,11,14,.9)}
+.costo input[type=range]::-moz-range-thumb{width:13px;height:13px;background:var(--bronze-hi);
+  border:none;transform:rotate(45deg);cursor:grab}
+.costo input[type=range]:focus-visible{outline:1px solid var(--bronze);outline-offset:8px}
+.costo-res{text-align:right;min-width:min(210px,100%)}
+@media(max-width:860px){.costo-res{text-align:left;border-top:1px solid var(--line-soft);padding-top:22px}}
+.costo-res .rk{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.costo-res .rn{font-family:var(--serif);font-size:clamp(38px,4.6vw,60px);font-weight:600;
+  color:var(--bronze-hi);line-height:1.05;margin-top:10px;font-style:italic}
+/* La cifra anual es la que de verdad convence, y a 11 px pegada al importe
+   mensual se leía como un pie de foto. Más aire por encima y un cuerpo mayor:
+   deja de ser una nota al margen y pasa a ser el segundo dato de la ficha. */
+.costo-res .ry{margin-top:16px;font-size:14px;letter-spacing:1.2px;color:var(--muted)}
+.costo-res .ry b{color:var(--ink);font-weight:500}
+.costo-pie{margin-top:clamp(20px,2.4vw,28px);padding-top:18px;border-top:1px solid var(--line-soft);
+  display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.costo-pie p{font-size:11.5px;line-height:1.7;color:var(--dim);max-width:520px}
+.costo-pie a{display:inline-flex;align-items:center;gap:10px;font-size:9.5px;letter-spacing:3.2px;
+  text-transform:uppercase;font-weight:500;color:var(--bronze-hi);border-bottom:1px solid var(--line);
+  padding-bottom:7px;transition:.35s;white-space:nowrap}
+.costo-pie a:hover{color:var(--bronze);border-color:var(--bronze)}
+
+/* ---------- MÉTRICAS REALES DE ESTA PÁGINA ----------
+   Tres cifras medidas en el navegador del visitante con Performance API. No
+   son una promesa de rendimiento: son lo que acaba de pasar en su equipo. */
+.met{display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:center;align-items:center;
+  margin:26px auto 16px;max-width:760px;opacity:0;transition:opacity .8s ease}
+.met.on{opacity:1}
+.met span{font-size:9.5px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+.met b{color:var(--bronze);font-weight:500}
+
+/* ---------- VALIDACIÓN EN VIVO ----------
+   El campo se marca al salirse de él, nunca mientras se escribe: corregir a
+   alguien en mitad de una palabra es la forma más rápida de que abandone. */
+.frame input.mal,.frame textarea.mal{border-bottom-color:#A8695A}
+.aviso{display:none;margin-top:8px;font-size:11px;letter-spacing:.6px;color:#C08476;line-height:1.5}
+.aviso.on{display:block}
+
+/* ---------- MODO PRESENTACIÓN ----------
+   Para enseñar la web en una reunión sin hacer scroll delante del cliente. No
+   cambia el contenido: apaga el cromo y mueve de sección en sección. */
+html.pres nav,html.pres .rail,html.pres #avance,html.pres .snd{display:none!important}
+html.pres{scroll-behavior:smooth}
+/* Sin barra fija arriba, el margen de anclaje que la compensaba deja un hueco */
+html.pres section[id],html.pres .hero{scroll-margin-top:0}
+.pres-idx{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);z-index:97;
+  display:none;align-items:center;gap:14px;padding:11px 20px;background:rgba(10,11,14,.94);
+  border:1px solid var(--line);font-size:9px;letter-spacing:3.2px;text-transform:uppercase;
+  color:var(--muted);opacity:0;transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
+html.pres .pres-idx{display:flex;opacity:1;transform:translate(-50%,0)}
+.pres-idx b{color:var(--bronze-hi);font-weight:500}
+.pres-idx i{width:5px;height:5px;background:var(--line);transform:rotate(45deg);font-style:normal}
 
 /* ---------- MODO ORO ----------
    No hay pista de que exista: quien lo encuentra es porque lo buscó. Dura unos
@@ -1065,8 +1268,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    pantallas, los perfiles 2,0 y los casos 1,9.
    Aquí pasan a barajas que se arrastran, ancladas por ficha. Se ve una ficha
    entera y asoma la siguiente, y ese borde asomando es la única señal que dice
-   «hay más» sin gastar espacio ni pedir instrucciones. El gesto ya existía en
-   las reseñas, así que no se introduce un idioma nuevo: se extiende.
+   «hay más» sin gastar espacio ni pedir instrucciones. Un mismo gesto para las
+   tres, así que no se introduce un idioma nuevo por sección.
    Nada de esto aplica por encima de 760 px. */
 .bar-idx{display:none}
 @media(max-width:760px){
@@ -1100,6 +1303,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      33 a 36 caracteres, que ya se lee de corrido. */
   .baraja>*{flex:0 0 84vw;scroll-snap-align:start;
     border:1px solid var(--line-soft);padding:clamp(21px,5.8vw,26px)}
+  /* Los casos no llevan contorno en ninguna medida: su marca son las dos
+     escuadras, y un recuadro alrededor las convertiría en adorno. El relleno
+     sube un poco para que las escuadras no rocen el texto. */
+  .baraja>.work{border:none;padding:clamp(26px,6.4vw,32px) clamp(21px,5.8vw,26px)}
 
   /* Las fichas nacen con la animación de entrada de la página, que las mantiene
      invisibles hasta asomar por el viewport. En una baraja horizontal las que
@@ -1107,7 +1314,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      neutraliza en cada ficha y entra la baraja completa como un bloque.
      La clase bar-listo la pone el JS, de modo que si el JS no corre nada queda
      oculto. */
-  .baraja>.rv{opacity:1;transform:none;transition:none}
+  /* La segunda variante (.sube) lleva una clase más y por eso ganaba a esta
+     excepción: las fichas se quedaban desplazadas 16 px dentro de la baraja.
+     Se nombra aquí explícitamente para que la neutralización siga mandando. */
+  .baraja>.rv,.baraja>.rv.sube:not(.in){opacity:1;transform:none;transition:none}
   .baraja.bar-listo{opacity:0;transform:translateY(26px);
     transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
   .baraja.bar-listo.entra{opacity:1;transform:none}
@@ -1119,10 +1329,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .svc.centro::after,.member.centro::after{transform:scaleX(1)}
   .svc.centro h3,.member.centro h3{color:var(--bronze-hi)}
   .svc.centro .go{color:var(--bronze);transform:translate(4px,-4px)}
-  .work.centro{border-color:var(--line)}
+  /* La ficha centrada enciende sus escuadras: es el equivalente exacto del
+     hover de escritorio, ahora que no hay borde que cambiar de color. */
+  .work.centro{background:linear-gradient(165deg,rgba(19,22,28,.52),rgba(10,11,14,.24))}
+  .work.centro::before,.work.centro::after{opacity:1}
 
-  /* Índice de posición: mismo numeral y mismo subrayado que se llena que el de
-     reseñas, para que la web siga sonando a una sola cosa. */
+  /* Índice de posición: numeral y subrayado que se llena, el mismo en las tres
+     barajas, para que la web siga sonando a una sola cosa. */
   .bar-idx{display:flex;gap:clamp(16px,5.5vw,30px);justify-content:center;
     margin-top:clamp(20px,5vw,28px)}
   .bar-b{position:relative;background:none;border:none;padding:0 0 9px;cursor:pointer;
@@ -1134,6 +1347,62 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     background:var(--bronze-hi);transition:width .45s cubic-bezier(.2,.7,.2,1)}
   .bar-b.on{color:var(--bronze-hi)}
   .bar-b.on::after{width:100%}
+}
+
+/* ==================================================================
+   IMPRESIÓN Y GUARDADO COMO PDF
+   Un cliente que quiere enseñar esto a su socio pulsa Ctrl+P, y hasta ahora
+   salían nueve hojas negras con la mitad del texto invisible. Aquí la página
+   se convierte en documento: fondo claro, tinta oscura, sin cromo de pantalla
+   y con la dirección de cada enlace impresa al lado, porque en papel un enlace
+   sin su URL es una palabra subrayada que no lleva a ninguna parte.
+   Va al final de la hoja a propósito: tiene que ganar a todo lo anterior.
+   ================================================================== */
+@media print{
+  @page{margin:16mm 14mm}
+  /* El lienzo de fondo, los rieles y todo lo que sólo sirve en pantalla */
+  #descenso,#avance,#preloader,.rail,nav,.snd,.oro-aviso,.pres-idx,
+  .firmas,.bait-btn,.costo input[type=range],#visor,
+  .aud-form,.aud-rival,.aud-cta,form.frame button,.works-fin a,.svc-btn,
+  .res-tapa,.bar-idx,.met{display:none!important}
+  html,body{background:#fff!important;color:#14161A!important}
+  body{overflow:visible!important}
+  *,*::before,*::after{animation:none!important;transition:none!important;
+    text-shadow:none!important;box-shadow:none!important}
+  /* Todo lo que en pantalla se descubre al desplazar llega ya descubierto:
+     en papel no hay scroll que lo dispare y saldría media hoja en blanco. */
+  .rv,.w,.zoomsec,.works-fin,.met{opacity:1!important;transform:none!important;visibility:visible!important}
+  .work .res-dato{filter:none!important;opacity:1!important;transform:none!important}
+  section{padding:10mm 0!important;break-inside:auto}
+  .wrap{max-width:none!important;padding:0!important}
+  h1,h2,h3,h4{color:#14161A!important;break-after:avoid}
+  h2.title{font-size:26pt!important;margin-top:6mm!important}
+  h3{font-size:14pt!important}
+  p,li,.lead{color:#3A3D44!important;font-size:10.5pt!important;line-height:1.55!important}
+  em,b,strong{color:#7A5C1E!important}
+  .sec-tag,.sec-tag .n{color:#7A5C1E!important}
+  /* Las fichas dejan de flotar sobre una foto y pasan a ser bloques con marco */
+  .svc,.work,.member,form.frame,.aud-out,.costo,.puente,.faq details{
+    background:#fff!important;border:1px solid #C9C4B8!important;break-inside:avoid;
+    padding:6mm!important}
+  .work::before,.work::after,.svc::after,form.frame::before,.aud-out::before,
+  .costo::before,#proyectos::after{display:none!important}
+  .svc-grid,.works,.team{gap:4mm!important;background:none!important;border:none!important}
+  .svc li{color:#7A5C1E!important;border-color:#C9C4B8!important}
+  .work .ghost{color:transparent!important;-webkit-text-stroke:1px #D8D3C6!important}
+  .stat{border-color:#C9C4B8!important}
+  .stat .n,.stat .n em{color:#14161A!important}
+  /* Las respuestas plegadas se imprimen abiertas: en papel nadie puede pulsar */
+  .faq details>*{display:block!important}
+  .faq summary{list-style:none;color:#14161A!important}
+  /* Un enlace impreso sin su dirección no es un enlace, es una palabra suelta */
+  a[href^="http"]::after,a[href^="mailto"]::after{content:" (" attr(href) ")";
+    font-size:8pt;color:#6B6355;word-break:break-all}
+  /* Los anclas internas no se anotan: su destino es esta misma hoja */
+  a[href^="#"]::after{content:""}
+  footer{background:none!important;border-top:1px solid #C9C4B8;padding-top:6mm!important}
+  footer .wordmark,footer .wordmark em{color:#14161A!important}
+  footer small,footer .motto,footer .fl a{color:#6B6355!important}
 }
 </style>
 </head>
@@ -1153,7 +1422,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      Al ser fija, la misma imagen sirve al hero y al manifiesto: no hay dos
      copias que alinear, y por tanto no hay costura posible entre ambos. -->
 <div id="descenso" aria-hidden="true">
-  <div class="esc ciudad"                              data-ancla=".manifesto"></div>
+  <!-- El fundido entre escenas da por hecho que sus anclas van en el orden del
+       documento. "Sobre nosotros" bajó hasta después de las reseñas, así que la
+       ciudad se ancla al hero: es lo primero de la página, siempre, y da igual
+       cómo se reordenen las secciones de abajo. -->
+  <div class="esc ciudad"                              data-ancla=".hero"></div>
   <div class="esc" data-src="assets/bg-servicios.webp" data-ancla="#servicios"></div>
   <div class="esc" data-src="assets/bg-proyectos.webp" data-ancla="#proyectos"></div>
   <div class="esc" data-src="assets/bg-contacto.webp"  data-ancla="#contacto"></div>
@@ -1170,17 +1443,16 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <div id="avance" aria-hidden="true"></div>
 
 <!-- El riel izquierdo deja de ser un rótulo y pasa a ser el índice del
-     recorrido: numera los seis tramos, enciende el que se está leyendo y deja
+     recorrido: numera los cinco tramos, enciende el que se está leyendo y deja
      encendidos los ya vistos. Es navegación y barra de progreso a la vez, y no
      ocupa ni un píxel más que el rótulo al que sustituye. -->
 <nav class="rail l" id="riel" aria-label="Índice del recorrido">
   <div class="idxr">
-    <a href="#nosotros"   data-sec="nosotros">01<b>Sobre nosotros</b></a>
-    <a href="#servicios"  data-sec="servicios">02<b>Servicios</b></a>
-    <a href="#diagnostico" data-sec="diagnostico">03<b>Diagnóstico</b></a>
-    <a href="#proyectos"  data-sec="proyectos">04<b>Proyectos</b></a>
-    <a href="#resenas"    data-sec="resenas">05<b>Reseñas</b></a>
-    <a href="#contacto"   data-sec="contacto">06<b>Contacto</b></a>
+    <a href="#servicios"  data-sec="servicios">01<b>Servicios</b></a>
+    <a href="#proyectos"  data-sec="proyectos">02<b>Reseñas</b></a>
+    <a href="#nosotros"   data-sec="nosotros">03<b>Sobre nosotros</b></a>
+    <a href="#diagnostico" data-sec="diagnostico">04<b>Diagnóstico</b></a>
+    <a href="#contacto"   data-sec="contacto">05<b>Contacto</b></a>
     <span class="sello" aria-hidden="true"></span>
   </div>
 </nav>
@@ -1204,10 +1476,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <span class="bt">S&amp;C <em>Solutions</em><span class="bs">Company</span></span>
   </a>
   <ul>
-    <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proyectos">Reseñas</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="#diagnostico">Diagnóstico</a></li>
-    <li><a href="#proyectos">Proyectos</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div style="display:flex;align-items:center;gap:14px">
@@ -1223,13 +1495,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
 <!-- ============ HERO ============ -->
 <header class="hero">
-  <div class="hero-bg" id="heroBg" role="img" aria-label="Rascacielos corporativos entre niebla"></div>
+  <div class="hero-bg" id="heroBg" role="img" aria-label="Coche deportivo en la orilla de una playa al anochecer, con el mar turquesa y los rascacielos de la ciudad al fondo"></div>
   <div class="wrap hero-inner">
     <span class="sec-tag">Solutions Company <span class="n">/ Est. 2026</span></span>
     <h1 data-split>Tu competencia<br><em>ya nos llamó.</em></h1>
     <div class="hero-sub">
       <span class="ln"></span>
-      <p>Webs premium — Automatización con IA — CRM — Datos inteligentes</p>
+      <p>Webs premium — Agentes de IA — CRM — Apps privadas — Automatización</p>
     </div>
     <div class="hero-cta">
       <a href="#servicios" class="btn solid">Descubrir servicios</a>
@@ -1244,17 +1516,197 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   </div>
 </header>
 
+<!-- ============ SERVICIOS ============ -->
+<section id="servicios">
+  <div class="wrap">
+    <span class="sec-tag"><span class="n">01 —</span> Servicios</span>
+    <h2 class="title" data-split>Lo que <em>dominamos</em></h2>
+    <div class="svc-grid baraja" data-baraja="servicio">
+      <article class="svc rv">
+        <span class="go">↗</span>
+        <span class="idx">/ 01</span>
+        <h3>Sitios Web Premium para tu Negocio</h3>
+        <p><b>Cada visitante que abandona una página web poco profesional es una oportunidad que probablemente no volverá.</b> Diseñamos sitios web que generan confianza desde el primer segundo y convierten visitas en clientes reales.</p>
+        <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Todos tus contactos</li><li>Fácil de actualizar</li></ul>
+        <a href="#contacto" class="svc-btn" data-service="Sitios Web Premium para tu Negocio"><span class="dia"></span>Solicitar</a>
+      </article>
+      <article class="svc rv">
+        <span class="go">↗</span>
+        <span class="idx">/ 02</span>
+        <h3>Agentes de IA para tu Negocio</h3>
+        <p><b>Cada llamada o mensaje sin responder puede convertirse en dinero perdido para tu negocio.</b> Un agente de IA atiende llamadas, WhatsApp y mensajes las 24 horas, responde preguntas, agenda citas y ayuda a vender incluso cuando tu negocio está cerrado.</p>
+        <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
+        <a href="#contacto" class="svc-btn" data-service="Agentes de IA para tu Negocio"><span class="dia"></span>Solicitar</a>
+      </article>
+      <article class="svc rv">
+        <span class="go">↗</span>
+        <span class="idx">/ 03</span>
+        <h3>CRM Empresarial</h3>
+        <p><b>Cada cliente sin seguimiento aumenta las probabilidades de que esa venta termine en manos de tu competencia.</b> Centraliza clientes, ventas, tareas y procesos en una sola plataforma para que ninguna oportunidad quede en el olvido.</p>
+        <ul><li>Gestión de clientes</li><li>Recordatorios automáticos</li><li>Todo en un solo lugar</li><li>Accesos personalizados</li></ul>
+        <a href="#contacto" class="svc-btn" data-service="CRM Empresarial"><span class="dia"></span>Solicitar</a>
+      </article>
+      <article class="svc rv">
+        <span class="go">↗</span>
+        <span class="idx">/ 04</span>
+        <h3>Aplicación Privada para tu Negocio</h3>
+        <p><b>Cuando tu empresa depende de procesos manuales, cada error puede convertirse en retrasos, costos innecesarios y clientes insatisfechos.</b> Creamos una aplicación exclusiva para centralizar tu operación y ayudarte a trabajar con mayor control, velocidad y eficiencia.</p>
+        <ul><li>PC, móvil, iPad</li><li>Accesos personalizados</li><li>Fácil de usar</li><li>Para todo el equipo</li></ul>
+        <a href="#contacto" class="svc-btn" data-service="Aplicación Privada para tu Negocio"><span class="dia"></span>Solicitar</a>
+      </article>
+      <!-- La quinta ocupa la fila entera: con cinco fichas en dos columnas, dejarla
+           sola a la izquierda rompía la retícula. Ancha, la cierra. -->
+      <article class="svc ancha rv">
+        <span class="go">↗</span>
+        <span class="idx">/ 05</span>
+        <h3>Automatización de Procesos en tu Negocio</h3>
+        <p><b>Cada proceso manual puede hacer que tu equipo desperdicie decenas de horas de trabajo cada mes.</b> Automatizamos tareas para reducir errores, acelerar la operación y permitir que tu empresa se enfoque en crecer, no en repetir el mismo trabajo todos los días.</p>
+        <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
+        <a href="#contacto" class="svc-btn" data-service="Automatización de Procesos en tu Negocio"><span class="dia"></span>Solicitar</a>
+      </article>
+    </div>
+
+    <!-- ============ CALCULADORA DEL TRABAJO MANUAL ============
+         Cierra la sección respondiendo a la única objeción que aparece siempre:
+         "¿y esto para qué lo quiero?". Las dos cifras las pone el visitante con
+         sus propias horas y su propio coste; aquí no se estima nada por él ni
+         se promete ningún ahorro. El resultado es una multiplicación que puede
+         rehacer en una servilleta, y por eso se la cree. -->
+    <div class="costo rv" id="costo">
+      <p class="ck">Antes de seguir</p>
+      <h3>¿Cuánto te cuesta <em>hacerlo a mano</em>?</h3>
+      <div class="costo-grid">
+        <div class="costo-campo">
+          <label for="costo-h">Horas a la semana en tareas repetidas</label>
+          <p class="val"><span id="costo-hv">8</span><small>horas</small></p>
+          <input id="costo-h" type="range" min="1" max="60" step="1" value="8"
+                 aria-describedby="costo-out">
+        </div>
+        <div class="costo-campo">
+          <label for="costo-c">Lo que te cuesta una hora de tu equipo</label>
+          <p class="val">$<span id="costo-cv">250</span><small>por hora</small></p>
+          <input id="costo-c" type="range" min="50" max="2000" step="10" value="250"
+                 aria-describedby="costo-out">
+        </div>
+        <div class="costo-res" id="costo-out" aria-live="polite">
+          <p class="rk">Se te va cada mes</p>
+          <p class="rn" id="costo-mes">$8,660</p>
+          <p class="ry">Al año: <b id="costo-anio">$104,000</b></p>
+        </div>
+      </div>
+      <div class="costo-pie">
+        <p>Son tus dos cifras multiplicadas, nada más: horas × coste × 4,33 semanas.
+          No incluye los errores que provoca el trabajo manual ni lo que dejas de
+          hacer mientras lo haces, porque eso no lo sabemos y no vamos a inventarlo.</p>
+        <a href="#contacto" id="costo-cta"><span class="dia" aria-hidden="true"></span>Quiero automatizarlo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CIFRAS ============ -->
+<section style="padding-top:0;padding-bottom:0">
+  <div class="stats">
+    <div class="stat rv"><div class="n"><span data-count="40">0</span><em>+</em></div><div class="l">Proyectos entregados</div></div>
+    <div class="stat rv"><div class="n"><span data-count="98">0</span><em>%</em></div><div class="l">Clientes satisfechos</div></div>
+    <div class="stat rv"><div class="n"><span data-count="1200">0</span><em>+</em></div><div class="l">Horas automatizadas</div></div>
+    <div class="stat rv"><div class="n">24<em>/7</em></div><div class="l">Soporte y monitoreo</div></div>
+  </div>
+</section>
+
+<!-- ============ RESEÑAS · CASOS ============
+     Aquí vivían dos secciones: los casos y, debajo, tres testimonios firmados
+     con nombres que no se podían acreditar. Los testimonios se retiran y su
+     nombre pasa a los casos, que dicen lo mismo con hechos comprobables. El
+     ancla #resenas se conserva para que los enlaces ya publicados sigan
+     llegando a algún sitio en vez de morir en el aire. -->
+<span id="resenas" class="ancla" aria-hidden="true"></span>
+<section id="proyectos">
+  <div class="wrap">
+    <div class="sec-cab">
+      <span class="sec-tag"><span class="n">02 —</span> Reseñas</span>
+      <h2 class="title" data-split>Casos que <em>hablan por sí solos</em></h2>
+    </div>
+    <div class="works baraja" data-baraja="caso">
+      <article class="work rv"><span class="ghost">01</span>
+        <span class="cat">E-commerce</span>
+        <h3>Joyería <em>Brava</em></h3>
+        <p>Tienda online con checkout en un clic y recuperación automática de carritos por WhatsApp.</p>
+        <div class="res">
+          <div class="res-dato" id="res-1"><b>+212% ventas</b><span>Primer trimestre</span></div>
+          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-1">
+            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
+        </div>
+      </article>
+      <article class="work rv"><span class="ghost">02</span>
+        <span class="cat">Automatización IA</span>
+        <h3>Logística <em>Nómada</em></h3>
+        <p>Cotizaciones, rastreo y facturación automáticos. Lo que tomaba un equipo completo, ahora ocurre mientras duermen.</p>
+        <div class="res">
+          <div class="res-dato" id="res-2"><b>−30 h/semana</b><span>Trabajo manual</span></div>
+          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-2">
+            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
+        </div>
+      </article>
+      <article class="work rv"><span class="ghost">03</span>
+        <span class="cat">CRM a medida</span>
+        <h3>Grupo <em>Vetmar</em></h3>
+        <p>CRM con historial de pacientes, recordatorios automáticos y métricas por sucursal. Cero olvidos.</p>
+        <div class="res">
+          <div class="res-dato" id="res-3"><b>3 sedes, 1 panel</b><span>Todo centralizado</span></div>
+          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-3">
+            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
+        </div>
+      </article>
+      <article class="work rv"><span class="ghost">04</span>
+        <span class="cat">Web + SEO</span>
+        <h3>Bufete <em>Aldana</em></h3>
+        <p>Web editorial con blog optimizado. En 4 meses superaron al despacho más grande de su ciudad.</p>
+        <div class="res">
+          <div class="res-dato" id="res-4"><b>#1 en Google</b><span>Búsqueda local</span></div>
+          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-4">
+            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
+        </div>
+      </article>
+    </div>
+    <!-- Sólo aparece con los cuatro resultados destapados -->
+    <div class="works-fin" id="works-fin" aria-live="polite">
+      <p>Los cuatro empezaron con una web que no vendía. <em>El quinto puede ser el tuyo.</em></p>
+      <a href="#contacto"><span class="dia" aria-hidden="true"></span>Contar mi caso</a>
+    </div>
+
+  </div>
+
+  <!-- Banda de firmantes: exactamente los cuatro negocios de los casos de
+       arriba, repetidos dos veces por mitad para que la banda no se lea vacía.
+       No hay ningún nombre aquí que no esté ya publicado en la página. La
+       segunda mitad es la copia exacta que permite el bucle sin salto, y va
+       oculta a lectores de pantalla para no leer todo dos veces. -->
+  <div class="firmas" id="firmas">
+    <div class="firmas-pista">
+      <div class="firmas-mitad">
+        <i>Joyería Brava</i><i>Logística Nómada</i><i>Grupo Vetmar</i><i>Bufete Aldana</i><i>Joyería Brava</i><i>Logística Nómada</i><i>Grupo Vetmar</i><i>Bufete Aldana</i>
+      </div>
+      <div class="firmas-mitad" aria-hidden="true">
+        <i>Joyería Brava</i><i>Logística Nómada</i><i>Grupo Vetmar</i><i>Bufete Aldana</i><i>Joyería Brava</i><i>Logística Nómada</i><i>Grupo Vetmar</i><i>Bufete Aldana</i>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ SOBRE NOSOTROS ============
-     Va inmediatamente después del hero y antes del manifiesto: quien acaba de
-     leer "tu competencia ya nos llamó" necesita saber quién lo dice antes de
-     que le vendan nada. La antesala de credenciales se ve primero que el
-     titular, así que la sección se presenta con la prueba, no con la promesa.
-     El lienzo del descenso no necesita ancla nueva: la escena "ciudad" se
-     mantiene entera mientras el manifiesto siga por debajo del centro. -->
+     Va después de los casos, no al principio. Abrir la página con
+     "somos dos" respondía una pregunta que el visitante todavía no se había
+     hecho, y le robaba el sitio al único tema que Google y el cliente buscan
+     aquí: los cinco servicios. Llegando en este punto ya está convencido de lo
+     que hacemos y lo que pregunta es con quién trata, así que las credenciales
+     rematan la confianza en lugar de abrir con una presentación.
+     La antesala de credenciales sigue viéndose antes que el titular: la sección
+     se presenta con la prueba, no con la promesa. -->
 <section id="nosotros">
   <div class="wrap">
 
-    <span class="sec-tag rv"><span class="n">01 —</span> Sobre nosotros</span>
+    <span class="sec-tag rv"><span class="n">03 —</span> Sobre nosotros</span>
     <h2 class="title" data-split>¿Quién <em>construye</em> tu proyecto?</h2>
     <p class="lead rv" style="margin-top:26px">Somos dos. No una agencia con veinte intermediarios entre tu
       idea y quien la escribe. Hablas con quien construye, y eso cambia el resultado.</p>
@@ -1362,7 +1814,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   </div>
 </section>
 
-<!-- ============ MANIFIESTO ============ -->
+<!-- ============ MANIFIESTO ============
+     Cierra el recorrido de la prueba: servicios, casos, reseñas y quiénes
+     somos. Es además el único sitio donde el señuelo que va debajo se sostiene,
+     porque "…pero si tuviéramos que elegir uno" necesita que ya se hayan visto
+     varios proyectos; puesto más arriba, ese "uno" no se refería a nada. -->
 <section class="manifesto">
   <div class="wrap">
     <blockquote data-split-observer>Mientras tú lees esto, alguien está cerrando tus clientes. <em>Nosotros construimos el sistema para que sea al revés.</em></blockquote>
@@ -1373,6 +1829,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <!-- ============ BAIT: MEJOR PROYECTO ============ -->
 <section class="bait">
   <div class="wrap">
+    <!-- Dos renglones: el primero afirma el estándar y el segundo lo remata.
+         Los puntos suspensivos que abrían la frase colgaban de nada; ahora
+         continúan la línea de arriba, que es lo que siempre pedían. -->
+    <p class="q rv">Todos nuestros trabajos salen con el mismo nivel…</p>
     <p class="q rv">…pero si tuviéramos que elegir uno, sería este.</p>
     <span class="bait-btn rv">
       <a href="#contacto" class="btn solid"><span class="dia"></span>Nuestro mejor proyecto<span class="dia"></span></a>
@@ -1380,56 +1840,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   </div>
 </section>
 
-<!-- ============ SERVICIOS ============ -->
-<section id="servicios">
-  <div class="wrap">
-    <span class="sec-tag"><span class="n">02 —</span> Servicios</span>
-    <h2 class="title" data-split>Lo que <em>dominamos</em></h2>
-    <div class="svc-grid baraja" data-baraja="servicio">
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 01</span>
-        <h3>Sitios Web Premium</h3>
-        <p>Webs que no parecen plantillas: velocidad, animación sobria y un diseño que hace que tus clientes digan “quiero eso”. Optimizadas para Google desde la primera línea.</p>
-        <ul><li>Landing pages</li><li>E-commerce</li><li>SEO técnico</li></ul>
-        <a href="#contacto" class="svc-btn" data-service="Sitio web premium"><span class="dia"></span>Solicitar</a>
-      </article>
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 02</span>
-        <h3>Automatización con IA</h3>
-        <p>Procesos que se ejecutan solos: atención a clientes, cotizaciones, documentos y reportes. Tu negocio operando mientras duermes.</p>
-        <ul><li>Chatbots 24/7</li><li>Flujos n8n / APIs</li><li>IA operativa</li></ul>
-        <a href="#contacto" class="svc-btn" data-service="Automatización con IA"><span class="dia"></span>Solicitar</a>
-      </article>
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 03</span>
-        <h3>CRM a Medida</h3>
-        <p>Clientes, ventas y pipeline en un solo panel construido para tu proceso. Sin rentas eternas de software genérico: el CRM se adapta a ti.</p>
-        <ul><li>Pipeline visual</li><li>Recordatorios</li><li>Métricas en vivo</li></ul>
-        <a href="#contacto" class="svc-btn" data-service="CRM a medida"><span class="dia"></span>Solicitar</a>
-      </article>
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 04</span>
-        <h3>Otros</h3>
-        <p>¿Tienes una idea que no cabe en ninguna categoría? Cuéntanosla: si se puede construir con tecnología, la construimos. Sin plantillas, sin límites.</p>
-        <ul><li>A medida</li><li>Consultoría</li><li>Lo que imagines</li></ul>
-        <a href="#contacto" class="svc-btn" data-service="Otro — quiero contarles mi idea"><span class="dia"></span>Solicitar</a>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CIFRAS ============ -->
 <section style="padding-top:0;padding-bottom:0">
-  <div class="stats">
-    <div class="stat rv"><div class="n"><span data-count="40">0</span><em>+</em></div><div class="l">Proyectos entregados</div></div>
-    <div class="stat rv"><div class="n"><span data-count="98">0</span><em>%</em></div><div class="l">Clientes satisfechos</div></div>
-    <div class="stat rv"><div class="n"><span data-count="1200">0</span><em>+</em></div><div class="l">Horas automatizadas</div></div>
-    <div class="stat rv"><div class="n">24<em>/7</em></div><div class="l">Soporte y monitoreo</div></div>
-  </div>
   <!-- Banda viva: rota datos comprobables de este mismo sitio. Si el visitante
        ya pasó por el diagnóstico, el primero es su propio resultado con la hora
        real a la que lo hizo. Ningún dato de aquí se inventa ni se simula. -->
@@ -1440,13 +1851,15 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 </section>
 
 <!-- ============ DIAGNÓSTICO ============
-     Va justo después de servicios: el visitante acaba de leer lo que hacemos y
-     aquí lo demostramos sobre su propia web en lugar de pedírselo de palabra.
+     Va pegado al contacto y es el último escalón antes de pedir nada: mirar,
+     ver la prueba, probar gratis sin registro, escribir. Estando contiguos, el
+     puente que inyecta la nota obtenida dentro del formulario ocurre sin que el
+     visitante recorra media página por el camino.
      El análisis lo hace un Worker de Cloudflare porque el navegador no puede
      leer otro dominio (CORS); el endpoint se configura en AUDITOR abajo. -->
 <section id="diagnostico">
   <div class="wrap">
-    <span class="sec-tag rv"><span class="n">03 —</span> Diagnóstico</span>
+    <span class="sec-tag rv"><span class="n">04 —</span> Diagnóstico</span>
     <h2 class="title" data-split>Tu web, <em>auditada</em> en 10 segundos</h2>
     <div class="aud-grid">
       <div class="rv">
@@ -1471,139 +1884,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   </div>
 </section>
 
-<!-- ============ PROYECTOS ============ -->
-<section id="proyectos">
-  <div class="wrap">
-    <span class="sec-tag"><span class="n">04 —</span> Proyectos</span>
-    <h2 class="title" data-split>Casos que <em>hablan solos</em></h2>
-    <div class="works baraja" data-baraja="caso">
-      <article class="work rv"><span class="ghost">01</span>
-        <span class="cat">E-commerce</span>
-        <h3>Joyería <em>Brava</em></h3>
-        <p>Tienda online con checkout en un clic y recuperación automática de carritos por WhatsApp.</p>
-        <div class="res">
-          <div class="res-dato" id="res-1"><b>+212% ventas</b><span>Primer trimestre</span></div>
-          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-1">
-            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
-        </div>
-      </article>
-      <article class="work rv"><span class="ghost">02</span>
-        <span class="cat">Automatización IA</span>
-        <h3>Logística <em>Nómada</em></h3>
-        <p>Cotizaciones, rastreo y facturación automáticos. Lo que tomaba un equipo completo, ahora ocurre mientras duermen.</p>
-        <div class="res">
-          <div class="res-dato" id="res-2"><b>−30 h/semana</b><span>Trabajo manual</span></div>
-          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-2">
-            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
-        </div>
-      </article>
-      <article class="work rv"><span class="ghost">03</span>
-        <span class="cat">CRM a medida</span>
-        <h3>Grupo <em>Vetmar</em></h3>
-        <p>CRM con historial de pacientes, recordatorios automáticos y métricas por sucursal. Cero olvidos.</p>
-        <div class="res">
-          <div class="res-dato" id="res-3"><b>3 sedes, 1 panel</b><span>Todo centralizado</span></div>
-          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-3">
-            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
-        </div>
-      </article>
-      <article class="work rv"><span class="ghost">04</span>
-        <span class="cat">Web + SEO</span>
-        <h3>Bufete <em>Aldana</em></h3>
-        <p>Web editorial con blog optimizado. En 4 meses superaron al despacho más grande de su ciudad.</p>
-        <div class="res">
-          <div class="res-dato" id="res-4"><b>#1 en Google</b><span>Búsqueda local</span></div>
-          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-4">
-            <span class="dia" aria-hidden="true"></span>Revelar resultado</button>
-        </div>
-      </article>
-    </div>
-    <!-- Sólo aparece con los cuatro resultados destapados -->
-    <div class="works-fin" id="works-fin" aria-live="polite">
-      <p>Los cuatro empezaron con una web que no vendía. <em>El quinto puede ser el tuyo.</em></p>
-      <a href="#contacto"><span class="dia" aria-hidden="true"></span>Contar mi caso</a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ RESEÑAS ============ -->
-<section id="resenas">
-  <div class="wrap" style="text-align:center">
-    <span class="sec-tag" style="justify-content:center"><span class="n">05 —</span> Reseñas</span>
-    <h2 class="title" data-split>Ellos ya <em>confiaron</em></h2>
-  </div>
-  <div class="reviews">
-    <div class="rev-pista">
-
-      <figure class="review on">
-        <div class="rev-marco">
-          <div class="rev-cal" role="img" aria-label="Cinco de cinco">
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <blockquote>Nos hicieron una web que parece de agencia internacional. Los clientes nos lo
-            dicen cada semana, y la automatización de cotizaciones nos ahorra horas diarias.</blockquote>
-          <figcaption class="rev-pie">
-            <div class="rev-rayo" aria-hidden="true"></div>
-            <span class="rev-quien">Mariana G.</span>
-            <span class="rev-que">Boutique Inmobiliaria</span>
-          </figcaption>
-        </div>
-      </figure>
-
-      <figure class="review">
-        <div class="rev-marco">
-          <div class="rev-cal" role="img" aria-label="Cinco de cinco">
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <blockquote>El CRM que nos construyeron reemplazó tres herramientas de pago mensual.
-            Todo mi equipo vende más porque por fin vemos el pipeline completo.</blockquote>
-          <figcaption class="rev-pie">
-            <div class="rev-rayo" aria-hidden="true"></div>
-            <span class="rev-quien">Carlos R.</span>
-            <span class="rev-que">Distribuidora Industrial</span>
-          </figcaption>
-        </div>
-      </figure>
-
-      <figure class="review">
-        <div class="rev-marco">
-          <div class="rev-cal" role="img" aria-label="Cinco de cinco">
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <blockquote>El chatbot con IA atiende el 80% de las preguntas solo. Mi equipo ahora se
-            enfoca en cerrar ventas, no en repetir respuestas. Mejor inversión del año.</blockquote>
-          <figcaption class="rev-pie">
-            <div class="rev-rayo" aria-hidden="true"></div>
-            <span class="rev-quien">Lucía M.</span>
-            <span class="rev-que">Clínica Estética</span>
-          </figcaption>
-        </div>
-      </figure>
-
-    </div>
-    <div class="rev-idx" id="dots" role="tablist" aria-label="Reseñas"></div>
-  </div>
-
-  <!-- Banda de firmantes: los mismos negocios que ya figuran arriba en reseñas
-       y abajo en casos. No hay ningún nombre aquí que no esté ya publicado en
-       la página. La segunda mitad es la copia exacta que permite el bucle sin
-       salto, y va oculta a lectores de pantalla para no leer todo dos veces. -->
-  <div class="firmas" id="firmas">
-    <div class="firmas-pista">
-      <div class="firmas-mitad">
-        <i>Boutique Inmobiliaria</i><i>Joyería Brava</i><i>Distribuidora Industrial</i><i>Logística Nómada</i><i>Clínica Estética</i><i>Grupo Vetmar</i><i>Bufete Aldana</i>
-      </div>
-      <div class="firmas-mitad" aria-hidden="true">
-        <i>Boutique Inmobiliaria</i><i>Joyería Brava</i><i>Distribuidora Industrial</i><i>Logística Nómada</i><i>Clínica Estética</i><i>Grupo Vetmar</i><i>Bufete Aldana</i>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ CONTACTO ============ -->
 <section id="contacto">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">06 —</span> Contacto</span>
+    <span class="sec-tag"><span class="n">05 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
       <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
@@ -1627,17 +1911,27 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           <p class="pv">Tu web sacó <b id="puente-n">—</b>. Cuéntanos tu caso y te decimos
             <b>qué arreglar primero</b>.</p>
           <p class="pu" id="puente-u"></p>
+          <ul class="pf" id="puente-f"></ul>
         </div>
+        <!-- Cada campo obligatorio lleva su aviso al lado, vacío y oculto hasta
+             que hace falta. Vive en el HTML y no lo crea el JS para que el
+             lector de pantalla ya tenga la relación establecida por
+             aria-describedby desde el primer momento. -->
         <label for="nombre">Nombre</label>
-        <input id="nombre" type="text" required placeholder="¿Cómo te llamas?">
+        <input id="nombre" type="text" required placeholder="¿Cómo te llamas?"
+               aria-describedby="nombre-av">
+        <p class="aviso" id="nombre-av"></p>
         <label for="email">Email</label>
-        <input id="email" type="email" required placeholder="tu@empresa.com">
+        <input id="email" type="email" required placeholder="tu@empresa.com"
+               aria-describedby="email-av">
+        <p class="aviso" id="email-av"></p>
         <label for="servicio">¿Qué necesitas?</label>
         <select id="servicio">
-          <option>Sitio web premium</option>
-          <option>Automatización con IA</option>
-          <option>CRM a medida</option>
-          <option>Otro — quiero contarles mi idea</option>
+          <option>Sitios Web Premium para tu Negocio</option>
+          <option>Agentes de IA para tu Negocio</option>
+          <option>CRM Empresarial</option>
+          <option>Aplicación Privada para tu Negocio</option>
+          <option>Automatización de Procesos en tu Negocio</option>
           <option>No lo sé aún — asesórenme</option>
         </select>
         <label for="msg">Tu idea</label>
@@ -1679,10 +1973,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
       </details>
       <details>
         <summary>¿Qué hacen exactamente?</summary>
-        <p class="faq-r">Cuatro cosas: sitios web premium, automatización de procesos
-          con inteligencia artificial, CRM construidos a la medida de tu operación, y
-          proyectos que no caben en ninguna de esas tres. Puedes verlas con detalle en
-          <a href="#servicios">lo que dominamos</a>.</p>
+        <p class="faq-r">Cinco cosas: sitios web premium, agentes de IA que atienden a
+          tus clientes, CRM empresarial construido a la medida de tu operación,
+          aplicaciones privadas para tu equipo y automatización de procesos. Puedes
+          verlas con detalle en <a href="#servicios">lo que dominamos</a>.</p>
       </details>
       <details>
         <summary>No sé qué necesito exactamente. ¿Puedo escribir igual?</summary>
@@ -1700,17 +1994,59 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wordmark">S&amp;C <em>Solutions Company</em></div>
   <p class="motto">Ambición · Estrategia · Resultados</p>
   <div class="fl">
-    <a href="#nosotros">Nosotros</a>
     <a href="#servicios">Servicios</a>
+    <a href="#proyectos">Reseñas</a>
+    <a href="#nosotros">Nosotros</a>
     <a href="#diagnostico">Diagnóstico</a>
-    <a href="#proyectos">Proyectos</a>
-    <a href="#resenas">Reseñas</a>
     <a href="#contacto">Contacto</a>
   </div>
+  <nav class="legal" aria-label="Información legal">
+    <a href="aviso-de-privacidad.html">Aviso de privacidad</a>
+    <a href="terminos.html">Términos y condiciones</a>
+    <a href="cookies.html">Cookies</a>
+  </nav>
+  <!-- Lo que acaba de pasar en el equipo del visitante, medido con Performance
+       API. No es una promesa de rendimiento ni un dato de laboratorio: son sus
+       propios números, y por eso el argumento no se puede discutir. Nace vacío
+       y el JS lo rellena; si no corre, no queda un hueco con guiones. -->
+  <p class="met" id="met" hidden></p>
   <small>© 2026 S&amp;C SOLUTIONS COMPANY — TODOS LOS DERECHOS RESERVADOS</small>
 </footer>
 
+<!-- Indicador del modo presentación. Vive fuera de main porque es cromo, no
+     contenido, y sólo se ve con el modo encendido. -->
+<div class="pres-idx" id="pres-idx" aria-hidden="true">
+  <span>Presentación</span><i></i><span><b id="pres-n">1</b> / <span id="pres-t">6</span></span>
+  <i></i><span>← → mover · Esc salir</span>
+</div>
+
 <script>
+/* ---------- EXPEDIENTE DEL VISITANTE ----------
+   Tres cosas de esta web hay que usarlas, no mirarlas: destapar los cuatro
+   casos, abrir una credencial y auditar un sitio. Aquí sólo se anota cuáles ha
+   hecho. No se guarda en ningún sitio, no sale del equipo y se olvida al cerrar
+   la pestaña: su única consecuencia es el sello del riel, que hasta ahora se
+   regalaba por el mero hecho de llegar abajo desplazando.
+   Va lo primero del script porque lo consultan módulos que se declaran mucho
+   más abajo, y quien avisa —los casos, las credenciales, el diagnóstico— es
+   siempre distinto de quien escucha. */
+const EXP=(()=>{
+  const hecho={casos:false,cred:false,diag:false};
+  const oyentes=[];
+  const cuenta=()=>Object.keys(hecho).filter(k=>hecho[k]).length;
+  return {
+    cuenta,
+    marca(k){
+      if(!(k in hecho)||hecho[k])return;
+      hecho[k]=true;
+      oyentes.forEach(f=>f(cuenta()));
+    },
+    /* El oyente se llama también al suscribirse: quien vuelve con un
+       diagnóstico ya guardado tiene que encontrar su punto ya contado. */
+    escucha(f){oyentes.push(f);f(cuenta());}
+  };
+})();
+
 /* ---------- PRELOADER + INTRO (con red de seguridad por redes lentas) ---------- */
 function intro(){
   const p=document.getElementById('preloader');
@@ -1738,14 +2074,41 @@ function splitWords(el){
 }
 document.querySelectorAll('[data-split],[data-split-observer]').forEach(splitWords);
 
-/* ---------- REVEALS ---------- */
+/* ---------- REVEALS ----------
+   Las entradas ya no son de un solo uso. Al subir vuelven a jugarse, porque una
+   animación que sólo ocurre en la bajada la pierde entera quien iba distraído y
+   no hay forma de recuperarla.
+   Dos cautelas para que la segunda vuelta no estorbe:
+   - el rearme sólo ocurre cuando el elemento ha salido POR COMPLETO de la
+     pantalla, nunca mientras asoma. Reanimar algo que el visitante tiene medio
+     delante es exactamente lo molesto;
+   - la entrada de subida es más floja que la de bajada (ver .sube en el CSS). */
+let ultimaY=scrollY,subiendo=false;
+addEventListener('scroll',()=>{const y=scrollY;if(y!==ultimaY){subiendo=y<ultimaY;ultimaY=y;}},{passive:true});
+
 const io=new IntersectionObserver(es=>es.forEach(e=>{
   if(!e.isIntersecting)return;
-  e.target.classList.add('in');
-  e.target.querySelectorAll('.w').forEach((w,i)=>w.style.transitionDelay=(i*0.06)+'s');
-  io.unobserve(e.target);
+  const t=e.target;
+  t.classList.toggle('sube',subiendo);
+  t.classList.add('in');
+  /* El desfase entre palabras se acorta a la vuelta: en un titular largo, seis
+     centésimas por palabra son casi un segundo de espera la segunda vez. */
+  const paso=subiendo?.028:.06;
+  t.querySelectorAll('.w').forEach((w,i)=>w.style.transitionDelay=Math.min(i*paso,.85).toFixed(3)+'s');
 }),{threshold:.15,rootMargin:'0px 0px -5% 0px'});
-document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>io.observe(el));
+
+/* El margen positivo ensancha la zona de vigilancia: el elemento sigue contando
+   como "a la vista" hasta un 25% de pantalla más allá del borde, y sólo pasado
+   eso se rearma. Ese colchón es lo que impide que algo se reanime a un dedo del
+   borde mientras se está leyendo. */
+const rearme=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting)return;
+  e.target.classList.remove('in','sube');
+}),{threshold:0,rootMargin:'25% 0px 25% 0px'});
+
+document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>{
+  io.observe(el);rearme.observe(el);
+});
 
 /* ---------- PARALLAX SUTIL DEL HERO (solo transform, pausado fuera de vista) ---------- */
 (()=>{
@@ -1794,6 +2157,13 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
       ultEsc=t;ex=cx;ey=cy;
       document.documentElement.style.setProperty('--mx',cx.toFixed(1)+'px');
       document.documentElement.style.setProperty('--my',cy.toFixed(1)+'px');
+      /* El titular usa su propia pareja, redondeada a píxeles enteros. Las dos
+         de arriba mueven fotos y ahí una décima de píxel no se nota; el hero
+         mueve TEXTO, y un texto que cae en 6,57 px lo pinta el navegador a
+         caballo entre dos píxeles: se ve permanentemente desenfocado. Es el
+         mismo desplazamiento, sólo que aterrizando donde hay píxel. */
+      document.documentElement.style.setProperty('--hx',Math.round(cx*-.15)+'px');
+      document.documentElement.style.setProperty('--hy',Math.round(cy*-.15)+'px');
     }
     raf=visible?requestAnimationFrame(paso):0;
   }
@@ -1818,9 +2188,10 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
 })();
 
 /* ---------- DESCENSO: una sola cámara que baja por toda la página ----------
-   Cada escena tiene una sección de anclaje. Su peso vale 1 cuando esa sección
-   está centrada en pantalla y cae a 0 justo cuando lo está la vecina, así que
-   los pesos de dos escenas contiguas siempre suman 1: fundido limpio.
+   Cada escena tiene una sección de anclaje. Su peso vale 1 mientras esa sección
+   es la que ocupa la pantalla y cae a 0 al cruzar la frontera con la vecina,
+   repartido en poco menos de una pantalla de recorrido. Los pesos de dos
+   escenas contiguas siempre suman 1: fundido limpio.
    Todas comparten el mismo factor de desplazamiento, y de ahí viene la
    ilusión de continuidad: no se relevan, la cámara sigue bajando. */
 (()=>{
@@ -1848,15 +2219,25 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
     if(document.body.scrollHeight!==altoDoc)mide();
     const vh=innerHeight,y=scrollY;
     const c=esc.map(o=>o.top+o.alto/2-y-vh/2);
+    /* Pesos por frontera, no por distancia entre centros.
+       Antes cada escena valía 1 sólo en el instante exacto en que su sección
+       cruzaba el centro de la pantalla, así que el fondo del hero empezaba a
+       irse en el primer píxel de desplazamiento y ninguna foto llegaba a verse
+       entera: siempre estaba a medio camino entre dos.
+       Ahora cada foto manda mientras manda su sección y el relevo ocurre en la
+       frontera entre ambas, repartido en TRANS. La referencia es la parte alta
+       de la pantalla y no el centro, porque una sección se siente tuya cuando
+       ocupa el alto del viewport, no cuando su punto medio pasa por el eje.
+       Los pesos sigue sumando 1, así que no hay dos fotos claras a la vez. */
+    const TRANS=vh*.8, p=y;
+    const s=[];
+    for(let i=0;i<n-1;i++)
+      s.push(Math.min(1,Math.max(0,(p-esc[i+1].top+TRANS/2)/TRANS)));
     let f=0;
     for(let i=0;i<n;i++){
       const d=c[i];
-      let g=d<0?(i<n-1?c[i+1]-c[i]:vh*2):(i>0?c[i]-c[i-1]:vh);
-      g=Math.max(g,1);
       const o=esc[i];
-      /* La ciudad se mantiene entera desde lo alto de la página: hace de fondo
-         al hero y sólo empieza a irse cuando ya la hemos dejado atrás. */
-      const w=(o.fija&&d>0)?1:Math.max(0,1-Math.abs(d)/g);
+      const w=i===0?1-s[0]:(i===n-1?s[n-2]:s[i-1]-s[i]);
       if(w>.004){
         if(!o.lista&&o.el.dataset.src){o.el.style.backgroundImage="url('"+o.el.dataset.src+"')";o.lista=true;}
         if(o.el.style.visibility!=='visible'){o.el.style.visibility='visible';o.el.classList.remove('quieto');}
@@ -1887,7 +2268,7 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
     /* El velo se cierra de forma continua al descender: .80 arriba, 1 abajo.
        Al ser un único elemento global, ese oscurecido no puede producir
        ninguna frontera entre secciones. */
-    if(velo)velo.style.opacity=(.8+.2*Math.min(1,y/(vh*1.15))).toFixed(3);
+    if(velo)velo.style.opacity=(.72+.28*Math.min(1,y/(vh*1.15))).toFixed(3);
   }
   const pide=()=>{if(!pend){pend=true;requestAnimationFrame(pinta);}};
   addEventListener('scroll',pide,{passive:true});
@@ -2010,129 +2391,24 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
 /* ---------- CONTADORES ---------- */
 document.querySelectorAll('[data-count]').forEach(el=>{
   const end=+el.dataset.count;
-  new IntersectionObserver((es,o)=>{if(!es[0].isIntersecting)return;o.disconnect();
+  /* Igual que las entradas: la cuenta se rearma al perderse de vista del todo,
+     así que también se recupera al volver a subir. Es de lo más vistoso de la
+     página y verlo una sola vez era desaprovecharlo. */
+  let corriendo=false;
+  new IntersectionObserver(es=>{
+    const e=es[0];
+    /* Arranca con la cifra bien dentro, pero sólo se rearma cuando desaparece
+       del todo: si se rearmase al asomar, bastaría un roce del scroll para que
+       los números se pusieran a contar delante de quien los está leyendo. */
+    if(e.intersectionRatio===0){corriendo=false;return;}
+    if(e.intersectionRatio<.4||corriendo)return;
+    corriendo=true;
     const t0=performance.now();
     (function step(t){const p=Math.min((t-t0)/1800,1),e=1-Math.pow(1-p,3);
       el.textContent=Math.round(end*e).toLocaleString('es-MX');
       if(p<1)requestAnimationFrame(step);})(t0);
-  },{threshold:.4}).observe(el);
+  },{threshold:[0,.4]}).observe(el);
 });
-
-/* ---------- RESEÑAS ---------- */
-(()=>{
-  const revs=[...document.querySelectorAll('.review')],idx=document.getElementById('dots');
-  if(!revs.length||!idx)return;
-  const DUR=6000;
-  let i=0,timer=0;
-
-  revs.forEach((_,n)=>{
-    const b=document.createElement('button');
-    b.type='button';
-    b.className='rev-b'+(n?'':' on');
-    b.setAttribute('role','tab');
-    b.setAttribute('aria-selected',n?'false':'true');
-    b.setAttribute('aria-label','Reseña '+(n+1)+' de '+revs.length);
-    /* El número es el índice visible; la <i> es la barra que lo va llenando */
-    b.innerHTML='0'+(n+1)+'<i></i>';
-    b.addEventListener('click',()=>{va(n);rearma();});
-    idx.appendChild(b);
-  });
-  idx.style.setProperty('--rev-dur',(DUR/1000)+'s');
-
-  function va(n){
-    if(n===i)return;
-    revs[i].classList.remove('on');
-    idx.children[i].classList.remove('on');
-    idx.children[i].setAttribute('aria-selected','false');
-    i=n;
-    revs[i].classList.add('on');
-    idx.children[i].setAttribute('aria-selected','true');
-    /* Reflujo forzado entre quitar y poner la clase: sin él el navegador
-       agrupa ambos cambios, no ve reinicio y la barra no vuelve a arrancar. */
-    const barra=idx.children[i].querySelector('i');
-    if(barra){barra.style.animation='none';barra.offsetWidth;barra.style.animation='';}
-    idx.children[i].classList.add('on');
-  }
-  function rearma(){clearInterval(timer);timer=setInterval(()=>va((i+1)%revs.length),DUR);}
-
-  /* ---- Arrastre lateral ----
-     En móvil los números del índice son dianas de quince píxeles y el gesto
-     natural es deslizar; sin esto, dos de cada tres reseñas no se leen nunca.
-     El eje se decide en el primer movimiento y ya no cambia: si el dedo empezó
-     bajando, el gesto es de la página y aquí no se toca nada. */
-  const pista=document.querySelector('.rev-pista');
-  if(pista){
-    const UMBRAL=46;
-    let id=null,x0=0,y0=0,dx=0,eje='';
-    pista.addEventListener('pointerdown',e=>{
-      if(e.pointerType==='mouse'&&e.button!==0)return;
-      id=e.pointerId;x0=e.clientX;y0=e.clientY;dx=0;eje='';
-      pista.classList.add('tira');
-    });
-    pista.addEventListener('pointermove',e=>{
-      if(e.pointerId!==id)return;
-      const ax=e.clientX-x0,ay=e.clientY-y0;
-      if(!eje){
-        if(Math.abs(ax)<6&&Math.abs(ay)<6)return;
-        eje=Math.abs(ax)>Math.abs(ay)?'x':'y';
-        if(eje==='x'){
-          para();
-          /* Sólo se captura el puntero cuando ya se sabe que el gesto es
-             horizontal: capturarlo antes secuestraría el scroll vertical. */
-          try{pista.setPointerCapture(id);}catch(_){}
-          revs[i].classList.add('tirando');
-        }
-      }
-      if(eje!=='x')return;
-      dx=ax;
-      /* Resistencia: el recorrido se frena al alejarse, así que el gesto tiene
-         tope y no se siente como una hoja suelta. */
-      revs[i].style.transform='translateX('+(dx*.42).toFixed(1)+'px)';
-      revs[i].style.opacity=Math.max(.35,1-Math.abs(dx)/380).toFixed(3);
-    },{passive:true});
-    const acaba=e=>{
-      if(id===null||(e&&e.pointerId!==undefined&&e.pointerId!==id))return;
-      const era=eje;
-      pista.classList.remove('tira');
-      revs[i].classList.remove('tirando');
-      revs[i].style.transform='';
-      revs[i].style.opacity='';
-      try{pista.releasePointerCapture(id);}catch(_){}
-      id=null;eje='';
-      if(era!=='x')return;
-      if(Math.abs(dx)>UMBRAL){
-        va(dx<0?(i+1)%revs.length:(i-1+revs.length)%revs.length);
-        SIG.clic();
-      }
-      rearma();
-    };
-    pista.addEventListener('pointerup',acaba);
-    pista.addEventListener('pointercancel',acaba);
-    /* Teclado: las flechas mueven el carrusel cuando el foco está en el índice */
-    idx.addEventListener('keydown',e=>{
-      if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
-      e.preventDefault();
-      va(e.key==='ArrowRight'?(i+1)%revs.length:(i-1+revs.length)%revs.length);
-      idx.children[i].focus();
-      rearma();
-    });
-  }
-
-  /* Al pasar por encima se congela: leer una reseña y que se cambie sola a
-     mitad de frase es la forma más rápida de que nadie las lea. */
-  const rev=document.getElementById('resenas');
-  const para=()=>{clearInterval(timer);idx.classList.add('quieto');};
-  const sigue=()=>{idx.classList.remove('quieto');rearma();};
-  rev.addEventListener('pointerenter',para);
-  rev.addEventListener('pointerleave',sigue);
-  rev.addEventListener('focusin',para);
-  rev.addEventListener('focusout',sigue);
-  /* Fuera de pantalla no tiene sentido gastar temporizador ni animación */
-  new IntersectionObserver(es=>{es[0].isIntersecting?rearma():clearInterval(timer);},
-    {threshold:0}).observe(rev);
-
-  rearma();
-})();
 
 /* ---------- SOLICITAR: pre-selecciona el servicio en el formulario ---------- */
 document.querySelectorAll('.svc-btn').forEach(b=>{
@@ -2142,11 +2418,56 @@ document.querySelectorAll('.svc-btn').forEach(b=>{
   });
 });
 
-/* ---------- FORM ---------- */
+/* ---------- FORM ----------
+   La comprobación ocurre al salir de cada campo, nunca mientras se escribe:
+   marcar en rojo a alguien que va por la tercera letra de su nombre es la forma
+   más rápida de que cierre la pestaña. Al enviar se repasa todo, y el foco cae
+   en el primer campo que falle, que es lo que evita el "algo ha ido mal" sin
+   decir dónde.
+   Las funciones se declaran sueltas —no dentro de un módulo— porque el envío
+   las llama desde otro punto del archivo y así quedan izadas. */
+const REGLAS={
+  nombre:v=>v.trim().length>=2?'':'Escribe tu nombre, aunque sea sólo el de pila.',
+  /* Deliberadamente laxa: comprobar un correo a fondo con una expresión regular
+     es imposible y termina rechazando direcciones válidas. Aquí sólo se
+     descarta lo que no puede entregarse de ninguna manera. */
+  email:v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())
+    ?'':'Ese correo está incompleto. Revisa que lleve @ y un dominio detrás.'
+};
+function validaCampo(id,mostrar){
+  const campo=document.getElementById(id),av=document.getElementById(id+'-av');
+  if(!campo||!REGLAS[id])return true;
+  const fallo=REGLAS[id](campo.value);
+  /* Un campo vacío que todavía no se ha tocado no está mal: está sin empezar */
+  const callar=!mostrar&&!campo.value.trim();
+  campo.classList.toggle('mal',!!fallo&&!callar);
+  campo.setAttribute('aria-invalid',fallo&&!callar?'true':'false');
+  if(av){av.textContent=callar?'':fallo;av.classList.toggle('on',!!fallo&&!callar);}
+  return !fallo;
+}
+function validaTodo(){
+  let primero=null;
+  Object.keys(REGLAS).forEach(id=>{
+    if(!validaCampo(id,true)&&!primero)primero=document.getElementById(id);
+  });
+  if(primero){primero.focus();return false;}
+  return true;
+}
+Object.keys(REGLAS).forEach(id=>{
+  const campo=document.getElementById(id);
+  if(!campo)return;
+  campo.addEventListener('blur',()=>validaCampo(id,true));
+  /* Mientras escribe sólo se limpia el aviso, nunca se pone: corregir sobre la
+     marcha a quien ya sabe que se equivocó es repetirle el error. */
+  campo.addEventListener('input',()=>{if(campo.classList.contains('mal'))validaCampo(id,false);});
+});
 document.getElementById('form').addEventListener('submit',e=>{
   e.preventDefault();
+  if(!validaTodo())return;
   document.getElementById('form-msg').classList.add('show');
   e.target.querySelectorAll('input,textarea').forEach(i=>i.value='');
+  e.target.querySelectorAll('.aviso').forEach(a=>{a.textContent='';a.classList.remove('on');});
+  e.target.querySelectorAll('.mal').forEach(i=>i.classList.remove('mal'));
   SIG.confirma();
 });
 
@@ -2173,14 +2494,21 @@ const SIG=(()=>{
      propio vaivén de volumen a una velocidad distinta y prima con las demás.
      Como esos vaivenes nunca vuelven a coincidir, no existe el punto donde
      "empieza otra vez", que es lo que cansa de la música de fondo en bucle.
-     Cada 26 segundos el acorde se desliza al siguiente en siete segundos, así
+     Cada 34 segundos el acorde se desliza al siguiente en nueve segundos, así
      que hay movimiento armónico sin un solo corte.
+     Todo el conjunto —armonía, eco y marea— está calibrado para acompañar, no
+     para narrar: si al leer se nota que hay música, está mal puesta.
      Cero archivos, cero peticiones, cero KB: se sintetiza en el navegador. */
+  /* La paleta anterior era toda menor y sonaba a tráiler de suspense. Ésta se
+     queda en La mayor y evita la nota que provoca esa tensión: el primer acorde
+     ni siquiera lleva tercera, así que no suena alegre ni triste, sólo abierto.
+     Las cuatro voces se mueven además por pasos cortos, y un salto corto es lo
+     que hace que un cambio de acorde pase desapercibido. */
   const ACORDES=[
-    [146.83,220.00,349.23,659.25],  /* Re menor novena  */
-    [174.61,261.63,440.00,659.25],  /* Fa mayor séptima */
-    [116.54,174.61,293.66,523.25],  /* Si bemol sexta   */
-    [110.00,164.81,261.63,392.00]   /* La menor séptima */
+    [110.00,164.81,246.94,329.63],  /* La con novena — abierto, sin tercera */
+    [146.83,220.00,277.18,329.63],  /* Re mayor novena — cálido            */
+    [ 92.50,220.00,277.18,369.99],  /* Fa# menor — el único punto de sombra */
+    [123.47,164.81,246.94,369.99]   /* Mi suspendido — deja la puerta abierta */
   ];
   let amb=null,ambG=null,acorde=0,relojAcorde=0;
 
@@ -2190,7 +2518,7 @@ const SIG=(()=>{
     /* Filtro cálido: recorta el brillo para que el fondo no compita con la
        voz interior de quien está leyendo. */
     const filtro=ctx.createBiquadFilter();
-    filtro.type='lowpass';filtro.frequency.value=760;filtro.Q.value=.55;
+    filtro.type='lowpass';filtro.frequency.value=880;filtro.Q.value=.4;
     /* Vaivén lentísimo del corte: es lo que hace que el fondo "respire" */
     const lfoF=ctx.createOscillator(),lfoFg=ctx.createGain();
     lfoF.frequency.value=.021;lfoFg.gain.value=260;
@@ -2198,11 +2526,14 @@ const SIG=(()=>{
     /* Eco largo y apagado: da el aire de sala sin necesitar ningún archivo de
        reverberación. El filtro dentro de la realimentación evita que las
        repeticiones se vuelvan metálicas al acumularse. */
+    /* El eco era largo y muy realimentado: eso es exactamente lo que convierte
+       un fondo en una cripta. Más corto y con la mitad de repeticiones da aire
+       de sala sin que nada suene a cueva. */
     const eco=ctx.createDelay(1),realim=ctx.createGain(),ecoF=ctx.createBiquadFilter();
-    eco.delayTime.value=.62;realim.gain.value=.34;
-    ecoF.type='lowpass';ecoF.frequency.value=1200;
+    eco.delayTime.value=.42;realim.gain.value=.18;
+    ecoF.type='lowpass';ecoF.frequency.value=1400;
     eco.connect(ecoF);ecoF.connect(realim);realim.connect(eco);
-    const mezclaEco=ctx.createGain();mezclaEco.gain.value=.42;
+    const mezclaEco=ctx.createGain();mezclaEco.gain.value=.3;
     filtro.connect(ambG);filtro.connect(eco);eco.connect(mezclaEco);mezclaEco.connect(ambG);
     ambG.connect(mst);
 
@@ -2224,7 +2555,38 @@ const SIG=(()=>{
       lfo.connect(lg);lg.connect(g.gain);lfo.start();
       return {a,b};
     });
-    amb={voces};
+    /* ---------- MAREA ----------
+       Una capa de ruido filtrado que sube y baja muy despacio. No pretende
+       imitar una grabación de playa: a este volumen no se identifica como
+       "olas", sólo quita al fondo el vacío de laboratorio que tiene un
+       sintetizador solo y le da algo por dónde respirar.
+       Son cuatro segundos de ruido generados una vez y reproducidos en bucle:
+       cero peticiones, y el bucle no se nota porque lo que se oye no es el
+       ruido sino el vaivén de volumen, que va por otro reloj. */
+    const seg=4,buf=ctx.createBuffer(1,ctx.sampleRate*seg,ctx.sampleRate),d=buf.getChannelData(0);
+    /* Ruido rosa aproximado: el blanco puro silba, y lo que suena a agua o a
+       viento siempre tiene más peso en los graves. */
+    let b0=0,b1=0,b2=0;
+    for(let i=0;i<d.length;i++){
+      const w=Math.random()*2-1;
+      b0=.99765*b0+w*.0990460;
+      b1=.96300*b1+w*.2965164;
+      b2=.57000*b2+w*1.0526913;
+      d[i]=(b0+b1+b2+w*.1848)*.16;
+    }
+    const mar=ctx.createBufferSource();mar.buffer=buf;mar.loop=true;
+    const marF=ctx.createBiquadFilter();
+    marF.type='lowpass';marF.frequency.value=520;marF.Q.value=.3;
+    const marG=ctx.createGain();marG.gain.value=.05;
+    /* El vaivén: catorce segundos por ciclo, ni un respiro igual al anterior
+       porque no coincide con ninguno de los relojes de las voces. */
+    const marL=ctx.createOscillator(),marLg=ctx.createGain();
+    marL.frequency.value=.071;marLg.gain.value=.032;
+    marL.connect(marLg);marLg.connect(marG.gain);marL.start();
+    mar.connect(marF);marF.connect(marG);marG.connect(ambG);
+    mar.start();
+
+    amb={voces,mar};
     /* El cambio de acorde va por temporizador y no por audio: siete segundos
        de deslizamiento es demasiado lento para programarlo por eventos. */
     relojAcorde=setInterval(()=>{
@@ -2233,10 +2595,10 @@ const SIG=(()=>{
       const t=ctx.currentTime;
       ACORDES[acorde].forEach((f,i)=>{
         const v=amb.voces[i];if(!v)return;
-        v.a.frequency.exponentialRampToValueAtTime(f,t+7);
-        v.b.frequency.exponentialRampToValueAtTime(f,t+7);
+        v.a.frequency.exponentialRampToValueAtTime(f,t+9);
+        v.b.frequency.exponentialRampToValueAtTime(f,t+9);
       });
-    },26000);
+    },34000);
   }
   /* Los fundidos son largos a propósito: un fondo que entra o sale de golpe
      se nota, y lo que no se nota es justo lo que se agradece. */
@@ -2299,10 +2661,11 @@ const SIG=(()=>{
     roce(){if(listo())tono(1174.66,0,.055,.012);},
     /* Pulsación: dos notas que suben, la respuesta a un clic */
     clic(){if(!listo())return;tono(587.33,0,.09,.032);tono(880,.045,.13,.026);},
-    /* Confirmación: acorde breve al completar algo */
-    confirma(){if(!listo())return;[523.25,659.25,783.99].forEach((f,i)=>tono(f,i*.07,.5,.03));},
-    /* Firma de entrada: sol mayor abierto, lento, como un sello que se posa */
-    firma(){if(!listo())return;[196,293.66,392,493.88].forEach((f,i)=>tono(f,i*.13,2.1,.05));},
+    /* Confirmación: acorde breve al completar algo. En La, como el ambiente:
+       antes iba en Do y chocaba con el fondo cada vez que sonaba. */
+    confirma(){if(!listo())return;[440,554.37,659.25].forEach((f,i)=>tono(f,i*.07,.5,.03));},
+    /* Firma de entrada: La mayor abierto, lento, como un sello que se posa */
+    firma(){if(!listo())return;[220,329.63,440,554.37].forEach((f,i)=>tono(f,i*.14,2.3,.045));},
     activa(v){
       on=v;
       try{localStorage.setItem(LLAVE,v?'1':'0');}catch(_){}
@@ -2414,7 +2777,7 @@ const SIG=(()=>{
     const prueba=new Image();
     prueba.onload=()=>{
       t.classList.add('tiene');
-      t.addEventListener('click',()=>abre(ruta,texto));
+      t.addEventListener('click',()=>{abre(ruta,texto);EXP.marca('cred');});
     };
     /* Sin imagen el sello sigue ahí como insignia, pero no promete abrir nada */
     prueba.onerror=()=>{t.disabled=true;t.setAttribute('aria-label',texto);};
@@ -2455,7 +2818,18 @@ const SIG=(()=>{
   if(!enlaces.length)return;
   const secs=enlaces.map(a=>document.getElementById(a.dataset.sec)).filter(Boolean);
   if(secs.length!==enlaces.length)return;
-  let actual=-1;
+  let actual=-1,alFinal=false;
+  /* El sello dejó de darse por llegar abajo. Desplazar hasta el pie no es haber
+     leído nada: con la rueda apoyada se conseguía en cuatro segundos. Ahora
+     pide las dos cosas —haber recorrido la página entera y haber usado al menos
+     dos de las tres herramientas—, y mientras falte una se queda en contorno.
+     Ese contorno es deliberado: dice que hay algo que ganar sin explicar qué. */
+  function sella(){
+    const listo=alFinal&&EXP.cuenta()>=2;
+    riel.classList.toggle('fin',listo);
+    riel.classList.toggle('casi',alFinal&&!listo);
+  }
+  EXP.escucha(sella);
   function marca(i){
     if(i===actual)return;
     actual=i;
@@ -2465,8 +2839,7 @@ const SIG=(()=>{
          de dónde está la pantalla ahora mismo. */
       if(n<=i)a.classList.add('visto');
     });
-    /* El sello sólo se gana pisando el último tramo */
-    if(i===enlaces.length-1)riel.classList.add('fin');
+    if(i===enlaces.length-1){alFinal=true;sella();}
   }
   /* La banda de -46% arriba y abajo deja activa la sección que cruza el centro
      exacto de la pantalla: con secciones de alturas muy distintas es el único
@@ -2515,11 +2888,17 @@ const DIAG=(()=>{
         /* Caduca a la semana: un diagnóstico de hace un mes ya no describe
            ninguna web, y presentarlo como actual sería falso. */
         if(Date.now()-d.t>6048e5)return null;
+        /* Los fallos se añadieron después: un registro guardado por la versión
+           anterior no los trae y no por eso deja de valer. */
+        if(!Array.isArray(d.f))d.f=[];
         return d;
       }catch(_){return null;}
     },
-    guarda(u,n){
-      try{localStorage.setItem(LLAVE,JSON.stringify({u,n,t:Date.now()}));}catch(_){}
+    /* Se guardan también los fallos concretos —sólo el título, tres como
+       máximo— porque son lo que convierte el puente del formulario en una
+       conversación concreta en vez de en una cifra suelta. */
+    guarda(u,n,f){
+      try{localStorage.setItem(LLAVE,JSON.stringify({u,n,f:(f||[]).slice(0,3),t:Date.now()}));}catch(_){}
     }
   };
 })();
@@ -2636,6 +3015,7 @@ function haceQue(ms){
       res.classList.add('abierto');
       b.setAttribute('aria-expanded','true');
       abiertos++;
+      if(abiertos===tapas.length)EXP.marca('casos');
       if(abiertos===tapas.length&&fin){
         /* El aviso llega con retraso deliberado: si aparece a la vez que el
            cuarto dato, el visitante lo lee como parte del efecto y no como
@@ -2669,6 +3049,7 @@ function haceQue(ms){
   const gris='color:#5E5A52;font:400 11px Inter,sans-serif';
   console.log('%c◆ S&C Solutions Company','font:600 22px Georgia,serif;color:#E4CD9A');
   console.log('%cCero librerías. Cero framework. Un archivo.%c\nSi has llegado hasta aquí, probablemente sepas lo que cuesta.\nEscríbenos: hola@sycsolutions.company','color:#F4F1EA;font:500 13px Inter,sans-serif',gris);
+  console.log('%cP — modo presentación (flechas para mover, Esc para salir)','color:#5E5A52;font:400 11px Inter,sans-serif');
   console.log('%c↑ ↑ ↓ ↓ ← → ← → B A','color:#3C3A34;font:400 11px monospace');
 
   const CLAVE=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
@@ -2714,7 +3095,9 @@ window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
   const campo=document.getElementById('aud-url'),
         boton=document.getElementById('aud-go'),
         salida=document.getElementById('aud-out');
-  let ocupado=false;
+  /* El último informe propio se conserva entero: la comparativa lo necesita
+     para el marcador y el botón de volver lo repinta sin repetir la consulta. */
+  let ocupado=false,mio=null;
 
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2751,11 +3134,53 @@ window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
       'distancia entre aparecer y aparecer el primero.';
   }
 
-  function pinta(d){
-    const n=Math.max(0,Math.min(100,Math.round(d.score))),
-          [tit,frase]=veredicto(n),
-          checks=d.checks||[],
-          C=2*Math.PI*45;
+  /* Una respuesta sin nota utilizable no puede pintar un informe. Math.round de
+     un valor ausente da NaN, y NaN pasaba entero hasta el aro: se veía el
+     círculo completo encendido y la cifra vacía, que es exactamente la clase de
+     resultado inventado que esta herramienta no puede permitirse. */
+  function nota(v){
+    const n=Math.round(Number(v));
+    return Number.isFinite(n)?Math.max(0,Math.min(100,n)):null;
+  }
+  /* Los tres fallos que se llevan al formulario. Sólo los que están mal del
+     todo: los puntos a medias no dan para abrir una conversación. */
+  const fallos=checks=>checks.filter(c=>c.estado==='bad').slice(0,3).map(c=>c.titulo);
+
+  /* El aro y el conteo son los mismos en el informe y en la comparativa */
+  function animaAro(cont,n){
+    const C=2*Math.PI*45,
+          aro=cont.querySelector('.fgc'),
+          num=cont.querySelector('b');
+    if(!aro||!num)return;
+    /* Forzar el reflujo, y no esperar a un fotograma, hace que la transición
+       arranque igual con la pestaña en segundo plano: ahí rAF no corre y el
+       resultado se quedaba vacío hasta que el visitante volviera. */
+    aro.getBoundingClientRect();
+    aro.style.strokeDashoffset=(C*(1-n/100)).toFixed(1);
+    const t0=performance.now();
+    let fin=false;
+    (function sube(t){
+      const p=Math.min((t-t0)/1300,1);
+      num.textContent=Math.round(n*(1-Math.pow(1-p,3)));
+      if(p<1)requestAnimationFrame(sube);else fin=true;
+    })(t0);
+    setTimeout(()=>{if(!fin)num.textContent=n;},1400);
+  }
+  const marcaAro=C=>'<div class="aud-ring"><svg viewBox="0 0 96 96" aria-hidden="true">'+
+    '<circle class="bgc" cx="48" cy="48" r="45"/>'+
+    '<circle class="fgc" cx="48" cy="48" r="45" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"/>'+
+    '</svg><b>0</b></div>';
+
+  function pinta(d,revisita){
+    const n=nota(d.score);
+    if(n===null){
+      error('El análisis volvió incompleto. Vuelve a intentarlo dentro de un momento.');
+      return;
+    }
+    const [tit,frase]=veredicto(n),
+          checks=Array.isArray(d.checks)?d.checks:[],
+          C=(2*Math.PI*45).toFixed(1);
+    mio={url:d.url,n,checks,bruto:d};
     /* La traducción al negocio sólo se imprime en lo que falla o va a medias.
        Repetirla también en lo que ya funciona convertiría la lista en ruido y
        enterraría justo lo que hay que leer. */
@@ -2773,10 +3198,7 @@ window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
 
     salida.innerHTML=
       '<div class="aud-score">'+
-        '<div class="aud-ring"><svg viewBox="0 0 96 96" aria-hidden="true">'+
-          '<circle class="bgc" cx="48" cy="48" r="45"/>'+
-          '<circle class="fgc" cx="48" cy="48" r="45" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+C.toFixed(1)+'"/>'+
-        '</svg><b>0</b></div>'+
+        marcaAro(C)+
         '<div class="aud-verdict"><p class="t">'+tit+'. '+frase+'</p><p class="u">'+esc(d.url)+'</p></div>'+
       '</div>'+
       '<p class="aud-resumen">'+resumen(checks)+'</p>'+
@@ -2786,23 +3208,25 @@ window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
         '<button class="aud-comp" type="button" id="aud-wa">'+
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.6.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.6-1.2a.5.5 0 0 0 0-.5c0-.1-.6-1.4-.8-1.9s-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 2.9 2.9 0 0 0-.9 2.2 5 5 0 0 0 1.1 2.7 11.5 11.5 0 0 0 4.4 3.9c1.6.6 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z"/></svg>'+
           'Compartir</button>'+
+        '<button class="aud-comp" type="button" id="aud-png">'+
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0l-4-4m4 4l4-4M4 19h16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+          'Guardar imagen</button>'+
+      '</div>'+
+      /* El segundo campo no está desde el principio: sin nota propia, comparar
+         no significa nada, y la entrada tiene que pedir una sola cosa. */
+      '<div class="aud-rival">'+
+        '<p class="rk">¿Y la de tu competencia?</p>'+
+        '<form id="aud-vs-form" novalidate>'+
+          '<input id="aud-vs-url" type="url" inputmode="url" placeholder="lawebdetucompetencia.com"'+
+          ' aria-label="Dirección de la web con la que quieres compararte">'+
+          '<button type="submit" id="aud-vs-go">Comparar</button>'+
+        '</form>'+
       '</div>';
 
-    const aro=salida.querySelector('.fgc'),num=salida.querySelector('.aud-ring b');
-    /* Forzar el reflujo, y no esperar a un fotograma, hace que la transición
-       del aro arranque igual con la pestaña en segundo plano: ahí rAF no corre
-       y el resultado se quedaba vacío hasta que el visitante volviera. */
-    aro.getBoundingClientRect();
-    aro.style.strokeDashoffset=(C*(1-n/100)).toFixed(1);
-    const t0=performance.now();
-    let fin=false;
-    (function sube(t){
-      const p=Math.min((t-t0)/1300,1);
-      num.textContent=Math.round(n*(1-Math.pow(1-p,3)));
-      if(p<1)requestAnimationFrame(sube);else fin=true;
-    })(t0);
-    /* Red de seguridad por lo mismo: la cifra acaba correcta haya o no rAF */
-    setTimeout(()=>{if(!fin)num.textContent=n;},1400);
+    animaAro(salida.querySelector('.aud-ring'),n);
+    montaRival();
+    const png=document.getElementById('aud-png');
+    if(png)png.addEventListener('click',()=>descarga(d.url,n,tit));
 
     /* Compartir: abre WhatsApp con el mensaje ya escrito. Quien pulsa enviar es
        el visitante, en su propio teléfono y al destinatario que él elija; desde
@@ -2818,17 +3242,191 @@ window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
     });
 
     /* Guardar el resultado en este navegador es lo que conecta el diagnóstico
-       con el formulario y con la banda viva. No sale del equipo del visitante. */
-    DIAG.guarda(d.url,n);
+       con el formulario y con la banda viva. No sale del equipo del visitante.
+       Al volver de la comparativa no se vuelve a guardar: reescribir la hora
+       haría que "analizada hace un momento" dejara de ser cierto. */
+    if(!revisita){
+      DIAG.guarda(d.url,n,fallos(checks));
+      EXP.marca('diag');
+      SIG.confirma();
+    }
     pintaPuente();
     const fix=document.getElementById('aud-fix');
     if(fix)fix.addEventListener('click',()=>pintaPuente(true));
-
-    SIG.confirma();
   }
 
   function error(msg){
     salida.innerHTML='<p class="aud-err">'+esc(msg)+'</p>';
+  }
+
+  /* ---- COMPARATIVA CONTRA LA COMPETENCIA ----
+     Es el mismo Worker y el mismo baremo aplicados a dos direcciones. Lo único
+     que se añade es el marcador: qué punto gana cada uno. Nada se pondera a
+     favor de nadie, entre otras cosas porque el visitante puede repetir la
+     consulta al revés y comprobarlo. */
+  function comparativa(a,b){
+    const dif=Math.abs(a.n-b.n);
+    if(a.n>b.n)return['Vas por delante',
+      'Le sacas <em>'+dif+' punto'+(dif>1?'s':'')+'</em>. Mantener esa distancia cuesta '+
+      'bastante menos que recuperarla.'];
+    if(a.n<b.n)return['Te está ganando',
+      'Te saca <em>'+dif+' punto'+(dif>1?'s':'')+'</em>. Eso son búsquedas que hoy '+
+      'terminan en su web y no en la tuya.'];
+    return['Empate técnico',
+      'Misma nota. Ahora mismo la diferencia la marca <em>quien mueva primero</em>.'];
+  }
+  /* El reparto sólo compara las comprobaciones que existen en los dos informes:
+     una que falte en uno de los lados no es una victoria de nadie. */
+  function reparto(a,b){
+    const suyo=new Map(b.checks.map(c=>[c.titulo,c.estado])),
+          peso=e=>e==='ok'?2:e==='warn'?1:0,
+          gana=[],pierde=[];
+    a.checks.forEach(c=>{
+      if(!suyo.has(c.titulo))return;
+      const y=peso(c.estado),s=peso(suyo.get(c.titulo));
+      if(y>s)gana.push(c.titulo);
+      else if(s>y)pierde.push(c.titulo);
+    });
+    return{gana,pierde};
+  }
+  function pintaVs(a,b){
+    const C=(2*Math.PI*45).toFixed(1),
+          [tit,frase]=comparativa(a,b),
+          {gana,pierde}=reparto(a,b),
+          col=(k,t,l)=>'<div class="vs-'+k+'"><h4>'+t+'</h4>'+
+            (l.length
+              ? '<ul>'+l.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
+              : '<p class="vs-nada">Nada que señalar por este lado.</p>')+'</div>';
+    salida.innerHTML=
+      '<div class="aud-vs">'+
+        '<div class="vs-lado'+(a.n<b.n?' pierde':'')+'">'+marcaAro(C)+
+          '<p class="q">Tu web</p><p class="u">'+esc(a.url)+'</p></div>'+
+        '<span class="vs-sep" aria-hidden="true"></span>'+
+        '<div class="vs-lado'+(b.n<a.n?' pierde':'')+'">'+marcaAro(C)+
+          '<p class="q">Su web</p><p class="u">'+esc(b.url)+'</p></div>'+
+      '</div>'+
+      '<div class="aud-verdict"><p class="t">'+tit+'. '+frase+'</p></div>'+
+      '<div class="vs-reparto">'+
+        col('gana','En esto le ganas',gana)+
+        col('pierde','En esto te gana',pierde)+
+      '</div>'+
+      '<div class="aud-cta">'+
+        '<a href="#contacto" class="btn solid" id="aud-fix" style="padding:13px 26px">Quiero adelantarle</a>'+
+        '<button class="aud-comp" type="button" id="aud-volver">Volver a mi diagnóstico</button>'+
+      '</div>';
+    const aros=salida.querySelectorAll('.aud-ring');
+    animaAro(aros[0],a.n);
+    animaAro(aros[1],b.n);
+    const fix=document.getElementById('aud-fix');
+    if(fix)fix.addEventListener('click',()=>pintaPuente(true));
+    const volver=document.getElementById('aud-volver');
+    if(volver)volver.addEventListener('click',()=>pinta(a.bruto,true));
+    SIG.confirma();
+  }
+  /* El formulario del rival se monta cada vez que se repinta el informe, porque
+     el innerHTML anterior se lleva por delante los oyentes del anterior. */
+  function montaRival(){
+    const fr=document.getElementById('aud-vs-form');
+    if(!fr)return;
+    fr.addEventListener('submit',async e=>{
+      e.preventDefault();
+      if(ocupado||!mio)return;
+      const campo2=document.getElementById('aud-vs-url'),
+            boton2=document.getElementById('aud-vs-go'),
+            dir=normaliza(campo2.value);
+      if(dir.error){error2(campo2,dir.error);return;}
+      /* Compararse consigo mismo devuelve un empate perfecto que no dice nada */
+      if(dir.url===mio.url){error2(campo2,'Esa es la misma web que acabas de analizar.');return;}
+      ocupado=true;boton2.disabled=true;boton2.textContent='Analizando';
+      const parar=arrancaPasos();
+      try{
+        const d=await consulta(dir.url);
+        const n=nota(d.score);
+        if(n===null)throw new Error('incompleto');
+        pintaVs(mio,{url:d.url,n,checks:Array.isArray(d.checks)?d.checks:[]});
+      }catch(err){
+        /* Un fallo del rival no puede llevarse por delante el informe propio:
+           se recupera el que ya estaba y el aviso se da al lado del campo. */
+        pinta(mio.bruto,true);
+        const c2=document.getElementById('aud-vs-url');
+        if(c2)error2(c2,mensaje(err));
+      }finally{
+        parar();
+        ocupado=false;
+        const b2=document.getElementById('aud-vs-go');
+        if(b2){b2.disabled=false;b2.textContent='Comparar';}
+      }
+    });
+  }
+  function error2(campo,msg){
+    const caja=campo.closest('.aud-rival');
+    if(!caja)return;
+    let av=caja.querySelector('.aviso');
+    if(!av){av=document.createElement('p');av.className='aviso';caja.appendChild(av);}
+    av.textContent=msg;av.classList.add('on');
+    campo.focus();
+  }
+
+  /* ---- TARJETA DESCARGABLE ----
+     El resultado sale del navegador como imagen y sin pasar por ningún
+     servidor: se dibuja aquí mismo en un lienzo. Es lo único de la página que
+     alguien puede enseñar a un tercero sin tener que explicarlo. */
+  async function descarga(url,n,tit){
+    const L=document.createElement('canvas');
+    L.width=1200;L.height=630;
+    const c=L.getContext('2d');
+    /* Las tipografías de la página tardan en estar listas; sin esperarlas el
+       lienzo dibujaría con la de reserva y la tarjeta saldría distinta a lo que
+       el visitante tiene delante. */
+    try{if(document.fonts&&document.fonts.ready)await document.fonts.ready;}catch(_){}
+    c.fillStyle='#0A0B0E';c.fillRect(0,0,1200,630);
+    c.strokeStyle='rgba(200,169,106,.28)';c.lineWidth=1;c.strokeRect(28.5,28.5,1143,573);
+    /* Escuadras: el mismo marco de acta que usan las fichas de la página */
+    c.strokeStyle='#C8A96A';c.lineWidth=2;
+    [[60,60,1,1],[1140,570,-1,-1]].forEach(([x,y,dx,dy])=>{
+      c.beginPath();c.moveTo(x,y+52*dy);c.lineTo(x,y);c.lineTo(x+52*dx,y);c.stroke();
+    });
+    c.fillStyle='#C8A96A';c.font='500 20px Inter,system-ui,sans-serif';
+    c.letterSpacing&&(c.letterSpacing='6px');
+    c.fillText('DIAGNÓSTICO SEO',96,140);
+    /* El aro, con el mismo trazo y el mismo hueco que el de la pantalla */
+    const cx=960,cy=315,r=118;
+    c.lineWidth=6;c.strokeStyle='#22252C';
+    c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();
+    c.strokeStyle='#C8A96A';c.lineCap='round';
+    c.beginPath();c.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*(n/100));c.stroke();
+    c.fillStyle='#E4CD9A';c.textAlign='center';
+    c.letterSpacing&&(c.letterSpacing='0px');
+    c.font='600 96px "Cormorant Garamond",Georgia,serif';
+    c.fillText(String(n),cx,cy+34);
+    c.fillStyle='#5E5A52';c.font='400 22px Inter,system-ui,sans-serif';
+    c.fillText('de 100',cx,cy+74);
+    c.textAlign='left';
+    c.fillStyle='#F4F1EA';c.font='600 62px "Cormorant Garamond",Georgia,serif';
+    c.fillText(tit,96,268);
+    /* La dirección puede ser larguísima: se recorta antes de pisar el aro */
+    c.fillStyle='#9A958A';c.font='400 26px Inter,system-ui,sans-serif';
+    let u=url.replace(/^https?:\/\//,'').replace(/\/$/,'');
+    while(c.measureText(u).width>660&&u.length>8)u=u.slice(0,-2);
+    if(u!==url.replace(/^https?:\/\//,'').replace(/\/$/,''))u+='…';
+    c.fillText(u,96,322);
+    c.fillStyle='#5E5A52';c.font='400 21px Inter,system-ui,sans-serif';
+    c.fillText('Analizado con el diagnóstico gratuito de',96,396);
+    c.fillStyle='#F4F1EA';c.font='600 40px "Cormorant Garamond",Georgia,serif';
+    c.fillText('S&C Solutions Company',96,448);
+    c.fillStyle='#C8A96A';c.font='500 19px Inter,system-ui,sans-serif';
+    c.letterSpacing&&(c.letterSpacing='4px');
+    c.fillText('SYCSOLUTIONS.COMPANY',96,520);
+    L.toBlob(b=>{
+      if(!b)return;
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(b);
+      a.download='diagnostico-'+url.replace(/^https?:\/\//,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')+'.png';
+      a.click();
+      /* El objeto de URL se libera en cuanto la descarga ha arrancado: dejarlo
+         vivo retiene la imagen entera en memoria hasta recargar. */
+      setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    },'image/png');
   }
 
   /* Cada línea nombra un trabajo que el Worker hace de verdad: pedir la página
@@ -2859,44 +3457,90 @@ window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
     return()=>clearInterval(t);
   }
 
-  f.addEventListener('submit',async e=>{
-    e.preventDefault();
-    if(ocupado)return;
-    let u=campo.value.trim();
-    if(!u)return;
+  /* Una sola puerta de entrada para las dos direcciones —la propia y la del
+     rival—, para que las dos se validen exactamente igual. */
+  function normaliza(v){
+    let u=String(v||'').trim();
+    if(!u)return{error:'Escribe una dirección para analizar.'};
     /* Anteponer https sólo si no hay esquema: comprobar únicamente http/https
        convertía "ftp://sitio.com" en una URL válida con host "ftp". */
     if(!/^[a-z][a-z0-9+.-]*:/i.test(u))u='https://'+u;
     let dir;
-    try{dir=new URL(u);}catch(_){error('Esa dirección no es válida. Prueba con algo como tuempresa.com');return;}
-    if(dir.protocol!=='http:'&&dir.protocol!=='https:'){
-      error('Solo podemos analizar direcciones web (http o https).');return;
-    }
+    try{dir=new URL(u);}catch(_){return{error:'Esa dirección no es válida. Prueba con algo como tuempresa.com'};}
+    if(dir.protocol!=='http:'&&dir.protocol!=='https:')
+      return{error:'Solo podemos analizar direcciones web (http o https).'};
+    /* Un host sin punto no existe fuera de una red interna: "localhost" o
+       "miweb" salían del navegador para morir en el Worker veinte segundos
+       después, y el visitante sólo veía que aquello no funcionaba. */
+    if(!dir.hostname.includes('.'))
+      return{error:'Eso no parece una dirección pública. Falta el dominio, algo como tuempresa.com'};
+    return{url:u};
+  }
+  async function consulta(u){
     const punto=window.SYC_AUDITOR;
-    if(!punto){
-      error('El diagnóstico aún no está conectado. Escríbenos y lo hacemos a mano hoy mismo.');
-      return;
-    }
+    if(!punto)throw new Error('sin-servicio');
+    if(navigator.onLine===false)throw new Error('sin-red');
+    const ctl=new AbortController(),
+          reloj=setTimeout(()=>ctl.abort(),20000);
+    let r;
+    try{r=await fetch(punto+'?url='+encodeURIComponent(u),{signal:ctl.signal});}
+    finally{clearTimeout(reloj);}
+    const d=await r.json().catch(()=>null);
+    if(!r.ok||!d)throw new Error((d&&d.error)||'sin-respuesta');
+    if(d.error)throw new Error(d.error);
+    return d;
+  }
+  /* Los mensajes del navegador llegan en inglés y hablando de red, no de webs
+     ("Failed to fetch"). Enseñarlos tal cual rompe el idioma de la página y no
+     le dice al visitante qué hacer a continuación. */
+  function mensaje(err){
+    const m=String((err&&err.message)||'');
+    if(err&&err.name==='AbortError')
+      return'Ese sitio tardó más de veinte segundos en responder. Eso, en sí mismo, ya es un hallazgo.';
+    if(m==='sin-servicio')
+      return'El diagnóstico no está conectado ahora mismo. Escríbenos y lo hacemos a mano hoy.';
+    if(m==='sin-red'||err instanceof TypeError)
+      return'No hay conexión, o se cortó a mitad. Vuelve a intentarlo cuando tengas red.';
+    if(m==='incompleto'||m==='sin-respuesta')
+      return'El análisis volvió incompleto. Vuelve a intentarlo dentro de un momento.';
+    /* Lo que devuelve el Worker sí está escrito para leerse: eso sí pasa */
+    return'No pudimos leer esa página: '+m+'.';
+  }
+
+  f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(ocupado)return;
+    const dir=normaliza(campo.value);
+    if(dir.error){error(dir.error);campo.focus();return;}
     ocupado=true;boton.disabled=true;boton.textContent='Analizando';
     const parar=arrancaPasos();
     try{
-      const ctl=new AbortController(),
-            reloj=setTimeout(()=>ctl.abort(),20000),
-            r=await fetch(punto+'?url='+encodeURIComponent(u),{signal:ctl.signal});
-      clearTimeout(reloj);
-      const d=await r.json().catch(()=>null);
-      if(!r.ok||!d)throw new Error((d&&d.error)||'sin respuesta');
-      if(d.error)throw new Error(d.error);
-      pinta(d);
+      pinta(await consulta(dir.url));
     }catch(err){
-      error(err.name==='AbortError'
-        ? 'Tu sitio tardó demasiado en responder. Eso, en sí mismo, ya es un hallazgo.'
-        : 'No pudimos leer esa página: '+(err.message||'error desconocido')+'.');
+      error(mensaje(err));
     }finally{
       parar();
       ocupado=false;boton.disabled=false;boton.textContent='Analizar';
     }
   });
+
+  /* Entrada por dirección: /?aud=ejemplo.com lanza el análisis solo. Es lo que
+     convierte la página 404 en una puerta al diagnóstico en vez de en un
+     callejón, y de paso hace que el enlace se pueda compartir ya cargado. */
+  (()=>{
+    let p;
+    try{p=new URL(location.href).searchParams.get('aud');}catch(_){return;}
+    if(!p)return;
+    const dir=normaliza(p);
+    if(dir.error)return;
+    campo.value=p;
+    /* Se espera al primer pintado para que el visitante vea de dónde sale el
+       resultado en vez de encontrárselo ya puesto. */
+    setTimeout(()=>{
+      document.getElementById('diagnostico').scrollIntoView({block:'start'});
+      f.dispatchEvent(new Event('submit',{cancelable:true}));
+    },700);
+  })();
 })();
 
 /* ---------- PUENTE DIAGNÓSTICO → CONTACTO ----------
@@ -2910,19 +3554,200 @@ function pintaPuente(rellena){
   if(!caja)return;
   const d=DIAG.lee();
   if(!d){caja.hidden=true;return;}
-  const nn=document.getElementById('puente-n'),uu=document.getElementById('puente-u');
+  const nn=document.getElementById('puente-n'),uu=document.getElementById('puente-u'),
+        ff=document.getElementById('puente-f');
   if(nn)nn.textContent=d.n+'/100';
   if(uu)uu.textContent=d.u+' · analizada '+haceQue(d.t);
+  /* Los fallos concretos, tal cual los nombró el análisis. Sin ellos el aviso
+     enseñaba una nota suelta; con ellos el visitante ve de qué va a ir la
+     conversación antes de escribir la primera letra. */
+  if(ff){
+    ff.textContent='';
+    d.f.forEach(t=>{const li=document.createElement('li');li.textContent=t;ff.appendChild(li);});
+  }
   caja.hidden=false;
   if(!rellena)return;
   const sel=document.getElementById('servicio'),msg=document.getElementById('msg');
-  if(sel)[...sel.options].forEach(o=>{if(o.text==='Sitio web premium')sel.value=o.text;});
+  if(sel)[...sel.options].forEach(o=>{if(o.text==='Sitios Web Premium para tu Negocio')sel.value=o.text;});
   if(msg&&!msg.value.trim()){
-    msg.value='Mi web es '+d.u+' y sacó '+d.n+'/100 en el diagnóstico. '+
-      'Quiero saber qué conviene arreglar primero.';
+    msg.value='Mi web es '+d.u+' y sacó '+d.n+'/100 en el diagnóstico.'+
+      (d.f.length?' Los fallos que salieron: '+d.f.join(', ')+'.':'')+
+      ' Quiero saber qué conviene arreglar primero.';
   }
+  /* El formulario recibe el foco en el primer campo vacío, no al principio:
+     quien llega desde el diagnóstico ya trajo su mensaje escrito. */
+  const nom=document.getElementById('nombre');
+  if(nom&&!nom.value.trim())setTimeout(()=>nom.focus({preventScroll:true}),650);
 }
 pintaPuente();
+/* Quien vuelve con un diagnóstico todavía vigente ya se ganó ese punto */
+if(DIAG.lee())EXP.marca('diag');
+
+/* ---------- CALCULADORA DEL TRABAJO MANUAL ----------
+   Dos cifras que pone el visitante y una multiplicación que puede rehacer en
+   una servilleta. Ese es justo el motivo de que se la crea: aquí no hay ningún
+   supuesto escondido, ni un ahorro estimado, ni un porcentaje de mejora. */
+(()=>{
+  const h=document.getElementById('costo-h'),
+        c=document.getElementById('costo-c');
+  if(!h||!c)return;
+  const hv=document.getElementById('costo-hv'),
+        cv=document.getElementById('costo-cv'),
+        mesEl=document.getElementById('costo-mes'),
+        anioEl=document.getElementById('costo-anio'),
+        cta=document.getElementById('costo-cta');
+  /* 4,33 es el promedio real de semanas por mes (52/12). Con 4 el número salía
+     un 8% corto y con 4,5 largo; es el único sitio donde redondear cambiaría
+     una cifra que el visitante puede comprobar. */
+  const SEM=4.33;
+  const dinero=n=>'$'+Math.round(n).toLocaleString('es-MX');
+  let mes=0,anio=0;
+  function pinta(){
+    const H=+h.value,C=+c.value;
+    mes=H*C*SEM;anio=H*C*52;
+    hv.textContent=H;
+    cv.textContent=C.toLocaleString('es-MX');
+    mesEl.textContent=dinero(mes);
+    anioEl.textContent=dinero(anio);
+  }
+  h.addEventListener('input',pinta);
+  c.addEventListener('input',pinta);
+  pinta();
+  /* Al volver atrás, o al recargar, el navegador restaura la posición de los
+     deslizadores DESPUÉS de ejecutar el script: sin volver a pintar aquí, la
+     cifra de la derecha se quedaba con los valores de fábrica mientras los
+     mandos enseñaban otros. */
+  addEventListener('pageshow',pinta);
+  /* El resultado viaja al formulario igual que el del diagnóstico: quien pulsa
+     llega abajo con su propio número escrito, no con un formulario en blanco. */
+  if(cta)cta.addEventListener('click',()=>{
+    const sel=document.getElementById('servicio'),msg=document.getElementById('msg');
+    if(sel)[...sel.options].forEach(o=>{
+      if(o.text==='Automatización de Procesos en tu Negocio')sel.value=o.text;
+    });
+    if(msg&&!msg.value.trim()){
+      msg.value='Dedicamos unas '+h.value+' horas a la semana a tareas repetidas, '+
+        'que a '+dinero(+c.value)+' la hora son '+dinero(mes)+' al mes. '+
+        'Quiero saber qué parte de eso se puede automatizar.';
+    }
+    SIG.clic();
+  });
+})();
+
+/* ---------- MÉTRICAS REALES DE ESTA PÁGINA ----------
+   Tres cifras medidas en el equipo del visitante. La tercera se cuenta de
+   verdad —scripts con src en el documento— en vez de afirmarse: si algún día
+   entra una librería, la línea deja de presumir sola. */
+(()=>{
+  const el=document.getElementById('met');
+  if(!el||!window.performance||!performance.getEntriesByType)return;
+  function pinta(){
+    const nav=performance.getEntriesByType('navigation')[0];
+    if(!nav)return;
+    const ms=Math.round(nav.domContentLoadedEventEnd||nav.responseEnd||0);
+    if(!ms)return;
+    /* +1 por el propio documento, que no aparece entre los recursos */
+    const req=performance.getEntriesByType('resource').length+1,
+          libs=document.querySelectorAll('script[src]').length;
+    el.innerHTML='<span>Esta página cargó en <b>'+ms+' ms</b></span>'+
+      '<span><b>'+req+'</b> peticiones</span>'+
+      '<span><b>'+libs+'</b> librerías externas</span>';
+    el.hidden=false;
+    requestAnimationFrame(()=>el.classList.add('on'));
+  }
+  /* Después de load y de un respiro: domContentLoadedEventEnd vale 0 hasta que
+     el evento ha terminado de propagarse. */
+  addEventListener('load',()=>setTimeout(pinta,400));
+})();
+
+/* ---------- MODO PRESENTACIÓN ----------
+   Para enseñar la web en una reunión sin hacer scroll delante del cliente. La
+   tecla P lo enciende, las flechas mueven de sección en sección y Escape sale.
+   No cambia el contenido: apaga el cromo y navega. */
+(()=>{
+  const idx=document.getElementById('pres-idx');
+  if(!idx)return;
+  const paradas=[document.querySelector('.hero'),
+    ...['servicios','proyectos','nosotros','diagnostico','contacto']
+      .map(i=>document.getElementById(i))].filter(Boolean);
+  if(paradas.length<2)return;
+  const total=document.getElementById('pres-t'),
+        actual=document.getElementById('pres-n');
+  let on=false,i=0;
+  total.textContent=paradas.length;
+  const suave=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function va(n){
+    i=Math.max(0,Math.min(paradas.length-1,n));
+    actual.textContent=i+1;
+    paradas[i].scrollIntoView({behavior:suave?'smooth':'auto',block:'start'});
+  }
+  function alterna(v){
+    on=v;
+    document.documentElement.classList.toggle('pres',on);
+    if(!on)return;
+    /* Arranca en la sección que el visitante ya tenía delante, no desde el
+       principio: encender el modo no debería moverle la página bajo los pies. */
+    let cerca=0,min=Infinity;
+    paradas.forEach((s,n)=>{
+      const d=Math.abs(s.getBoundingClientRect().top);
+      if(d<min){min=d;cerca=n;}
+    });
+    va(cerca);
+    SIG.clic();
+  }
+  addEventListener('keydown',e=>{
+    /* Nada de atajos mientras se escribe: la P de "proyecto" no puede encender
+       una presentación en mitad de una frase. */
+    const t=e.target;
+    if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+    if(e.ctrlKey||e.metaKey||e.altKey)return;
+    if(!on){
+      if(e.key==='p'||e.key==='P'){e.preventDefault();alterna(true);}
+      return;
+    }
+    if(e.key==='Escape'||e.key==='p'||e.key==='P'){e.preventDefault();alterna(false);}
+    else if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){e.preventDefault();va(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();va(i-1);}
+    else if(e.key==='Home'){e.preventDefault();va(0);}
+    else if(e.key==='End'){e.preventDefault();va(paradas.length-1);}
+  });
+})();
+
+/* ---------- FUNCIONAR SIN CONEXIÓN: APAGADO MIENTRAS SE CONSTRUYE ----------
+   El Service Worker (sw.js) sigue escrito y funciona: se probó apagando el
+   servidor y la página abría entera. Pero mientras la web se está haciendo hace
+   más daño que bien. Guarda copias en el equipo del visitante, y aquí el
+   "visitante" somos nosotros: cada cambio de CSS o de texto compite con lo que
+   ese navegador ya tenía guardado, y se acaba mirando una versión de hace dos
+   horas sin saberlo. Ya pasó una vez —una sección se veía con el diseño viejo—
+   y diagnosticar eso cuesta más que lo que ahorra.
+
+   Se vuelve a encender cuando el sitio esté cerrado, cambiando este bloque por:
+       navigator.serviceWorker.register('sw.js')
+
+   Mientras tanto se hace lo contrario: dar de baja cualquier copia que quedara
+   instalada de las pruebas anteriores y vaciar sus cachés. Sin esto, el
+   navegador que ya lo instaló seguiría sirviéndose a sí mismo la versión
+   antigua para siempre, aunque el registro desapareciera del código. */
+if('serviceWorker' in navigator){
+  addEventListener('load',async()=>{
+    try{
+      const rs=await navigator.serviceWorker.getRegistrations();
+      if(!rs.length)return;
+      await Promise.all(rs.map(r=>r.unregister()));
+      if(window.caches){
+        const ks=await caches.keys();
+        await Promise.all(ks.filter(k=>k.startsWith('syc-')).map(k=>caches.delete(k)));
+      }
+      /* Darlo de baja no cambia lo que esta pestaña ya tiene servido: hace falta
+         una recarga para volver a pedir todo a la red. Se hace una sola vez. */
+      if(!sessionStorage.getItem('syc-sw-limpio')){
+        sessionStorage.setItem('syc-sw-limpio','1');
+        location.reload();
+      }
+    }catch(_){}
+  });
+}
 </script>
 </body>
 </html>

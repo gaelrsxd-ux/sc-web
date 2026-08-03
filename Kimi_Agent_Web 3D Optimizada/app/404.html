@@ -14,7 +14,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0A0B0E;--ink:#F4F1EA;--muted:#9A958A;--dim:#5E5A52;
+/* --dim igualado a la portada: el #5E5A52 anterior daba 2,9 de contraste sobre
+   el fondo y lo mínimo legible es 4,5. Aquí se lo llevaban los enlaces a las
+   secciones y la nota del diagnóstico, que es lo único útil de esta página. */
+:root{--bg:#0A0B0E;--ink:#F4F1EA;--muted:#9A958A;--dim:#858075;
   --bronze:#C8A96A;--bronze-hi:#E4CD9A;--line:rgba(200,169,106,.28);
   --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif}
 body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--sans);
@@ -43,6 +46,29 @@ p{color:var(--muted);font-size:clamp(15px,1.5vw,17px);line-height:1.8;
 .otros a:hover{color:var(--bronze)}
 .dia{color:var(--bronze);transform:rotate(45deg);display:inline-block;
   width:7px;height:7px;background:currentColor}
+/* ---------- SALIDA ÚTIL ----------
+   Una 404 que sólo pide disculpas desperdicia la única visita que ya está
+   perdida. Aquí se ofrece lo mejor que tiene la casa: el análisis gratuito.
+   El campo no analiza nada por su cuenta —eso vive en la portada— sino que
+   lleva la dirección hasta allí, donde el diagnóstico arranca solo. Así hay
+   una única implementación del analizador y no dos que se separan con el
+   tiempo. */
+.oferta{margin-top:44px;padding-top:34px;border-top:1px solid rgba(200,169,106,.14)}
+.oferta .k{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
+.oferta h2{font-family:var(--serif);font-weight:600;font-size:clamp(21px,3vw,29px);
+  margin-top:14px;line-height:1.25}
+.oferta h2 em{font-style:italic;color:var(--bronze-hi);font-weight:500}
+.oferta form{display:flex;margin-top:22px;border-bottom:1px solid var(--line);text-align:left}
+.oferta input{flex:1;min-width:0;background:transparent;border:none;color:var(--ink);
+  font-family:var(--serif);font-size:18px;padding:10px 2px;outline:none}
+.oferta input::placeholder{color:var(--dim)}
+.oferta input:focus{border:none}
+.oferta form:focus-within{border-color:var(--bronze-hi)}
+.oferta button{flex-shrink:0;border:none;background:none;color:var(--bronze);cursor:pointer;
+  font-family:var(--sans);font-size:9.5px;letter-spacing:3px;text-transform:uppercase;
+  font-weight:500;padding:0 4px 0 18px;transition:color .3s}
+.oferta button:hover{color:var(--bronze-hi)}
+.oferta .nota{font-size:10.5px;letter-spacing:1px;color:var(--dim);margin-top:14px;line-height:1.7}
 </style>
 </head>
 <body>
@@ -54,12 +80,36 @@ p{color:var(--muted);font-size:clamp(15px,1.5vw,17px);line-height:1.8;
      Lo que buscas seguramente sigue en la portada.</p>
   <a class="btn" href="/"><span class="dia" aria-hidden="true"></span> Volver al inicio</a>
   <nav class="otros" aria-label="Secciones">
-    <a href="/#nosotros">Nosotros</a>
     <a href="/#servicios">Servicios</a>
+    <a href="/#proyectos">Reseñas</a>
+    <a href="/#nosotros">Nosotros</a>
     <a href="/#diagnostico">Diagnóstico gratuito</a>
-    <a href="/#proyectos">Proyectos</a>
     <a href="/#contacto">Contacto</a>
   </nav>
+
+  <section class="oferta">
+    <p class="k">Ya que estás aquí</p>
+    <h2>Analizamos <em>tu</em> web gratis, y esa sí <em>existe</em></h2>
+    <form id="ir" novalidate>
+      <label for="u" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dirección de tu web</label>
+      <input id="u" type="url" inputmode="url" autocomplete="url" placeholder="tuempresa.com">
+      <button type="submit">Analizar</button>
+    </form>
+    <p class="nota">Revisamos lo que Google mira primero y te devolvemos la nota con los
+      fallos concretos. Sin registro y sin coste.</p>
+  </section>
 </main>
+<script>
+/* Aquí no se analiza nada: se traslada la dirección a la portada, que es donde
+   vive el diagnóstico. Una segunda copia del analizador en esta página serían
+   dos versiones destinadas a separarse. */
+document.getElementById('ir').addEventListener('submit',e=>{
+  e.preventDefault();
+  const v=document.getElementById('u').value.trim();
+  /* Sin dirección, la portada se abre igual por su sección de diagnóstico: el
+     visitante quería salir de aquí y sale. */
+  location.href=v?'/?aud='+encodeURIComponent(v)+'#diagnostico':'/#diagnostico';
+});
+</script>
 </body>
 </html>
