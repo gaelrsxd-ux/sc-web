@@ -1151,6 +1151,11 @@ footer .legal a:hover{color:var(--bronze)}
   padding:0 4px 0 18px;transition:color .3s}
 .aud-form button:hover:not(:disabled){color:var(--bronze-hi)}
 .aud-form button:disabled{color:var(--dim);cursor:default}
+/* Llegada por /?aud=: el campo viene relleno pero el análisis NO se lanza solo.
+   Este latido señala dónde hay que pulsar. Solo opacidad, sin repintado. */
+.aud-form button.pide-clic{animation:pideclic 1.6s ease-in-out 3}
+@keyframes pideclic{0%,100%{opacity:1}50%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.aud-form button.pide-clic{animation:none}}
 .aud-note{margin-top:14px;font-size:11px;letter-spacing:1px;color:var(--dim);line-height:1.7}
 /* Panel de resultados */
 .aud-out{border:1px solid var(--line-soft);background:rgba(var(--bg-rgb),.9);padding:clamp(26px,3.2vw,42px);
@@ -3827,9 +3832,17 @@ window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
     }
   });
 
-  /* Entrada por dirección: /?aud=ejemplo.com lanza el análisis solo. Es lo que
-     convierte la página 404 en una puerta al diagnóstico en vez de en un
-     callejón, y de paso hace que el enlace se pueda compartir ya cargado. */
+  /* Entrada por dirección: /?aud=ejemplo.com deja el campo relleno y lleva al
+     diagnóstico, pero NO lo lanza. Es lo que convierte la página 404 en una
+     puerta al diagnóstico en vez de en un callejón, y el enlace se sigue
+     pudiendo compartir ya cargado.
+
+     Antes disparaba el análisis solo, sin un clic. Eso permitía a cualquiera
+     difundir /?aud=<víctima> y usar los navegadores de nuestros visitantes para
+     provocar peticiones del Worker contra el destino que él eligiera: tráfico
+     saliente con nuestra identidad y a cargo de nuestra cuenta, sin que ni el
+     visitante ni nosotros lo hubiéramos pedido. El parámetro prepara la acción;
+     quien la ejecuta es siempre una persona pulsando el botón. */
   (()=>{
     let p;
     try{p=new URL(location.href).searchParams.get('aud');}catch(_){return;}
@@ -3838,10 +3851,11 @@ window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
     if(dir.error)return;
     campo.value=p;
     /* Se espera al primer pintado para que el visitante vea de dónde sale el
-       resultado en vez de encontrárselo ya puesto. */
+       campo relleno en vez de encontrárselo ya puesto. */
     setTimeout(()=>{
       document.getElementById('diagnostico').scrollIntoView({block:'start'});
-      f.dispatchEvent(new Event('submit',{cancelable:true}));
+      campo.focus({preventScroll:true});
+      boton.classList.add('pide-clic');
     },700);
   })();
 })();

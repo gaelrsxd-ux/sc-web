@@ -10,9 +10,12 @@
  * La URL resultante se pega en la constante AUDITOR de app/index.html.
  */
 
-/* Orígenes que pueden llamar al Worker. Si no está en la lista, no hay CORS y
-   el navegador bloquea la respuesta: evita que el endpoint acabe siendo el
-   auditor gratuito de terceros a costa de nuestra cuenta. */
+/* Orígenes que pueden llamar al Worker.
+   AVISO IMPORTANTE, porque el comentario anterior afirmaba lo contrario: CORS
+   NO es control de acceso. Solo impide que un navegador de otro origen LEA la
+   respuesta; curl, un script de servidor o un bot la obtienen igual. Quien
+   protege de verdad el gasto de la cuenta es el limitador de tasa de más abajo,
+   no esta lista. */
 const ORIGENES = [
   'https://sycsolutions.company',
   'https://www.sycsolutions.company',
@@ -20,20 +23,29 @@ const ORIGENES = [
      la URL de producción del proyecto (rama principal), estable entre
      despliegues; las URLs de previsualización con hash cambian en cada
      `wrangler pages deploy` y no se pueden fijar aquí de antemano. */
-  'https://syc-solutions.pages.dev',
-  'http://localhost:8080',
-  'http://127.0.0.1:8080'
+  'https://syc-solutions.pages.dev'
 ];
+
+/* Solo en desarrollo. Tener localhost en la lista de producción deja que
+   cualquier página servida en el equipo de un visitante lea el Worker desde su
+   navegador: superficie que no pinta nada en producción.
+   Uso local:  npx wrangler dev --var ENTORNO:dev */
+const ORIGENES_DEV = ['http://localhost:8080', 'http://127.0.0.1:8080'];
 
 const LIMITE_BYTES = 1_500_000;   /* deja de leer al superar millón y medio */
 const ESPERA_MS    = 12_000;      /* un sitio que tarda más ya suspende solo */
+const ESPERA_AUX_MS = 5_000;      /* presupuesto propio de robots.txt/sitemap */
 const SALTOS_MAX   = 3;           /* redirecciones que seguimos a mano */
+const CACHE_OK_S   = 3600;        /* informes correctos: una hora */
+const CACHE_ERR_S  = 300;         /* errores: cinco minutos, ver nota abajo */
 
 export default {
-  async fetch(peticion) {
+  async fetch(peticion, env, ctx) {
+    const dev = env && env.ENTORNO === 'dev';
+    const permitidos = dev ? [...ORIGENES, ...ORIGENES_DEV] : ORIGENES;
     const origen = peticion.headers.get('Origin') || '';
     const cors = {
-      'Access-Control-Allow-Origin': ORIGENES.includes(origen) ? origen : ORIGENES[0],
+      'Access-Control-Allow-Origin': permitidos.includes(origen) ? origen : permitidos[0],
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Max-Age': '86400',
       'Vary': 'Origin'
@@ -57,11 +69,17 @@ export default {
       return json({ error: 'dirección no válida' }, 400, cors);
     }
 
+    /* Credenciales incrustadas: se descartan antes de tocar la red. Reenviar
+       usuario:clave@destino convertiría al Worker en un repartidor de
+       credenciales ajenas hacia donde diga quien llama. */
+    destino.username = '';
+    destino.password = '';
+
     const veto = inseguro(destino);
     if (veto) return json({ error: veto }, 400, cors);
 
-    /* Cachea el resultado una hora. Un mismo sitio analizado en bucle deja de
-       costar peticiones salientes, que es el abuso más probable aquí. */
+    /* La caché va ANTES del limitador: servir un informe ya calculado no cuesta
+       peticiones salientes, así que no tiene sentido penalizarlo. */
     const clave = new Request(
       'https://cache.local/seo?u=' + encodeURIComponent(destino.href),
       { method: 'GET' }
@@ -73,26 +91,66 @@ export default {
       return copia;
     }
 
+    /* Limitador por IP. Es la única barrera real contra el abuso: sin él,
+       recorrer miles de dominios distintos nunca toca caché y cada intento son
+       peticiones salientes reales facturadas a nuestra cuenta. */
+    if (env && env.LIMITADOR) {
+      const ip = peticion.headers.get('CF-Connecting-IP') || 'desconocida';
+      const { success } = await env.LIMITADOR.limit({ key: ip });
+      if (!success) {
+        return json(
+          { error: 'demasiados análisis seguidos; espera un minuto e inténtalo de nuevo' },
+          429,
+          { ...cors, 'Retry-After': '60' }
+        );
+      }
+    }
+
     let informe;
     try {
       informe = await analiza(destino);
     } catch (e) {
-      return json({ error: mensaje(e) }, 502, cors);
+      /* Los errores TAMBIÉN se cachean. Antes no, y ese era el agujero: apuntar
+         a dominios inexistentes o que no devuelven HTML nunca tocaba caché, así
+         que cada intento provocaba peticiones salientes reales. Amplificación
+         de 1 entrante a 3 salientes, indefinidamente. */
+      const fallo = json({ error: mensaje(e) }, 502, cors);
+      fallo.headers.set('Cache-Control', 'public, max-age=' + CACHE_ERR_S);
+      if (ctx) ctx.waitUntil(caches.default.put(clave, fallo.clone()));
+      return fallo;
     }
 
     const salida = json(informe, 200, cors);
-    salida.headers.set('Cache-Control', 'public, max-age=3600');
-    await caches.default.put(clave, salida.clone());
+    salida.headers.set('Cache-Control', 'public, max-age=' + CACHE_OK_S);
+    /* waitUntil en vez de await: guardar en caché no debe retrasar la respuesta
+       que ya está lista. */
+    if (ctx) ctx.waitUntil(caches.default.put(clave, salida.clone()));
+    else await caches.default.put(clave, salida.clone());
     return salida;
   }
 };
 
 /* ---------- red ---------- */
 
-/** Rechaza destinos que no deben alcanzarse desde el borde. */
+/** Rechaza destinos que no deben alcanzarse desde el borde.
+ *
+ *  Nota sobre codificaciones alternativas (http://2130706433/, 0x7f000001,
+ *  127.1): no son un bypass porque el parser de `new URL()` normaliza IPv4 a
+ *  cuádruple con puntos en los esquemas especiales antes de que la expresión
+ *  regular de abajo lo vea. Se documenta porque es una dependencia implícita
+ *  del parser: si esta función se reutiliza sobre un string crudo, o en un
+ *  runtime con otro parser, deja de ser cierto. Valida siempre sobre
+ *  `url.hostname` ya normalizado, nunca sobre el texto original. */
 function inseguro(u) {
   if (u.protocol !== 'http:' && u.protocol !== 'https:')
     return 'solo se admiten direcciones http y https';
+
+  /* Puerto: solo el estándar de cada esquema. Sin esta comprobación el Worker
+     responde de forma distinguible según el destino esté abierto, cerrado o no
+     devuelva HTML —y además publica `tiempoMs`—, lo que lo convierte en un
+     escáner de puertos semiciego contra cualquier host público. */
+  if (u.port !== '' && u.port !== '80' && u.port !== '443')
+    return 'solo se analizan sitios publicados en los puertos web habituales';
 
   const h = u.hostname.toLowerCase().replace(/\.$/, '');
 
@@ -114,8 +172,22 @@ function inseguro(u) {
         (a === 172 && b >= 16 && b <= 31) ||
         (a === 192 && b === 168) ||
         (a === 169 && b === 254) ||
-        (a === 100 && b >= 64 && b <= 127))
+        (a === 100 && b >= 64 && b <= 127) ||
+        /* Rangos que faltaban: benchmarking (198.18/15), IETF protocol
+           assignments (192.0.0/24) y las tres TEST-NET de documentación. */
+        (a === 198 && b >= 18 && b <= 19) ||
+        (a === 192 && b === 0) ||
+        (a === 198 && b === 51) ||
+        (a === 203 && b === 0))
       return 'no se pueden analizar direcciones de red privada';
+  } else if (!h.includes('.')) {
+    /* Host de una sola etiqueta: `metadata`, `router`, `consul`,
+       `instance-data`. No es localhost, no acaba en .local ni .internal, y no
+       casa con la regex de IPv4, así que colaba. En el borde de Cloudflare
+       resuelve por DNS público y probablemente falla, pero esta función está
+       pensada para reutilizarse, y dentro de una red con dominios de búsqueda
+       configurados esto es un acceso directo al servicio de metadatos. */
+    return 'eso no parece un dominio público';
   }
   return null;
 }
@@ -143,10 +215,14 @@ async function trae(url, señal, metodo = 'GET') {
   }
 }
 
-/** Comprueba que un recurso auxiliar existe, sin descargarlo entero. */
+/** Comprueba que un recurso auxiliar existe, sin descargarlo entero.
+    Antes el comentario decía esto mismo pero el cuerpo se quedaba abierto y sin
+    tope: un /robots.txt de 2 GB se descargaba entero. Ahora se cancela nada más
+    conocer el estado, que es lo único que interesa. */
 async function existe(base, ruta, señal) {
   try {
     const { r } = await trae(new URL(ruta, base), señal, 'GET');
+    if (r.body) { try { await r.body.cancel(); } catch { /* ya cerrado */ } }
     return r.status >= 200 && r.status < 300;
   } catch {
     return false;
@@ -158,14 +234,20 @@ async function existe(base, ruta, señal) {
 async function analiza(url) {
   const ctl = new AbortController();
   const reloj = setTimeout(() => ctl.abort(), ESPERA_MS);
-  const t0 = Date.now();
-
-  let resp, final;
   try {
-    ({ r: resp, final } = await trae(url, ctl.signal));
+    return await analizaConSeñal(url, ctl.signal);
   } finally {
+    /* El reloj se limpia cuando TODO ha terminado, no al recibir las cabeceras.
+       Antes se limpiaba tras `trae`, así que la lectura del cuerpo quedaba sin
+       límite: un servidor que envía un byte por minuto mantenía la petición
+       abierta indefinidamente sin llegar nunca al tope de bytes. */
     clearTimeout(reloj);
   }
+}
+
+async function analizaConSeñal(url, señal) {
+  const t0 = Date.now();
+  const { r: resp, final } = await trae(url, señal);
   const ms = Date.now() - t0;
 
   if (!resp.ok) throw new Error('el servidor respondió ' + resp.status);
@@ -221,10 +303,21 @@ async function analiza(url) {
 
   d.title = d.title.trim();
 
-  const [tieneRobots, tieneSitemap] = await Promise.all([
-    existe(final, '/robots.txt', undefined),
-    existe(final, '/sitemap.xml', undefined)
-  ]);
+  /* Presupuesto propio para las auxiliares. Antes iban con `undefined` como
+     señal y el reloj principal ya se había limpiado en el finally de arriba:
+     un host hostil que acepta la conexión y no responde nunca dejaba DOS
+     subpeticiones colgadas sin límite por cada petición entrante. */
+  const auxCtl = new AbortController();
+  const auxReloj = setTimeout(() => auxCtl.abort(), ESPERA_AUX_MS);
+  let tieneRobots = false, tieneSitemap = false;
+  try {
+    [tieneRobots, tieneSitemap] = await Promise.all([
+      existe(final, '/robots.txt', auxCtl.signal),
+      existe(final, '/sitemap.xml', auxCtl.signal)
+    ]);
+  } finally {
+    clearTimeout(auxReloj);
+  }
 
   return puntua(d, final, ms, tieneRobots, tieneSitemap);
 }

@@ -2,6 +2,21 @@ name = "syc-seo-audit"
 main = "seo-audit.js"
 compatibility_date = "2026-07-01"
 
+[vars]
+# "dev" añade localhost a la lista CORS. En producción se queda en "prod".
+# Para trabajar en local:  npx wrangler dev --var ENTORNO:dev
+ENTORNO = "prod"
+
+# Limitador de tasa por IP. Es la única barrera real contra el abuso del
+# endpoint: la lista CORS no lo es (curl la ignora) y la caché solo corta el
+# martilleo sobre la MISMA URL, no recorrer miles de dominios distintos.
+# El Worker vive en *.workers.dev, donde las reglas de WAF y Rate Limiting de
+# zona no se aplican, así que tiene que ir dentro del código.
+[[ratelimits]]
+name = "LIMITADOR"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
+
 # El Worker no guarda nada: lee la página, puntúa y responde. El único estado
 # es la caché de borde, que ya viene incluida sin declarar binding alguno.
 
