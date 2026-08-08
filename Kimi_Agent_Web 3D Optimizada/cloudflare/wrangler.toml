@@ -15,7 +15,10 @@ ENTORNO = "prod"
 [[ratelimits]]
 name = "LIMITADOR"
 namespace_id = "1001"
-simple = { limit = 20, period = 60 }
+
+  [ratelimits.simple]
+  limit = 20
+  period = 60
 
 # El Worker no guarda nada: lee la página, puntúa y responde. El único estado
 # es la caché de borde, que ya viene incluida sin declarar binding alguno.

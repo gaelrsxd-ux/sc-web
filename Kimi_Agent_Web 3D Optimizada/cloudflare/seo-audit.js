@@ -79,7 +79,14 @@ export default {
     if (veto) return json({ error: veto }, 400, cors);
 
     /* La caché va ANTES del limitador: servir un informe ya calculado no cuesta
-       peticiones salientes, así que no tiene sentido penalizarlo. */
+       peticiones salientes, así que no tiene sentido penalizarlo.
+
+       Ojo: esta consulta a la Cache API tampoco surte efecto en `*.workers.dev`
+       (ver `dentroDelTope`). Lo que de verdad evita repetir el análisis de una
+       misma dirección hoy es la cabecera Cache-Control de la respuesta, que sí
+       la respeta la caché de borde estándar. Los dos mecanismos se
+       complementan y el de aquí despertará al mover el Worker a un dominio
+       propio. */
     const clave = new Request(
       'https://cache.local/seo?u=' + encodeURIComponent(destino.href),
       { method: 'GET' }
@@ -94,16 +101,35 @@ export default {
     /* Limitador por IP. Es la única barrera real contra el abuso: sin él,
        recorrer miles de dominios distintos nunca toca caché y cada intento son
        peticiones salientes reales facturadas a nuestra cuenta. */
+    const ip = peticion.headers.get('CF-Connecting-IP') || 'desconocida';
+    let permitido = true;
+
+    /* Binding nativo de Rate Limiting. Se conserva la llamada porque cuando
+       funciona es lo correcto —cuenta en el borde, sin coste—, pero NO se
+       confía solo en él: en esta cuenta devuelve success:true siempre, incluso
+       con 40 peticiones en paralelo desde una IP y un tope de 20/60s.
+       Comprobado con `wrangler tail`: el binding está presente y limit() se
+       invoca con la IP correcta; simplemente no cuenta. */
     if (env && env.LIMITADOR) {
-      const ip = peticion.headers.get('CF-Connecting-IP') || 'desconocida';
       const { success } = await env.LIMITADOR.limit({ key: ip });
-      if (!success) {
-        return json(
-          { error: 'demasiados análisis seguidos; espera un minuto e inténtalo de nuevo' },
-          429,
-          { ...cors, 'Retry-After': '60' }
-        );
-      }
+      permitido = success;
+    }
+
+    /* Limitador propio sobre la caché de borde. Existe porque el de arriba no
+       aplica aquí y dejar el endpoint sin ningún tope era el agujero principal.
+       No es exacto y no pretende serlo: la lectura y la escritura no son
+       atómicas, así que una ráfaga simultánea lee el mismo contador y pasa
+       entera. Lo que sí acota es el abuso SOSTENIDO, que es la forma real de
+       explotarlo —recorrer miles de dominios lleva tiempo—. El tope exacto
+       importa menos que el hecho de que exista. */
+    if (permitido) permitido = await dentroDelTope(ip, ctx);
+
+    if (!permitido) {
+      return json(
+        { error: 'demasiados análisis seguidos; espera un minuto e inténtalo de nuevo' },
+        429,
+        { ...cors, 'Retry-After': '60' }
+      );
     }
 
     let informe;
@@ -129,6 +155,65 @@ export default {
     return salida;
   }
 };
+
+/* ---------- límite de uso ---------- */
+
+const TOPE_POR_VENTANA = 20;   /* análisis nuevos por IP y minuto */
+
+/**
+ * Cuenta peticiones por IP en ventanas de un minuto usando la caché de borde.
+ *
+ * ⚠ HOY NO SURTE EFECTO, y conviene saberlo antes de confiar en ello.
+ *
+ * La Cache API sólo funciona en dominios propios: en `*.workers.dev` —que es
+ * donde vive este Worker ahora mismo— `match()` siempre falla y `put()` no
+ * guarda nada, así que el contador lee cero en cada petición y deja pasar
+ * todo. Verificado: 30 peticiones seguidas y 40 en paralelo pasan enteras.
+ *
+ * Se deja escrito, no borrado, porque **empieza a proteger solo** en cuanto el
+ * Worker se sirva desde `sycsolutions.company`. Ese es el arreglo de verdad, y
+ * está esperando a que se compre el dominio.
+ *
+ * Por qué no hay alternativa que funcione hoy:
+ *  · el binding nativo de Rate Limiting no cuenta en esta cuenta (comprobado
+ *    con `wrangler tail`: se invoca y siempre devuelve success:true);
+ *  · KV admite mil escrituras diarias en el plan gratuito, menos que un día
+ *    de uso normal;
+ *  · los Durable Objects, que darían un contador atómico de verdad, exigen
+ *    plan de pago.
+ *
+ * Lo que SÍ acota el gasto hoy: la caché de borde estándar —la de la cabecera
+ * Cache-Control, que no es la Cache API y sí funciona aquí— evita repetir el
+ * análisis de una misma dirección, incluidos los errores. Y el plan gratuito
+ * de Workers no factura excedente: al pasar el límite diario el Worker deja de
+ * responder, no genera cobro.
+ *
+ * Cuando llegue el dominio, además de esto habrá que poner una regla de Rate
+ * Limiting del WAF en la zona, que es la barrera fiable.
+ */
+async function dentroDelTope(ip, ctx) {
+  try {
+    const ventana = Math.floor(Date.now() / 60000);
+    const clave = new Request(
+      'https://cache.local/rl?ip=' + encodeURIComponent(ip) + '&v=' + ventana
+    );
+    const previo = await caches.default.match(clave);
+    const usados = previo ? Number(await previo.text()) || 0 : 0;
+    if (usados >= TOPE_POR_VENTANA) return false;
+
+    const nuevo = new Response(String(usados + 1), {
+      headers: { 'Cache-Control': 'max-age=60' }
+    });
+    if (ctx) ctx.waitUntil(caches.default.put(clave, nuevo));
+    else await caches.default.put(clave, nuevo);
+    return true;
+  } catch {
+    /* Si la caché falla, se deja pasar. Un limitador roto no debe tumbar el
+       servicio: el fallo aquí es de disponibilidad, no de seguridad, y ya hay
+       otras barreras (validación, SSRF, caché de resultados). */
+    return true;
+  }
+}
 
 /* ---------- red ---------- */
 
@@ -249,6 +334,14 @@ async function analizaConSeñal(url, señal) {
   const t0 = Date.now();
   const { r: resp, final } = await trae(url, señal);
   const ms = Date.now() - t0;
+
+  /* Los 52x/53x no vienen del sitio auditado: los genera el propio borde de
+     Cloudflare cuando no consigue hablar con el origen —el 530 es literalmente
+     «no pude resolver ese dominio»—. Decir «el servidor respondió 530» a quien
+     pidió el diagnóstico no significa nada y además suena a que su web falla,
+     cuando lo que pasa es que la dirección no existe. */
+  if (resp.status >= 520 && resp.status <= 530)
+    throw new Error('no se pudo conectar con ese dominio; comprueba que la dirección existe y responde');
 
   if (!resp.ok) throw new Error('el servidor respondió ' + resp.status);
 
