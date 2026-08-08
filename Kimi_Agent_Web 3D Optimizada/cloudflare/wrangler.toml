@@ -1,6 +1,7 @@
 name = "syc-seo-audit"
 main = "seo-audit.js"
 compatibility_date = "2026-07-01"
+workers_dev = false
 
 [vars]
 # "dev" añade localhost a la lista CORS. En producción se queda en "prod".
