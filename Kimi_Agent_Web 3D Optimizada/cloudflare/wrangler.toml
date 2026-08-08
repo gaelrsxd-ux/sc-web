@@ -7,11 +7,14 @@ compatibility_date = "2026-07-01"
 # Para trabajar en local:  npx wrangler dev --var ENTORNO:dev
 ENTORNO = "prod"
 
-# Limitador de tasa por IP. Es la única barrera real contra el abuso del
-# endpoint: la lista CORS no lo es (curl la ignora) y la caché solo corta el
-# martilleo sobre la MISMA URL, no recorrer miles de dominios distintos.
-# El Worker vive en *.workers.dev, donde las reglas de WAF y Rate Limiting de
-# zona no se aplican, así que tiene que ir dentro del código.
+# Limitador de tasa por IP. Es la barrera real contra el abuso del endpoint: la
+# lista CORS no lo es (curl la ignora) y la caché solo corta el martilleo sobre
+# la MISMA URL, no recorrer miles de dominios distintos.
+#
+# Este binding, en esta cuenta, no llega a contar: se invoca y devuelve siempre
+# success:true. Quien aplica el límite de verdad es el contador de
+# `dentroDelTope` en seo-audit.js, que funciona desde que el Worker se sirve en
+# audit.sycsolutions.company. Se conserva declarado por si empieza a contar.
 [[ratelimits]]
 name = "LIMITADOR"
 namespace_id = "1001"

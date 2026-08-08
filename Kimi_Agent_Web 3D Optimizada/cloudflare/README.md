@@ -15,17 +15,37 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-`deploy` imprime la URL final, del estilo
-`https://syc-seo-audit.TU-SUBDOMINIO.workers.dev`.
+`deploy` imprime una URL de `*.workers.dev`, pero **no es la que usa la web**.
+El Worker se sirve desde un subdominio propio configurado en el panel de
+Cloudflare (Workers → Domains & Routes):
 
-Esa URL se pega en **una sola línea** de `app/index.html` (busca `SYC_AUDITOR`):
-
-```js
-window.SYC_AUDITOR='https://syc-seo-audit.TU-SUBDOMINIO.workers.dev';
+```
+https://audit.sycsolutions.company
 ```
 
-Mientras siga vacía, el formulario avisa de que no está conectado en lugar de
-fingir un análisis.
+Eso no es cosmético. Servirlo desde la zona propia es lo que hace que funcione
+la Cache API —y con ella el límite de peticiones, que en `*.workers.dev` no
+contaba nada—, permite añadir reglas de WAF de zona, y evita publicar el
+subdominio de la cuenta de Cloudflare en la cabecera de seguridad de la web.
+
+Si ese subdominio cambia hay que tocarlo en **dos** sitios, y los dos importan:
+
+```js
+// app/index.html  (busca SYC_AUDITOR)
+window.SYC_AUDITOR='https://audit.sycsolutions.company';
+```
+
+```
+# app/_headers  -> directiva connect-src de la CSP
+connect-src 'self' https://audit.sycsolutions.company
+```
+
+Si sólo se cambia el primero, la CSP bloquea la petición y el diagnóstico deja
+de funcionar sin decir por qué. Mientras `SYC_AUDITOR` siga vacía, el
+formulario avisa de que no está conectado en lugar de fingir un análisis.
+
+La dirección de `*.workers.dev` sigue activa y respondiendo; simplemente ya no
+la usa la web.
 
 ## Probar en local
 

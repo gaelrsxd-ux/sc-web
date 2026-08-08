@@ -3391,11 +3391,15 @@ function haceQue(ms){
    El navegador no puede leer otro dominio: la política de origen cruzado lo
    impide. El análisis lo hace el Worker de cloudflare/seo-audit.js y aquí sólo
    se pinta. Si AUDITOR sigue vacío, el formulario lo dice en vez de fingir. */
-/* ── ÚNICO valor a tocar tras desplegar el Worker ───────────────────────────
-   Pega aquí la URL que devuelve `npx wrangler deploy`, por ejemplo:
-   window.SYC_AUDITOR='https://syc-seo-audit.TU-SUBDOMINIO.workers.dev';
+/* ── ÚNICO valor a tocar si cambia el Worker ────────────────────────────────
+   El Worker se sirve desde un subdominio propio, no desde la URL de
+   *.workers.dev que devuelve `npx wrangler deploy`. Vivir en la zona propia no
+   es cosmético: es lo que hace que funcionen la Cache API —y con ella el límite
+   de peticiones— y las reglas de la zona. Además deja de publicar el
+   subdominio de la cuenta de Cloudflare en la cabecera de seguridad.
+   Si algún día cambia, hay que tocarlo aquí Y en connect-src de app/_headers.
    Mientras siga vacío el formulario lo dice en lugar de fingir un análisis. */
-window.SYC_AUDITOR='https://syc-seo-audit.gael-r-sxd.workers.dev';
+window.SYC_AUDITOR='https://audit.sycsolutions.company';
 
 (()=>{
   const f=document.getElementById('aud-form');

@@ -17,12 +17,19 @@
    protege de verdad el gasto de la cuenta es el limitador de tasa de más abajo,
    no esta lista. */
 const ORIGENES = [
+  /* El sitio en su dominio propio. `www` redirige aquí con 301, pero se deja
+     listado: la redirección la sigue el navegador ANTES de la petición al
+     Worker en la navegación normal, aunque un enlace directo con www podría
+     llegar todavía con ese Origin. */
   'https://sycsolutions.company',
   'https://www.sycsolutions.company',
-  /* Mientras no hay dominio propio, el sitio vive en Cloudflare Pages. Esta es
-     la URL de producción del proyecto (rama principal), estable entre
-     despliegues; las URLs de previsualización con hash cambian en cada
-     `wrangler pages deploy` y no se pueden fijar aquí de antemano. */
+  /* Se conserva porque el sitio SIGUE publicándose en este proyecto de Pages y
+     su dominio por defecto continúa activo y sirviendo la misma web: quitarlo
+     rompería el diagnóstico para quien llegue por ahí, sin ganar nada. Es
+     además la dirección donde se comprueba un despliegue antes de que el
+     dominio propio propague.
+     Las URLs de previsualización con hash NO están aquí a propósito: cambian
+     en cada `wrangler pages deploy` y no pueden fijarse de antemano. */
   'https://syc-solutions.pages.dev'
 ];
 
@@ -81,12 +88,10 @@ export default {
     /* La caché va ANTES del limitador: servir un informe ya calculado no cuesta
        peticiones salientes, así que no tiene sentido penalizarlo.
 
-       Ojo: esta consulta a la Cache API tampoco surte efecto en `*.workers.dev`
-       (ver `dentroDelTope`). Lo que de verdad evita repetir el análisis de una
-       misma dirección hoy es la cabecera Cache-Control de la respuesta, que sí
-       la respeta la caché de borde estándar. Los dos mecanismos se
-       complementan y el de aquí despertará al mover el Worker a un dominio
-       propio. */
+       Esta consulta a la Cache API sólo tiene efecto sirviendo desde el dominio
+       propio (ver `dentroDelTope`). Se complementa con la cabecera
+       Cache-Control de la respuesta, que la respeta la caché de borde estándar
+       y funciona en cualquier caso. */
     const clave = new Request(
       'https://cache.local/seo?u=' + encodeURIComponent(destino.href),
       { method: 'GET' }
@@ -163,33 +168,26 @@ const TOPE_POR_VENTANA = 20;   /* análisis nuevos por IP y minuto */
 /**
  * Cuenta peticiones por IP en ventanas de un minuto usando la caché de borde.
  *
- * ⚠ HOY NO SURTE EFECTO, y conviene saberlo antes de confiar en ello.
+ * FUNCIONA desde que el Worker se sirve en `audit.sycsolutions.company`.
+ * Medido en producción sobre ese dominio: la petición 21 recibe 429, y de 35
+ * seguidas pasan 20 y se bloquean 15. Es exactamente el tope de abajo.
  *
- * La Cache API sólo funciona en dominios propios: en `*.workers.dev` —que es
- * donde vive este Worker ahora mismo— `match()` siempre falla y `put()` no
- * guarda nada, así que el contador lee cero en cada petición y deja pasar
- * todo. Verificado: 30 peticiones seguidas y 40 en paralelo pasan enteras.
+ * Conviene saber por qué antes no funcionaba, para no repetir el error: la
+ * Cache API **sólo opera en dominios propios**. Mientras el Worker vivió en
+ * `*.workers.dev`, `match()` siempre fallaba y `put()` no guardaba nada, así
+ * que el contador leía cero en cada petición y dejaba pasar todo. El mismo
+ * código, sin tocar una línea, empezó a proteger al cambiar de dominio.
  *
- * Se deja escrito, no borrado, porque **empieza a proteger solo** en cuanto el
- * Worker se sirva desde `sycsolutions.company`. Ese es el arreglo de verdad, y
- * está esperando a que se compre el dominio.
+ * Limitación que se mantiene: leer y escribir no es atómico, así que una
+ * ráfaga simultánea lee el mismo valor y pasa entera —40 en paralelo siguen
+ * pasando—. Frena el abuso sostenido, que es la forma real de explotar esto:
+ * recorrer miles de dominios lleva tiempo. Para cortar también los picos hace
+ * falta una regla de Rate Limiting del WAF en la zona, que ya es posible ahora
+ * que hay dominio propio, o un contador atómico con Durable Objects.
  *
- * Por qué no hay alternativa que funcione hoy:
- *  · el binding nativo de Rate Limiting no cuenta en esta cuenta (comprobado
- *    con `wrangler tail`: se invoca y siempre devuelve success:true);
- *  · KV admite mil escrituras diarias en el plan gratuito, menos que un día
- *    de uso normal;
- *  · los Durable Objects, que darían un contador atómico de verdad, exigen
- *    plan de pago.
- *
- * Lo que SÍ acota el gasto hoy: la caché de borde estándar —la de la cabecera
- * Cache-Control, que no es la Cache API y sí funciona aquí— evita repetir el
- * análisis de una misma dirección, incluidos los errores. Y el plan gratuito
- * de Workers no factura excedente: al pasar el límite diario el Worker deja de
- * responder, no genera cobro.
- *
- * Cuando llegue el dominio, además de esto habrá que poner una regla de Rate
- * Limiting del WAF en la zona, que es la barrera fiable.
+ * El binding nativo de Rate Limiting sigue declarado y se invoca antes que
+ * esto, pero en esta cuenta devuelve success:true siempre (comprobado con
+ * `wrangler tail`). Se conserva por si empieza a contar; no se depende de él.
  */
 async function dentroDelTope(ip, ctx) {
   try {
