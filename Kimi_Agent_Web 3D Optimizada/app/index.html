@@ -1154,6 +1154,10 @@ footer .legal a:hover{color:var(--bronze)}
 /* Llegada por /?aud=: el campo viene relleno pero el análisis NO se lanza solo.
    Este latido señala dónde hay que pulsar. Solo opacidad, sin repintado. */
 .aud-form button.pide-clic{animation:pideclic 1.6s ease-in-out 3}
+/* Contenedor del widget anti-bots. En modo "sólo si hace falta interacción"
+   está vacío casi siempre, y entonces no debe ocupar ni un píxel. */
+.aud-ts{margin-top:14px}
+.aud-ts:empty{margin-top:0}
 @keyframes pideclic{0%,100%{opacity:1}50%{opacity:.35}}
 @media(prefers-reduced-motion:reduce){.aud-form button.pide-clic{animation:none}}
 .aud-note{margin-top:14px;font-size:11px;letter-spacing:1px;color:var(--dim);line-height:1.7}
@@ -3788,16 +3792,85 @@ window.SYC_AUDITOR='https://audit.sycsolutions.company';
       return{error:'Eso no parece una dirección pública. Falta el dominio, algo como tuempresa.com'};
     return{url:u};
   }
+  /* ── Verificación anti-bots ──────────────────────────────────────────────
+     El diagnóstico es la parte cara: cada análisis abre conexiones salientes
+     que se facturan a nuestra cuenta, y un bot puede recorrer miles de dominios
+     sin que ningún límite por IP lo note si cambia de IP. Turnstile encarece
+     eso lo suficiente para que no compense.
+
+     El script de Cloudflare se carga la PRIMERA vez que alguien va a analizar,
+     no en cada visita: quien sólo lee la portada no tiene por qué ejecutar
+     código de terceros. Render explícito y en modo "sólo si hace falta
+     interacción", así que lo normal es que el visitante no vea nada.
+
+     La sitekey es pública por diseño —va en el HTML y cualquiera la ve—; lo que
+     no puede salir de aquí es el secreto, que vive en el Worker. Si alguien la
+     devuelve al marcador PENDIENTE_SITEKEY, el formulario avisa en vez de
+     fingir, igual que hace SYC_AUDITOR cuando está vacío. */
+  const SITEKEY='0x4AAAAAAEKjpagA_DLwswxz';
+  let tsCarga=null,tsId=null,tsToken=null,tsPend=null;
+
+  function cargaTs(){
+    if(tsCarga)return tsCarga;
+    tsCarga=new Promise((ok,mal)=>{
+      const s=document.createElement('script');
+      s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.async=true;s.defer=true;
+      s.onload=()=>ok();s.onerror=()=>mal(new Error('sin-verificacion'));
+      document.head.appendChild(s);
+    });
+    return tsCarga;
+  }
+
+  function cajaTs(){
+    let c=document.getElementById('aud-ts');
+    if(!c){c=document.createElement('div');c.id='aud-ts';c.className='aud-ts';
+           f.insertAdjacentElement('afterend',c);}
+    return c;
+  }
+
+  async function pideToken(){
+    if(tsToken)return tsToken;
+    if(SITEKEY==='PENDIENTE_SITEKEY')throw new Error('sin-verificacion');
+    await cargaTs();
+    if(tsId===null){
+      tsId=window.turnstile.render(cajaTs(),{
+        sitekey:SITEKEY,action:'diagnostico-seo',appearance:'interaction-only',
+        callback:t=>{tsToken=t;if(tsPend){tsPend.ok(t);tsPend=null;}},
+        'error-callback':()=>{if(tsPend){tsPend.mal(new Error('sin-verificacion'));tsPend=null;}},
+        'expired-callback':()=>{tsToken=null;}
+      });
+    }
+    return new Promise((ok,mal)=>{
+      tsPend={ok,mal};
+      /* Si el desafío no se resuelve en medio minuto, se avisa en vez de dejar
+         el botón girando para siempre. */
+      setTimeout(()=>{if(tsPend){tsPend=null;mal(new Error('sin-verificacion'));}},30000);
+    });
+  }
+
+  /* Un token se gasta en cuanto el Worker lo valida —son de un solo uso—, así
+     que el siguiente análisis necesita uno nuevo, haya ido bien o mal. */
+  function reiniciaTs(){
+    tsToken=null;
+    if(tsId!==null&&window.turnstile){try{window.turnstile.reset(tsId);}catch(_){}}
+  }
+
   async function consulta(u){
     const punto=window.SYC_AUDITOR;
     if(!punto)throw new Error('sin-servicio');
     if(navigator.onLine===false)throw new Error('sin-red');
+    const t=await pideToken();
     const ctl=new AbortController(),
           reloj=setTimeout(()=>ctl.abort(),20000);
     let r;
-    try{r=await fetch(punto+'?url='+encodeURIComponent(u),{signal:ctl.signal});}
-    finally{clearTimeout(reloj);}
+    try{r=await fetch(punto+'?url='+encodeURIComponent(u),
+      {signal:ctl.signal,headers:{'X-Turnstile-Token':t}});}
+    finally{clearTimeout(reloj);reiniciaTs();}
     const d=await r.json().catch(()=>null);
+    if(r.status===403)throw new Error('verificacion');
+    if(r.status===429)throw new Error('demasiados');
+    if(r.status===503)throw new Error('no-disponible');
     if(!r.ok||!d)throw new Error((d&&d.error)||'sin-respuesta');
     if(d.error)throw new Error(d.error);
     return d;
@@ -3811,6 +3884,14 @@ window.SYC_AUDITOR='https://audit.sycsolutions.company';
       return'Ese sitio tardó más de veinte segundos en responder. Eso, en sí mismo, ya es un hallazgo.';
     if(m==='sin-servicio')
       return'El diagnóstico no está conectado ahora mismo. Escríbenos y lo hacemos a mano hoy.';
+    if(m==='sin-verificacion')
+      return'No pudimos completar la verificación anti-bots. Recarga la página e inténtalo otra vez.';
+    if(m==='verificacion')
+      return'La verificación anti-bots caducó. Vuelve a pulsar Analizar.';
+    if(m==='demasiados')
+      return'Has pedido varios análisis seguidos. Espera un minuto y vuelve a intentarlo.';
+    if(m==='no-disponible')
+      return'El diagnóstico no está disponible ahora mismo. Inténtalo en un minuto.';
     if(m==='sin-red'||err instanceof TypeError)
       return'No hay conexión, o se cortó a mitad. Vuelve a intentarlo cuando tengas red.';
     if(m==='incompleto'||m==='sin-respuesta')

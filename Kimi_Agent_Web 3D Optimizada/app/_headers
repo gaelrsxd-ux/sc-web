@@ -43,7 +43,15 @@
   # style-src conserva 'unsafe-inline' a propósito: el riesgo de una inyección de
   # estilos es muy inferior al de ejecución de código, y los estilos inline están
   # repartidos por todo el marcado, no en tres bloques.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-oASLDhF/wrdjgKb1jWSEHw+P3icd6tVkULphaCwYYfo=' 'sha256-GgRFCfrGnrlkUeGeTEDE1tXdwN/PZHDDL0V2Zm2+t1A=' 'sha256-H0jtfUxxLv/ng8XpF6w45V3fHaWoVMsGuad8q/3MamY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://audit.sycsolutions.company; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+  #
+  # Turnstile añade EXACTAMENTE dos valores, que son los que documenta
+  # Cloudflare en su página de CSP: `script-src` para cargar api.js y
+  # `frame-src` para el iframe del widget. Nada más. La doc menciona además
+  # `connect-src 'self'`, pero sólo para el modo pre-clearance, que no usamos, y
+  # 'self' ya está.
+  # No hace falta unsafe-inline: Turnstile no exige estilos ni scripts en línea,
+  # y los scripts propios siguen autorizados por su huella.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'sha256-oASLDhF/wrdjgKb1jWSEHw+P3icd6tVkULphaCwYYfo=' 'sha256-GgRFCfrGnrlkUeGeTEDE1tXdwN/PZHDDL0V2Zm2+t1A=' 'sha256-RyxZl7dla9Apn6xXYKzDQN3s8kZ9aQVcP05bvLL+cNI='; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://audit.sycsolutions.company; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
 
 # Aquí NO se toca la caché de /assets/*. Los fondos se llaman siempre igual
 # —hero-bg.webp, bg-servicios.webp…— y se han sustituido ya un par de veces:

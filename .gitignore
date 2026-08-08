@@ -16,3 +16,19 @@
 # Caché de Wrangler. Incluye wrangler-account.json, que guarda la cuenta de
 # Cloudflare: no tiene por qué acabar en el repositorio.
 .wrangler/
+
+# Secretos locales. Hasta ahora la única defensa contra un .env era el hook de
+# pre-commit, que se salta con --no-verify; y .dev.vars —que es justo donde
+# wrangler dev lee los secretos locales, y por tanto donde va a acabar
+# SAL_LIMITE al trabajar en local— no lo cubría nadie.
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+
+# Material criptográfico suelto.
+*.pem
+*.key
+*.p12
+*.pfx

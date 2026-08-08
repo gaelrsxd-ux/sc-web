@@ -1,0 +1,29 @@
+# Escenario: ENTORNO NO está definido.
+#
+# Sirve para comprobar la polaridad: todo lo que no sea "dev" explícito debe
+# comportarse como producción. Es decir, con esta config el Worker tiene que
+# rechazar las claves de prueba de Turnstile e ignorar la sobrescritura de
+# TURNSTILE_URL. Nunca se despliega.
+
+name = "syc-seo-audit-sinentorno"
+main = "arnes.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+# A propósito: sin ENTORNO.
+LIMITE_ATOMICO = "on"
+SAL_LIMITE = "5b8f2c1e9a4d7063fe1528cb3a9d64e07f2b8c5a1d3e6904b7f8c2a5d1e63b90"  # secreto-permitido: valor falso de pruebas
+TURNSTILE_SECRET = "1x0000000000000000000000000000000AA"
+TURNSTILE_HOSTNAMES = "example.com"
+
+[[durable_objects.bindings]]
+name = "LIMITADOR_DO"
+class_name = "LimitadorIP"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LimitadorIP"]
+
+[[services]]
+binding = "YO"
+service = "syc-seo-audit-sinentorno"

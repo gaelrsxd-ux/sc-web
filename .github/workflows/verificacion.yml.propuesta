@@ -1,0 +1,73 @@
+# PROPUESTA — NO ACTIVA.
+#
+# Este archivo termina en `.propuesta` a propósito: GitHub sólo ejecuta lo que
+# encuentra como `.yml` dentro de .github/workflows/, así que mientras conserve
+# esta extensión no corre nada. Para activarlo hay que renombrarlo, y eso es una
+# decisión con consecuencias (consume minutos de Actions en un repo privado).
+#
+#   git mv .github/workflows/verificacion.yml.propuesta .github/workflows/verificacion.yml
+#
+# Qué resuelve: hoy las cuatro comprobaciones que sostienen este proyecto sólo
+# se ejecutan si alguien se acuerda. El hook de pre-commit cubre una —el escáner
+# de secretos— y se salta con --no-verify. Esto las convierte en una barrera que
+# no depende de la memoria de nadie.
+#
+# No necesita NINGÚN secreto: `wrangler deploy --dry-run` compila sin
+# autenticarse y `wrangler dev` corre en local con workerd. Esa es la razón de
+# que la lista sea justo esta y no incluya nada que toque Cloudflare de verdad.
+
+name: verificación
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # El escáner de secretos con --todo mira los archivos versionados;
+          # con el historial completo también se puede ampliar a los commits.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Escáner de secretos
+        run: node tools/scan-secretos.mjs --todo
+
+      - name: Hashes de la CSP sincronizados con el HTML
+        run: node tools/csp-hashes.mjs --check
+
+      - name: Pruebas del limitador (concurrencia, fallo cerrado, mutación, SSRF)
+        working-directory: Kimi_Agent_Web 3D Optimizada/cloudflare
+        # Cada suite levanta su propio wrangler dev. En serie a propósito: en
+        # paralelo se saturan los recursos y las pruebas fallan por tiempo.
+        #
+        # AVISO: esta suite NECESITA salida a Internet. Varias pruebas de
+        # turnstile.test.mjs llaman al siteverify REAL de Cloudflare con las
+        # claves de prueba públicas, y una de ellas —«POLARIDAD: sin ENTORNO,
+        # TURNSTILE_URL se IGNORA»— depende justamente de que la llamada salga
+        # de verdad: comprueba que el simulador local recibe cero peticiones
+        # porque el Worker fue al servicio real. En un runner sin red esa prueba
+        # no da un falso verde, pero sí falla por un motivo que no es el suyo.
+        # Si algún día hace falta un job sin red, hay que saltarla de forma
+        # condicional, no relajarla.
+        run: node --test --test-concurrency=1 "test/*.test.mjs"
+
+      - name: El Worker compila y declara los bindings esperados
+        working-directory: Kimi_Agent_Web 3D Optimizada/cloudflare
+        run: npx --yes wrangler@4.120.0 deploy --dry-run --outdir /tmp/dry
+
+# Pendiente antes de activarlo, y no es trivial:
+#   - Las suites tardan ~65 s en esta máquina. En un runner compartido, más.
+#   - `test/*.test.mjs` arranca varios `wrangler dev`; hay que comprobar que los
+#     puertos 8931 y 8961-8971 están libres en el runner y que el árbol de
+#     procesos se limpia en Linux (el código ya distingue Windows de POSIX).
+#   - Decidir si se ejecuta en cada push o sólo en pull request, por coste.

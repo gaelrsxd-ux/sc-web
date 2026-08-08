@@ -1,0 +1,49 @@
+# Config SOLO para pruebas locales. No se despliega: el nombre es distinto, el
+# punto de entrada es el arnés y el service binding a sí mismo no tiene sentido
+# en producción.
+#
+#   npx wrangler dev -c test/wrangler.test.toml
+
+name = "syc-seo-audit-test"
+main = "arnes.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+# "dev" es necesario aquí: es lo que permite usar las claves de prueba de
+# Turnstile. Fuera de desarrollo el Worker las rechaza con 503 a propósito, para
+# que una clave de prueba desplegada por error no convierta el control en un
+# adorno.
+ENTORNO = "dev"
+LIMITE_ATOMICO = "on"
+
+# Clave de prueba PÚBLICA de Cloudflare, de la página "Testing": siempre pasa.
+# No es un secreto y no protege nada; está aquí y no en .dev.vars para que la
+# suite funcione en cualquier máquina sin preparación previa.
+TURNSTILE_SECRET = "1x0000000000000000000000000000000AA"
+
+# Con claves de prueba, siteverify devuelve siempre hostname "example.com"
+# —comprobado contra el servicio real; la doc muestra "localhost", que es
+# engañoso—. En producción esta variable no se define y se usan los hostnames
+# de ORIGENES.
+TURNSTILE_HOSTNAMES = "example.com"
+# En producción esto es un secreto (`wrangler secret put SAL_LIMITE`). Aquí es
+# una variable normal y con un valor fijo a propósito: las pruebas tienen que
+# ser reproducibles, y esta sal no protege nada real. Cumple el formato mínimo
+# (64 hex = 256 bits) para que la validación no la rechace; NO es un secreto y
+# no debe usarse en producción bajo ningún concepto.
+SAL_LIMITE = "5b8f2c1e9a4d7063fe1528cb3a9d64e07f2b8c5a1d3e6904b7f8c2a5d1e63b90"  # secreto-permitido: valor falso de pruebas
+
+[[durable_objects.bindings]]
+name = "LIMITADOR_DO"
+class_name = "LimitadorIP"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LimitadorIP"]
+
+# Binding a sí mismo. Es lo que permite abanicar subpeticiones desde dentro del
+# isolate y conseguir solape real: entrando por TCP, workerd las atiende de una
+# en una y la prueba de concurrencia no probaría nada.
+[[services]]
+binding = "YO"
+service = "syc-seo-audit-test"

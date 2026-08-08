@@ -7,6 +7,13 @@ compatibility_date = "2026-07-01"
 # Para trabajar en local:  npx wrangler dev --var ENTORNO:dev
 ENTORNO = "prod"
 
+# Interruptor de retirada en caliente del limitador atómico. Con "off" el Worker
+# deja de consultar el Durable Object y vuelve a las capas anteriores, sin
+# desplegar código nuevo.
+# Aviso: `wrangler deploy --var` NO persiste; para que sobreviva al siguiente
+# despliegue rutinario hay que cambiarlo aquí.
+LIMITE_ATOMICO = "on"
+
 # Limitador de tasa por IP. Es la barrera real contra el abuso del endpoint: la
 # lista CORS no lo es (curl la ignora) y la caché solo corta el martilleo sobre
 # la MISMA URL, no recorrer miles de dominios distintos.
@@ -23,8 +30,92 @@ namespace_id = "1001"
   limit = 20
   period = 60
 
-# El Worker no guarda nada: lee la página, puntúa y responde. El único estado
-# es la caché de borde, que ya viene incluida sin declarar binding alguno.
+# Limitador atómico. Es la única capa que cuenta bien una ráfaga simultánea:
+# ni la regla del WAF (cuenta por centro de datos y con retraso) ni el contador
+# sobre la Cache API (lee y escribe en dos pasos) lo consiguen. Medido antes de
+# esto: de 40 peticiones a la vez pasaban 39.
+[[durable_objects.bindings]]
+name = "LIMITADOR_DO"
+class_name = "LimitadorIP"
+
+# `new_sqlite_classes`, no `new_classes`: el almacenamiento SQLite es el que
+# permite leer y escribir de forma SÍNCRONA, y esa es justamente la propiedad
+# de la que sale la atomicidad. Con el almacenamiento clásico (asíncrono) haría
+# falta un `await` entre leer y escribir, que es el hueco por el que se cuela
+# la ráfaga.
+#
+# El tag no se toca nunca más una vez desplegado: es el identificador de la
+# migración, no un número de versión del código.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LimitadorIP"]
+
+# El Worker no guarda nada de lo que analiza: lee la página, puntúa y responde.
+# El único estado propio son los contadores del limitador, que sólo contienen
+# marcas de tiempo, y la caché de borde.
+#
+# ATENCIÓN ANTES DE DESPLEGAR: falta un secreto, y sin él el diagnóstico NO
+# funciona para nadie.
+#
+# El limitador falla CERRADO. Sin SAL_LIMITE no hay forma de derivar la
+# identidad, así que cada petición se responde 503 con
+# X-Limitador: sin-identidad, y el análisis no se ejecuta. El Worker arranca y
+# el sitio público no se ve afectado, pero el diagnóstico queda caído al 100 %
+# hasta que exista el secreto.
+#
+# Por eso el secreto va PRIMERO y en un paso aparte. Ver DESPLIEGUE.md.
+#
+#   npx wrangler secret put SAL_LIMITE
+#
+# Requisitos: mínimo 43 caracteres y al menos 16 símbolos distintos. Se genera
+# con 32 bytes aleatorios sin que el valor pase por pantalla ni por disco; el
+# comando exacto está en DESPLIEGUE.md.
+#
+# Y hace falta un SEGUNDO secreto, por el mismo motivo y con la misma
+# consecuencia si falta: sin él, 503 para todos.
+#
+#   npx wrangler secret put TURNSTILE_SECRET
+#
+# Es la secret key del widget de Turnstile, que se crea en el panel. El Worker
+# rechaza las claves de PRUEBA fuera de desarrollo a propósito: la que "siempre
+# pasa" aceptaría cualquier cosa y dejaría el control en un adorno.
+
+# Topes de recursos. Son un cinturón contra un bug propio, no contra el tráfico:
+# lo que protege del abuso es el limitador. Aviso de la documentación que
+# conviene tener presente al leer las pruebas: estos límites SÓLO se aplican
+# desplegado en la red de Cloudflare, `wrangler dev` no los respeta. Por eso el
+# tope de subpeticiones existe TAMBIÉN como contador en el código
+# (MAX_SUBPETICIONES en seo-audit.js), que es el que sí se puede probar en local
+# y el que devuelve un error entendible en vez de matar la invocación.
+#
+# subrequests: MEDIDO en local instrumentando el fetch global. Un análisis de un
+#   sitio real gasta 3 (página + robots.txt + sitemap.xml) más 1 de la
+#   validación del token: 4 en total. Un dominio que no resuelve gasta 2. El
+#   peor caso posible según el código son 12 del análisis —cada uno de esos tres
+#   con hasta 3 redirecciones— más 1 del token: 13. 50 deja casi cuatro veces
+#   ese peor caso y sigue muy por debajo del techo del plan.
+# cpu_ms: el análisis es de espera, no de cálculo —12 s de presupuesto de red y
+#   un tope de 1,5 MB de HTML que HTMLRewriter procesa en flujo—. Medido en
+#   local, un análisis completo de un sitio real tarda 378 ms de RELOJ, casi
+#   todo esperando a la red; el tiempo de CPU es una fracción de eso. 1000 ms
+#   deja margen de sobra y aun así queda treinta veces por debajo del valor por
+#   defecto del plan, que es lo que hace que un bucle infinito se corte en vez
+#   de facturarse.
+#   Lo que NO se ha medido: el p99 de CPU real. Hace falta la telemetría de
+#   producción y este token no puede leerla. El valor está elegido por arriba a
+#   propósito para que esa incertidumbre no rompa nada.
+[limits]
+subrequests = 50
+cpu_ms = 1000
 
 [observability]
 enabled = true
+
+# Los invocation logs guardan la petición y su metadatos —incluida la IP del
+# visitante y la URL completa— durante días. Es justo lo que este Worker se
+# esfuerza en no almacenar: la identidad viaja como HMAC y la IP no se escribe
+# en ninguna tabla. Guardarla en los logs por defecto anularía ese trabajo.
+# Lo que se conserva: las trazas y lo que el Worker escribe a propósito con
+# console, que es agregado y sin datos personales.
+[observability.logs]
+invocation_logs = false

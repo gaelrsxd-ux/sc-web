@@ -64,7 +64,19 @@ for (const p of paginas) {
   for (const h of hs) if (!hashes.includes(h)) hashes.push(h);
 }
 
-const directiva = "script-src 'self' " + hashes.map(h => `'${h}'`).join(' ');
+/* Orígenes externos autorizados en script-src, aparte de 'self' y los hashes.
+   Viven aquí y no sueltos en _headers por un motivo: este script REESCRIBE la
+   directiva entera cada vez que corre, así que cualquier origen añadido a mano
+   allí desaparecería en la siguiente regeneración —silenciosamente, y la web se
+   quedaría sin ese recurso—. Teniéndolos aquí, la lista es una sola y cualquier
+   añadido se ve en el diff de un archivo que se revisa.
+
+   challenges.cloudflare.com: lo exige Turnstile para cargar api.js. Es lo único
+   que documenta Cloudflare junto a frame-src, que no gestiona este script. */
+const ORIGENES_SCRIPT = ['https://challenges.cloudflare.com'];
+
+const directiva = "script-src 'self' " + ORIGENES_SCRIPT.join(' ') + ' ' +
+  hashes.map(h => `'${h}'`).join(' ');
 
 const original = readFileSync(HEADERS, 'utf8');
 

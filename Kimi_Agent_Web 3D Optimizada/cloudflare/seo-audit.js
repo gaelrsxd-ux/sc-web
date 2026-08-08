@@ -46,22 +46,138 @@ const SALTOS_MAX   = 3;           /* redirecciones que seguimos a mano */
 const CACHE_OK_S   = 3600;        /* informes correctos: una hora */
 const CACHE_ERR_S  = 300;         /* errores: cinco minutos, ver nota abajo */
 
+const VENTANA_MS = 60_000;        /* ventana del limitador atómico */
+
+/* Única ruta que ejecuta el análisis. Tiene que coincidir con la que llama el
+   frontend (`window.SYC_AUDITOR` + '?url=' en app/index.html). Todo lo demás
+   responde 404 sin mirar siquiera el parámetro. */
+const RUTA_DIAGNOSTICO = '/';
+
+/* ---------- Turnstile ---------- */
+
+const TURNSTILE_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+
+/* El token viaja en cabecera, NUNCA en la URL: en la query acabaría en los logs
+   de acceso, en la cabecera Referer y en la clave de caché. */
+const TURNSTILE_CABECERA = 'X-Turnstile-Token';
+
+/* 2048 es el máximo documentado por Cloudflare ("Maximum length: 2048
+   characters"), y su propio ejemplo canónico rechaza por encima de ahí antes de
+   llamar a siteverify. Se usa igual: un token que no puede ser válido no merece
+   gastar una subpetición de red. */
+const TURNSTILE_MAX = 2048;
+
+const TURNSTILE_ACCION = 'diagnostico-seo';
+const TURNSTILE_ESPERA_MS = 5_000;
+
+/* Claves de prueba públicas de Cloudflare, documentadas en la página "Testing".
+   Se reconocen aquí por una razón concreta: con ellas siteverify NO devuelve el
+   campo `action`, así que exigirlo haría imposible probar el camino feliz sin un
+   navegador. Detectarlas permite relajar ESA comprobación sólo en desarrollo,
+   sin tocar el camino de producción. Y sirve de red: una clave de prueba en
+   producción se rechaza en vez de convertir Turnstile en un adorno. */
+const TURNSTILE_SECRETOS_DE_PRUEBA = new Set([
+  '1x0000000000000000000000000000000AA',   /* siempre pasa */
+  '2x0000000000000000000000000000000AA',   /* siempre falla */
+  '3x0000000000000000000000000000000AA'    /* token ya gastado */
+]);
+
+/* Presupuesto para la consulta al Durable Object. Existe porque el modo de
+   fallo dominante de un Durable Object no es el error, es la LENTITUD: cuando
+   un objeto está saturado el runtime encola las peticiones antes de devolver
+   error, y durante todo ese rato no hay ninguna excepción que capturar.
+   Superarlo NO abre: falla cerrado, así que quedarse corto no es un agujero,
+   es indisponibilidad. Por eso el valor se elige por arriba.
+
+   Medido en local (test/medir.mjs): el limitador tarda 7 ms en p99 con el
+   objeto caliente y 30 ms con el objeto recién creado. El caso caro no es ese,
+   es la cola: 100 peticiones simultáneas contra la MISMA identidad se
+   serializan en el objeto y dan p99 de 1108 ms. Con el presupuesto en 800 ms
+   —el valor inicial— esas peticiones excedidas devolvían 503 en vez del 429
+   que les corresponde. En producción hay que sumar además el viaje hasta el
+   centro de datos donde viva el objeto, que puede estar en otro continente.
+   1500 ms cubre cola, arranque en frío y travesía con margen, y sigue siendo
+   una octava parte del presupuesto del análisis (12 s). */
+const PRESUPUESTO_DO_MS = 1500;
+
+/* La clase la registra el runtime por el nombre exportado, así que este
+   reexport es obligatorio y no puede ser condicional: si limitador-do.js no
+   carga, no falla el limitador, falla el Worker entero. Por eso la suite de
+   pruebas carga ESTE archivo y no un doble. */
+export { LimitadorIP } from './limitador-do.js';
+
 export default {
   async fetch(peticion, env, ctx) {
     const dev = env && env.ENTORNO === 'dev';
     const permitidos = dev ? [...ORIGENES, ...ORIGENES_DEV] : ORIGENES;
     const origen = peticion.headers.get('Origin') || '';
+    /* NO "ARREGLES" ESTE `permitidos[0]` OMITIENDO LA CABECERA. Parece el fallo
+       clásico y es justo lo contrario: es lo único que hoy impide un fallo de
+       verdad. Medido sobre una copia de este Worker:
+
+         si a un origen no permitido se le responde SIN cabecera, la respuesta
+         guardada en la Cache API conserva la ACAO del primer origen que pobló
+         esa entrada, porque `Headers.set` no borra lo que no se le pasa. A
+         partir de ahí, durante una hora, todos reciben la ACAO de otro. Un
+         visitante que llegue por `www` recibiría la del dominio raíz y su
+         navegador le cortaría el diagnóstico.
+
+       Devolver siempre un origen de la lista mantiene la respuesta uniforme y
+       deja que sea el navegador quien deniegue: no coincide con su origen y
+       corta la lectura. Si algún día hay que cambiarlo, hay que borrar
+       explícitamente la ACAO de la copia cacheada en el mismo commit.
+
+       Y no se toca `Access-Control-Allow-Credentials`: sin él, ni cookies ni
+       cabeceras de autenticación viajan, que es lo que se quiere. */
     const cors = {
       'Access-Control-Allow-Origin': permitidos.includes(origen) ? origen : permitidos[0],
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      /* Sin esto el navegador ni siquiera intenta la petición: mandar una
+         cabecera propia obliga a preflight, y el preflight sólo pasa si el
+         servidor la declara aquí. */
+      'Access-Control-Allow-Headers': TURNSTILE_CABECERA,
       'Access-Control-Max-Age': '86400',
       'Vary': 'Origin'
     };
 
-    if (peticion.method === 'OPTIONS') return new Response(null, { headers: cors });
-    if (peticion.method !== 'GET') return json({ error: 'método no permitido' }, 405, cors);
+    const url = new URL(peticion.url);
+    const ruta = url.pathname;
 
-    const cruda = new URL(peticion.url).searchParams.get('url');
+    /* Lista blanca de rutas. Hasta ahora el Worker ignoraba el path y analizaba
+       con cualquier ruta que llevara ?url=, y eso se explotó de verdad: una
+       regla de la zona que salta la fase de bots para /robots.txt y
+       /sitemap.xml no filtraba por hostname, así que
+       `audit.sycsolutions.company/robots.txt?url=…` devolvía el informe entero
+       saltándose Super Bot Fight Mode.
+
+       La regla de la zona hay que arreglarla igual, pero esta comprobación
+       existe para que ese fallo no vuelva a depender de una sola capa: aunque
+       alguien vuelva a abrir el skip por error, aquí ya no hay nada que abrir.
+       Ninguna ruta que no sea la canónica ejecuta el análisis. */
+    if (ruta === '/robots.txt') {
+      /* Propio y restrictivo: esto es una API, no tiene nada que indexar. Se
+         responde igual lleve query o no, y en ningún caso analiza nada. */
+      if (peticion.method !== 'GET' && peticion.method !== 'HEAD') {
+        return json({ error: 'método no permitido' }, 405, { ...cors, 'Allow': 'GET, HEAD' });
+      }
+      return new Response('User-agent: *\nDisallow: /\n', {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'public, max-age=86400',
+          'X-Content-Type-Options': 'nosniff'
+        }
+      });
+    }
+
+    if (ruta !== RUTA_DIAGNOSTICO) return json({ error: 'no encontrado' }, 404, cors);
+
+    if (peticion.method === 'OPTIONS') return new Response(null, { headers: cors });
+    if (peticion.method !== 'GET') {
+      return json({ error: 'método no permitido' }, 405, { ...cors, 'Allow': 'GET, OPTIONS' });
+    }
+
+    const cruda = url.searchParams.get('url');
     if (!cruda) return json({ error: 'falta el parámetro url' }, 400, cors);
 
     /* Solo se antepone https cuando NO hay esquema alguno. Comprobar únicamente
@@ -85,8 +201,86 @@ export default {
     const veto = inseguro(destino);
     if (veto) return json({ error: veto }, 400, cors);
 
-    /* La caché va ANTES del limitador: servir un informe ya calculado no cuesta
-       peticiones salientes, así que no tiene sentido penalizarlo.
+    /* Turnstile, y va ANTES del limitador a propósito. El orden importa: si el
+       token se validara después, cualquiera podría gastar la cuota de una IP
+       compartida mandando basura, sin resolver un solo desafío. Así un token
+       ausente o inválido no cuesta ni una plaza del contador.
+       Va después de validar la URL porque esa comprobación es local y gratis:
+       no tiene sentido gastar una subpetición contra siteverify para acabar
+       rechazando la petición por una dirección mal escrita. */
+    const prechequeo = prechequeaToken(peticion.headers.get(TURNSTILE_CABECERA));
+    if (prechequeo) {
+      cors['X-Limitador'] = 'turnstile-precheck';
+      return json(
+        { error: 'verificación anti-bots ausente o no válida', renovar: true },
+        403,
+        cors
+      );
+    }
+
+    const ts = await verificaTurnstile(env, peticion.headers.get(TURNSTILE_CABECERA).trim());
+    if (!ts.ok) {
+      cors['X-Limitador'] = ts.estado;
+      /* Sólo se registran los fallos de configuración o de plataforma. Un token
+         rechazado es funcionamiento normal y ruido en el log. */
+      if (ts.codigo !== 403) registra('turnstile-degradado', { estado: ts.estado });
+      if (ts.codigo === 403) {
+        return json(
+          { error: 'verificación anti-bots ausente o no válida', renovar: true },
+          403,
+          cors
+        );
+      }
+      return json(
+        { error: 'el diagnóstico no está disponible en este momento; inténtalo en un minuto' },
+        503,
+        { ...cors, 'Retry-After': '60' }
+      );
+    }
+
+    const ip = peticion.headers.get('CF-Connecting-IP') || 'desconocida';
+    /* La IP no vuelve a aparecer a partir de aquí: lo que circula es su
+       seudónimo. Es null si no hay sal configurada o si no había cabecera. */
+    const seudo = await seudonimo(ip, env);
+
+    /* Limitador atómico, y va ANTES de la caché a propósito.
+       Antes el orden era el contrario, con este razonamiento: servir un informe
+       ya calculado no cuesta peticiones salientes, así que no había que
+       penalizarlo. Sigue siendo verdad, pero deja un agujero que importa más:
+       una ráfaga simultánea contra una URL YA CACHEADA se serviría entera sin
+       tocar ningún limitador, que es justo el pico que había que cerrar.
+       Ponerlo delante no endurece nada que no estuviera ya endurecido: la regla
+       de Rate Limiting del WAF cuenta desde hace un rato TODAS las peticiones a
+       este host, aciertos de caché incluidos, con el mismo tope de 20/60s. Esto
+       sólo hace exacto lo que aquella capa ya intenta hacer. */
+    const lim = await topeAtomico(env, seudo);
+    cors['X-Limitador'] = lim.estado;
+
+    if (!lim.permitido) {
+      /* Dos negativas distintas y no conviene mezclarlas. `limite` es el
+         funcionamiento normal: has gastado tu cuota, vuelve en un minuto. Todo
+         lo demás es que el limitador NO PUDO decidir, y entonces el diagnóstico
+         no se ejecuta —falla cerrado— porque es la operación cara. Decirle 429
+         a alguien que no ha gastado nada sería mentirle, y además invitaría a
+         reintentar contra un sistema que ya está mal. */
+      if (lim.estado === 'limite') {
+        return json(
+          { error: 'demasiados análisis seguidos; espera un minuto e inténtalo de nuevo' },
+          429,
+          { ...cors, 'Retry-After': String(esperaRedondeada(lim.esperaS)) }
+        );
+      }
+      registra('limitador-cerrado', { estado: lim.estado });
+      return json(
+        { error: 'el diagnóstico no está disponible en este momento; inténtalo en un minuto' },
+        503,
+        { ...cors, 'Retry-After': '60' }
+      );
+    }
+
+    /* La caché va antes del limitador POR CACHE API: servir un informe ya
+       calculado no cuesta peticiones salientes, así que no tiene sentido
+       penalizarlo dos veces.
 
        Esta consulta a la Cache API sólo tiene efecto sirviendo desde el dominio
        propio (ver `dentroDelTope`). Se complementa con la cabecera
@@ -103,10 +297,14 @@ export default {
       return copia;
     }
 
-    /* Limitador por IP. Es la única barrera real contra el abuso: sin él,
-       recorrer miles de dominios distintos nunca toca caché y cada intento son
-       peticiones salientes reales facturadas a nuestra cuenta. */
-    const ip = peticion.headers.get('CF-Connecting-IP') || 'desconocida';
+    /* Tercera capa. Con el Durable Object sano esta ya no puede rechazar nada:
+       aquí sólo llegan peticiones que el limitador atómico admitió, y admite 20
+       como mucho por ventana, que es el mismo tope que mira esta.
+       Se conserva por dos motivos, y ninguno es el que decía este comentario
+       antes —que el limitador atómico fallaba abierto; ya no, falla cerrado—:
+       cubre el caso de que alguien apague el limitador con LIMITE_ATOMICO=off,
+       y cubre el hostname *.workers.dev, donde no llega la regla del WAF.
+       Es una red, no una capa activa. */
     let permitido = true;
 
     /* Binding nativo de Rate Limiting. Se conserva la llamada porque cuando
@@ -127,7 +325,7 @@ export default {
        entera. Lo que sí acota es el abuso SOSTENIDO, que es la forma real de
        explotarlo —recorrer miles de dominios lleva tiempo—. El tope exacto
        importa menos que el hecho de que exista. */
-    if (permitido) permitido = await dentroDelTope(ip, ctx);
+    if (permitido) permitido = await dentroDelTope(seudo || ip, ctx);
 
     if (!permitido) {
       return json(
@@ -145,6 +343,9 @@ export default {
          a dominios inexistentes o que no devuelven HTML nunca tocaba caché, así
          que cada intento provocaba peticiones salientes reales. Amplificación
          de 1 entrante a 3 salientes, indefinidamente. */
+      /* Del destino sólo el host: sirve para ver si un dominio concreto está
+         dando guerra y no arrastra ruta ni parámetros. */
+      registra('analisis-fallido', { host: destino.hostname, motivo: mensaje(e) });
       const fallo = json({ error: mensaje(e) }, 502, cors);
       fallo.headers.set('Cache-Control', 'public, max-age=' + CACHE_ERR_S);
       if (ctx) ctx.waitUntil(caches.default.put(clave, fallo.clone()));
@@ -161,9 +362,332 @@ export default {
   }
 };
 
+/**
+ * Comprobación local del token, ANTES de gastar una subpetición de red.
+ *
+ * Devuelve null si el token es plausible, o el motivo del rechazo. No dice si el
+ * token es válido —eso sólo lo sabe siteverify—, sólo descarta lo que no puede
+ * serlo. Es el mismo criterio que publica Cloudflare como canónico.
+ */
+function prechequeaToken(token) {
+  if (typeof token !== 'string') return 'ausente';
+  const t = token.trim();
+  if (!t) return 'ausente';
+  if (t.length > TURNSTILE_MAX) return 'demasiado largo';
+  /* Base64 y base64url, más el punto que separa las partes del token. Cualquier
+     otra cosa —espacios, control, unicode— no puede venir del widget. */
+  if (!/^[A-Za-z0-9._~+/=-]+$/.test(t)) return 'caracteres no válidos';
+  return null;
+}
+
+/** Hostnames donde puede haberse renderizado el widget. Es el hostname del
+ *  SITIO, no el de esta API: el widget vive en la web pública. */
+function hostnamesTurnstile(env) {
+  const config = env && env.TURNSTILE_HOSTNAMES;
+  if (config) return String(config).split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  return ORIGENES.map(o => new URL(o).hostname.toLowerCase());
+}
+
+/**
+ * Valida el token contra siteverify.
+ *
+ * Falla CERRADO en todos los caminos: un problema de red o una respuesta que no
+ * se entiende NO deja pasar. Devuelve { ok } o { ok:false, codigo, estado }.
+ *
+ * Sobre el anti-replay: no hay almacén propio de nonces a propósito. Los tokens
+ * de Turnstile ya son de un solo uso en siteverify —un segundo intento devuelve
+ * `timeout-or-duplicate`— y caducan a los 300 s. Montar un registro propio
+ * duplicaría ese trabajo, añadiría estado que mantener y no cerraría nada que
+ * Cloudflare no cierre ya.
+ */
+async function verificaTurnstile(env, token) {
+  const secreto = env && env.TURNSTILE_SECRET;
+  if (!secreto) return { ok: false, codigo: 503, estado: 'turnstile-sin-secreto' };
+
+  const dev = env && env.ENTORNO === 'dev';
+  const dePrueba = TURNSTILE_SECRETOS_DE_PRUEBA.has(secreto);
+
+  /* Sólo se admite redirigir siteverify en desarrollo. Es lo que permite probar
+     los caminos que no se pueden provocar contra el servicio real —caído, 5xx,
+     cuerpo que no es JSON, cuelgue— que son justo los que deben fallar cerrado.
+     En producción la constante es la única dirección posible: aunque alguien
+     defina la variable, se ignora. */
+  const destino = (dev && env.TURNSTILE_URL) ? env.TURNSTILE_URL : TURNSTILE_URL;
+
+  /* Una clave de prueba fuera de desarrollo convierte el control en un adorno
+     —la que "siempre pasa" acepta cualquier cosa—, así que se trata como avería
+     de configuración, no como un rechazo del visitante. */
+  if (dePrueba && !dev) return { ok: false, codigo: 503, estado: 'turnstile-claves-de-prueba' };
+
+  let datos;
+  const ctl = new AbortController();
+  const reloj = setTimeout(() => ctl.abort(), TURNSTILE_ESPERA_MS);
+  try {
+    const r = await fetch(destino, {
+      method: 'POST',
+      body: new URLSearchParams({ secret: secreto, response: token }),
+      signal: ctl.signal
+    });
+    /* Se distingue "contestó algo que no es 200" de "no contestó". Las dos
+       cierran igual, pero en el log son problemas distintos: la primera apunta
+       a la configuración o al servicio, la segunda a la red. */
+    if (!r.ok) return { ok: false, codigo: 503, estado: 'turnstile-http-' + r.status };
+    datos = await r.json();
+  } catch {
+    /* Red caída, tiempo agotado o cuerpo que no es JSON. */
+    return { ok: false, codigo: 503, estado: 'turnstile-inalcanzable' };
+  } finally {
+    clearTimeout(reloj);
+  }
+
+  if (!datos || typeof datos !== 'object') {
+    return { ok: false, codigo: 503, estado: 'turnstile-respuesta-invalida' };
+  }
+
+  /* REFUERZO, no mecanismo principal. El que decide es la comparación del
+     secreto contra los tres valores públicos, unas líneas más arriba: eso es
+     determinista y sólo depende de nuestra configuración. Esto de aquí sale de
+     un campo que Cloudflare NO documenta, así que puede desaparecer sin aviso;
+     mientras exista, atrapa el caso de un secreto de prueba que no estuviera en
+     nuestra lista. Si desapareciera, no se pierde la protección. */
+  const marcadaComoPrueba = !!(datos.metadata && datos.metadata.result_with_testing_key === true);
+  if (marcadaComoPrueba && !dev) {
+    return { ok: false, codigo: 503, estado: 'turnstile-claves-de-prueba' };
+  }
+
+  /* Con un secreto VÁLIDO, siteverify responde 200 aunque rechace el token, así
+     que el veredicto se toma por `success` y no por el estado HTTP.
+     El estado sí importa en un caso, y está resuelto arriba: si el secreto es
+     inválido devuelve 400 —medido— y eso es una avería nuestra, no una culpa
+     del visitante, así que sale por la rama de 503 y no por este 403. */
+  if (datos.success !== true) {
+    return { ok: false, codigo: 403, estado: 'turnstile-rechazado', renovar: true };
+  }
+
+  const host = String(datos.hostname || '').toLowerCase();
+  if (!hostnamesTurnstile(env).includes(host)) {
+    return { ok: false, codigo: 403, estado: 'turnstile-hostname', renovar: true };
+  }
+
+  /* Con claves de prueba el campo `action` no llega —comprobado contra el
+     servicio real—, así que exigirlo dejaría el camino feliz sin poder probarse.
+     Se omite SÓLO en ese caso.
+     La condición mira `dePrueba`, que compara el secreto configurado con los
+     tres valores públicos documentados, y NO `marcadaComoPrueba`, que sale de
+     un campo que Cloudflare no documenta. La diferencia importa: si ese campo
+     desapareciera, usarlo aquí haría que la comprobación se aplicara o se
+     saltara según lo que devuelva un tercero. Con `dePrueba` la decisión sólo
+     depende de nuestra configuración, y en producción —donde el secreto es real
+     y `dePrueba` es falso— la comprobación se exige siempre. */
+  if (!dePrueba && datos.action !== TURNSTILE_ACCION) {
+    return { ok: false, codigo: 403, estado: 'turnstile-accion', renovar: true };
+  }
+
+  return { ok: true };
+}
+
 /* ---------- límite de uso ---------- */
 
 const TOPE_POR_VENTANA = 20;   /* análisis nuevos por IP y minuto */
+
+/* Longitud mínima de SAL_LIMITE. 43 caracteres es lo que ocupan 32 bytes en
+   base64 sin relleno, así que por debajo de ahí es imposible que haya 256 bits
+   de entropía y no hace falta discutirlo. Por encima no se puede medir la
+   entropía real desde aquí —un valor largo y repetitivo la pasaría—, así que
+   esto descarta el descuido, no al adversario. Ver LIMITADOR.md. */
+const SAL_MIN_LARGO = 43;
+
+/* Cachea la clave HMAC importada durante la vida del isolate. Importarla en
+   cada petición es trabajo criptográfico repetido en el camino crítico para
+   obtener siempre lo mismo. */
+let claveHmac = null;
+let salDeLaClave = null;
+
+/** ¿Sirve esta sal? Se comprueba en cada petición porque es barato y porque el
+ *  precio de equivocarse es un seudónimo predecible. */
+function salValida(sal) {
+  if (typeof sal !== 'string') return false;
+  const s = sal.trim();
+  if (s.length < SAL_MIN_LARGO) return false;
+  /* Un valor con muy pocos caracteres distintos no es aleatorio por largo que
+     sea: descarta rellenos tipo "aaaa..." o "0000...". */
+  if (new Set(s).size < 16) return false;
+  return true;
+}
+
+/**
+ * Normaliza la IP antes de derivar la identidad.
+ *
+ * Sin esto, dos escrituras de la misma dirección serían dos identidades con
+ * cuota propia. Y hay una que importa mucho más que las demás: en IPv6 lo
+ * habitual es que a un solo cliente le asignen un /64 entero —millones de
+ * billones de direcciones—, así que limitar por dirección completa regala
+ * cuota infinita a cualquiera con IPv6. Se trunca a /64, que es lo que hace el
+ * propio Cloudflare en sus reglas de rate limiting.
+ *
+ * Devuelve null si no hay nada de lo que fiarse: eso acaba en fallo cerrado.
+ */
+function identidad(ip) {
+  if (typeof ip !== 'string') return null;
+  let s = ip.trim().toLowerCase();
+  if (!s) return null;
+
+  /* Forma con corchetes y/o puerto, e identificador de zona (fe80::1%eth0). */
+  if (s.startsWith('[')) s = s.slice(1, s.indexOf(']') === -1 ? undefined : s.indexOf(']'));
+  const zona = s.indexOf('%');
+  if (zona !== -1) s = s.slice(0, zona);
+  s = s.replace(/\.$/, '');
+  if (!s) return null;
+
+  /* IPv4 mapeada dentro de IPv6: ::ffff:1.2.3.4 es la misma máquina que
+     1.2.3.4 y tiene que compartir contador con ella. */
+  const mapeada = s.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/);
+  if (mapeada) s = mapeada[1];
+
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(s)) {
+    const partes = s.split('.').map(Number);
+    if (partes.some(n => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+    return 'v4:' + partes.join('.');
+  }
+
+  if (s.includes(':')) {
+    const bloques = expandeIPv6(s);
+    if (!bloques) return null;
+    /* /64: los cuatro primeros grupos. Todo lo que hay debajo lo controla el
+       mismo abonado, así que es una sola identidad. */
+    return 'v6:' + bloques.slice(0, 4).join(':');
+  }
+
+  return null;
+}
+
+/** Expande un IPv6 a sus ocho grupos de cuatro dígitos. null si no lo es. */
+function expandeIPv6(s) {
+  const dobles = s.split('::');
+  if (dobles.length > 2) return null;
+  const trozo = t => (t ? t.split(':') : []);
+  let izq = trozo(dobles[0]);
+  let der = dobles.length === 2 ? trozo(dobles[1]) : [];
+
+  /* Cola IPv4 (::ffff:192.0.2.1 ya se resolvió antes; esto cubre el resto). */
+  const cola = der.length ? der[der.length - 1] : (izq.length ? izq[izq.length - 1] : '');
+  if (cola && cola.includes('.')) {
+    const p = cola.split('.').map(Number);
+    if (p.length !== 4 || p.some(n => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+    const a = ((p[0] << 8) | p[1]).toString(16);
+    const b = ((p[2] << 8) | p[3]).toString(16);
+    if (der.length) der = [...der.slice(0, -1), a, b];
+    else izq = [...izq.slice(0, -1), a, b];
+  }
+
+  if (dobles.length === 1) {
+    if (izq.length !== 8) return null;
+  } else if (izq.length + der.length > 7) return null;
+
+  const huecos = 8 - izq.length - der.length;
+  const todos = [...izq, ...Array(huecos).fill('0'), ...der];
+  if (todos.length !== 8) return null;
+  for (const g of todos) {
+    if (!/^[0-9a-f]{1,4}$/.test(g)) return null;
+  }
+  return todos.map(g => g.padStart(4, '0'));
+}
+
+/**
+ * Deriva el nombre del Durable Object a partir de la IP.
+ *
+ * Usa HMAC-SHA256 con la sal como CLAVE, no un hash de sal+IP concatenados: en
+ * un HMAC la clave entra por un camino distinto al mensaje, así que no hay
+ * forma de jugar con los límites entre ambos.
+ *
+ * Es SEUDONIMIZACIÓN, no anonimización, y la diferencia importa: sólo hay 2^32
+ * direcciones IPv4, así que quien tenga la sal las recorre todas en segundos y
+ * revierte cualquier seudónimo. La sal es el único secreto que lo sostiene.
+ * Lo que sí garantiza: la IP en claro no sale de esta función.
+ *
+ * Devuelve null ante cualquier problema. Ese null acaba en 503, nunca en pasar.
+ */
+async function seudonimo(ip, env) {
+  const sal = env && env.SAL_LIMITE;
+  if (!salValida(sal)) return null;
+
+  const ident = identidad(ip);
+  if (!ident) return null;
+
+  try {
+    if (claveHmac === null || salDeLaClave !== sal) {
+      claveHmac = await crypto.subtle.importKey(
+        'raw', new TextEncoder().encode(sal),
+        { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+      );
+      salDeLaClave = sal;
+    }
+    const firma = await crypto.subtle.sign('HMAC', claveHmac, new TextEncoder().encode(ident));
+    /* 16 bytes bastan de sobra para no colisionar. */
+    return [...new Uint8Array(firma).slice(0, 16)]
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Consulta el limitador atómico.
+ *
+ * FALLA CERRADO. Si el limitador no puede garantizar que la petición cabe en la
+ * cuota, el diagnóstico no se ejecuta y se responde 503.
+ *
+ * Es una decisión deliberada y tiene un precio: cualquier problema del Durable
+ * Object deja el diagnóstico temporalmente indisponible. Se acepta porque la
+ * operación que hay detrás es cara —abre conexiones salientes a terceros y se
+ * factura a nuestra cuenta— y porque un limitador que se desactiva solo justo
+ * cuando falla algo es exactamente el que un atacante querría. El sitio público
+ * no se ve afectado: vive en Pages, en otro hostname, y no pasa por aquí.
+ *
+ * El `estado` viaja en la cabecera X-Limitador. Sin él, un limitador vivo y uno
+ * apagado producirían la misma salida observable y no habría forma de saber
+ * cuál está corriendo en producción. No lleva información sobre quién pide.
+ */
+async function topeAtomico(env, seudo) {
+  /* El interruptor de retirada es lo ÚNICO que abre, y sólo porque es una
+     decisión humana y explícita, no un fallo. */
+  if (env && env.LIMITE_ATOMICO === 'off') return { permitido: true, estado: 'apagado' };
+
+  if (!env || !env.LIMITADOR_DO) return { permitido: false, estado: 'sin-binding' };
+  if (!seudo) return { permitido: false, estado: 'sin-identidad' };
+
+  let reloj;
+  try {
+    const objeto = env.LIMITADOR_DO.get(env.LIMITADOR_DO.idFromName(seudo));
+    const r = await Promise.race([
+      objeto.consume(TOPE_POR_VENTANA, VENTANA_MS),
+      new Promise((_, falla) => {
+        reloj = setTimeout(() => falla(new Error('presupuesto agotado')), PRESUPUESTO_DO_MS);
+      })
+    ]);
+
+    /* Se valida la FORMA de la respuesta, no sólo que no haya excepción. Un
+       objeto raro, un undefined o un null por un fallo de la plataforma no
+       pueden interpretarse como permiso: sin este `ok` explícito, `r.permitido`
+       sobre un undefined daría el mismo falsy que un rechazo legítimo, y sobre
+       un objeto inesperado podría dar truthy. */
+    if (!r || r.ok !== true || typeof r.permitido !== 'boolean') {
+      return { permitido: false, estado: 'respuesta-invalida' };
+    }
+
+    return r.permitido
+      ? { permitido: true, estado: 'ok' }
+      : { permitido: false, estado: 'limite', esperaS: r.esperaS };
+  } catch (e) {
+    /* Sin reintentos: si el objeto está saturado, insistir es empujar. La
+       distinción sólo sirve para el diagnóstico de la cabecera; las dos ramas
+       cierran igual. */
+    return { permitido: false, estado: e && e.overloaded ? 'saturado' : 'error' };
+  } finally {
+    clearTimeout(reloj);
+  }
+}
 
 /**
  * Cuenta peticiones por IP en ventanas de un minuto usando la caché de borde.
@@ -189,11 +713,14 @@ const TOPE_POR_VENTANA = 20;   /* análisis nuevos por IP y minuto */
  * esto, pero en esta cuenta devuelve success:true siempre (comprobado con
  * `wrangler tail`). Se conserva por si empieza a contar; no se depende de él.
  */
-async function dentroDelTope(ip, ctx) {
+async function dentroDelTope(quien, ctx) {
   try {
     const ventana = Math.floor(Date.now() / 60000);
+    /* `quien` es el seudónimo cuando hay sal configurada, y la IP en claro sólo
+       como último recurso. Merecía el cambio: no hay motivo para que una IP
+       viaje en una clave de caché pudiendo viajar su seudónimo. */
     const clave = new Request(
-      'https://cache.local/rl?ip=' + encodeURIComponent(ip) + '&v=' + ventana
+      'https://cache.local/rl?q=' + encodeURIComponent(quien) + '&v=' + ventana
     );
     const previo = await caches.default.match(clave);
     const usados = previo ? Number(await previo.text()) || 0 : 0;
@@ -215,6 +742,14 @@ async function dentroDelTope(ip, ctx) {
 
 /* ---------- red ---------- */
 
+/* Se exporta sólo para poder probarla como función pura: es el filtro que
+   sostiene toda la defensa contra SSRF y merece una batería de cientos de
+   vectores que no puede pagarse a golpe de petición HTTP. El runtime de Workers
+   únicamente usa el export por defecto y las clases de Durable Object, así que
+   exportarla no cambia nada del Worker desplegado.
+   Ver test/ssrf.test.mjs. */
+export { inseguro };
+
 /** Rechaza destinos que no deben alcanzarse desde el borde.
  *
  *  Nota sobre codificaciones alternativas (http://2130706433/, 0x7f000001,
@@ -228,23 +763,47 @@ function inseguro(u) {
   if (u.protocol !== 'http:' && u.protocol !== 'https:')
     return 'solo se admiten direcciones http y https';
 
-  /* Puerto: solo el estándar de cada esquema. Sin esta comprobación el Worker
-     responde de forma distinguible según el destino esté abierto, cerrado o no
-     devuelva HTML —y además publica `tiempoMs`—, lo que lo convierte en un
-     escáner de puertos semiciego contra cualquier host público. */
-  if (u.port !== '' && u.port !== '80' && u.port !== '443')
+  /* El puerto se compara con el que corresponde a ESTE esquema, no con la
+     pareja 80/443 indistintamente: http://host:443 y https://host:80 son
+     sondas de puerto disfrazadas de tráfico normal. Sin esta comprobación el
+     Worker responde de forma distinguible según el destino esté abierto,
+     cerrado o no devuelva HTML —y además publica `tiempoMs`—, lo que lo
+     convierte en un escáner de puertos semiciego contra cualquier host. */
+  if (u.port !== '' && u.port !== (u.protocol === 'https:' ? '443' : '80'))
     return 'solo se analizan sitios publicados en los puertos web habituales';
 
-  const h = u.hostname.toLowerCase().replace(/\.$/, '');
+  /* Credenciales: se cortan AQUÍ y no sólo en la puerta de entrada, porque a
+     esta función llegan también los destinos de las redirecciones, y por ahí un
+     sitio hostil colaba un usuario:clave que el Worker acababa enviando —y
+     publicando en el informe, que se cachea una hora—. */
+  if (u.username || u.password)
+    return 'no se admiten direcciones con usuario y contraseña incrustados';
+
+  /* Se quitan TODOS los puntos finales, no uno. Con `\.$` la dirección
+     "127.0.0.1.." quedaba en "127.0.0.1.", que ya no casa con la regex de IPv4
+     de abajo ni cae en la rama de etiqueta única: se saltaba el filtro entero,
+     localhost y redes privadas incluidas. */
+  const h = u.hostname.toLowerCase().replace(/\.+$/, '');
+
+  /* Etiqueta vacía en medio: ninguna resolución legítima la usa, y es la otra
+     mitad del truco anterior. */
+  if (h === '' || h.includes('..')) return 'eso no parece un dominio público';
 
   if (h === 'localhost' || h.endsWith('.localhost') ||
-      h.endsWith('.local') || h.endsWith('.internal') || h.endsWith('.home.arpa'))
+      h.endsWith('.local') || h.endsWith('.internal') || h.endsWith('.home.arpa') ||
+      /* Sufijos de red interna que colaban por tener puntos: el descubrimiento
+         de servicios de Kubernetes y de Consul son destinos de primera. */
+      h.endsWith('.svc') || h.endsWith('.consul') || h.endsWith('.lan') ||
+      h.endsWith('.intranet') || h.endsWith('.corp') || h.endsWith('.private'))
     return 'no se pueden analizar direcciones internas';
 
   /* IPv6 literal: descartado entero. Las formas comprimidas y las direcciones
      mapeadas de IPv4 dan demasiadas maneras de escribir ::1 como para filtrar
-     con confianza, y ningún sitio real que auditemos se publica así. */
-  if (h.includes(':') || u.href.includes('['))
+     con confianza, y ningún sitio real que auditemos se publica así.
+     Se mira el HOSTNAME, no el href: con `u.href.includes('[')` se rechazaba
+     cualquier URL legítima con corchetes en la ruta o la query —?filtro[0]=azul
+     es de lo más común—. */
+  if (h.includes(':') || h.startsWith('['))
     return 'no se admiten direcciones IPv6 literales';
 
   const ip = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
@@ -261,7 +820,8 @@ function inseguro(u) {
         (a === 198 && b >= 18 && b <= 19) ||
         (a === 192 && b === 0) ||
         (a === 198 && b === 51) ||
-        (a === 203 && b === 0))
+        (a === 203 && b === 0) ||
+        (a === 192 && b === 88))   /* relé anycast 6to4, 192.88.99.0/24 */
       return 'no se pueden analizar direcciones de red privada';
   } else if (!h.includes('.')) {
     /* Host de una sola etiqueta: `metadata`, `router`, `consul`,
@@ -275,17 +835,53 @@ function inseguro(u) {
   return null;
 }
 
+/**
+ * Presupuesto de subpeticiones por análisis.
+ *
+ * El techo sale de contar el peor caso del código, no de elegir un número
+ * bonito: la página principal son 1 petición más hasta SALTOS_MAX (3)
+ * redirecciones, o sea 4; y `robots.txt` y `sitemap.xml` hacen lo mismo cada
+ * uno. 4 × 3 = 12. Cualquier valor por encima de eso significa que hay un bucle
+ * que no debería existir, y entonces conviene cortar en vez de seguir gastando.
+ *
+ * Es un contador en el código y no un ajuste de plataforma porque Cloudflare no
+ * ofrece un tope configurable de subpeticiones: el límite del plan es global por
+ * invocación y muy alto, así que no protege de un bug nuestro.
+ */
+const MAX_SUBPETICIONES = 12;
+
+function presupuestoNuevo() {
+  return { usadas: 0, max: MAX_SUBPETICIONES };
+}
+
 /** Sigue las redirecciones a mano validando cada salto. */
-async function trae(url, señal, metodo = 'GET') {
+async function trae(url, señal, metodo = 'GET', presupuesto = null) {
   let actual = url, saltos = 0;
   while (true) {
+    if (presupuesto) {
+      if (presupuesto.usadas >= presupuesto.max) {
+        throw new Error('ese sitio encadena demasiadas redirecciones');
+      }
+      presupuesto.usadas++;
+    }
     const r = await fetch(actual.href, {
       method: metodo,
       redirect: 'manual',
       signal: señal,
       headers: {
         'User-Agent': 'SYC-SEO-Audit/1.0 (+https://sycsolutions.company/#diagnostico)',
-        'Accept': 'text/html,application/xhtml+xml'
+        'Accept': 'text/html,application/xhtml+xml',
+        /* Cloudflare añade por su cuenta la IP REAL del visitante a toda
+           subpetición hacia un sitio que no es cliente suyo, en dos cabeceras:
+           `CF-Connecting-IP` y `x-real-ip`. O sea que el sitio analizado ve
+           desde qué IP se pidió el diagnóstico.
+           De las dos, la documentación dice que sólo `x-real-ip` se puede
+           alterar, y que el valor tiene que ser una IP sintácticamente válida.
+           Se fija a 0.0.0.0 —dirección "sin especificar", que no identifica a
+           nadie— para no filtrar por ahí.
+           `CF-Connecting-IP` NO se puede quitar y sigue yendo con la IP real:
+           es un riesgo residual documentado en LIMITADOR.md, no algo resuelto. */
+        'x-real-ip': '0.0.0.0'
       }
     });
     if (r.status < 300 || r.status > 399) return { r, final: actual };
@@ -302,9 +898,9 @@ async function trae(url, señal, metodo = 'GET') {
     Antes el comentario decía esto mismo pero el cuerpo se quedaba abierto y sin
     tope: un /robots.txt de 2 GB se descargaba entero. Ahora se cancela nada más
     conocer el estado, que es lo único que interesa. */
-async function existe(base, ruta, señal) {
+async function existe(base, ruta, señal, presupuesto = null) {
   try {
-    const { r } = await trae(new URL(ruta, base), señal, 'GET');
+    const { r } = await trae(new URL(ruta, base), señal, 'GET', presupuesto);
     if (r.body) { try { await r.body.cancel(); } catch { /* ya cerrado */ } }
     return r.status >= 200 && r.status < 300;
   } catch {
@@ -317,8 +913,12 @@ async function existe(base, ruta, señal) {
 async function analiza(url) {
   const ctl = new AbortController();
   const reloj = setTimeout(() => ctl.abort(), ESPERA_MS);
+  /* Un presupuesto por análisis, no global: lo que se acota es cuánto puede
+     gastar UNA petición entrante, que es donde un bug o un sitio hostil hacen
+     daño. */
+  const presupuesto = presupuestoNuevo();
   try {
-    return await analizaConSeñal(url, ctl.signal);
+    return await analizaConSeñal(url, ctl.signal, presupuesto);
   } finally {
     /* El reloj se limpia cuando TODO ha terminado, no al recibir las cabeceras.
        Antes se limpiaba tras `trae`, así que la lectura del cuerpo quedaba sin
@@ -328,9 +928,9 @@ async function analiza(url) {
   }
 }
 
-async function analizaConSeñal(url, señal) {
+async function analizaConSeñal(url, señal, presupuesto) {
   const t0 = Date.now();
-  const { r: resp, final } = await trae(url, señal);
+  const { r: resp, final } = await trae(url, señal, 'GET', presupuesto);
   const ms = Date.now() - t0;
 
   /* Los 52x/53x no vienen del sitio auditado: los genera el propio borde de
@@ -353,7 +953,10 @@ async function analizaConSeñal(url, señal) {
   };
 
   await new HTMLRewriter()
-    .on('html', { element: e => { d.lang = e.getAttribute('lang') || ''; } })
+    /* `limpio` porque este valor lo escribe la web analizada, que la elige un
+       desconocido, y acaba dentro del informe. Un `lang` de 40 KB o con
+       caracteres de control no aporta nada y sí ensucia todo lo que lo lea. */
+    .on('html', { element: e => { d.lang = limpio(e.getAttribute('lang'), 35); } })
     .on('title', { text: t => { if (d.title.length < 300) d.title += t.text; } })
     .on('h1', { element: () => { d.h1++; } })
     .on('img', {
@@ -403,8 +1006,8 @@ async function analizaConSeñal(url, señal) {
   let tieneRobots = false, tieneSitemap = false;
   try {
     [tieneRobots, tieneSitemap] = await Promise.all([
-      existe(final, '/robots.txt', auxCtl.signal),
-      existe(final, '/sitemap.xml', auxCtl.signal)
+      existe(final, '/robots.txt', auxCtl.signal, presupuesto),
+      existe(final, '/sitemap.xml', auxCtl.signal, presupuesto)
     ]);
   } finally {
     clearTimeout(auxReloj);
@@ -556,18 +1159,91 @@ function puntua(d, url, ms, robots, sitemap) {
 function json(cuerpo, estado, cabeceras) {
   return new Response(JSON.stringify(cuerpo), {
     status: estado,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', ...cabeceras }
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      /* Estas dos no son burocracia: el informe incluye texto copiado de la web
+         analizada —el atributo `lang`, por ejemplo— y esa web la elige un
+         desconocido. El `Content-Type` ya impide que un navegador actual
+         renderice esto como HTML; `nosniff` lo impide también en los que
+         adivinan el tipo, y una política que no permite nada cierra el resto.
+         Coste de compatibilidad: ninguno. Un JSON no carga nada. */
+      'X-Content-Type-Options': 'nosniff',
+      'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
+      ...cabeceras
+    }
   });
 }
 
-/* Los fallos de red del runtime llegan como "internal error; reference = …".
-   Eso no le dice nada a quien lo lee y además saca a la vista un identificador
-   interno, así que se traduce a la causa real: el dominio no responde. */
+/**
+ * Registro propio, deliberadamente pobre.
+ *
+ * Los invocation logs de la plataforma están DESACTIVADOS en wrangler.toml
+ * porque guardan la IP del visitante y la URL completa durante días, que es
+ * justo lo que este Worker se esfuerza en no almacenar. Pero apagarlos sin más
+ * dejaría ciega la operación, así que se escribe lo mínimo para saber si algo
+ * va mal y nada para saber quién pidió qué.
+ *
+ * Lo que NUNCA entra aquí: IP, seudónimo, token de Turnstile, sal, secretos, y
+ * la URL analizada completa —del destino sólo el host, que basta para ver si un
+ * dominio concreto está dando guerra y no lleva ni ruta ni parámetros—.
+ */
+function registra(evento, extra) {
+  try {
+    console.log(JSON.stringify({ evento, ...(extra || {}) }));
+  } catch {
+    /* Un fallo escribiendo un log no puede tumbar una petición. */
+  }
+}
+
+/**
+ * Redondea la espera HACIA ARRIBA a múltiplos de 10 s.
+ *
+ * El valor exacto sale de la marca más antigua de la ventana, así que en una IP
+ * compartida —una oficina, un CGNAT— le contaba a quien recibe el 429 cuándo
+ * pidió algo un tercero, con precisión de segundo. Redondear al alza lo
+ * convierte en un dato grueso sin romper nada: el invariante que importa es que
+ * el valor devuelto NUNCA sea menor que la espera real, porque si lo fuera el
+ * cliente reintentaría antes de tiempo y se llevaría otro 429.
+ */
+function esperaRedondeada(segundos) {
+  const s = Number(segundos);
+  if (!Number.isFinite(s) || s <= 0) return 60;
+  return Math.min(60, Math.ceil(s / 10) * 10);
+}
+
+/** Recorta texto traído de la web analizada antes de devolverlo en el informe.
+ *  Va sobre el valor, no sobre la presentación: el informe lo consume nuestro
+ *  frontend, pero también curl y cualquier integración futura. */
+function limpio(s, tope = 100) {
+  return String(s || '').replace(/[\u0000-\u001F\u007F<>]/g, '').slice(0, tope);
+}
+
+/* Lista blanca de mensajes. El criterio está invertido a propósito respecto a
+   como estaba: antes se devolvía `e.message` para todo lo que NO casara con una
+   lista de patrones prohibidos, así que cualquier error nuevo del runtime salía
+   tal cual al exterior. Eso no es teórico: un destino con credenciales
+   incrustadas hace que el runtime lance un TypeError cuyo texto incluye la URL
+   entera —contraseña incluida—, y ese cuerpo se cachea públicamente cinco
+   minutos. Con lista blanca, lo que no reconocemos no sale. */
+const MENSAJES_PROPIOS = new Set([
+  'solo se admiten direcciones http y https',
+  'solo se analizan sitios publicados en los puertos web habituales',
+  'no se admiten direcciones con usuario y contraseña incrustados',
+  'no se pueden analizar direcciones internas',
+  'no se admiten direcciones IPv6 literales',
+  'dirección IP no válida',
+  'no se pueden analizar direcciones de red privada',
+  'eso no parece un dominio público',
+  'ese sitio encadena demasiadas redirecciones',
+  'esa dirección no devuelve una página HTML',
+  'no se pudo conectar con ese dominio; comprueba que la dirección existe y responde'
+]);
+
 function mensaje(e) {
   if (e.name === 'AbortError')
     return 'el sitio tardó más de ' + (ESPERA_MS / 1000) + ' segundos en responder';
-  const m = e.message || '';
-  if (!m || /internal error|reference\s*=|connection (lost|refused)|resolve|ENOTFOUND|ECONNRESET|certificate|SSL|TLS/i.test(m))
-    return 'no se pudo conectar con ese dominio; comprueba que la dirección existe y responde';
-  return m;
+  const m = (e && e.message) || '';
+  if (MENSAJES_PROPIOS.has(m)) return m;
+  if (/^el servidor respondió \d{3}$/.test(m)) return m;
+  return 'no se pudo conectar con ese dominio; comprueba que la dirección existe y responde';
 }

@@ -1,0 +1,25 @@
+# Escenario de fallo: SAL_LIMITE no está definida.
+# Comprueba que el Worker responde 503 y NO ejecuta el análisis. Nunca se despliega.
+
+name = "syc-seo-audit-sinsal"
+main = "arnes.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+ENTORNO = "dev"
+LIMITE_ATOMICO = "on"
+TURNSTILE_SECRET = "1x0000000000000000000000000000000AA"
+TURNSTILE_HOSTNAMES = "example.com"
+# A propósito: sin SAL_LIMITE.
+
+[[durable_objects.bindings]]
+name = "LIMITADOR_DO"
+class_name = "LimitadorIP"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LimitadorIP"]
+
+[[services]]
+binding = "YO"
+service = "syc-seo-audit-sinsal"
