@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+/* Bloqueante y arriba de todo a propósito: si el tema se aplicara tras el
+   primer pintado, el visitante vería un parpadeo del oscuro al claro (o
+   viceversa) cada vez que entra con el tema claro ya guardado. */
+try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAttribute('data-tema','claro');}catch(_){}
+</script>
 <title>S&C Solutions Company — Webs, Automatización e IA para Negocios</title>
 <meta name="description" content="Construimos negocios que se ven tan bien como funcionan: sitios web premium, agentes de IA, CRM empresarial, aplicaciones privadas y automatización de procesos. S&C Solutions Company.">
 <meta name="keywords" content="diseño web premium, agentes de IA, CRM empresarial, aplicaciones privadas a medida, automatización de procesos, inteligencia artificial para negocios">
@@ -116,14 +122,16 @@
    "@id":"https://sycsolutions.company/#faq",
    "isPartOf":{"@id":"https://sycsolutions.company/#web"},
    "mainEntity":[
-    {"@type":"Question","name":"¿Cuánto cuesta el diagnóstico de mi web?",
-     "acceptedAnswer":{"@type":"Answer","text":"Nada, y no hace falta registrarse. Analizamos únicamente la página pública que nos indiques: no guardamos la dirección ni la compartimos. Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a tu negocio."}},
     {"@type":"Question","name":"¿Trabajan solo con negocios de México?",
-     "acceptedAnswer":{"@type":"Answer","text":"Nuestra base está en México y trabajamos con todo el mundo. El trabajo es remoto de principio a fin, así que la ubicación no cambia nada del resultado."}},
+     "acceptedAnswer":{"@type":"Answer","text":"No, trabajamos con negocios de toda Latinoamérica. El proceso es remoto de principio a fin y el resultado no cambia sin importar dónde estés. Nuestra base está en San Luis Potosí, México: si tu negocio está por la zona y prefieres cerrar los detalles en persona, ahí sí podemos reunirnos cara a cara."}},
+    {"@type":"Question","name":"¿Cómo es el proceso de trabajo y el pago?",
+     "acceptedAnswer":{"@type":"Answer","text":"Empezamos con una videollamada para entender tu negocio y lo que necesitas. Con eso armamos un plan y te presentamos opciones concretas para elegir. Al arrancar se cubre el 50% del proyecto, y a partir de ahí trabajamos por entregas: vas viendo avances por partes, y en cada una puedes pedir que se modifique, agregue o quite algo antes de seguir. Cuando el proyecto está terminado y aprobado, se liquida el 50% restante y se entrega por completo."}},
     {"@type":"Question","name":"¿Cuánto tardan en responderme?",
      "acceptedAnswer":{"@type":"Answer","text":"Menos de 24 horas. Atendemos de lunes a sábado, de 9:00 a 19:00. Si escribes fuera de ese horario, tu mensaje entra igual y lo verás respondido al abrir el siguiente día hábil."}},
     {"@type":"Question","name":"¿Qué hacen exactamente?",
      "acceptedAnswer":{"@type":"Answer","text":"Cinco cosas: sitios web premium, agentes de IA que atienden a tus clientes, CRM empresarial construido a la medida de tu operación, aplicaciones privadas para tu equipo y automatización de procesos."}},
+    {"@type":"Question","name":"¿Cuánto cuesta el diagnóstico de mi web?",
+     "acceptedAnswer":{"@type":"Answer","text":"Nada, y no hace falta registrarse. Analizamos únicamente la página pública que nos indiques: no guardamos la dirección ni la compartimos. Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a tu negocio."}},
     {"@type":"Question","name":"No sé qué necesito exactamente. ¿Puedo escribir igual?",
      "acceptedAnswer":{"@type":"Answer","text":"Sí, es lo más habitual. En el formulario tienes la opción «No lo sé aún — asesórenme». Cuéntanos qué hace tu negocio y qué te gustaría conseguir, y te decimos qué haríamos y por dónde empezaríamos."}}
    ]
@@ -146,6 +154,13 @@
 <style>
 :root{
   --bg:#0A0B0E; --bg2:#111318; --panel:#13161C;
+  /* Los tres tripletes en canales sueltos: casi todos los paneles traslúcidos
+     de la página (nav, tooltips, tarjetas, el velo del lienzo) se escribieron
+     como rgba(10,11,14,X) literal en vez de rgba(var(--bg-rgb),X). Funcionaba
+     porque nunca había un segundo tema que necesitara leer ese mismo color con
+     otro valor. Con el tema claro sí: cada rgba() literal habría que
+     encontrarlo y voltearlo a mano, y tarde o temprano alguno se olvida. */
+  --bg-rgb:10,11,14; --bg2-rgb:17,19,24; --panel-rgb:19,22,28;
   /* --dim subió de #5E5A52 a este valor. El anterior daba 2,9 de contraste
      contra el fondo, y lo mínimo legible es 4,5: con él, los veinte y pico
      rótulos pequeños de la página —"Email", "Antes de escribir", los números de
@@ -153,7 +168,7 @@
      enfocarlos. Ahora dan 4,9 y siguen estando claramente por debajo de --muted,
      así que la jerarquía de tonos no cambia; sólo deja de perderse el escalón
      más bajo. Medido, no estimado. */
-  --ink:#F4F1EA; --muted:#9A958A; --dim:#858075;
+  --ink:#F4F1EA; --ink-rgb:244,241,234; --muted:#9A958A; --dim:#858075;
   --bronze:#C8A96A; --bronze-hi:#E4CD9A;
   --line:rgba(200,169,106,.22); --line-soft:rgba(200,169,106,.11);
   --serif:'Cormorant Garamond',Georgia,serif;
@@ -161,6 +176,49 @@
   /* Desplazamiento del puntero. Vive en la raíz porque lo consume tanto el
      titular del hero como el lienzo del descenso, que es hermano de main. */
   --mx:0px; --my:0px;
+  /* .72 dejaba pasar sólo el 28% del contraste del hero. Medido: el follaje se
+     mueve unas 5 unidades de luminancia en el vídeo y llegaban 1,4 a la
+     pantalla, que en zonas oscuras está en el umbral de lo que el ojo detecta
+     —de ahí que el movimiento "no se notara" aunque estuviera ahí—. A .55 pasan
+     2,2 unidades y el gesto se lee. El titular es texto grande y aguanta de
+     sobra (5,8 de contraste medido, el mínimo AAA para ese tamaño es 4,5), y el
+     antetítulo lleva sombra propia desde ahora. Sólo afecta a la primera
+     pantalla: el velo sigue cerrándose a 1 conforme se desciende. */
+  --velo-op:.55;
+  --err:#C08476;
+  /* Texto que va ENCIMA de un fondo bronce (botón sólido, selección, hovers).
+     En oscuro el bronce es un dorado claro y el texto oscuro contrasta bien;
+     en claro el bronce baja de tono (ver más abajo) y ese mismo texto oscuro
+     dejaría de leerse, así que --on-bronze se invierte junto con --bronze. */
+  --on-bronze:#0A0B0E;
+}
+/* ---------- TEMA CLARO ---------- */
+/* Espejo tonal del oscuro, no un tema nuevo: --bg oscuro (#0A0B0E) pasa a ser
+   el --ink claro y viceversa con --ink (#F4F1EA), así la jerarquía de marca
+   —bronce sobre un fondo neutro— se conserva en vez de inventar una paleta
+   aparte. --line/--line-soft suben de opacidad porque un trazo calibrado para
+   destacar sobre negro casi desaparece sobre marfil: la misma alfa se lee muy
+   distinto según el fondo.
+   Las fotos de fondo son todas nocturnas (auroras, luna, cueva) y no cambian
+   con el tema —recolorearlas en vivo no es viable—, así que --velo-op sube de
+   .72 a .93: el velo (ver más abajo) casi las cubre y el tema claro se lee
+   como una interfaz clara consistente en vez de un lavado gris sobre foto de
+   noche. */
+html[data-tema="claro"]{
+  --bg:#F5F2E9; --bg2:#FAF8F2; --panel:#FFFFFF;
+  --bg-rgb:245,242,233; --bg2-rgb:250,248,242; --panel-rgb:255,255,255;
+  --ink:#18150F; --ink-rgb:24,21,15; --muted:#5C5648; --dim:#847E70;
+  --line:rgba(154,119,46,.32); --line-soft:rgba(154,119,46,.17);
+  --velo-op:.93; --err:#A8432E;
+  /* El dorado #C8A96A del tema oscuro da 2:1 de contraste contra el marfil de
+     este tema —amarillo sobre blanco, el problema que se reportó—, muy por
+     debajo del mínimo de 4,5:1. Baja a un bronce quemado, medido contra fondo
+     blanco (el panel de las tarjetas, el más exigente): #8C6A1C da 4,8:1 y
+     #7A5C1E —el mismo tono que ya usaba la hoja de impresión para esto mismo—
+     da 6,2:1. --on-bronze pasa a blanco porque el botón sólido ya no es un
+     dorado claro sobre el que un texto oscuro destaque: con el bronce oscurecido,
+     es al revés. */
+  --bronze:#8C6A1C; --bronze-hi:#7A5C1E; --on-bronze:#FFFFFF;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -177,7 +235,7 @@ section[id],header[id],main>[id]{scroll-margin-top:98px}
    texto con su mejor método: ClearType en Windows, el suyo en Mac.
    Si algún día se quiere el trazo más fino de Mac, se vuelve a añadir aquí. */
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden}
-::selection{background:var(--bronze);color:#0A0B0E}
+::selection{background:var(--bronze);color:var(--on-bronze)}
 a{color:inherit;text-decoration:none}
 img{max-width:100%}
 h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
@@ -215,7 +273,7 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
      de lectura, y a propósito. Son numerales de dos cifras con su rótulo
      emergente al lado, y su trabajo es apagarse para que se distinga el tramo
      donde estás. Aun así sube de 1,7 a 3,6 de contraste: se ven. */
-  color:#6F6A60;transition:color .45s ease}
+  color:rgba(var(--ink-rgb),.42);transition:color .45s ease}
 /* El trazo horizontal es el latido del índice: crece al llegar al tramo */
 .idxr a::before{content:"";position:absolute;left:50%;bottom:1px;width:7px;height:1px;
   margin-left:-3.5px;background:currentColor;opacity:.5;
@@ -227,7 +285,7 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
 /* Rótulo del tramo: sale del riel hacia la página, no lo tapa */
 .idxr b{position:absolute;left:calc(100% + 12px);top:50%;transform:translate(-6px,-50%);
   white-space:nowrap;font-family:var(--sans);font-size:8.5px;font-weight:500;letter-spacing:3px;
-  text-transform:uppercase;color:var(--bronze-hi);background:rgba(10,11,14,.94);
+  text-transform:uppercase;color:var(--bronze-hi);background:rgba(var(--bg-rgb),.94);
   border:1px solid var(--line);padding:6px 10px;opacity:0;pointer-events:none;
   transition:opacity .3s,transform .3s}
 .idxr a:hover b,.idxr a:focus-visible b{opacity:1;transform:translate(0,-50%)}
@@ -244,38 +302,65 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
 #preloader{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;transition:opacity .8s ease,visibility .8s}
 #preloader.done{opacity:0;visibility:hidden}
 #preloader img{width:min(320px,70vw)}
-.load-line{width:min(260px,54vw);height:1px;background:#22252C;position:relative;overflow:hidden}
+.load-line{width:min(260px,54vw);height:1px;background:var(--line);position:relative;overflow:hidden}
 .load-line i{position:absolute;inset:0;background:var(--bronze);transform:translateX(-100%);animation:load 1.7s cubic-bezier(.7,0,.3,1) forwards}
 @keyframes load{to{transform:translateX(0)}}
 #preloader small{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--dim)}
 
 /* ---------- NAV ----------
-   :not(.rail) es imprescindible desde que el riel izquierdo es también un
-   <nav>: sin él, la altura de 82 px y el relleno lateral de esta barra caían
-   sobre el riel, que mide toda la pantalla de alto y 46 px de ancho, y el
-   índice del recorrido acababa comprimido y saliéndose por arriba. */
-nav:not(.rail){position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,58px);height:82px;background:linear-gradient(180deg,rgba(10,11,14,.94),rgba(10,11,14,.6) 75%,transparent);border-bottom:1px solid var(--line-soft)}
-nav .brand{display:flex;align-items:center;gap:13px}
-nav .brand img{width:42px;height:42px;object-fit:contain}
-nav .brand .bt{font-family:var(--serif);font-size:19px;font-weight:600}
-nav .brand .bt em{font-style:italic;color:var(--bronze)}
-nav .brand .bs{display:block;font-family:var(--sans);font-size:8px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-top:1px}
-nav ul{display:flex;gap:clamp(18px,2.8vw,42px);list-style:none}
-nav ul a{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);position:relative;padding:5px 0;transition:color .3s}
-nav ul a::after{content:"";position:absolute;left:0;bottom:-3px;width:0;height:1px;background:var(--bronze);transition:width .35s}
-nav ul a:hover{color:var(--bronze-hi)}
-nav ul a:hover::after{width:100%}
-@media(max-width:840px){nav ul{display:none}}
+   .principal y no "nav:not(.rail)": esta barra se identifica por lo que es, no
+   por descarte. El selector anterior alcanzaba a CUALQUIER <nav> de la página,
+   y ya había hecho falta exceptuar el riel una vez; cuando el pie estrenó su
+   <nav class="legal"> para los enlaces legales, volvió a pasar lo mismo —esos
+   tres enlaces se fijaban arriba con altura 82 px y caían encima del logo y
+   del menú—. Cada <nav> nuevo repetiría el fallo, así que la regla deja de ser
+   una lista de excepciones. */
+nav.principal{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,58px);height:82px;background:linear-gradient(180deg,rgba(var(--bg-rgb),.94),rgba(var(--bg-rgb),.6) 75%,transparent);border-bottom:1px solid var(--line-soft)}
+nav.principal .brand{display:flex;align-items:center;gap:13px}
+nav.principal .brand img{width:42px;height:42px;object-fit:contain}
+nav.principal .brand .bt{font-family:var(--serif);font-size:19px;font-weight:600}
+nav.principal .brand .bt em{font-style:italic;color:var(--bronze)}
+nav.principal .brand .bs{display:block;font-family:var(--sans);font-size:8px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-top:1px}
+nav.principal ul{display:flex;gap:clamp(18px,2.8vw,42px);list-style:none}
+nav.principal ul a{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);position:relative;padding:5px 0;transition:color .3s}
+nav.principal ul a::after{content:"";position:absolute;left:0;bottom:-3px;width:0;height:1px;background:var(--bronze);transition:width .35s}
+nav.principal ul a:hover{color:var(--bronze-hi)}
+nav.principal ul a:hover::after{width:100%}
+/* El umbral era 840 y estaba mal medido: con la serif cargada, la fila entera
+   —marca (143) + cinco enlaces + Tema + Silencio + Hablemos— pide ~1040 px
+   contando el relleno lateral, que crece con la pantalla (4vw). Entre 841 y
+   ese ancho el menú reaparecía sin espacio y "Hablemos" quedaba cortado por el
+   borde. El menú se enseña sólo cuando cabe entero; por debajo, la página
+   funciona igual que en móvil: riel, scroll y el CTA. */
+@media(max-width:1080px){nav.principal ul{display:none}}
+/* Por debajo de ~400 px la barra pedía 363 px: marca (143 con la serif ya
+   cargada) + las dos píldoras + "Hablemos" (casi todo relleno y separación
+   entre letras). En un móvil de 320 px eso dejaba el botón cortado por el
+   borde derecho. Se recorta el relleno y el interletrado —no el tamaño de
+   letra, que es lo que se lee. */
+@media(max-width:400px){
+  nav.principal{padding:0 14px}
+  nav.principal>div{gap:9px!important}
+  nav.principal .btn.solid{padding:13px 14px!important;letter-spacing:2px}
+  .tema,.snd{padding:9px 9px}
+}
+/* Aun apretada, la barra pide 363 px. En pantallas más angostas cae el
+   emblema gráfico y queda el nombre: a 42 px el emblema es una tarjeta
+   ilegible —decoración—, mientras que "S&C Solutions Company" se lee. Con
+   esto la barra baja a ~308 px y entra hasta en 320. */
+@media(max-width:380px){
+  nav.principal .brand img{display:none}
+}
 
 /* ---------- BOTONES ---------- */
 .btn{display:inline-flex;align-items:center;gap:12px;padding:16px 34px;font-size:11px;letter-spacing:3.5px;text-transform:uppercase;font-weight:500;border:1px solid var(--bronze);position:relative;overflow:hidden;transition:color .4s;z-index:1}
 .btn::before{content:"";position:absolute;inset:0;background:var(--bronze);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.7,0,.2,1);z-index:-1}
-.btn.solid{background:var(--bronze);color:#0A0B0E}
+.btn.solid{background:var(--bronze);color:var(--on-bronze)}
 .btn.solid::before{background:var(--bronze-hi)}
 .btn.ghost{color:var(--bronze-hi)}
 .btn:hover::before{transform:scaleX(1)}
-.btn.solid:hover{color:#0A0B0E}
-.btn.ghost:hover{color:#0A0B0E}
+.btn.solid:hover{color:var(--on-bronze)}
+.btn.ghost:hover{color:var(--on-bronze)}
 
 /* ---------- LAYOUT ---------- */
 main{position:relative;z-index:2}
@@ -328,7 +413,7 @@ main{position:relative;z-index:2}
    Se aclaró al cambiar los fondos: con fotos de ciudad daba igual, pero el
    turquesa del mar se comía entero y el cambio no se notaba. Arriba deja pasar
    el color y abajo se cierra, que es donde vive el texto largo. */
-#velo{position:absolute;inset:0;opacity:.72;will-change:opacity;background:linear-gradient(100deg,rgba(10,11,14,.92) 16%,rgba(10,11,14,.84) 58%,rgba(10,11,14,.8))}
+#velo{position:absolute;inset:0;opacity:var(--velo-op);will-change:opacity;background:linear-gradient(100deg,rgba(var(--bg-rgb),.92) 16%,rgba(var(--bg-rgb),.84) 58%,rgba(var(--bg-rgb),.8))}
 /* Antes era una barra de luz que barría la pantalla; se leía como un efecto
    de edición. Ahora es una lumbre ancha y tenue que sólo calienta el cruce. */
 /* Las medidas se dividen por la escala del lienzo: vh es relativo a la pantalla,
@@ -410,14 +495,39 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    misma foto —una que se desplaza y otra fija— hacía imposible alinearlas, y
    de ahí los edificios descuadrados al pasar del hero al manifiesto. */
 .hero-bg{display:none}
-/* Dos planos de la misma foto con máscaras complementarias: el lejano se queda
-   con el cielo y la bruma, el cercano con los edificios del primer término.
-   Al moverse a distinta velocidad producen paralaje real. */
-.esc.ciudad::before,.esc.ciudad::after{content:"";position:absolute;inset:0;background:url('assets/hero-bg.webp') center 38%/cover no-repeat;will-change:transform;backface-visibility:hidden}
-.esc.ciudad::before{transform-origin:50% 25%;-webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent 78%);mask-image:linear-gradient(to bottom,#000 55%,transparent 78%)}
-.esc.ciudad::after{transform-origin:50% 100%;-webkit-mask-image:linear-gradient(to bottom,transparent 55%,#000 78%);mask-image:linear-gradient(to bottom,transparent 55%,#000 78%)}
-/* El vuelo de dron: los dos planos siguen derivando en un ciclo de 36 segundos
-   después de la entrada, y esa deriva lentísima es lo que hace que la ciudad
+/* Antes eran dos planos de la misma foto con máscaras complementarias —el
+   lejano con el cielo, el cercano con el primer término— pensados para una
+   ciudad sin un sujeto claro, donde la mezcla en la franja 55%-78% pasaba
+   desapercibida. Con el Porsche esa misma franja cae encima del coche y las
+   dos copias, cada una con su propio zoom/rotateY, se veían como un coche
+   fantasma. Un solo plano cubre toda la escena: se pierde el paralaje de
+   profundidad entre dos capas, pero el coche deja de duplicarse y conserva su
+   propia animación de deriva. */
+.esc.ciudad::after{content:"";position:absolute;inset:0;background:url('assets/hero-bg.webp') center 80%/cover no-repeat;will-change:transform;backface-visibility:hidden}
+/* El vídeo del hero: el mismo fotograma que la foto, con las auroras y las
+   ramas en movimiento. object-position repite el 80% vertical del ::after —si
+   no coincidieran, el relevo foto→vídeo se vería como un salto de encuadre.
+   Entra con un fundido corto cuando ya hay imagen que enseñar; hasta entonces
+   la foto de debajo sostiene la escena.
+
+   Son DOS elementos, no uno, y ahí está el truco del bucle. El último
+   fotograma del vídeo no coincide con el primero —se midió: cambia un cuarto
+   de la imagen—, así que un loop nativo cortaría a la vista cada diez
+   segundos. En vez de eso, cuando a una copia le queda poco, la otra arranca
+   desde cero por debajo y se cruzan en un fundido: el corte ocurre mientras
+   las dos imágenes están mezcladas, que es justo donde no se percibe. El
+   fundido dura lo que dice --hv-cruce, y el JS lee esa misma variable para no
+   tener el valor escrito en dos sitios. */
+.esc.ciudad{--hv-cruce:1.4s}
+.esc.ciudad .hv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 80%;
+  opacity:0;transition:opacity var(--hv-cruce) linear;pointer-events:none}
+.esc.ciudad .hv.activo{opacity:1}
+/* La primera entrada es la del relevo foto→vídeo y va más lenta y suave que
+   los cruces posteriores, que son lineales para que la suma de las dos
+   opacidades no baje en mitad del cruce y asome la foto de debajo. */
+.esc.ciudad .hv.estreno{transition:opacity .9s ease}
+/* El vuelo de dron: el plano sigue derivando en un ciclo de 36 segundos
+   después de la entrada, y esa deriva lentísima es lo que hace que la escena
    parezca filmada y no una foto pegada.
    Estuvo retirado un rato mientras se buscaba la causa de los tirones en
    escritorio, porque es el gesto que más área mueve de toda la página. No era
@@ -427,41 +537,21 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    Los fotogramas clave sólo llevan números literales —el desplazamiento del
    puntero entra aparte, por la propiedad translate—, y así la animación puede
    vivir en la GPU en vez de recalcularse a mano en cada fotograma. */
-#preloader.done ~ #descenso .esc.ciudad::before{animation:entraLejos 5s cubic-bezier(.4,0,.2,1) both,dronLejos 36s linear 5s infinite}
 #preloader.done ~ #descenso .esc.ciudad::after{animation:entraCerca 5s cubic-bezier(.4,0,.2,1) both,dronCerca 36s linear 5s infinite}
-/* --mx/--my los escribe el puntero. El plano lejano recibe un 35% del
-   desplazamiento y el cercano el 100%: esa diferencia es la profundidad.
-   Van en la propiedad translate, NO dentro de transform, y esa separación es
-   la diferencia entre una página fluida y una atascada:
+/* --mx/--my los escribe el puntero, con el 100% del desplazamiento ya que
+   sólo queda un plano. Va en la propiedad translate, NO dentro de transform,
+   y esa separación es la diferencia entre una página fluida y una atascada:
    una animación cuyos fotogramas clave leen una variable no se puede delegar
    a la GPU, porque sus valores no se conocen de antemano. Estando --mx dentro
    de transform, cada movimiento del ratón obligaba a recalcular a mano, en el
-   hilo principal, dos imágenes a pantalla completa con máscara y perspectiva.
+   hilo principal, una imagen a pantalla completa con perspectiva.
    Por eso en el móvil iba fina —ahí no hay ratón que mover— y en el escritorio
    se arrastraba. Ahora transform sólo lleva números literales y vive en la GPU;
    el desplazamiento del puntero entra por translate, que se compone aparte. */
-.esc.ciudad::before{translate:calc(var(--mx)*.35) calc(var(--my)*.35)}
 .esc.ciudad::after{translate:var(--mx) var(--my)}
-@keyframes entraLejos{
-  from{transform:scale(1.26) translate3d(-1%,-.6%,0)}
-  to{transform:scale(1.06) translate3d(-1%,-.6%,0)}
-}
-/* El plano cercano llegaba a escala 1.3 mientras el lejano se quedaba en 1.12.
-   Con una fotografía de rascacielos daba igual —es textura repetida—, pero la
-   foto de la costa tiene una línea de horizonte: esa diferencia de aumento la
-   partía en dos y además dejaba fuera del encuadre el mar y la ciudad. Ahora
-   los dos planos vuelan casi al mismo aumento; se pierde algo de paralaje y se
-   gana la fotografía entera. */
 @keyframes entraCerca{
   from{transform:perspective(1200px) scale(1.42) translate3d(-1.6%,-1%,0) rotateY(1.2deg)}
   to{transform:perspective(1200px) scale(1.09) translate3d(-1.6%,-1%,0) rotateY(1.2deg)}
-}
-@keyframes dronLejos{
-  0%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
-  25%{transform:scale(1.09) translate3d(-.3%,-1%,0)}
-  50%{transform:scale(1.12) translate3d(1%,-.3%,0)}
-  75%{transform:scale(1.09) translate3d(.3%,.6%,0)}
-  100%{transform:scale(1.06) translate3d(-1%,-.6%,0)}
 }
 @keyframes dronCerca{
   0%{transform:perspective(1200px) scale(1.09) translate3d(-1.6%,-1%,0) rotateY(1.2deg)}
@@ -470,25 +560,35 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
   75%{transform:perspective(1200px) scale(1.13) translate3d(.6%,1.1%,0) rotateY(-.3deg)}
   100%{transform:perspective(1200px) scale(1.09) translate3d(-1.6%,-1%,0) rotateY(1.2deg)}
 }
-/* El velo pasa a .hero para quedar por encima de los dos planos */
+/* El velo pasa a .hero para quedar por encima del plano */
 /* El velo del hero desaparece: lo cubre el velo único del lienzo. Sólo queda
    un oscurecido suave arriba, para que la barra de navegación se lea. */
-.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(10,11,14,.45),transparent 26%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(var(--bg-rgb),.45),transparent 26%)}
 /* --hx/--hy en vez de calcular aquí a partir de --mx: ver el módulo del puntero.
    Llegan ya redondeadas a píxel entero para que el titular no quede a medio
    píxel y se vea borroso. */
 .hero-inner{position:relative;z-index:2;text-align:center;transform:translate3d(var(--hx,0px),var(--hy,0px),0);will-change:transform}
 .hero-inner::before{content:"";position:absolute;z-index:-1;left:50%;top:46%;width:min(820px,88vw);height:min(820px,88vw);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(200,169,106,.14),transparent 68%);pointer-events:none;animation:halo 8s ease-in-out infinite alternate}
 @keyframes halo{from{opacity:.5}to{opacity:1}}
-.hero-inner .sec-tag{justify-content:center}
+/* En el resto del sitio el sec-tag sólo lleva línea a la izquierda (::before);
+   aquí, sin nada de texto detrás para justificar la asimetría, se añade una
+   segunda línea a la derecha para que quede pareja de los dos lados. */
+/* Bronce de 10 px sobre el cielo del vídeo: medido, daba 2,5 de contraste
+   —el mínimo para texto pequeño es 4,5— porque justo detrás pasa la aurora,
+   que es la zona más clara del encuadre. Sube a --bronze-hi y se le pone la
+   misma sombra que ya usan los datos de contacto sobre foto; la sombra crea un
+   halo oscuro pegado al trazo, que es lo que sostiene la lectura cuando el
+   fondo se mueve y no puede darse por conocido. */
+.hero-inner .sec-tag{justify-content:center;color:var(--bronze-hi);text-shadow:0 1px 10px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.6)}
+.hero-inner .sec-tag::after{content:"";width:42px;height:1px;background:var(--bronze)}
+.hero-inner .sec-tag .n{color:var(--bronze)}
 .hero h1{font-size:clamp(50px,8.4vw,132px);line-height:1.06;margin:26px auto 30px;font-weight:600;text-align:center}
 .hero h1 em{font-style:italic;font-weight:500;color:var(--bronze-hi)}
-.hero-sub{display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:42px}
-.hero-sub .ln{width:64px;height:1px;background:var(--bronze)}
-.hero-sub p{font-family:var(--serif);font-style:italic;font-size:clamp(17px,1.9vw,22px);color:var(--muted);letter-spacing:.5px}
 .hero-cta{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
 .hero-foot{position:absolute;bottom:30px;left:0;right:0;z-index:2}
-.hero-foot .wrap{display:flex;justify-content:space-between;align-items:center;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim)}
+/* Con "Diseño — Código — IA" fuera sólo queda el aviso de scroll: space-between
+   lo habría mandado a la izquierda al no tener con quién repartirse el hueco. */
+.hero-foot .wrap{display:flex;justify-content:flex-end;align-items:center;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim)}
 .scroll-cue{display:flex;align-items:center;gap:12px}
 .scroll-cue i{display:block;width:1px;height:42px;background:linear-gradient(180deg,var(--bronze),transparent);animation:drop 2.1s ease-in-out infinite}
 @keyframes drop{0%{transform:scaleY(0);transform-origin:top}55%{transform:scaleY(1);transform-origin:top}56%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
@@ -536,8 +636,8 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    y por eso no puede existir ninguna frontera visible entre unas y otras. */
 #servicios{padding-top:clamp(34px,3.8vw,56px)}
 /* legibilidad reforzada en contacto */
-form.frame{background:rgba(12,14,19,.93)}
-.frame label{color:#CFC9BB}
+form.frame{background:rgba(var(--bg-rgb),.93)}
+.frame label{color:var(--muted)}
 .frame input,.frame textarea,.frame select{border-bottom:1px solid rgba(200,169,106,.5)}
 #contacto .c-item .v{text-shadow:0 2px 14px rgba(0,0,0,.7)}
 .svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
@@ -592,7 +692,7 @@ form.frame{background:rgba(12,14,19,.93)}
 .svc-btn{display:inline-flex;align-items:center;gap:10px;margin-top:26px;padding:12px 24px;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:500;color:var(--bronze-hi);border:1px solid var(--line);position:relative;transition:.35s;z-index:1}
 .svc-btn::before{content:"";position:absolute;inset:0;border:1px solid var(--bronze);pointer-events:none;animation:ringp-s 2.8s cubic-bezier(.2,.6,.3,1) infinite}
 @keyframes ringp-s{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.22);opacity:0}}
-.svc-btn:hover{background:var(--bronze);color:#0A0B0E;border-color:var(--bronze)}
+.svc-btn:hover{background:var(--bronze);color:var(--on-bronze);border-color:var(--bronze)}
 .svc-btn:hover::before{animation:none;opacity:0}
 .dia{display:inline-block;width:8px;height:8px;background:currentColor;transform:rotate(45deg);flex-shrink:0}
 
@@ -702,10 +802,10 @@ form.frame{background:rgba(12,14,19,.93)}
    es lo que sustituye al antiguo cambio de color del borde. */
 .work{border:none;position:relative;overflow:hidden;
   padding:clamp(30px,3.4vw,48px) clamp(28px,3.2vw,46px);
-  background:linear-gradient(165deg,rgba(19,22,28,.34),rgba(10,11,14,.12));
+  background:linear-gradient(165deg,rgba(var(--panel-rgb),.34),rgba(var(--bg-rgb),.12));
   transition:transform .5s cubic-bezier(.2,.7,.2,1),background .5s ease}
 .work:hover{transform:translateY(-7px);
-  background:linear-gradient(165deg,rgba(19,22,28,.52),rgba(10,11,14,.24))}
+  background:linear-gradient(165deg,rgba(var(--panel-rgb),.52),rgba(var(--bg-rgb),.24))}
 /* Escuadras de acta: el mismo trazo que enmarcaba las reseñas. Un recuadro
    completo encajona y además vuelve a dibujar una caja sobre la foto; la
    escuadra sugiere el documento y deja pasar el fondo por los cuatro lados.
@@ -825,7 +925,7 @@ form.frame{background:rgba(12,14,19,.93)}
 .c-item .k{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 .c-item .v{font-family:var(--serif);font-size:clamp(19px,2vw,24px);font-weight:500}
 .c-item .v em{font-style:italic;color:var(--bronze-hi)}
-form.frame{border:1px solid var(--line);padding:clamp(28px,3.6vw,52px);background:rgba(17,19,24,.7);position:relative}
+form.frame{border:1px solid var(--line);padding:clamp(28px,3.6vw,52px);background:rgba(var(--bg2-rgb),.7);position:relative}
 form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(--line-soft);pointer-events:none}
 .frame label{display:block;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;font-weight:500}
 .frame label:first-of-type{margin-top:0}
@@ -861,6 +961,7 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
 .faq .faq-r{padding:0 38px clamp(15px,1.8vw,21px) 0;color:var(--muted);
   font-size:15px;line-height:1.75}
 .faq .faq-r a{color:var(--bronze-hi);border-bottom:1px solid var(--line)}
+.faq .faq-r b{color:var(--bronze-hi);font-weight:500}
 @media(max-width:620px){.faq .faq-r{font-size:14px;padding-right:8px}
   .faq summary{padding-right:32px}}
 
@@ -881,7 +982,13 @@ form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(-
 }
 
 /* ---------- FOOTER ---------- */
-footer{position:relative;z-index:2;padding:clamp(40px,4.6vw,64px) 0 34px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05))}
+/* El relleno lateral era 0: las filas del pie no van dentro de un .wrap como
+   el resto de la página, así que ocupaban el ancho entero y en un móvil los
+   textos largos —"Aviso de privacidad · Términos y condiciones", la línea de
+   métricas— llegaban justo al borde de la pantalla. Se les da el mismo margen
+   que usa toda la página en vez de un valor nuevo, para que el pie quede
+   alineado con las secciones de arriba. */
+footer{position:relative;z-index:2;padding:clamp(40px,4.6vw,64px) var(--wrap-pad) 34px;text-align:center;background:linear-gradient(180deg,transparent,rgba(200,169,106,.05))}
 footer .wordmark{font-family:var(--serif);font-size:clamp(34px,4.4vw,54px);font-weight:600;line-height:1}
 footer .wordmark em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 footer .motto{margin:20px 0 8px;font-size:10px;letter-spacing:7px;text-transform:uppercase;color:var(--muted)}
@@ -900,6 +1007,33 @@ footer small{color:var(--dim);font-size:10px;letter-spacing:2px}
 footer .legal{display:flex;gap:8px 22px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
 footer .legal a{font-size:9.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--dim);transition:color .3s}
 footer .legal a:hover{color:var(--bronze)}
+/* En un móvil el interletrado ancho del pie es lo que rompe las líneas por
+   sitios raros: "Ambición · Estrategia · Resultados" con 7 px de separación
+   pide 360 px de ancho él solo. Aquí no adorna, sólo estorba, así que se
+   recorta; el tamaño de letra no baja para no perder legibilidad. */
+@media(max-width:520px){
+  footer .motto{letter-spacing:3.4px}
+  footer .fl{gap:14px 18px}
+  footer .legal{gap:8px 14px}
+  footer .legal a{letter-spacing:1.6px}
+  .met{gap:6px 16px}
+  .met span{letter-spacing:2px}
+  footer small{letter-spacing:1.2px}
+}
+
+/* ---------- TEMA ----------
+   Mismo molde que .snd para que las dos píldoras de la barra lean como un
+   mismo grupo de controles. El diamante reutiliza el lenguaje de los sellos de
+   certificado: hueco en oscuro (el tema por defecto, nada que activar),
+   relleno en claro (activo), igual que un sello ganado. */
+.tema{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid var(--line-soft);
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);background:none;
+  font-family:var(--sans);font-weight:500;transition:color .3s,border-color .3s}
+.tema:hover{color:var(--bronze-hi);border-color:var(--line)}
+.tema[aria-pressed="true"]{color:var(--bronze-hi);border-color:var(--line)}
+.tema-ico{width:8px;height:8px;flex-shrink:0;border:1px solid currentColor;transform:rotate(45deg);transition:background-color .3s}
+.tema[aria-pressed="true"] .tema-ico{background:currentColor}
+@media(max-width:840px){.tema .tema-t{display:none}.tema{padding:9px 11px}}
 
 /* ---------- SONIDO ---------- */
 .snd{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid var(--line-soft);
@@ -927,7 +1061,7 @@ footer .legal a:hover{color:var(--bronze)}
    cuatro certificados o diez. El detalle completo lo da el visor, que ya
    existía. */
 .creds{margin-top:clamp(40px,4.4vw,60px);border:1px solid var(--line-soft);
-  background:rgba(17,19,24,.55);padding:clamp(20px,2.4vw,28px) clamp(18px,2.4vw,32px);
+  background:rgba(var(--bg2-rgb),.55);padding:clamp(20px,2.4vw,28px) clamp(18px,2.4vw,32px);
   display:flex;align-items:center;gap:clamp(18px,2.6vw,36px);flex-wrap:wrap;justify-content:center}
 .creds-txt{flex:1 1 260px;min-width:0}
 .creds-suma{font-family:var(--serif);font-size:clamp(21px,2.2vw,28px);font-weight:600;line-height:1.25}
@@ -950,7 +1084,7 @@ footer .legal a:hover{color:var(--bronze)}
    sello se toca directamente, que es más rápido que leer una etiqueta. */
 .cred-tip{position:absolute;bottom:calc(100% + 11px);left:50%;transform:translateX(-50%) translateY(4px);
   white-space:nowrap;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
-  background:rgba(10,11,14,.96);border:1px solid var(--line);padding:7px 12px;pointer-events:none;
+  background:rgba(var(--bg-rgb),.96);border:1px solid var(--line);padding:7px 12px;pointer-events:none;
   opacity:0;transition:opacity .3s,transform .3s;z-index:3}
 .cred.tiene:hover .cred-tip,.cred.tiene:focus-visible .cred-tip{opacity:1;transform:translateX(-50%)}
 @media(hover:none){.cred-tip{display:none}}
@@ -976,7 +1110,7 @@ footer .legal a:hover{color:var(--bronze)}
 #visor .cerrar{position:absolute;top:clamp(16px,2.4vw,30px);right:clamp(16px,2.4vw,30px);
   width:46px;height:46px;border:1px solid var(--line);background:none;color:var(--bronze-hi);
   font-family:var(--serif);font-size:23px;line-height:1;cursor:pointer;transition:.35s}
-#visor .cerrar:hover{background:var(--bronze);color:#0A0B0E;border-color:var(--bronze)}
+#visor .cerrar:hover{background:var(--bronze);color:var(--on-bronze);border-color:var(--bronze)}
 /* Perfiles */
 /* Mismo panel opaco que la rejilla de servicios y por el mismo motivo: mientras
    los dos perfiles entran, su celda no puede ser una ventana a la foto del
@@ -1019,7 +1153,7 @@ footer .legal a:hover{color:var(--bronze)}
 .aud-form button:disabled{color:var(--dim);cursor:default}
 .aud-note{margin-top:14px;font-size:11px;letter-spacing:1px;color:var(--dim);line-height:1.7}
 /* Panel de resultados */
-.aud-out{border:1px solid var(--line-soft);background:rgba(12,14,19,.9);padding:clamp(26px,3.2vw,42px);
+.aud-out{border:1px solid var(--line-soft);background:rgba(var(--bg-rgb),.9);padding:clamp(26px,3.2vw,42px);
   min-height:290px;display:flex;flex-direction:column;justify-content:center;position:relative}
 .aud-out::before{content:"";position:absolute;inset:7px;border:1px solid var(--line-soft);pointer-events:none}
 .aud-idle{text-align:center;color:var(--dim);font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.7}
@@ -1029,14 +1163,14 @@ footer .legal a:hover{color:var(--bronze)}
    ve el expediente formándose. El último paso no se marca hasta que llega la
    respuesta real, porque ahí sí terminaría mintiendo. */
 .aud-busy{text-align:left;width:100%}
-.aud-busy .bar{width:100%;height:1px;background:#22252C;margin:0 0 24px;position:relative;overflow:hidden}
+.aud-busy .bar{width:100%;height:1px;background:var(--line);margin:0 0 24px;position:relative;overflow:hidden}
 .aud-busy .bar i{position:absolute;inset:0;background:var(--bronze);transform:translateX(-100%);
   animation:audload 1.15s cubic-bezier(.6,0,.4,1) infinite}
 @keyframes audload{to{transform:translateX(100%)}}
 .aud-pasos{list-style:none;display:flex;flex-direction:column;gap:13px}
 .aud-pasos li{display:flex;align-items:center;gap:13px;font-size:11px;letter-spacing:2.6px;
-  text-transform:uppercase;color:#33363D;transition:color .5s ease}
-.aud-pasos li .mk{width:6px;height:6px;flex-shrink:0;border:1px solid #33363D;transform:rotate(45deg);
+  text-transform:uppercase;color:rgba(var(--ink-rgb),.35);transition:color .5s ease}
+.aud-pasos li .mk{width:6px;height:6px;flex-shrink:0;border:1px solid rgba(var(--ink-rgb),.35);transform:rotate(45deg);
   transition:background-color .5s,border-color .5s,transform .5s cubic-bezier(.2,.7,.2,1)}
 .aud-pasos li.hecho{color:var(--dim)}
 .aud-pasos li.hecho .mk{background:var(--dim);border-color:var(--dim)}
@@ -1051,7 +1185,7 @@ footer .legal a:hover{color:var(--bronze)}
 .aud-ring{width:96px;height:96px;flex-shrink:0;position:relative}
 .aud-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .aud-ring circle{fill:none;stroke-width:2}
-.aud-ring .bgc{stroke:#22252C}
+.aud-ring .bgc{stroke:var(--line-soft)}
 .aud-ring .fgc{stroke:var(--bronze);stroke-linecap:round;transition:stroke-dashoffset 1.3s cubic-bezier(.2,.7,.2,1)}
 .aud-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font-family:var(--serif);font-size:31px;font-weight:600;color:var(--ink)}
@@ -1068,7 +1202,7 @@ footer .legal a:hover{color:var(--bronze)}
 .aud-list .mk{flex-shrink:0;width:7px;height:7px;margin-top:6px;transform:rotate(45deg)}
 .aud-list .ok .mk{background:var(--bronze)}
 .aud-list .warn .mk{background:#8A7A4E}
-.aud-list .bad .mk{background:transparent;border:1px solid #6B6355}
+.aud-list .bad .mk{background:transparent;border:1px solid var(--dim)}
 .aud-list li b{color:var(--ink);font-weight:500}
 .aud-cta{margin-top:24px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
 .aud-err{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--muted);text-align:center;line-height:1.7}
@@ -1088,7 +1222,7 @@ footer .legal a:hover{color:var(--bronze)}
 .aud-comp{display:inline-flex;align-items:center;gap:9px;padding:12px 20px;font-family:var(--sans);
   font-size:9.5px;letter-spacing:3px;text-transform:uppercase;font-weight:500;color:var(--bronze-hi);
   border:1px solid var(--line);background:none;cursor:pointer;transition:.35s}
-.aud-comp:hover{background:var(--bronze);color:#0A0B0E;border-color:var(--bronze)}
+.aud-comp:hover{background:var(--bronze);color:var(--on-bronze);border-color:var(--bronze)}
 .aud-comp svg{width:13px;height:13px;flex-shrink:0;fill:currentColor}
 .aud-comp.ok{color:var(--bronze);border-color:var(--bronze)}
 
@@ -1135,7 +1269,7 @@ footer .legal a:hover{color:var(--bronze)}
 .vs-lado .q{margin-top:12px;font-size:9px;letter-spacing:3.4px;text-transform:uppercase;color:var(--bronze)}
 .vs-lado .u{margin-top:6px;font-size:10px;letter-spacing:1.2px;color:var(--dim);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.vs-lado.pierde .aud-ring .fgc{stroke:#6B6355}
+.vs-lado.pierde .aud-ring .fgc{stroke:var(--dim)}
 .vs-lado.pierde .q{color:var(--dim)}
 .vs-sep{width:9px;height:9px;background:var(--line);transform:rotate(45deg)}
 /* El reparto de puntos: en qué te gana y en qué le ganas. Dos columnas para que
@@ -1148,7 +1282,7 @@ footer .legal a:hover{color:var(--bronze)}
 .vs-reparto li{font-size:12.5px;line-height:1.55;color:var(--muted);display:flex;gap:10px}
 .vs-reparto li::before{content:"";width:5px;height:5px;flex-shrink:0;margin-top:6px;transform:rotate(45deg)}
 .vs-gana li::before{background:var(--bronze)}
-.vs-pierde li::before{background:transparent;border:1px solid #6B6355}
+.vs-pierde li::before{background:transparent;border:1px solid var(--dim)}
 .vs-nada{font-size:12.5px;line-height:1.6;color:var(--dim);font-style:italic;font-family:var(--serif)}
 
 /* ---------- CALCULADORA DEL TRABAJO MANUAL ----------
@@ -1156,7 +1290,7 @@ footer .legal a:hover{color:var(--bronze)}
    aparece siempre: "¿y esto para qué lo quiero?". El número lo pone el
    visitante con sus propias horas; aquí no se estima nada por él. */
 .costo{margin-top:clamp(26px,3vw,38px);border:1px solid var(--line-soft);
-  background:rgba(12,14,19,.72);padding:clamp(24px,3vw,40px);position:relative}
+  background:rgba(var(--bg-rgb),.72);padding:clamp(24px,3vw,40px);position:relative}
 .costo::before{content:"";position:absolute;inset:7px;border:1px solid rgba(200,169,106,.06);pointer-events:none}
 .costo>*{position:relative}
 .costo .ck{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
@@ -1177,7 +1311,7 @@ footer .legal a:hover{color:var(--bronze)}
   background:var(--line);outline:none;cursor:pointer}
 .costo input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
   width:15px;height:15px;background:var(--bronze-hi);transform:rotate(45deg);cursor:grab;
-  border:none;box-shadow:0 0 0 4px rgba(10,11,14,.9)}
+  border:none;box-shadow:0 0 0 4px rgba(var(--bg-rgb),.9)}
 .costo input[type=range]::-moz-range-thumb{width:13px;height:13px;background:var(--bronze-hi);
   border:none;transform:rotate(45deg);cursor:grab}
 .costo input[type=range]:focus-visible{outline:1px solid var(--bronze);outline-offset:8px}
@@ -1211,19 +1345,19 @@ footer .legal a:hover{color:var(--bronze)}
 /* ---------- VALIDACIÓN EN VIVO ----------
    El campo se marca al salirse de él, nunca mientras se escribe: corregir a
    alguien en mitad de una palabra es la forma más rápida de que abandone. */
-.frame input.mal,.frame textarea.mal{border-bottom-color:#A8695A}
-.aviso{display:none;margin-top:8px;font-size:11px;letter-spacing:.6px;color:#C08476;line-height:1.5}
+.frame input.mal,.frame textarea.mal{border-bottom-color:var(--err)}
+.aviso{display:none;margin-top:8px;font-size:11px;letter-spacing:.6px;color:var(--err);line-height:1.5}
 .aviso.on{display:block}
 
 /* ---------- MODO PRESENTACIÓN ----------
    Para enseñar la web en una reunión sin hacer scroll delante del cliente. No
    cambia el contenido: apaga el cromo y mueve de sección en sección. */
-html.pres nav,html.pres .rail,html.pres #avance,html.pres .snd{display:none!important}
+html.pres nav.principal,html.pres .rail,html.pres #avance,html.pres .snd,html.pres .tema{display:none!important}
 html.pres{scroll-behavior:smooth}
 /* Sin barra fija arriba, el margen de anclaje que la compensaba deja un hueco */
 html.pres section[id],html.pres .hero{scroll-margin-top:0}
 .pres-idx{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);z-index:97;
-  display:none;align-items:center;gap:14px;padding:11px 20px;background:rgba(10,11,14,.94);
+  display:none;align-items:center;gap:14px;padding:11px 20px;background:rgba(var(--bg-rgb),.94);
   border:1px solid var(--line);font-size:9px;letter-spacing:3.2px;text-transform:uppercase;
   color:var(--muted);opacity:0;transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
 html.pres .pres-idx{display:flex;opacity:1;transform:translate(-50%,0)}
@@ -1237,7 +1371,7 @@ html.pres .pres-idx{display:flex;opacity:1;transform:translate(-50%,0)}
 html.oro{--bronze:#E7C778;--bronze-hi:#FFF3CE;--line:rgba(231,199,120,.42);--line-soft:rgba(231,199,120,.2)}
 html.oro body{filter:saturate(1.22) contrast(1.03)}
 .oro-aviso{position:fixed;left:50%;bottom:32px;transform:translate(-50%,18px);z-index:96;
-  display:flex;align-items:center;gap:12px;padding:14px 24px;background:rgba(10,11,14,.96);
+  display:flex;align-items:center;gap:12px;padding:14px 24px;background:rgba(var(--bg-rgb),.96);
   border:1px solid var(--bronze);font-size:9.5px;letter-spacing:3.4px;text-transform:uppercase;
   color:var(--bronze-hi);opacity:0;pointer-events:none;
   transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
@@ -1331,7 +1465,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .svc.centro .go{color:var(--bronze);transform:translate(4px,-4px)}
   /* La ficha centrada enciende sus escuadras: es el equivalente exacto del
      hover de escritorio, ahora que no hay borde que cambiar de color. */
-  .work.centro{background:linear-gradient(165deg,rgba(19,22,28,.52),rgba(10,11,14,.24))}
+  .work.centro{background:linear-gradient(165deg,rgba(var(--panel-rgb),.52),rgba(var(--bg-rgb),.24))}
   .work.centro::before,.work.centro::after{opacity:1}
 
   /* Índice de posición: numeral y subrayado que se llena, el mismo en las tres
@@ -1426,7 +1560,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
        documento. "Sobre nosotros" bajó hasta después de las reseñas, así que la
        ciudad se ancla al hero: es lo primero de la página, siempre, y da igual
        cómo se reordenen las secciones de abajo. -->
-  <div class="esc ciudad"                              data-ancla=".hero"></div>
+  <!-- El vídeo va DENTRO de la escena, no en su lugar: la foto sigue pintada en
+       el ::after y hace de cartel mientras el vídeo carga (y si no carga, o si
+       el visitante pidió menos movimiento, se queda ella). Ambos comparten el
+       mismo encuadre y el mismo punto de anclaje, así que el relevo no se ve. -->
+  <div class="esc ciudad"                              data-ancla=".hero">
+    <video class="hv" id="heroVidA" muted playsinline preload="none" aria-hidden="true"></video>
+    <video class="hv" id="heroVidB" muted playsinline preload="none" aria-hidden="true"></video>
+  </div>
   <div class="esc" data-src="assets/bg-servicios.webp" data-ancla="#servicios"></div>
   <div class="esc" data-src="assets/bg-proyectos.webp" data-ancla="#proyectos"></div>
   <div class="esc" data-src="assets/bg-contacto.webp"  data-ancla="#contacto"></div>
@@ -1470,7 +1611,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <!-- Con el riel izquierdo convertido en índice ya hay dos navegaciones en la
      página: cada una necesita su rótulo para que un lector de pantalla pueda
      distinguirlas al saltar entre puntos de referencia. -->
-<nav aria-label="Principal">
+<nav class="principal" aria-label="Principal">
   <a class="brand" href="#top">
     <img src="assets/logo.svg" alt="Logo S&C Solutions Company">
     <span class="bt">S&amp;C <em>Solutions</em><span class="bs">Company</span></span>
@@ -1483,6 +1624,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div style="display:flex;align-items:center;gap:14px">
+    <button class="tema" id="tema" type="button" aria-pressed="false" aria-label="Cambiar a tema claro">
+      <span class="tema-ico" aria-hidden="true"></span>
+      <span class="tema-t">Tema</span>
+    </button>
     <button class="snd" id="snd" type="button" aria-pressed="false" aria-label="Activar sonido de la página">
       <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
       <span class="snd-t">Sonido</span>
@@ -1499,18 +1644,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wrap hero-inner">
     <span class="sec-tag">Solutions Company <span class="n">/ Est. 2026</span></span>
     <h1 data-split>Tu competencia<br><em>ya nos llamó.</em></h1>
-    <div class="hero-sub">
-      <span class="ln"></span>
-      <p>Webs premium — Agentes de IA — CRM — Apps privadas — Automatización</p>
-    </div>
-    <div class="hero-cta">
-      <a href="#servicios" class="btn solid">Descubrir servicios</a>
-      <a href="#contacto" class="btn ghost">Pedir propuesta</a>
-    </div>
   </div>
   <div class="hero-foot">
     <div class="wrap">
-      <span>Diseño — Código — Inteligencia Artificial</span>
       <span class="scroll-cue">Scroll <i></i></span>
     </div>
   </div>
@@ -1953,17 +2089,22 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <div class="faq rv" id="faq">
       <p class="faq-k">Antes de escribir</p>
       <details>
-        <summary>¿Cuánto cuesta el diagnóstico de mi web?</summary>
-        <p class="faq-r">Nada, y no hace falta registrarse. Analizamos únicamente la
-          página pública que nos indiques: no guardamos la dirección ni la compartimos.
-          Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a
-          tu negocio. Puedes <a href="#diagnostico">probarlo ahora mismo</a>.</p>
+        <summary>¿Trabajan solo con negocios de México?</summary>
+        <p class="faq-r">No, trabajamos con negocios de toda Latinoamérica. El proceso
+          es remoto de principio a fin y el resultado no cambia sin importar dónde
+          estés. Nuestra base está en <b>San Luis Potosí, México</b>: si tu negocio
+          está por la zona y prefieres cerrar los detalles en persona, ahí sí podemos
+          reunirnos cara a cara.</p>
       </details>
       <details>
-        <summary>¿Trabajan solo con negocios de México?</summary>
-        <p class="faq-r">Nuestra base está en México y trabajamos con todo el mundo.
-          El trabajo es remoto de principio a fin, así que la ubicación no cambia nada
-          del resultado.</p>
+        <summary>¿Cómo es el proceso de trabajo y el pago?</summary>
+        <p class="faq-r">Empezamos con una videollamada para entender tu negocio y lo
+          que necesitas. Con eso armamos un plan y te presentamos opciones concretas
+          para elegir. Al arrancar se cubre el <b>50%</b> del proyecto, y a partir de
+          ahí trabajamos por entregas: vas viendo avances por partes, y en cada una
+          puedes pedir que se modifique, agregue o quite algo antes de seguir. Cuando
+          el proyecto está terminado y aprobado, se liquida el <b>50%</b> restante y se
+          entrega por completo.</p>
       </details>
       <details>
         <summary>¿Cuánto tardan en responderme?</summary>
@@ -1977,6 +2118,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           tus clientes, CRM empresarial construido a la medida de tu operación,
           aplicaciones privadas para tu equipo y automatización de procesos. Puedes
           verlas con detalle en <a href="#servicios">lo que dominamos</a>.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto cuesta el diagnóstico de mi web?</summary>
+        <p class="faq-r">Nada, y no hace falta registrarse. Analizamos únicamente la
+          página pública que nos indiques: no guardamos la dirección ni la compartimos.
+          Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a
+          tu negocio. Puedes <a href="#diagnostico">probarlo ahora mismo</a>.</p>
       </details>
       <details>
         <summary>No sé qué necesito exactamente. ¿Puedo escribir igual?</summary>
@@ -2207,6 +2355,15 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
   const hero=document.querySelector('.hero');
   const K=.18;               /* recorrido de la cámara por escena */
   let pend=false,altoDoc=-1;
+  /* El tema claro sube --velo-op de .72 a .93 (las fotos son todas nocturnas y
+     no cambian con el tema, así que el velo casi las cubre). La curva de abajo
+     parte de ese valor en vez de tenerlo escrito a fuego, y se relee cuando el
+     interruptor de tema dispara 'sc-tema'. */
+  let veloBase=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--velo-op'))||.72;
+  document.addEventListener('sc-tema',()=>{
+    veloBase=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--velo-op'))||.72;
+    pinta();
+  });
   /* Posiciones cacheadas. Leer getBoundingClientRect en cada fotograma fuerza
      un recálculo de maquetación y rompe el scroll suave de los anclas. */
   function mide(){
@@ -2249,9 +2406,9 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
           ?'translate3d(0,'+(-y*.06).toFixed(1)+'px,0)'
           :'translate3d(0,'+(d*K).toFixed(1)+'px,0) scale('+(1.12-w*.05).toFixed(3)+')';
       }else if(o.el.style.visibility!=='hidden'){
-        /* .quieto detiene aquí el vuelo de dron de los dos planos de la ciudad:
-           son dos imágenes a pantalla completa con máscara y escala variable,
-           lo más caro de la página, y seguían animándose invisibles. */
+        /* .quieto detiene aquí el vuelo de dron del plano de la ciudad: es una
+           imagen a pantalla completa con escala variable, lo más caro de la
+           página, y seguía animándose invisible. */
         o.el.style.visibility='hidden';o.el.style.opacity='0';o.el.classList.add('quieto');
       }
       f+=i*w;
@@ -2265,16 +2422,136 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
          78vh de alto son los 90vh de recorrido de siempre. */
       veta.style.transform='translate3d(0,'+((.5-fr)*115.38).toFixed(1)+'%,0)';
     }
-    /* El velo se cierra de forma continua al descender: .80 arriba, 1 abajo.
-       Al ser un único elemento global, ese oscurecido no puede producir
+    /* El velo se cierra de forma continua al descender: veloBase arriba, 1
+       abajo. Al ser un único elemento global, ese oscurecido no puede producir
        ninguna frontera entre secciones. */
-    if(velo)velo.style.opacity=(.72+.28*Math.min(1,y/(vh*1.15))).toFixed(3);
+    if(velo)velo.style.opacity=(veloBase+(1-veloBase)*Math.min(1,y/(vh*1.15))).toFixed(3);
   }
   const pide=()=>{if(!pend){pend=true;requestAnimationFrame(pinta);}};
   addEventListener('scroll',pide,{passive:true});
   addEventListener('resize',()=>{mide();pide();},{passive:true});
   addEventListener('load',()=>{mide();pinta();});
   mide();pinta();
+})();
+
+/* ---------- VÍDEO DEL HERO ----------
+   Las auroras y las ramas en movimiento. El src no está en el HTML y se pone
+   aquí: así el vídeo no compite con la foto del hero por el ancho de banda de
+   la primera pantalla, que es lo que decide la sensación de velocidad.
+   Tres motivos para no cargarlo nunca:
+   - prefers-reduced-motion: un cielo entero moviéndose es justo lo que esa
+     preferencia pide evitar.
+   - Save-Data: pesa bastante; en un plan medido eso es dinero del visitante.
+   - Pantallas estrechas: en móvil el hero se recorta tanto que casi todo el
+     movimiento (el cielo) queda fuera del encuadre, y ahí el vídeo es coste
+     sin beneficio.
+   En cualquiera de esos casos se queda la foto, que ya está pintada debajo.
+
+   La anchura se vuelve a mirar al redimensionar. Comprobarla una sola vez al
+   cargar dejaba sin vídeo —para siempre, hasta recargar— a quien entra en
+   vertical y gira el teléfono, o abre la ventana estrecha y luego la
+   maximiza. Las otras dos condiciones no cambian a mitad de visita, así que
+   ésas sí se miran una vez. */
+(()=>{
+  const a=document.getElementById('heroVidA'), b=document.getElementById('heroVidB');
+  if(!a||!b)return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if(navigator.connection&&navigator.connection.saveData)return;
+
+  if(innerWidth<760){
+    /* Con espera, y no al primer resize que supere el umbral: mientras se
+       arrastra el borde de una ventana se disparan decenas de eventos, y basta
+       que uno pase de 760 para descargar el vídeo por un ancho que el visitante
+       ni siquiera ha soltado. Se mide cuando la anchura lleva un momento
+       quieta. */
+    let temp=0;
+    const alEnsanchar=()=>{
+      clearTimeout(temp);
+      temp=setTimeout(()=>{
+        if(innerWidth<760)return;
+        removeEventListener('resize',alEnsanchar);
+        arranca();
+      },400);
+    };
+    addEventListener('resize',alEnsanchar,{passive:true});
+    return;
+  }
+  arranca();
+
+  function arranca(){
+  const esc=a.parentElement;
+  /* El CSS manda sobre la duración del cruce: aquí sólo se lee. */
+  const CRUCE=parseFloat(getComputedStyle(esc).getPropertyValue('--hv-cruce'))||1.4;
+
+  /* El vídeo se reproduce por debajo de su velocidad nativa. El viento se
+     generó con amplitud grande —para que el movimiento se vea— y a velocidad
+     normal eso resulta agitado; al ralentizarlo se conserva el recorrido de
+     las ramas y se pierde la prisa, que es la sensación buscada. */
+  const RITMO=0.6;
+
+  const SRC='assets/hero-loop.mp4';
+  a.src=SRC; b.src=SRC;
+  /* defaultPlaybackRate además de playbackRate: load() devuelve la velocidad
+     al valor por defecto, así que fijar sólo playbackRate antes de cargar no
+     sirve de nada —se pierde en cuanto empieza la carga—. */
+  a.defaultPlaybackRate=b.defaultPlaybackRate=RITMO;
+  a.playbackRate=b.playbackRate=RITMO;
+  a.load();
+
+  let visible=true, actual=a, espera=b, relevando=false;
+
+  /* Se espera a canplay y no a que haya bytes: sin esto el fundido arrancaría
+     sobre un vídeo todavía en negro y se vería un parpadeo oscuro encima de
+     la foto. La segunda copia se carga después, para no pelear con la primera
+     por el ancho de banda de la primera pantalla. */
+  a.addEventListener('canplay',()=>{
+    a.classList.add('estreno','activo');
+    if(visible)a.play().catch(()=>{});
+    b.load();
+  },{once:true});
+
+  /* timeupdate basta: dispara varias veces por segundo y el relevo sólo
+     necesita saber que quedan CRUCE segundos, no el fotograma exacto.
+     El umbral se multiplica por el ritmo: CRUCE son segundos de reloj —los que
+     dura el fundido del CSS— pero currentTime avanza en segundos de vídeo, y a
+     0,6× uno de reloj son 0,6 de vídeo. Sin corregirlo, el vídeo saliente
+     llegaba a su final con el fundido a medias y se quedaba congelado a la
+     vista durante el resto del cruce. */
+  function vigila(e){
+    const v=e.target;
+    if(v!==actual||relevando||!v.duration)return;
+    if(v.duration-v.currentTime>CRUCE*RITMO)return;
+
+    relevando=true;
+    /* La que entra empieza desde cero por debajo; al añadirle .activo las dos
+       quedan al 100% y el cruce ocurre cuando la saliente se apaga. */
+    espera.classList.remove('estreno');
+    espera.currentTime=0;
+    if(visible)espera.play().catch(()=>{});
+    espera.classList.add('activo');
+    actual.classList.remove('activo');
+
+    const saliente=actual;
+    actual=espera; espera=saliente;
+    /* Pausarla al terminar el fundido, y no antes, evita que su último
+       fotograma se congele a la vista mientras aún es visible. */
+    setTimeout(()=>{saliente.pause();relevando=false;},CRUCE*1000);
+  }
+  a.addEventListener('timeupdate',vigila);
+  b.addEventListener('timeupdate',vigila);
+
+  /* El hero ocupa la primera pantalla, así que el vídeo sólo tiene sentido
+     mientras esa pantalla se ve. Fuera de ella se pausa: decodificar vídeo a
+     pantalla completa es el trabajo más caro de la página y no se ve nada.
+     Mismo criterio que .quieto para el resto de animaciones. */
+  const hero=document.querySelector('.hero');
+  if(!hero)return;
+  new IntersectionObserver(es=>{
+    visible=es[0].isIntersecting;
+    if(visible){ if(actual.classList.contains('activo'))actual.play().catch(()=>{}); }
+    else { a.pause(); b.pause(); }
+  },{threshold:0}).observe(hero);
+  }
 })();
 
 /* ---------- PAUSA DE LO QUE NO SE VE ----------
@@ -2696,6 +2973,32 @@ const SIG=(()=>{
     }
   };
   return api;
+})();
+
+/* ---------- INTERRUPTOR DE TEMA ----------
+   El estado real ya lo aplicó el script bloqueante del <head> antes del primer
+   pintado —por eso no hay parpadeo—; este bloque sólo sincroniza el botón con
+   lo que ya está en el DOM y reacciona a los clics. 'sc-tema' avisa al lienzo
+   del descenso para que su velo relea --velo-op del tema nuevo. */
+(()=>{
+  const b=document.getElementById('tema');
+  if(!b)return;
+  const LLAVE='sc_tema';
+  const html=document.documentElement;
+  const meta=document.querySelector('meta[name="theme-color"]');
+  const pinta=claro=>{
+    b.setAttribute('aria-pressed',claro?'true':'false');
+    b.setAttribute('aria-label',claro?'Cambiar a tema oscuro':'Cambiar a tema claro');
+    if(meta)meta.setAttribute('content',claro?'#F5F2E9':'#0A0B0E');
+  };
+  pinta(html.getAttribute('data-tema')==='claro');
+  b.addEventListener('click',()=>{
+    const claro=html.getAttribute('data-tema')!=='claro';
+    if(claro)html.setAttribute('data-tema','claro');else html.removeAttribute('data-tema');
+    try{localStorage.setItem(LLAVE,claro?'claro':'oscuro');}catch(_){}
+    pinta(claro);
+    document.dispatchEvent(new Event('sc-tema'));
+  });
 })();
 
 (()=>{
