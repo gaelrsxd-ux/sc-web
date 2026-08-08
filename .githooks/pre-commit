@@ -1,0 +1,4 @@
+#!/bin/sh
+# Bloquea el commit si aparece algo con pinta de secreto en lo preparado.
+# Se activa con:  git config core.hooksPath .githooks
+node tools/scan-secretos.mjs || exit 1
