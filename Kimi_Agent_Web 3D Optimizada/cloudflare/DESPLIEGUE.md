@@ -185,6 +185,20 @@ console.log(r.status, r.headers.get('X-Limitador'));   // esperado: 200 "ok"
 | Repetir la misma URL ya cacheada, en ráfaga | sigue cortando en 20 |
 | Esperar 60 s sin tráfico | vuelve a `200` |
 
+### El 429 con mensaje propio: pendiente de verificación en producción
+
+No se puede provocar a mano con facilidad y **no se relaja nada para poder
+probarlo**. Hacen falta 20 tokens de Turnstile válidos en 60 segundos, y cada
+token es de un solo uso: no se pueden reutilizar ni fabricar. La única forma
+honesta es pulsar «Analizar» veinte veces en un minuto, resolviendo el widget
+cada vez.
+
+Queda cubierto en local por 33 pruebas de concurrencia —incluidas 40, 100 y 500
+simultáneas con sobrepaso cero— y por la ráfaga real de 35 secuenciales que ya se
+midió contra producción antes de existir Turnstile: 20 pasaron, 15 dieron 429.
+
+Si alguna vez se provoca en producción, anótalo aquí con la fecha.
+
 ### Comprobación de que NO hay una clave de prueba desplegada
 
 Es la que más barata sale de olvidar y la que más caro cuesta: con la clave de
@@ -201,17 +215,42 @@ const r = await fetch('https://audit.sycsolutions.company/?url=' + encodeURIComp
 console.log(r.status, r.headers.get('X-Limitador'));
 ```
 
-Tres salidas posibles, y las tres significan cosas distintas:
+**El canario se lee por el CÓDIGO, no por la cabecera.** Y conviene saber por
+qué, porque la primera versión de este documento decía lo contrario y no era
+ejecutable:
+
+- `X-Limitador` **no se puede leer desde el navegador**: es una cabecera propia y
+  no está en `Access-Control-Expose-Headers`, así que el navegador la esconde.
+- Desde `curl` o PowerShell **tampoco**: Super Bot Fight Mode bloquea a los
+  clientes que no son navegador antes de que el Worker llegue a ejecutarse, y
+  devuelve su propio 403 sin ninguna cabecera nuestra.
+
+Entre las dos cosas, la cabecera no es observable en producción por nadie que
+esté haciendo el despliegue. El código de estado sí, y basta:
 
 | Respuesta | Qué significa | Qué hacer |
 |---|---|---|
-| **`403` + `turnstile-rechazado`** | La secret real está puesta y rechazó el token de ejemplo. | Correcto, seguir. |
-| **`503` + `turnstile-claves-de-prueba`** | Hay una clave de PRUEBA desplegada. El gate la detectó y cerró. | **PARAR** y poner la secret real. |
+| **`403`** | La secret real está puesta y rechazó el token de ejemplo. | Correcto, seguir. |
+| **`503`** | El Worker no pudo validar. Ver el desempate de abajo. | **PARAR**. |
 | **`200`** | Hay una clave de prueba desplegada **y** el gate no funcionó. | **PARAR**. Lo peor de los tres. |
 
-Ojo con el segundo: `503` **no** significa aquí «siteverify caído». Ese caso sale
-como `turnstile-inalcanzable` o `turnstile-http-<estado>`. Es la cabecera
-`X-Limitador` la que distingue, no el código.
+**Desempate del 503.** Hay dos causas y se distinguen sin leer cabeceras:
+
+1. Espera un minuto y repite. Si pasa a `403`, era **siteverify caído o lento**:
+   transitorio, no hay nada que arreglar.
+2. Si sigue en `503`, es una **clave de prueba desplegada**. Confírmalo con
+   `npx wrangler secret list` —el nombre estará— y vuelve a poner la secret real
+   del panel. Una clave de prueba empieza por `1x`, `2x` o `3x`.
+
+El `403` es además una prueba positiva fuerte: sólo puede salir de que siteverify
+haya **rechazado** el token de ejemplo, y eso sólo lo hace una secret real. Con la
+clave de prueba «siempre pasa» la respuesta sería `503`, nunca `403`.
+
+*Mejora posible, deliberadamente NO hecha:* añadir `X-Limitador` a
+`Access-Control-Expose-Headers` haría el diagnóstico legible desde el navegador.
+Se descartó por ahora porque obliga a un despliegue más del Worker y amplía a
+cualquier origen la visibilidad del estado interno de la defensa, a cambio de
+comodidad. Si algún día se hace, este canario puede volver a leerse por cabecera.
 
 Ráfaga desde la consola del navegador:
 
