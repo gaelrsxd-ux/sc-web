@@ -49,8 +49,9 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "image":"https://sycsolutions.company/assets/hero-og.jpg",
    "foundingDate":"2026",
    "email":"hola@sycsolutions.company",
-   "areaServed":{"@type":"Country","name":"México"},
-   "address":{"@type":"PostalAddress","addressCountry":"MX"},
+   "telephone":"+524423697248",
+   "areaServed":[{"@type":"Country","name":"México"},{"@type":"Place","name":"Latinoamérica"}],
+   "address":{"@type":"PostalAddress","addressLocality":"San Luis Potosí","addressRegion":"San Luis Potosí","addressCountry":"MX"},
    "knowsAbout":["Diseño web","Inteligencia artificial","Automatización de procesos","CRM","Análisis de datos"],
    "founder":[
     {"@id":"https://sycsolutions.company/#gael"},
@@ -127,7 +128,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
     {"@type":"Question","name":"¿Cómo es el proceso de trabajo y el pago?",
      "acceptedAnswer":{"@type":"Answer","text":"Empezamos con una videollamada para entender tu negocio y lo que necesitas. Con eso armamos un plan y te presentamos opciones concretas para elegir. Al arrancar se cubre el 50% del proyecto, y a partir de ahí trabajamos por entregas: vas viendo avances por partes, y en cada una puedes pedir que se modifique, agregue o quite algo antes de seguir. Cuando el proyecto está terminado y aprobado, se liquida el 50% restante y se entrega por completo."}},
     {"@type":"Question","name":"¿Cuánto tardan en responderme?",
-     "acceptedAnswer":{"@type":"Answer","text":"Menos de 24 horas. Atendemos de lunes a sábado, de 9:00 a 19:00. Si escribes fuera de ese horario, tu mensaje entra igual y lo verás respondido al abrir el siguiente día hábil."}},
+     "acceptedAnswer":{"@type":"Answer","text":"Menos de 24 horas. Atendemos de lunes a viernes de 9:00 a 23:00, y sábados y domingos de 10:00 a 22:00. Fuera de ese horario también solemos responder: tu mensaje entra igual."}},
     {"@type":"Question","name":"¿Qué hacen exactamente?",
      "acceptedAnswer":{"@type":"Answer","text":"Cinco cosas: sitios web premium, agentes de IA que atienden a tus clientes, CRM empresarial construido a la medida de tu operación, aplicaciones privadas para tu equipo y automatización de procesos."}},
     {"@type":"Question","name":"¿Cuánto cuesta el diagnóstico de mi web?",
@@ -925,6 +926,39 @@ form.frame{background:rgba(var(--bg-rgb),.93)}
 .c-item .k{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 .c-item .v{font-family:var(--serif);font-size:clamp(19px,2vw,24px);font-weight:500}
 .c-item .v em{font-style:italic;color:var(--bronze-hi)}
+
+/* ---------- CONTACTO ACCIONABLE ----------
+   El teléfono y el correo eran texto muerto: se veían y no se podían usar. Van
+   como enlace —WhatsApp y cliente de correo— y cada uno lleva al lado su botón
+   de copiar, que es lo que cubre el escritorio sin WhatsApp instalado y a quien
+   quiere el dato para pegarlo en otro sitio. El texto visible del teléfono se
+   queda legible; lo que se copia es el valor en plano, que es lo que sirve
+   pegado en un marcador o en la barra de WhatsApp. */
+.c-enl{color:inherit;text-decoration:none;border-bottom:1px solid var(--line-soft);
+  transition:color .3s,border-color .3s}
+.c-enl:hover,.c-enl:focus-visible{color:var(--bronze-hi);border-color:var(--bronze)}
+.c-enl:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
+/* Objetivo táctil holgado: la mayoría del tráfico entra por el móvil y este
+   botón es de los pocos que hay que acertar a la primera. */
+.c-copia{margin-top:11px;display:inline-flex;align-items:center;gap:8px;min-height:38px;
+  padding:9px 15px;font-family:var(--sans);font-size:9px;letter-spacing:2.6px;
+  text-transform:uppercase;font-weight:500;color:var(--dim);border:1px solid var(--line-soft);
+  background:none;cursor:pointer;transition:color .3s,border-color .3s}
+.c-copia:hover{color:var(--bronze-hi);border-color:var(--line)}
+.c-copia:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
+.c-copia .dia{width:6px;height:6px;transform:rotate(45deg);background:currentColor;flex-shrink:0;
+  opacity:.55;transition:opacity .3s}
+.c-copia.ok{color:var(--bronze);border-color:var(--bronze)}
+.c-copia.ok .dia{opacity:1}
+/* Matiz al pie de un dato. Va en el tipo pequeño de la interfaz y no en la
+   serif del valor: es una aclaración, no otro dato que leer. */
+.c-nota{margin-top:9px;font-size:12px;line-height:1.6;color:var(--dim);font-style:italic;
+  font-family:var(--serif)}
+/* Sólo para lectores de pantalla. El marcado ya usaba este nombre de clase con
+   los estilos escritos a mano en el atributo; aquí queda la regla y dice lo
+   mismo, para no repetirla en cada sitio que la necesite. */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
 form.frame{border:1px solid var(--line);padding:clamp(28px,3.6vw,52px);background:rgba(var(--bg2-rgb),.7);position:relative}
 form.frame::before{content:"";position:absolute;inset:7px;border:1px solid var(--line-soft);pointer-events:none}
 .frame label{display:block;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;font-weight:500}
@@ -2041,11 +2075,29 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
       <div class="c-info">
         <p class="lead rv">Cuéntanos tu idea. Respondemos en menos de 24 horas — la ambición no espera.</p>
         <div class="c-datos rv" style="margin-top:26px">
-          <div class="c-item ancho"><div class="k">Email</div><div class="v"><em>hola@sycsolutions.company</em></div></div>
-          <div class="c-item"><div class="k">WhatsApp</div><div class="v">+52 000 000 0000</div></div>
-          <div class="c-item"><div class="k">Horario</div><div class="v">Lun — Sáb · 9:00 a 19:00</div></div>
-          <div class="c-item ancho"><div class="k">Base</div><div class="v">México · Trabajamos con todo el mundo</div></div>
+          <div class="c-item ancho">
+            <div class="k">Email</div>
+            <div class="v"><a class="c-enl" href="mailto:hola@sycsolutions.company"><em>hola@sycsolutions.company</em></a></div>
+            <button class="c-copia" type="button" data-copiar="hola@sycsolutions.company" data-que="El correo"
+                    aria-label="Copiar el correo hola@sycsolutions.company"><span class="dia" aria-hidden="true"></span>Copiar</button>
+          </div>
+          <div class="c-item">
+            <div class="k">WhatsApp</div>
+            <div class="v"><a class="c-enl" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer">+52 442 369 7248</a></div>
+            <button class="c-copia" type="button" data-copiar="+524423697248" data-que="El número de WhatsApp"
+                    aria-label="Copiar el número de WhatsApp +52 442 369 7248"><span class="dia" aria-hidden="true"></span>Copiar</button>
+          </div>
+          <div class="c-item"><div class="k">Horario</div>
+            <div class="v">Lun — Vie · 9:00 a 23:00<br>Sáb y Dom · 10:00 a 22:00</div>
+            <!-- Aclaración, no promesa: dice lo que suele pasar, sin poner un
+                 plazo que después haya que cumplir a las tres de la mañana. -->
+            <p class="c-nota">Fuera de horario también solemos responder.</p>
+          </div>
+          <div class="c-item ancho"><div class="k">Base</div><div class="v">San Luis Potosí, México · Atendemos todo México y LATAM</div></div>
         </div>
+        <!-- El "Copiado" del botón es visual. Esto es lo mismo dicho para quien
+             no lo ve: una región viva, vacía hasta que hay algo que anunciar. -->
+        <p class="sr-only" id="c-avisa" role="status" aria-live="polite"></p>
       </div>
       <form class="frame rv" id="form">
         <!-- Puente desde el diagnóstico. Sólo se muestra si este navegador
@@ -2117,9 +2169,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
       </details>
       <details>
         <summary>¿Cuánto tardan en responderme?</summary>
-        <p class="faq-r">Menos de 24 horas. Atendemos de lunes a sábado, de 9:00 a
-          19:00. Si escribes fuera de ese horario, tu mensaje entra igual y lo verás
-          respondido al abrir el siguiente día hábil.</p>
+        <p class="faq-r">Menos de 24 horas. Atendemos de lunes a viernes de 9:00 a
+          23:00, y sábados y domingos de 10:00 a 22:00. Fuera de ese horario también
+          solemos responder: tu mensaje entra igual.</p>
       </details>
       <details>
         <summary>¿Qué hacen exactamente?</summary>
@@ -4112,6 +4164,68 @@ if(DIAG.lee())EXP.marca('diag');
     else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();va(i-1);}
     else if(e.key==='Home'){e.preventDefault();va(0);}
     else if(e.key==='End'){e.preventDefault();va(paradas.length-1);}
+  });
+})();
+
+/* ---------- COPIAR LOS DATOS DE CONTACTO ----------
+   Un botón por dato. El camino normal es navigator.clipboard, que es el que
+   funciona en el móvil —de donde va a venir casi todo el tráfico—, pero exige
+   contexto seguro: en http, en navegadores viejos o si el usuario ha denegado
+   el permiso, no existe o revienta. Por eso hay respaldo con execCommand, que
+   está obsoleto y sigue siendo lo único que responde ahí. Si tampoco puede, el
+   botón lo dice en vez de fingir que copió.
+
+   No se usa onclick en el marcado: la CSP autoriza los scripts por su huella y
+   un manejador en línea exigiría abrir 'unsafe-hashes'. */
+(()=>{
+  const botones=document.querySelectorAll('.c-copia');
+  if(!botones.length)return;
+  const avisa=document.getElementById('c-avisa');
+
+  async function copia(txt){
+    if(navigator.clipboard&&isSecureContext){
+      try{await navigator.clipboard.writeText(txt);return true;}catch(_){}
+    }
+    /* Respaldo. El campo va fuera de la vista pero NO con display:none ni
+       visibility:hidden: un campo oculto así no se puede seleccionar y la copia
+       falla en silencio. Y se restaura la selección que tuviera el visitante,
+       que si estaba señalando un párrafo no tiene por qué perderlo. */
+    const ta=document.createElement('textarea');
+    ta.value=txt;ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;top:0;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    const sel=getSelection();
+    const previa=sel&&sel.rangeCount?sel.getRangeAt(0):null;
+    let ok=false;
+    try{
+      ta.select();
+      ta.setSelectionRange(0,txt.length);   /* iOS ignora select() a secas */
+      ok=document.execCommand('copy');
+    }catch(_){ok=false;}
+    ta.remove();
+    if(previa&&sel){sel.removeAllRanges();sel.addRange(previa);}
+    return ok;
+  }
+
+  botones.forEach(b=>{
+    const texto=b.dataset.copiar,que=b.dataset.que||'El dato';
+    let vuelta=null;
+    b.addEventListener('click',async()=>{
+      const ok=await copia(texto);
+      b.classList.toggle('ok',ok);
+      b.lastChild.nodeValue=ok?'Copiado':'Cópialo a mano';
+      if(avisa)avisa.textContent=ok
+        ? que+' se copió al portapapeles: '+texto
+        : 'No se pudo copiar automáticamente. '+que+' es '+texto;
+      /* Vuelve solo. Un "Copiado" que se queda para siempre deja de informar y
+         además miente en la siguiente visita a la sección. */
+      clearTimeout(vuelta);
+      vuelta=setTimeout(()=>{
+        b.classList.remove('ok');
+        b.lastChild.nodeValue='Copiar';
+        if(avisa)avisa.textContent='';
+      },2600);
+    });
   });
 })();
 
