@@ -1,5 +1,5 @@
 /* ============================================================================
-   S&C SOLUTIONS COMPANY — SERVICE WORKER
+   S&C SOLUTIONS — SERVICE WORKER
 
    Para qué está: que la web abra entera con la red caída. No es un truco de
    demostración; es la prueba física de lo que se vende dos secciones más
