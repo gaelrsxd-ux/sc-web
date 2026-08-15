@@ -2869,20 +2869,36 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
 /* El contador de cifras animadas se fue con la banda que animaba: era el único
    sitio del archivo con elementos [data-count]. */
 
-/* ---------- TURNSTILE: CARGADOR COMPARTIDO ----------
+/* ---------- TURNSTILE: CARGADOR COMPARTIDO, CLAVES SEPARADAS ----------
    Dos partes de la página piden verificación anti-bots: el diagnóstico y el
-   formulario de contacto. El script de Cloudflare es UNO y se carga una sola
-   vez, la primera que hace falta —no en cada visita: quien sólo lee la portada
-   no tiene por qué ejecutar código de terceros—. Con dos cargas separadas el
-   segundo <script> vuelve a inicializar la API y deja al primer widget sin
-   responder; de ahí que el cargador viva aquí arriba y no dentro de cada
-   módulo. Lo único compartido es esto: cada parte renderiza su propio widget,
-   con su propia acción y su propio ciclo de vida.
+   formulario de contacto. Lo que comparten es EL CARGADOR, y nada más.
 
-   La clave es PÚBLICA por diseño: va en el HTML y cualquiera puede leerla. Lo
-   que no puede salir de un servidor es el secreto, que no está aquí ni en este
-   repositorio. */
-const TS_SITEKEY='0x4AAAAAAEKjpagA_DLwswxz';
+   El script de Cloudflare es UNO y se carga una sola vez. Con dos cargas
+   separadas el segundo <script> vuelve a inicializar la API y deja al primer
+   widget sin responder; de ahí que el cargador viva aquí arriba y no dentro de
+   cada módulo.
+
+   ⚠ LAS DOS CLAVES SON DISTINTAS Y NO SE PUEDEN UNIFICAR. Parecen candidatas
+   obvias a juntarse en una sola constante —lo estuvieron, y por eso el
+   formulario de contacto llevaba semanas sin funcionar—. Son dos widgets
+   distintos en el panel de Cloudflare, cada uno con SU secreto, y cada secreto
+   vive en un servidor distinto:
+
+     · SyC Diagnostico SEO  → lo valida el Worker del diagnóstico (audit.*)
+     · SyC OS Gateway       → lo valida el gateway del contacto (app.*)
+
+   Un token emitido por un widget y comprobado con el secreto del otro no es un
+   token válido a medias: Cloudflare devuelve invalid-input-response y el
+   servidor responde 403 «verificación fallida». Desde el navegador se ve
+   exactamente igual que un token caducado, y ahí se pierde el tiempo. Antes de
+   tocar cualquiera de estas dos líneas: cada clave va con el backend que tiene
+   su secreto, y punto.
+
+   Las claves son PÚBLICAS por diseño: van en el HTML y cualquiera puede
+   leerlas. Lo que no puede salir de un servidor es el secreto, que no está aquí
+   ni en este repositorio. */
+const TS_SITEKEY_DIAGNOSTICO='0x4AAAAAAEKjpagA_DLwswxz';
+const TS_SITEKEY_CONTACTO='0x4AAAAAAEK4XVI_9s0X_JX9';
 let tsCargador=null;
 function cargaTurnstile(){
   if(tsCargador)return tsCargador;
@@ -3042,52 +3058,129 @@ function cargaTurnstile(){
   });
 
   /* ── Verificación anti-bots ────────────────────────────────────────────────
-     El widget se renderiza la primera vez que alguien pulsa Enviar, no al
-     cargar la página. En modo "sólo si hace falta interacción" lo normal es que
-     el visitante no llegue a ver nada. */
-  let tsId=null,tsToken=null,tsPend=null;
+     El widget se PREPARA por adelantado —al asomar el formulario por la pantalla
+     o al primer foco en un campo, lo que ocurra antes— y no al pulsar Enviar.
+     Antes se renderizaba en el propio envío, y eso cargaba el script de
+     Cloudflare, resolvía el desafío y mandaba la petición dentro del mismo clic:
+     el visitante veía "Enviando…" durante todo el trámite y, si Turnstile decidía
+     pedir una casilla, esa casilla le aparecía DESPUÉS de haber pulsado. Con el
+     desafío resuelto de antemano el envío sale al instante, y la casilla —cuando
+     la hay— aparece mientras todavía está escribiendo.
+
+     Preparar antes tiene un precio, y hay que pagarlo entero: el token caduca a
+     los cinco minutos y ahora se emite mucho antes de gastarse. Por eso
+     expired-callback no se limita a olvidarlo —reinicia el widget para que llegue
+     otro—. Sin eso, quien redacte con calma llegaría al botón con el token
+     caducado y el envío se quedaría esperando un callback que ya no iba a
+     llegar. */
+  let tsId=null,tsToken=null,tsPend=null,tsMuerto=null,
+      tsPreparado=false,tsPideClic=false;
+
+  /* Sólo hay un sitio donde se despierta a quien espera, para que no queden dos
+     caminos que puedan resolver la misma promesa dos veces. */
+  function resuelveTs(via,dato){
+    const p=tsPend;
+    if(!p)return;
+    tsPend=null;
+    p[via](dato);
+  }
+
+  /* Idempotente a propósito: la llaman el observador, el primer foco y el propio
+     envío. Sólo la primera hace algo. */
+  function preparaTs(){
+    if(tsPreparado)return;
+    tsPreparado=true;
+    cargaTurnstile().then(()=>{
+      if(tsId!==null)return;
+      tsId=window.turnstile.render(cajaTs,{
+        sitekey:TS_SITEKEY_CONTACTO,action:'contacto',appearance:'interaction-only',
+        /* El token se guarda SIEMPRE, haya alguien esperándolo o no: lo normal,
+           con el widget preparado antes, es que llegue mientras el visitante
+           sigue escribiendo y no haya nadie esperando nada. */
+        callback:t=>{tsToken=t;tsPideClic=false;resuelveTs('ok',t);},
+        'error-callback':()=>{resuelveTs('mal',new Error('sin-verificacion'));},
+        /* Caducado: se reinicia para que llegue uno nuevo en vez de quedarse
+           quieto. Ver el comentario de arriba: con la preparación por adelantado
+           esto pasa de raro a corriente. */
+        'expired-callback':()=>{tsToken=null;reiniciaTs();},
+        /* Los dos únicos momentos en que el visitante TIENE que hacer algo.
+           Sirven para no decirle "recarga la página" cuando lo que hay es una
+           casilla esperando a que la marque. */
+        'before-interactive-callback':()=>{tsPideClic=true;},
+        'after-interactive-callback':()=>{tsPideClic=false;}
+      });
+    /* .catch encadenado y no el segundo argumento de .then: con el segundo
+       argumento, un fallo del propio render() —la caja ya ocupada, la API a
+       medio inicializar— no lo recoge nadie, se queda como promesa rechazada sin
+       gestionar y, peor, tsMuerto no se marca: cada envío se comería sus diez
+       segundos de espera antes de rendirse. */
+    }).catch(e=>{
+      /* El script no llegó a cargar, o el widget no se pudo montar. Para esta
+         página es definitivo: no hay nada que reintentar, así que los envíos
+         siguientes fallan al momento en vez de esperar a nadie. */
+      tsMuerto=e;
+      resuelveTs('mal',e);
+    });
+  }
+
+  /* Al enviar. Si el token ya está —que es lo normal con el widget preparado—
+     sale al instante. Si todavía no, se ESPERA al callback: lo que no se hace
+     nunca es mandar la petición con el campo vacío, que es un 403 seguro. */
   function pideToken(){
+    /* Red de seguridad: si nuestra contabilidad se hubiera desincronizado, la
+       verdad la tiene Turnstile. */
+    if(!tsToken&&tsId!==null&&window.turnstile){
+      try{const t=window.turnstile.getResponse(tsId);if(t)tsToken=t;}catch(_){}
+    }
     if(tsToken)return Promise.resolve(tsToken);
+    if(tsMuerto)return Promise.reject(tsMuerto);
+    preparaTs();
     return new Promise((ok,mal)=>{
-      /* UN SOLO plazo para todo el trámite: descargar el script de Cloudflare y
-         resolver el desafío. Puesto sólo sobre el desafío, un
-         challenges.cloudflare.com que ni responde ni falla —un portal cautivo,
-         un cortafuegos que se traga la conexión sin devolver nada— dejaba el
-         botón en "Enviando…" indefinidamente, que es la única forma que le queda
-         a este formulario de volver a mentir: parecer que está haciendo algo. */
-      const reloj=setTimeout(()=>{tsPend=null;mal(new Error('sin-verificacion'));},30000);
-      const pend={
-        ok:t=>{clearTimeout(reloj);tsPend=null;ok(t);},
-        mal:e=>{clearTimeout(reloj);tsPend=null;mal(e);}
+      /* Diez segundos. Con el widget ya preparado, esperar más sólo sirve para
+         dejar el botón ocupado: si en diez segundos no hay token es que algo no
+         va a llegar. Y el plazo cubre TODO el trámite —descarga incluida—, para
+         que un challenges.cloudflare.com que ni responde ni falla no deje el
+         botón en "Enviando…" indefinidamente. */
+      const reloj=setTimeout(()=>{
+        tsPend=null;
+        /* Diez segundos sin token pero con una casilla puesta no es un fallo:
+           es que nadie la ha marcado todavía. Mandar ahí a recargar la página
+           sería mandar a rehacer lo que ya está escrito. */
+        mal(new Error(tsPideClic?'marca-casilla':'sin-verificacion'));
+      },10000);
+      tsPend={
+        ok:t=>{clearTimeout(reloj);ok(t);},
+        mal:e=>{clearTimeout(reloj);mal(e);}
       };
-      tsPend=pend;
-      cargaTurnstile().then(()=>{
-        if(tsToken){pend.ok(tsToken);return;}
-        if(tsId===null){
-          tsId=window.turnstile.render(cajaTs,{
-            sitekey:TS_SITEKEY,action:'contacto',appearance:'interaction-only',
-            /* El token se guarda SIEMPRE, aunque el plazo ya haya vencido y no
-               quede nadie esperando: así el siguiente intento arranca con él en
-               la mano en vez de repetir el desafío entero. */
-            callback:t=>{tsToken=t;if(tsPend)tsPend.ok(t);},
-            'error-callback':()=>{if(tsPend)tsPend.mal(new Error('sin-verificacion'));},
-            'expired-callback':()=>{tsToken=null;}
-          });
-        }
-        /* Si ya estaba renderizado, el reinicio del intento anterior dejó el
-           desafío corriendo y la respuesta llega por ese mismo callback. */
-      },e=>pend.mal(e));
     });
   }
   /* Un token se gasta en cuanto el servidor lo canjea —son de un solo uso—, así
      que el siguiente envío necesita uno nuevo, haya ido bien o mal el anterior.
      Sin este reinicio, el segundo intento de quien falló la primera vez recibe
      un 403 por reutilizar un token quemado, y el mensaje de error diría que la
-     verificación falló cuando en realidad falló el reintento. */
+     verificación falló cuando en realidad falló el reintento.
+     El reset deja el desafío corriendo otra vez, así que el token siguiente
+     suele estar listo mucho antes de que nadie vuelva a pulsar Enviar. */
   function reiniciaTs(){
     tsToken=null;
     if(tsId!==null&&window.turnstile){try{window.turnstile.reset(tsId);}catch(_){}}
   }
+
+  /* Dos disparadores para lo mismo, y gana el que llegue primero:
+       · el formulario asomando por la pantalla, que es cuando el visitante ya
+         puede empezar a rellenarlo;
+       · el primer foco en cualquier campo, por si llega por teclado o por un
+         enlace directo sin que el observador haya tenido ocasión de saltar.
+     Se observa el FORMULARIO y no la sección entera: la sección empieza con un
+     titular grande y la columna de datos, y quien sólo pasa de largo por ahí no
+     tiene por qué acabar ejecutando código de Cloudflare. */
+  if('IntersectionObserver' in window){
+    const ob=new IntersectionObserver(es=>{
+      if(es.some(e=>e.isIntersecting)){ob.disconnect();preparaTs();}
+    },{threshold:0});
+    ob.observe(f);
+  }
+  NOMBRES.forEach(id=>campos[id].addEventListener('focus',preparaTs,{once:true}));
 
   async function envia(datos){
     if(navigator.onLine===false)throw new Error('sin-red');
@@ -3171,6 +3264,11 @@ function cargaTurnstile(){
     if(estado>=500)
       return{texto:'El servidor falló al guardar el mensaje. No es cosa tuya y tu texto sigue aquí: inténtalo en un par de minutos, o escríbenos por WhatsApp.'};
     const m=String((err&&err.message)||'');
+    /* Turnstile pidió una casilla y nadie la marcó. No es un fallo de nada:
+       está ahí, encima del botón, esperando. Decirle a esta persona que recargue
+       la página sería mandarla a rehacer lo que ya tiene escrito. */
+    if(m==='marca-casilla')
+      return{texto:'Falta un paso: marca la casilla de verificación que hay justo encima del botón y vuelve a pulsar Enviar.'};
     if(m==='sin-verificacion')
       return{texto:'No se pudo cargar la verificación anti-bots. Recarga la página e inténtalo otra vez; si sigue igual, escríbenos por WhatsApp.'};
     /* Un fetch que ni siquiera sale del navegador —sin red, cortado a mitad, o
@@ -3220,6 +3318,11 @@ function cargaTurnstile(){
     NOMBRES.forEach(k=>{datos[k]=campos[k].value.trim();});
 
     ocupado=true;boton.disabled=true;boton.textContent='Enviando…';
+    /* Con el widget preparado por adelantado esto casi nunca se ve. Cuando se
+       ve, es porque el desafío todavía no ha terminado, y entonces el visitante
+       merece saber por qué el botón se ha quedado ocupado en vez de mirar un
+       "Enviando…" que no está enviando nada todavía. */
+    if(!tsToken)dice('Comprobando que no eres un robot…',false);
     try{
       const respuesta=await envia(datos);
       /* AQUÍ, Y SÓLO AQUÍ. El servidor contestó 2xx: el mensaje existe en algún
@@ -4279,12 +4382,14 @@ window.SYC_AUDITOR='https://audit.sycsolutions.company';
      devuelve al marcador PENDIENTE_SITEKEY, el formulario avisa en vez de
      fingir, igual que hace SYC_AUDITOR cuando está vacío.
 
-     El cargador del script y la clave son ahora los compartidos con el
-     formulario de contacto (cargaTurnstile / TS_SITEKEY, más arriba). Cargar
-     api.js dos veces reinicializa la API de Cloudflare y deja al primer widget
-     que se hubiera renderizado sin responder. El widget de aquí sigue siendo
-     propio: su propia caja, su propia acción y su propio ciclo de vida. */
-  const SITEKEY=TS_SITEKEY;
+     El cargador del script sí es el compartido con el formulario de contacto
+     (cargaTurnstile, más arriba): cargar api.js dos veces reinicializa la API de
+     Cloudflare y deja al primer widget que se hubiera renderizado sin responder.
+     La CLAVE no se comparte, y no es un descuido: la de aquí es la del widget
+     «SyC Diagnostico SEO», cuyo secreto vive en el Worker del diagnóstico. El
+     contacto usa otra porque lo valida otro servidor. Ver el comentario largo
+     junto a las dos constantes. */
+  const SITEKEY=TS_SITEKEY_DIAGNOSTICO;
   let tsId=null,tsToken=null,tsPend=null;
 
   function cajaTs(){

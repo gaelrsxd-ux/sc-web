@@ -24,12 +24,14 @@
    cualquier caché que no sea la de este número.
    ========================================================================= */
 
-/* Se sube en cada publicación que cambie el HTML. Esta lleva el formulario de
-   contacto conectado al gateway: sin subirla, quien ya visitó el sitio y se
-   quedara sin red seguiría viendo en la copia guardada la versión anterior, la
-   que no tenía formulario. El activate borra cualquier caché que no sea de este
-   número, así que la copia vieja no sobrevive al cambio. */
-const VERSION = 'syc-2026-08-d';
+/* Se sube en cada publicación que cambie el HTML. El activate borra cualquier
+   caché que no sea de este número, así que la copia vieja no sobrevive.
+     · -d  el formulario de contacto conectado al gateway.
+     · -e  la clave de Turnstile CORRECTA para ese gateway. Aquí subirla no es
+           higiene: la copia guardada lleva incrustada la clave equivocada, y
+           quien la conserve seguiría enviando tokens que el gateway rechaza con
+           un 403 aunque el sitio publicado ya esté arreglado. */
+const VERSION = 'syc-2026-08-e';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
