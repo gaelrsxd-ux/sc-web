@@ -51,7 +51,15 @@
   # 'self' ya está.
   # No hace falta unsafe-inline: Turnstile no exige estilos ni scripts en línea,
   # y los scripts propios siguen autorizados por su huella.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'sha256-oASLDhF/wrdjgKb1jWSEHw+P3icd6tVkULphaCwYYfo=' 'sha256-GgRFCfrGnrlkUeGeTEDE1tXdwN/PZHDDL0V2Zm2+t1A=' 'sha256-EVbqu/mxZKGgQd3LIgECatzPoyFGJPxVptMedfWCF3M='; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://audit.sycsolutions.company; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+  #
+  # connect-src lleva DOS destinos y ninguno de adorno:
+  #   audit.sycsolutions.company  — el Worker del diagnóstico.
+  #   app.sycsolutions.company    — el gateway al que envía el formulario de
+  #     contacto. Sin este origen el navegador corta el fetch antes de que salga
+  #     un byte, y lo único que se ve es un error de CSP en la consola: el
+  #     formulario parece roto sin motivo aparente. Si el gateway cambia de
+  #     dominio hay que tocarlo aquí Y en GATEWAY, en el script de index.html.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'sha256-oASLDhF/wrdjgKb1jWSEHw+P3icd6tVkULphaCwYYfo=' 'sha256-GgRFCfrGnrlkUeGeTEDE1tXdwN/PZHDDL0V2Zm2+t1A=' 'sha256-dQW96EUNqal5XHJpdeySgPo4JPZDw6ffT9RsOrEvd9Q='; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://audit.sycsolutions.company https://app.sycsolutions.company; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
 
 # Aquí NO se toca la caché de /assets/*. Los fondos se llaman siempre igual
 # —hero-bg.webp, bg-servicios.webp…— y se han sustituido ya un par de veces:

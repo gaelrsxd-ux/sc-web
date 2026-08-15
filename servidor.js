@@ -13,6 +13,30 @@ const path = require('path');
 const raiz = path.join(__dirname, 'Kimi_Agent_Web 3D Optimizada', 'app');
 const puerto = +(process.argv[2] || 8090);
 
+/* ---------- LA MISMA POLÍTICA DE CONTENIDO QUE EN PRODUCCIÓN ----------
+   Cloudflare Pages lee app/_headers al desplegar; este servidor no lo hacía, así
+   que en local la página se veía SIN CSP. Eso convertía la prueba en local en un
+   trámite vacío: los dos fallos que de verdad tumban esta web —una huella
+   sha256 desfasada y un origen que falta en connect-src— sólo aparecían ya
+   publicados. Se lee la misma línea del mismo archivo y se envía igual, para que
+   la consola del navegador diga aquí lo que va a decir allí.
+   Sólo esa cabecera: HSTS sobre http://localhost dejaría el puerto marcado como
+   obligatorio-HTTPS en el navegador de quien pruebe, y eso sobrevive al final de
+   la sesión.
+   Se relee en CADA petición y no una vez al arrancar. Parece un derroche —son
+   dos kilobytes— pero es justo lo contrario: el ciclo real es editar el HTML,
+   correr  node tools/csp-hashes.mjs  y recargar. Con el valor guardado en
+   memoria, esa recarga sigue enseñando la huella vieja y el navegador acusa un
+   fallo que ya está arreglado; o peor, oculta uno que no lo está. */
+function politicaContenido() {
+  try {
+    const linea = fs.readFileSync(path.join(raiz, '_headers'), 'utf8')
+      .match(/^\s*Content-Security-Policy:\s*(.+)$/m);
+    return linea ? linea[1].trim() : null;
+  } catch (_) { return null; }
+}
+if (!politicaContenido()) console.warn('  Aviso: no se pudo leer la CSP de app/_headers; se sirve sin ella.');
+
 const TIPOS = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -43,10 +67,13 @@ const servidor = http.createServer((req, res) => {
   if (!destino.startsWith(raiz)) { res.writeHead(403).end('403'); return; }
   fs.readFile(destino, (err, buf) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }).end('404'); return; }
-    res.writeHead(200, {
+    const cabeceras = {
       'Content-Type': TIPOS[path.extname(destino).toLowerCase()] || 'application/octet-stream',
       'Cache-Control': 'no-store'
-    });
+    };
+    const csp = politicaContenido();
+    if (csp) cabeceras['Content-Security-Policy'] = csp;
+    res.writeHead(200, cabeceras);
     res.end(buf);
   });
 });

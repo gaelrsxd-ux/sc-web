@@ -24,7 +24,12 @@
    cualquier caché que no sea la de este número.
    ========================================================================= */
 
-const VERSION = 'syc-2026-08-c';
+/* Se sube en cada publicación que cambie el HTML. Esta lleva el formulario de
+   contacto conectado al gateway: sin subirla, quien ya visitó el sitio y se
+   quedara sin red seguiría viendo en la copia guardada la versión anterior, la
+   que no tenía formulario. El activate borra cualquier caché que no sea de este
+   número, así que la copia vieja no sobrevive al cambio. */
+const VERSION = 'syc-2026-08-d';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 

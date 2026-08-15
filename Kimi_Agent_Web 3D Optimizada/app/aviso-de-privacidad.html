@@ -27,13 +27,17 @@
 <main>
   <p class="tag">Legal</p>
   <h1>Aviso de <em>Privacidad</em></h1>
-  <p class="fecha">Última actualización: 3 de agosto de 2026</p>
+  <p class="fecha">Última actualización: 15 de agosto de 2026</p>
 
   <div class="nota">
     <p>Resumen honesto, antes del documento largo: <b>esta web no usa cookies</b>,
       no lleva publicidad, no tiene herramientas de analítica y no vende ni cede
       datos a nadie. Lo único que recibimos de ti es lo que tú nos escribes para
       ponerte en contacto.</p>
+    <p><b>Qué ha cambiado en esta versión:</b> el formulario de contacto ya está
+      conectado. Lo que escribas en él <b>sí se envía y sí se guarda</b> en
+      nuestro sistema para poder responderte. Hasta ahora no lo hacía, y este
+      aviso lo decía; ya no es cierto y por eso se actualiza.</p>
   </div>
 
   <nav class="indice" aria-label="Contenido">
@@ -63,21 +67,34 @@
 
   <h2 id="datos"><span class="n">02</span>Qué datos recabamos</h2>
 
-  <h3>Cuando nos escribes</h3>
+  <h3>Cuando usas el formulario de contacto</h3>
+  <p>Se recogen exactamente <b>cinco datos</b>, que son los cinco campos del
+    formulario y ninguno más:</p>
+  <ul>
+    <li><b>Nombre</b>, para saber cómo dirigirnos a ti.</li>
+    <li><b>Correo electrónico</b>, para poder responderte.</li>
+    <li><b>Teléfono</b>, por el mismo motivo y porque suele ser la vía más
+      rápida. Se guarda tal y como lo escribas y también en formato
+      internacional, para poder marcarlo sin ambigüedad.</li>
+    <li><b>Servicio</b> que te interesa, elegido de la lista.</li>
+    <li><b>Mensaje</b>, lo que tú nos quieras contar.</li>
+  </ul>
+  <p>Al pulsar «Enviar mensaje» esos cinco datos viajan cifrados a
+    <b>nuestro propio sistema de gestión</b>, alojado en un servidor bajo nuestro
+    control, y quedan <b>almacenados</b> ahí para que podamos atenderte y darle
+    seguimiento. No pasan por ningún formulario de terceros ni por ninguna
+    herramienta de marketing. El envío incluye además una verificación anti-bots
+    de Cloudflare (Turnstile), que sirve para distinguir a una persona de un
+    programa automático y <b>no lee lo que escribes</b>.</p>
+  <p>El formulario es opcional: puedes escribirnos igual por WhatsApp o por
+    correo, y en ese caso no pasa por aquí.</p>
+
+  <h3>Cuando nos escribes por WhatsApp o por correo</h3>
   <p>Los que tú decidas darnos para que podamos responderte: normalmente tu
     <b>nombre, una forma de contacto y lo que nos cuentes</b>. Si escribes por
     WhatsApp, recibimos además el número desde el que escribes, porque es la
     forma en que esa aplicación funciona; si escribes por correo, recibimos tu
     dirección de correo.</p>
-
-  <div class="nota">
-    <p><b>Este sitio ya no tiene formulario.</b> El que hubo no estaba conectado
-      a ningún servidor y no llegaba a enviar nada, así que se ha retirado. Los
-      dos canales son ahora WhatsApp y el correo, y en los dos el mensaje sale
-      de tu propia aplicación: <b>esta web no recoge, no envía y no guarda nada
-      de lo que escribas</b>. Si algún día se conecta un formulario,
-      actualizaremos este aviso y la fecha de arriba.</p>
-  </div>
 
   <h3>Cuando usas el diagnóstico gratuito</h3>
   <p>Se envía a nuestro servidor <b>únicamente la dirección web que tú escribas</b>,
@@ -125,9 +142,20 @@
       <tbody>
         <tr>
           <td>Cloudflare</td>
-          <td>Alojamiento de la web y ejecución del diagnóstico</td>
-          <td>Datos técnicos de conexión y, si lo usas, la dirección web que
-            escribas en el diagnóstico</td>
+          <td>Alojamiento de la web, ejecución del diagnóstico y verificación
+            anti-bots (Turnstile) del formulario</td>
+          <td>Datos técnicos de conexión; si usas el diagnóstico, la dirección
+            web que escribas; y al enviar el formulario, las señales técnicas que
+            Turnstile usa para distinguir a una persona de un programa. Turnstile
+            <b>no recibe</b> lo que escribes en los campos</td>
+        </tr>
+        <tr>
+          <td><span class="pend">POR COMPLETAR: proveedor de alojamiento del
+            sistema de gestión</span></td>
+          <td>Alojar el sistema propio donde quedan guardados los mensajes del
+            formulario</td>
+          <td>Los cinco campos del formulario: nombre, correo, teléfono, servicio
+            y mensaje</td>
         </tr>
         <tr>
           <td>Google (Google Fonts)</td>
@@ -144,8 +172,9 @@
 
   <h2 id="conservacion"><span class="n">05</span>Cuánto tiempo los guardamos</h2>
   <ul>
-    <li><b>Mensajes de contacto:</b> mientras dure la conversación y hasta dos
-      años después del último contacto, por si retomas el proyecto.</li>
+    <li><b>Mensajes de contacto</b> —los del formulario, los de WhatsApp y los
+      de correo—<b>:</b> mientras dure la conversación y hasta dos años después
+      del último contacto, por si retomas el proyecto.</li>
     <li><b>Datos de clientes:</b> durante la relación y después el tiempo que
       exija la legislación fiscal y mercantil aplicable.</li>
     <li><b>Resultado del diagnóstico:</b> siete días, y en tu propio navegador,
@@ -169,9 +198,15 @@
 
   <h2 id="seguridad"><span class="n">07</span>Cómo los protegemos</h2>
   <ul>
-    <li>Toda la web se sirve cifrada por HTTPS.</li>
-    <li>El sitio no usa librerías externas de terceros, así que no hay código
-      ajeno ejecutándose en tu navegador mientras lo visitas.</li>
+    <li>Toda la web se sirve cifrada por HTTPS, y el envío del formulario
+      viaja cifrado igual.</li>
+    <li>El sitio no usa librerías externas de terceros: no hay analítica, ni
+      publicidad, ni marcos de trabajo ajenos. El <b>único</b> código de un
+      tercero que puede llegar a ejecutarse en tu navegador es la verificación
+      anti-bots de Cloudflare, y sólo si usas el diagnóstico o envías el
+      formulario. Mientras únicamente leas la página no se carga.</li>
+    <li>El navegador tiene prohibido, por la política de contenido del propio
+      sitio, enviar datos a cualquier destino que no sea nuestro servidor.</li>
     <li>Los correos con datos de clientes se guardan en cuentas protegidas con
       contraseña y verificación en dos pasos.</li>
     <li>Sólo las dos personas que forman la empresa tienen acceso a esa
@@ -194,10 +229,10 @@
     cliente.</p>
 
   <h2 id="cambios"><span class="n">10</span>Cambios a este aviso</h2>
-  <p>Si cambia la forma en que tratamos los datos —por ejemplo, el día que
-    conectemos el formulario o si algún día añadimos analítica— publicaremos aquí
-    la versión nueva y cambiaremos la fecha de la cabecera. Te recomendamos
-    revisarla de vez en cuando.</p>
+  <p>Si cambia la forma en que tratamos los datos —como acaba de pasar al
+    conectar el formulario, o si algún día añadimos analítica— publicamos aquí la
+    versión nueva y cambiamos la fecha de la cabecera. Te recomendamos revisarla
+    de vez en cuando.</p>
   <p>Para cualquier duda sobre este aviso:
     <a href="mailto:hola@sycsolutions.company">hola@sycsolutions.company</a>.</p>
 </main>

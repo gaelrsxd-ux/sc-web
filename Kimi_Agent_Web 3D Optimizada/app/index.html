@@ -134,7 +134,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
     {"@type":"Question","name":"¿Cuánto cuesta el diagnóstico de mi web?",
      "acceptedAnswer":{"@type":"Answer","text":"Nada, y no hace falta registrarse. Analizamos únicamente la página pública que nos indiques: no guardamos la dirección ni la compartimos. Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a tu negocio."}},
     {"@type":"Question","name":"No sé qué necesito exactamente. ¿Puedo escribir igual?",
-     "acceptedAnswer":{"@type":"Answer","text":"Sí, es lo más habitual. Escríbenos por WhatsApp o por correo y dinos qué hace tu negocio y qué te gustaría conseguir; no hace falta que traigas el encargo definido. Te decimos qué haríamos y por dónde empezaríamos."}}
+     "acceptedAnswer":{"@type":"Answer","text":"Sí, es lo más habitual. En el formulario tienes la opción «No lo sé aún — asesórenme», y también puedes escribirnos por WhatsApp o por correo. Dinos qué hace tu negocio y qué te gustaría conseguir; no hace falta que traigas el encargo definido. Te decimos qué haríamos y por dónde empezaríamos."}}
    ]
   },
   {
@@ -636,7 +636,12 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 /* Ninguna sección lleva fondo: el velo único del lienzo cubre toda la pantalla
    y por eso no puede existir ninguna frontera visible entre unas y otras. */
 #servicios{padding-top:clamp(34px,3.8vw,56px)}
-/* legibilidad reforzada en contacto */
+/* legibilidad reforzada en contacto: el marco va sobre una foto, así que se
+   opaca al 93 % y con eso los campos de dentro se leen con el mismo trazo fino
+   que el resto de la página. Aquí vivían además dos reglas para las etiquetas y
+   para el borde de los campos que no llegaban a aplicarse nunca: las mismas
+   propiedades se declaran trescientas líneas más abajo con idéntica
+   especificidad, y en la cascada gana la última. No se recuperan. */
 .frame{background:rgba(var(--bg-rgb),.93)}
 #contacto .c-item .v{text-shadow:0 2px 14px rgba(0,0,0,.7)}
 .svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
@@ -872,11 +877,11 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,6vw,84px);margin-top:clamp(32px,3.6vw,50px);align-items:start}
 @media(max-width:900px){.contact-grid{grid-template-columns:1fr}}
 /* ---------- CONTACTO EN MÓVIL: LA ACCIÓN PRIMERO ----------
-   En escritorio los datos van a la izquierda y los canales a la derecha, a la
+   En escritorio los datos van a la izquierda y el formulario a la derecha, a la
    vista los dos a la vez. Apilado, el visitante recorría email, WhatsApp,
-   horario y base —media pantalla— antes de llegar a un botón: la acción quedaba
-   detrás de información de consulta.
-   Aquí se invierte: la frase de entrada, los dos botones, y los datos después,
+   horario y base —media pantalla— antes de poder escribir una letra: el único
+   sitio de la web donde se pide algo quedaba detrás de información de consulta.
+   Aquí se invierte: la frase de entrada, el formulario, y los datos después,
    para quien prefiera copiarlos y escribir por su cuenta.
    display:contents disuelve la caja del bloque de información para que sus dos
    hijos puedan ordenarse por separado; por eso la animación de entrada vive en
@@ -909,10 +914,52 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    quiere el dato para pegarlo en otro sitio. El texto visible del teléfono se
    queda legible; lo que se copia es el valor en plano, que es lo que sirve
    pegado en un marcador o en la barra de WhatsApp. */
-.c-enl{color:inherit;text-decoration:none;border-bottom:1px solid var(--line-soft);
-  transition:color .3s,border-color .3s}
-.c-enl:hover,.c-enl:focus-visible{color:var(--bronze-hi);border-color:var(--bronze)}
+/* Funcionaban, pero no lo parecían: la única señal era una línea al 8 % de
+   opacidad que se despertaba con el ratón. En un móvil no hay ratón, y el móvil
+   es justo donde se pulsan. Ahora la señal es PERMANENTE y son dos, ninguna
+   dependiente del color:
+     · la línea de debajo, subida de --line-soft a --line, que es el mismo peso
+       que ya tienen los bordes de los campos y de los botones de copiar;
+     · un icono pequeño al final —sobre para el correo, flecha saliente para el
+       enlace que abre WhatsApp fuera de la web—.
+   El icono lleva texto alternativo vacío con la sintaxis  content: X / ""  para
+   que un lector de pantalla no lea "flecha noreste" detrás del número de
+   teléfono. Va repetido en una segunda declaración a propósito: el navegador
+   que no entienda esa sintaxis descarta sólo la segunda y se queda con la
+   primera, así que el icono no desaparece en ningún sitio. */
+.c-enl{color:inherit;text-decoration:none;border-bottom:1px solid var(--line);
+  /* La línea de bronce se traza sobre la que ya está, de izquierda a derecha.
+     Va como fondo y no como pseudo-elemento porque un ::after posicionado se
+     parte cuando el enlace cambia de renglón; con background-origin en el borde
+     el trazo cae exactamente encima de la línea de reposo, sin doblarla. */
+  background-image:linear-gradient(var(--bronze-hi),var(--bronze-hi));
+  background-origin:border-box;background-repeat:no-repeat;
+  background-position:0 100%;background-size:0 1px;
+  transition:color .3s,border-color .3s,background-size .42s cubic-bezier(.2,.7,.2,1)}
+.c-enl::after{content:"↗";font-size:.6em;margin-left:.34em;vertical-align:.34em;
+  display:inline-block;color:var(--bronze);
+  transition:transform .42s cubic-bezier(.2,.7,.2,1),color .3s}
+.c-enl::after{content:"↗" / ""}
+.c-enl[href^="mailto:"]::after{content:"✉"}
+.c-enl[href^="mailto:"]::after{content:"✉" / ""}
+/* Ratón y teclado, los dos: el foco no es un caso menor del hover. */
+.c-enl:hover,.c-enl:focus-visible{color:var(--bronze-hi);border-color:var(--bronze);
+  background-size:100% 1px}
+.c-enl:hover::after,.c-enl:focus-visible::after{color:var(--bronze-hi);transform:translate(2px,-2px)}
+.c-enl[href^="mailto:"]:hover::after,.c-enl[href^="mailto:"]:focus-visible::after{transform:translateY(-2px)}
 .c-enl:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
+/* Con movimiento reducido, la regla general de la hoja ya apaga la transición:
+   el trazo y el color aparecen puestos en vez de dibujarse, que es lo correcto
+   —el indicador se queda, la animación no—. Lo que sí hay que quitar a mano es
+   el paso del icono: sin transición dejaría de ser un gesto y pasaría a ser un
+   salto de dos píxeles al pasar por encima.
+   La variante del correo va repetida y no sobra: lleva un selector de atributo
+   de más, así que gana en especificidad y sin nombrarla aquí seguiría saltando
+   —medido en el navegador con el movimiento reducido activo—. */
+@media (prefers-reduced-motion:reduce){
+  .c-enl:hover::after,.c-enl:focus-visible::after,
+  .c-enl[href^="mailto:"]:hover::after,.c-enl[href^="mailto:"]:focus-visible::after{transform:none}
+}
 /* Objetivo táctil holgado: la mayoría del tráfico entra por el móvil y este
    botón es de los pocos que hay que acertar a la primera. */
 .c-copia{margin-top:11px;display:inline-flex;align-items:center;gap:8px;min-height:38px;
@@ -936,28 +983,56 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
   clip-path:inset(50%);white-space:nowrap}
 .frame{border:1px solid var(--line);padding:clamp(28px,3.6vw,52px);background:rgba(var(--bg2-rgb),.7);position:relative}
 .frame::before{content:"";position:absolute;inset:7px;border:1px solid var(--line-soft);pointer-events:none}
-/* ---------- CANALES ----------
-   Lo que ocupa el sitio del formulario. El marco es el mismo, así que la
-   sección no se descompensa; lo que cambia es que dentro hay dos acciones que
-   terminan en una conversación real en vez de cuatro campos que no iban a
-   ninguna parte. */
+/* ---------- FORMULARIO ----------
+   Los campos no llevan caja: sólo una línea debajo. Es lo que hace que el
+   bloque parezca un documento y no un panel de administración, y es la misma
+   línea fina que usa el resto de la página. */
+.frame label{display:block;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;font-weight:500}
+.frame input,.frame textarea,.frame select{width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--ink);font-family:var(--serif);font-size:19px;padding:10px 2px;outline:none;transition:border-color .3s;border-radius:0}
+.frame select option{background:var(--bg2);font-size:15px}
+.frame input:focus,.frame textarea:focus,.frame select:focus{border-color:var(--bronze-hi)}
+.frame textarea{resize:vertical;min-height:92px}
+/* Sólo el <button> de enviar, no cualquier .btn dentro del marco: escrito como
+   «.frame .btn» esto le quitaba el borde también a los dos enlaces de canal del
+   pie, que se quedaban como texto suelto flotando sin caja. */
+.frame button.btn{margin-top:30px;border:none;font-family:var(--sans);cursor:pointer}
+/* Enviando: el botón deja de aceptar pulsaciones y lo dice a la vez con el
+   texto y con la opacidad. Un botón que sólo cambia de texto se sigue pulsando
+   tres veces; uno que sólo se apaga parece roto. */
+.frame button.btn[disabled]{opacity:.5;cursor:progress;pointer-events:none}
+/* Caja del desafío anti-bots. Mientras Turnstile no la rellena mide cero y no
+   deja un hueco entre el último campo y el botón. */
+.ts-caja{margin-top:24px}
+.ts-caja:empty{margin-top:0}
+/* ---------- RESPUESTA DEL ENVÍO ----------
+   Vacía no ocupa nada, así que no hay un hueco reservado esperando una noticia.
+   En verde de la casa cuando el servidor confirmó; en el rojo de los avisos
+   cuando falló, y entonces en el tipo pequeño de la interfaz, porque un motivo
+   de error se lee, no se contempla. */
+.form-msg{margin-top:20px;font-family:var(--serif);font-style:italic;font-size:17px;
+  line-height:1.5;color:var(--bronze-hi)}
+.form-msg:empty{display:none}
+.form-msg.mal{font-family:var(--sans);font-style:normal;font-size:13px;letter-spacing:.4px;
+  line-height:1.65;color:var(--err)}
+.form-nota{margin-top:18px;font-size:11.5px;line-height:1.7;color:var(--dim)}
+.form-nota a{color:var(--muted);border-bottom:1px solid var(--line-soft);
+  transition:color .3s,border-color .3s}
+.form-nota a:hover,.form-nota a:focus-visible{color:var(--bronze-hi);border-color:var(--bronze)}
+.form-nota a:focus-visible{outline:1px solid var(--bronze);outline-offset:3px}
+/* ---------- CANALES DIRECTOS, AL PIE DEL FORMULARIO ----------
+   WhatsApp y el correo siguen a un toque para quien no quiere rellenar nada.
+   Van en pequeño y en fila, y no como los dos botones grandes que ocupaban este
+   marco: aquí la acción principal es el envío, y dos botones del mismo tamaño
+   compitiendo debajo no dejarían claro cuál es. */
+.can-alt{margin-top:30px;padding-top:22px;border-top:1px solid var(--line-soft)}
 .can-k{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze);margin-bottom:14px}
 .can-t{font-family:var(--serif);font-size:clamp(18px,1.9vw,22px);line-height:1.5;color:var(--ink)}
-/* En columna y no en fila: en móvil dos botones lado a lado se parten, y aquí
-   uno de los dos —WhatsApp— es claramente el camino principal. */
-.can-btns{display:flex;flex-direction:column;align-items:flex-start;gap:14px;margin-top:30px}
-.can-btns .btn{font-family:var(--sans)}
+.can-btns{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px}
+.can-btns .btn{font-family:var(--sans);padding:13px 24px;font-size:10px;letter-spacing:2.6px}
 /* Sin esto el foco por teclado caía en el contorno naranja del navegador, que
    es el único elemento de la página que no es de la paleta. */
 .can-btns .btn:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:4px}
-/* En pantalla estrecha "Escribir por WhatsApp" se partía en dos líneas y el
-   botón principal quedaba con forma de caja. Menos espaciado entre letras y
-   menos relleno lateral: cabe en una línea sin tocar el tamaño del objetivo. */
-@media(max-width:420px){
-  .can-btns .btn{padding:15px 22px;font-size:10px;letter-spacing:2.6px}
-}
-.can-n{margin-top:26px;padding-top:20px;border-top:1px solid var(--line-soft);
-  font-size:12.5px;line-height:1.7;color:var(--dim)}
+.can-n{font-size:12.5px;line-height:1.7;color:var(--dim)}
 
 /* ---------- PREGUNTAS FRECUENTES ----------
    Vive dentro de contacto y no como sección propia: así no renumera los seis
@@ -1376,8 +1451,10 @@ footer .legal a:hover{color:var(--bronze)}
 /* ---------- VALIDACIÓN EN VIVO ----------
    El campo se marca al salirse de él, nunca mientras se escribe: corregir a
    alguien en mitad de una palabra es la forma más rápida de que abandone. */
-/* El aviso de error lo usa ahora sólo el diagnóstico: el formulario de
-   contacto que lo estrenó ya no existe. */
+/* Lo usan el formulario de contacto y el diagnóstico. El del formulario marca
+   además el campo: lo que el servidor devuelve en un 400 se enseña junto al
+   campo que lo provocó, no como un "algo ha ido mal" al pie. */
+.frame input.mal,.frame textarea.mal,.frame select.mal{border-bottom-color:var(--err)}
 .aviso{display:none;margin-top:8px;font-size:11px;letter-spacing:.6px;color:var(--err);line-height:1.5}
 .aviso.on{display:block}
 
@@ -1530,6 +1607,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   #descenso,#avance,#preloader,.rail,nav,.snd,.oro-aviso,.pres-idx,
   .bait-btn,.costo input[type=range],#visor,
   .aud-form,.aud-rival,.aud-cta,.works-fin a,.svc-btn,
+  .frame button,.ts-caja,.can-alt,
   .res-tapa,.bar-idx,.met{display:none!important}
   html,body{background:#fff!important;color:#14161A!important}
   body{overflow:visible!important}
@@ -1687,10 +1765,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wrap">
     <span class="sec-tag"><span class="n">01 —</span> Servicios</span>
     <h2 class="title" data-split>Lo que <em>dominamos</em></h2>
-    <!-- Los cinco "Solicitar" llevaban a #contacto y allí pre-seleccionaban el
-         servicio en un desplegable del formulario. Al retirarse el formulario esa
-         intención se quedó sin destino, así que ahora la cumple WhatsApp: cada
-         botón abre el chat con el servicio ya escrito en el mensaje.
+    <!-- Los cinco "Solicitar" abren WhatsApp con el servicio ya escrito en el
+         mensaje. Se quedan así aunque el formulario haya vuelto: el desplegable
+         de contacto ofrece los mismos cinco servicios, y un enlace que abre una
+         conversación de un toque convierte mejor que uno que baja media página
+         hasta un campo pre-seleccionado.
          El texto va codificado en el propio href y no lo compone el JavaScript:
          así el botón funciona igual con el JS caído, y no hay una plantilla de
          mensaje repartida entre el marcado y el script.
@@ -2059,7 +2138,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
       <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
-           entrada, los canales y los datos puedan ordenarse por separado. La
+           entrada, el formulario y los datos puedan ordenarse por separado. La
            animación de entrada va por eso en los hijos y no aquí. -->
       <div class="c-info">
         <p class="lead rv">Cuéntanos tu idea. Respondemos en menos de 24 horas — la ambición no espera.</p>
@@ -2088,18 +2167,29 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
              no lo ve: una región viva, vacía hasta que hay algo que anunciar. -->
         <p class="sr-only" id="c-avisa" role="status" aria-live="polite"></p>
       </div>
-      <!-- Aquí vivía un formulario que no enviaba nada: validaba, decía
-           "Recibido" y tiraba el mensaje. Meses así explican por qué no entró
-           ni un solo contacto. Se retira entero —marcado y JavaScript— y en su
-           sitio quedan los dos canales que sí llegan a alguien. Cuando exista
-           el gateway se podrá volver a poner un formulario; hasta entonces,
-           prometer un envío que no ocurre es peor que no tenerlo. -->
-      <div class="frame rv" id="canales">
+      <!-- Aquí vivió un formulario que no enviaba nada: validaba, decía
+           "Recibido", limpiaba los campos y tiraba el mensaje. Se retiró porque
+           prometía un envío que no ocurría, y prometerlo era peor que no
+           tenerlo. Vuelve ahora que existe el destinatario: el gateway público
+           de S&C, que guarda el mensaje y responde con un identificador.
+           Lo que lo hace distinto del anterior cabe en una línea, y está escrita
+           igual en el JavaScript: «Recibido» sólo se dice si el servidor
+           contestó 2xx. Si falla, se dice que falló y los campos NO se tocan.
+
+           method="post" y sin action a propósito. El envío lo hace el
+           JavaScript, pero si por lo que sea no llegara a correr, el navegador
+           haría el envío nativo a esta misma página: con POST eso muere en un
+           405 del alojamiento, mientras que con GET —el valor por defecto— el
+           mensaje entero acabaría escrito en la barra de direcciones, en el
+           historial y en los registros del servidor. novalidate porque la
+           validación la hace el script: los avisos del navegador llegan en el
+           idioma del sistema y no en el de esta página. -->
+      <form class="frame rv" id="form" method="post" novalidate>
         <!-- Puente desde el diagnóstico. Sólo se muestra si este navegador
              guardó un análisis: el dato es del propio visitante y no sale de
-             su equipo. El JS lo rellena y lo destapa. Ya no rellena ningún
-             campo —no hay—: enseña la nota para que el visitante la tenga
-             delante mientras escribe por su cuenta. -->
+             su equipo. El JS lo rellena y lo destapa. No escribe en ningún
+             campo: enseña la nota para que el visitante la tenga delante
+             mientras redacta, que es distinto de redactar por él. -->
         <div class="puente" id="puente" hidden>
           <p class="pk">Tu diagnóstico</p>
           <p class="pv">Tu web sacó <b id="puente-n">—</b>. Cuéntanoslo al escribir y te decimos
@@ -2108,23 +2198,85 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           <ul class="pf" id="puente-f"></ul>
         </div>
         <p class="can-k">Escríbenos</p>
-        <p class="can-t">Sin formularios de por medio: eliges el canal y el mensaje
-          llega a quien va a construir tu proyecto.</p>
-        <div class="can-btns">
-          <a class="btn solid" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer">
-            <span class="dia" aria-hidden="true"></span>Escribir por WhatsApp</a>
-          <a class="btn" href="mailto:hola@sycsolutions.company">
-            <span class="dia" aria-hidden="true"></span>Enviar un correo</a>
+        <p class="can-t">Cuéntanos qué necesitas y te respondemos al correo o al
+          teléfono que dejes aquí.</p>
+        <!-- Cada campo obligatorio lleva su aviso al lado, vacío y oculto hasta
+             que hace falta. Vive en el HTML y no lo crea el JS para que el
+             lector de pantalla ya tenga la relación establecida por
+             aria-describedby desde el primer momento.
+             Los maxlength son los del esquema del servidor, no una cifra
+             elegida aquí: 120, 200, 40, 120 y 4000. Puestos en el marcado, el
+             navegador impide pasarse antes de que el servidor tenga que
+             rechazarlo. -->
+        <label for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" type="text" required maxlength="120"
+               autocomplete="name" placeholder="¿Cómo te llamas?"
+               aria-describedby="nombre-av">
+        <p class="aviso" id="nombre-av"></p>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required maxlength="200"
+               autocomplete="email" placeholder="tu@empresa.com"
+               aria-describedby="email-av">
+        <p class="aviso" id="email-av"></p>
+        <!-- El teléfono es obligatorio en el servidor, así que aquí también. No
+             se marca como "opcional" ni se pide "si quieres": pedir un dato
+             obligatorio como si fuera voluntario es la forma más rápida de que
+             el envío falle con un error que el visitante no entiende. -->
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" name="telefono" type="tel" required maxlength="40"
+               inputmode="tel" autocomplete="tel"
+               placeholder="Con clave de país si no es de México"
+               aria-describedby="telefono-av">
+        <p class="aviso" id="telefono-av"></p>
+        <!-- Las cinco primeras opciones son, palabra por palabra, los cinco
+             servicios que anuncia la sección 01 de esta misma página. La sexta
+             es la que las preguntas frecuentes prometen unas líneas más abajo. -->
+        <label for="servicio">¿Qué necesitas?</label>
+        <select id="servicio" name="servicio" required aria-describedby="servicio-av">
+          <option>Sitios Web Premium para tu Negocio</option>
+          <option>Agentes de IA para tu Negocio</option>
+          <option>CRM Empresarial</option>
+          <option>Aplicación Privada para tu Negocio</option>
+          <option>Automatización de Procesos en tu Negocio</option>
+          <option>No lo sé aún — asesórenme</option>
+        </select>
+        <p class="aviso" id="servicio-av"></p>
+        <label for="mensaje">Tu idea</label>
+        <textarea id="mensaje" name="mensaje" required maxlength="4000"
+                  placeholder="Describe tu negocio y qué quieres lograr..."
+                  aria-describedby="mensaje-av"></textarea>
+        <p class="aviso" id="mensaje-av"></p>
+        <!-- Caja del desafío anti-bots. Nace vacía y sin alto: el widget se
+             renderiza la primera vez que alguien pulsa Enviar, y en modo
+             "sólo si hace falta interacción" lo normal es que no se vea nada. -->
+        <div class="ts-caja" id="form-ts"></div>
+        <button type="submit" class="btn solid" id="form-go">Enviar mensaje</button>
+        <!-- Región viva: aquí cae tanto el "Recibido" como el motivo exacto del
+             fallo, y en los dos casos se anuncia a quien no ve la pantalla. -->
+        <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
+        <p class="form-nota">Al enviar, estos datos entran en nuestro sistema para
+          poder responderte. Nada más: ni boletines, ni publicidad, ni cesión a
+          terceros. <a href="aviso-de-privacidad.html">Aviso de privacidad</a>.</p>
+        <!-- Los dos canales directos siguen aquí, y en formato pequeño a
+             propósito: quien prefiere WhatsApp lo tiene a un toque sin que le
+             discuta el sitio al formulario. Sin "arriba" ni "a la izquierda" en
+             el texto: en móvil los datos van debajo y en escritorio al lado, así
+             que cualquier dirección sería falsa en una de las dos. -->
+        <div class="can-alt">
+          <p class="can-n">¿Prefieres escribir por tu cuenta? Llega igual:</p>
+          <div class="can-btns">
+            <a class="btn" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer"
+               aria-label="Escribir por WhatsApp al +52 442 369 7248">
+              <span class="dia" aria-hidden="true"></span>WhatsApp</a>
+            <a class="btn" href="mailto:hola@sycsolutions.company"
+               aria-label="Enviar un correo a hola@sycsolutions.company">
+              <span class="dia" aria-hidden="true"></span>Correo</a>
+          </div>
         </div>
-        <!-- Sin "arriba" ni "a la izquierda": en móvil los datos van debajo y
-             en escritorio al lado, así que cualquier dirección sería falsa en
-             una de las dos. -->
-        <p class="can-n">¿Prefieres copiar el número o el correo y escribir desde
-          otra parte? Cada dato tiene su botón de copiar en esta misma sección.</p>
-      </div>
+      </form>
     </div>
 
-    <!-- Preguntas frecuentes. Van DESPUÉS de los canales a propósito: plegadas
+    <!-- Preguntas frecuentes. Van DESPUÉS del formulario a propósito: plegadas
          ocupan 266 px, y puestas antes obligaban a rodearlas para llegar a la
          única acción de la página. Quien ya decidió escribe sin estorbo; quien
          duda las encuentra justo al pasar de largo, que es cuando pregunta.
@@ -2175,9 +2327,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
       </details>
       <details>
         <summary>No sé qué necesito exactamente. ¿Puedo escribir igual?</summary>
-        <p class="faq-r">Sí, es lo más habitual. Escríbenos por WhatsApp o por correo
-          y dinos qué hace tu negocio y qué te gustaría conseguir; no hace falta que
-          traigas el encargo definido. Te decimos qué haríamos y por dónde
+        <p class="faq-r">Sí, es lo más habitual. En el formulario tienes la opción
+          «No lo sé aún — asesórenme», y también puedes escribirnos por WhatsApp o
+          por correo. Dinos qué hace tu negocio y qué te gustaría conseguir; no hace
+          falta que traigas el encargo definido. Te decimos qué haríamos y por dónde
           empezaríamos.</p>
       </details>
     </div>
@@ -2716,11 +2869,388 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
 /* El contador de cifras animadas se fue con la banda que animaba: era el único
    sitio del archivo con elementos [data-count]. */
 
-/* Aquí vivían tres bloques del formulario de contacto: la pre-selección del
-   servicio desde los botones "Solicitar", las reglas de validación de nombre y
-   correo, y el manejador de envío. Se van con él. Los botones "Solicitar"
-   siguen llevando a la sección de contacto; lo que ya no hacen es rellenar un
-   campo que no existe. */
+/* ---------- TURNSTILE: CARGADOR COMPARTIDO ----------
+   Dos partes de la página piden verificación anti-bots: el diagnóstico y el
+   formulario de contacto. El script de Cloudflare es UNO y se carga una sola
+   vez, la primera que hace falta —no en cada visita: quien sólo lee la portada
+   no tiene por qué ejecutar código de terceros—. Con dos cargas separadas el
+   segundo <script> vuelve a inicializar la API y deja al primer widget sin
+   responder; de ahí que el cargador viva aquí arriba y no dentro de cada
+   módulo. Lo único compartido es esto: cada parte renderiza su propio widget,
+   con su propia acción y su propio ciclo de vida.
+
+   La clave es PÚBLICA por diseño: va en el HTML y cualquiera puede leerla. Lo
+   que no puede salir de un servidor es el secreto, que no está aquí ni en este
+   repositorio. */
+const TS_SITEKEY='0x4AAAAAAEKjpagA_DLwswxz';
+let tsCargador=null;
+function cargaTurnstile(){
+  if(tsCargador)return tsCargador;
+  tsCargador=new Promise((ok,mal)=>{
+    if(window.turnstile){ok();return;}
+    const s=document.createElement('script');
+    s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    s.async=true;s.defer=true;
+    s.onload=()=>ok();s.onerror=()=>mal(new Error('sin-verificacion'));
+    document.head.appendChild(s);
+  });
+  return tsCargador;
+}
+
+/* ---------- FORMULARIO DE CONTACTO ----------
+   El formulario anterior hacía preventDefault(), escribía "Recibido", vaciaba
+   los campos y tiraba el mensaje al suelo. Nunca tuvo destinatario. Éste lo
+   tiene, y todo lo que sigue existe para que no pueda volver a mentir:
+
+   1. «Recibido» SÓLO si el servidor respondió 2xx. No hay ninguna rama de éxito
+      optimista, ni un mensaje que se enseñe "mientras tanto". Si el envío falla
+      se dice que falló y se dice POR QUÉ.
+   2. Si falla, los campos NO se tocan. Quien acaba de escribir cuatro párrafos
+      no los pierde por un corte de red. Vaciar el formulario es una acción
+      exclusiva de la rama de éxito.
+   3. Los errores se separan porque llevan a acciones distintas: un campo que el
+      servidor rechaza se marca junto al campo; un 403 es la verificación y se
+      arregla volviendo a pulsar; un fallo de red se arregla con red. Un único
+      "algo ha ido mal" obligaría al visitante a adivinar cuál de los tres es.
+   4. El botón se deshabilita mientras se envía y lo dice con el texto, no sólo
+      con la opacidad.
+   5. Ni el token ni el mensaje se escriben nunca en la consola. No hay un solo
+      console.* en este módulo, y es a propósito: la consola de un visitante es
+      un sitio donde no tiene por qué aparecer lo que acaba de redactar. */
+(()=>{
+  const f=document.getElementById('form');
+  if(!f)return;
+
+  /* ── ÚNICO valor a tocar si cambia el gateway ──────────────────────────────
+     Si cambia, hay que tocarlo aquí Y en connect-src de app/_headers: el
+     navegador corta el fetch contra cualquier origen que no esté en esa lista y
+     no llega a salir nada. */
+  const GATEWAY='https://app.sycsolutions.company/api/gateway/publico/contacto';
+
+  const campos={
+    nombre:  document.getElementById('nombre'),
+    email:   document.getElementById('email'),
+    telefono:document.getElementById('telefono'),
+    servicio:document.getElementById('servicio'),
+    mensaje: document.getElementById('mensaje')
+  };
+  const NOMBRES=Object.keys(campos);
+  if(NOMBRES.some(k=>!campos[k]))return;
+  const boton=document.getElementById('form-go'),
+        salida=document.getElementById('form-msg'),
+        cajaTs=document.getElementById('form-ts');
+  if(!boton||!salida||!cajaTs)return;
+  const ETIQUETA=boton.textContent;
+
+  /* ── Reglas ────────────────────────────────────────────────────────────────
+     Son las MISMAS del esquema del servidor —mínimos, máximos y obligatoriedad—
+     y no una versión suave de ellas. No se duplican por gusto: el servidor
+     sigue siendo el que manda, pero sin esto alguien escribe cuatro párrafos,
+     pulsa enviar, gasta un token y se entera entonces de que el nombre
+     necesitaba dos letras.
+     La del correo es deliberadamente laxa: comprobar una dirección a fondo con
+     una expresión regular es imposible y termina rechazando direcciones
+     válidas. Aquí sólo se descarta lo que no puede entregarse de ninguna
+     manera. */
+  const REGLAS={
+    nombre:v=>{
+      const t=v.trim();
+      if(t.length<2)return'Escribe tu nombre, aunque sea sólo el de pila.';
+      if(t.length>120)return'El nombre no puede pasar de 120 caracteres.';
+      return'';
+    },
+    email:v=>{
+      const t=v.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t))
+        return'Ese correo está incompleto. Revisa que lleve @ y un dominio detrás.';
+      if(t.length>200)return'El correo no puede pasar de 200 caracteres.';
+      return'';
+    },
+    /* El teléfono lo normaliza el servidor a formato internacional y guarda
+       también lo que se escribió tal cual, así que aquí no se reformatea nada:
+       sólo se comprueba que haya dígitos suficientes para ser un número. */
+    telefono:v=>{
+      const t=v.trim();
+      if(!t)return'Hace falta un teléfono: es por donde respondemos más rápido.';
+      if(t.length>40)return'Ese teléfono es demasiado largo. Revísalo.';
+      if((t.match(/\d/g)||[]).length<8)
+        return'Faltan dígitos. Escríbelo completo, con clave de país si no es de México.';
+      return'';
+    },
+    servicio:v=>{
+      const t=v.trim();
+      if(!t)return'Elige qué necesitas. Si no lo tienes claro, está la opción de que te asesoremos.';
+      if(t.length>120)return'Esa opción no es válida. Elige una de la lista.';
+      return'';
+    },
+    mensaje:v=>{
+      const t=v.trim();
+      if(!t)return'Cuéntanos aunque sea en una línea qué quieres conseguir.';
+      if(t.length>4000)return'El mensaje pasa de 4000 caracteres. Recórtalo y el resto nos lo cuentas al responderte.';
+      return'';
+    }
+  };
+
+  function marca(id,texto){
+    const c=campos[id],av=document.getElementById(id+'-av');
+    if(!c)return;
+    c.classList.toggle('mal',!!texto);
+    c.setAttribute('aria-invalid',texto?'true':'false');
+    if(av){av.textContent=texto||'';av.classList.toggle('on',!!texto);}
+  }
+  /* mostrar=false silencia el aviso de un campo que todavía está vacío: no está
+     mal, está sin empezar. Corregir a alguien por la tercera letra de su nombre
+     es la forma más rápida de que cierre la pestaña. */
+  function valida(id,mostrar){
+    const c=campos[id];
+    if(!c||!REGLAS[id])return true;
+    const fallo=REGLAS[id](c.value);
+    marca(id,(!mostrar&&!c.value.trim())?'':fallo);
+    return !fallo;
+  }
+  /* El foco cae en el primer campo que falla, que es lo que evita el "algo ha
+     ido mal" sin decir dónde. Comprobado con el ratón y con el teclado: el
+     navegador no lo devuelve al botón. */
+  function enfoca(el){if(el)el.focus();}
+  function validaTodo(){
+    let primero=null;
+    NOMBRES.forEach(id=>{if(!valida(id,true)&&!primero)primero=campos[id];});
+    if(primero){enfoca(primero);return false;}
+    return true;
+  }
+  NOMBRES.forEach(id=>{
+    const c=campos[id];
+    c.addEventListener('blur',e=>{
+      /* Si el foco se va hacia otra cosa DEL PROPIO FORMULARIO que no es un
+         campo —el botón de enviar, los enlaces del pie—, el aviso no se pinta
+         aquí. No es cosmético: medido en el navegador, pintarlo inserta una
+         línea, el botón baja unos veinte píxeles ENTRE el mousedown y el
+         mouseup, el mouseup cae fuera del botón y el navegador no llega a
+         emitir el clic. El visitante deja el mensaje vacío, pulsa Enviar y no
+         pasa absolutamente nada; tiene que pulsar dos veces para que le hagan
+         caso. El envío vuelve a validarlo todo de inmediato, así que no se
+         pierde ni un aviso: lo único que se deja de hacer es mover el suelo
+         bajo el dedo de quien está pulsando. */
+      const destino=e.relatedTarget;
+      if(destino&&f.contains(destino)&&NOMBRES.indexOf(destino.id)===-1)return;
+      valida(id,true);
+    });
+    /* Mientras escribe sólo se limpia el aviso, nunca se pone: repetirle el
+       error a quien ya sabe que se equivocó y lo está corrigiendo sobra. */
+    c.addEventListener('input',()=>{if(c.classList.contains('mal'))valida(id,false);});
+    if(c.tagName==='SELECT')c.addEventListener('change',()=>valida(id,false));
+  });
+
+  /* ── Verificación anti-bots ────────────────────────────────────────────────
+     El widget se renderiza la primera vez que alguien pulsa Enviar, no al
+     cargar la página. En modo "sólo si hace falta interacción" lo normal es que
+     el visitante no llegue a ver nada. */
+  let tsId=null,tsToken=null,tsPend=null;
+  function pideToken(){
+    if(tsToken)return Promise.resolve(tsToken);
+    return new Promise((ok,mal)=>{
+      /* UN SOLO plazo para todo el trámite: descargar el script de Cloudflare y
+         resolver el desafío. Puesto sólo sobre el desafío, un
+         challenges.cloudflare.com que ni responde ni falla —un portal cautivo,
+         un cortafuegos que se traga la conexión sin devolver nada— dejaba el
+         botón en "Enviando…" indefinidamente, que es la única forma que le queda
+         a este formulario de volver a mentir: parecer que está haciendo algo. */
+      const reloj=setTimeout(()=>{tsPend=null;mal(new Error('sin-verificacion'));},30000);
+      const pend={
+        ok:t=>{clearTimeout(reloj);tsPend=null;ok(t);},
+        mal:e=>{clearTimeout(reloj);tsPend=null;mal(e);}
+      };
+      tsPend=pend;
+      cargaTurnstile().then(()=>{
+        if(tsToken){pend.ok(tsToken);return;}
+        if(tsId===null){
+          tsId=window.turnstile.render(cajaTs,{
+            sitekey:TS_SITEKEY,action:'contacto',appearance:'interaction-only',
+            /* El token se guarda SIEMPRE, aunque el plazo ya haya vencido y no
+               quede nadie esperando: así el siguiente intento arranca con él en
+               la mano en vez de repetir el desafío entero. */
+            callback:t=>{tsToken=t;if(tsPend)tsPend.ok(t);},
+            'error-callback':()=>{if(tsPend)tsPend.mal(new Error('sin-verificacion'));},
+            'expired-callback':()=>{tsToken=null;}
+          });
+        }
+        /* Si ya estaba renderizado, el reinicio del intento anterior dejó el
+           desafío corriendo y la respuesta llega por ese mismo callback. */
+      },e=>pend.mal(e));
+    });
+  }
+  /* Un token se gasta en cuanto el servidor lo canjea —son de un solo uso—, así
+     que el siguiente envío necesita uno nuevo, haya ido bien o mal el anterior.
+     Sin este reinicio, el segundo intento de quien falló la primera vez recibe
+     un 403 por reutilizar un token quemado, y el mensaje de error diría que la
+     verificación falló cuando en realidad falló el reintento. */
+  function reiniciaTs(){
+    tsToken=null;
+    if(tsId!==null&&window.turnstile){try{window.turnstile.reset(tsId);}catch(_){}}
+  }
+
+  async function envia(datos){
+    if(navigator.onLine===false)throw new Error('sin-red');
+    const t=await pideToken();
+    const ctl=new AbortController(),reloj=setTimeout(()=>ctl.abort(),25000);
+    let r;
+    try{
+      r=await fetch(GATEWAY,{
+        method:'POST',
+        /* Sólo Content-Type, y no una cabecera propia con el token: el CORS del
+           gateway autoriza exactamente esa cabecera. Cualquier otra y el
+           navegador tumba la petición en la comprobación previa, antes de que
+           salga un solo byte del mensaje. El token va en el cuerpo. */
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(Object.assign({turnstileToken:t},datos)),
+        signal:ctl.signal
+      });
+    }finally{clearTimeout(reloj);reiniciaTs();}
+    const cuerpo=await r.json().catch(()=>null);
+    if(r.ok)return cuerpo||{};
+    const err=new Error('http-'+r.status);
+    err.estado=r.status;err.cuerpo=cuerpo;
+    throw err;
+  }
+
+  /* ── El detalle del 400 ────────────────────────────────────────────────────
+     El gateway responde 400 con el motivo y, cuando es un problema de datos,
+     con el detalle de qué campo falla. La forma exacta de ese detalle no está
+     fijada de este lado —el esquema vive en el otro repositorio—, así que en
+     vez de acertar una forma y romperse con las demás, esto recorre el cuerpo
+     entero y se queda con cualquier par (campo conocido, texto) que encuentre.
+     Cubre las formas habituales:
+       {campos:{email:"..."}}            {errores:{email:["..."]}}
+       {detalles:[{campo:"email",mensaje:"..."}]}
+       {issues:[{path:["email"],message:"..."}]}
+     Lo que no encaje en ninguna cae al mensaje general, que nunca deja al
+     visitante sin saber qué ha pasado. */
+  function detalleCampos(cuerpo){
+    const fuera={};
+    const guarda=(clave,valor)=>{
+      const id=String(clave||'').toLowerCase();
+      if(NOMBRES.indexOf(id)===-1||fuera[id])return;
+      const txt=Array.isArray(valor)?valor[0]:valor;
+      if(typeof txt==='string'&&txt.trim())fuera[id]=txt.trim().slice(0,200);
+    };
+    const anda=(n,hondo)=>{
+      if(!n||typeof n!=='object'||hondo>6)return;
+      if(Array.isArray(n)){n.forEach(x=>anda(x,hondo+1));return;}
+      let nom=n.campo||n.field||n.name||n.path;
+      if(Array.isArray(nom))nom=nom[nom.length-1];
+      const msj=n.mensaje||n.message||n.detalle||n.error;
+      if(nom&&typeof msj==='string')guarda(nom,msj);
+      Object.keys(n).forEach(k=>{
+        if(NOMBRES.indexOf(k.toLowerCase())!==-1)guarda(k,n[k]);
+        else anda(n[k],hondo+1);
+      });
+    };
+    anda(cuerpo,0);
+    return fuera;
+  }
+
+  /* Tres situaciones distintas, tres mensajes distintos, porque llevan a tres
+     acciones distintas. Los del navegador llegan en inglés y hablando de red
+     ("Failed to fetch"): enseñarlos tal cual rompe el idioma de la página y no
+     le dice a nadie qué hacer a continuación. */
+  function diagnostico(err){
+    if(err&&err.name==='AbortError')
+      return{texto:'El envío tardó demasiado y se cortó. Tu mensaje sigue aquí: vuelve a pulsar Enviar.'};
+    const estado=err&&err.estado,cuerpo=err&&err.cuerpo;
+    if(estado===403)
+      return{texto:'No se completó la verificación anti-bots. Ya está reiniciada: vuelve a pulsar Enviar y, si aparece una casilla, márcala.'};
+    if(estado===429)
+      return{texto:'Has enviado varios mensajes seguidos. Espera un minuto y vuelve a intentarlo.'};
+    if(estado===400){
+      const d=detalleCampos(cuerpo);
+      if(Object.keys(d).length)
+        return{campos:d,texto:'El servidor no aceptó algunos datos. Están marcados abajo con el motivo.'};
+      const motivo=cuerpo&&typeof cuerpo.error==='string'?cuerpo.error:'';
+      return{texto:'El servidor no aceptó los datos'+(motivo?': '+motivo:'')+'. Revísalos y vuelve a enviar.'};
+    }
+    if(estado>=500)
+      return{texto:'El servidor falló al guardar el mensaje. No es cosa tuya y tu texto sigue aquí: inténtalo en un par de minutos, o escríbenos por WhatsApp.'};
+    const m=String((err&&err.message)||'');
+    if(m==='sin-verificacion')
+      return{texto:'No se pudo cargar la verificación anti-bots. Recarga la página e inténtalo otra vez; si sigue igual, escríbenos por WhatsApp.'};
+    /* Un fetch que ni siquiera sale del navegador —sin red, cortado a mitad, o
+       bloqueado antes de salir— llega siempre como TypeError. */
+    if(m==='sin-red'||err instanceof TypeError)
+      return{texto:'No salió de tu navegador: no hay conexión o se cortó a mitad. No se ha perdido nada — vuelve a pulsar Enviar cuando tengas red.'};
+    return{texto:'No pudimos enviarlo. Tu mensaje sigue aquí: vuelve a intentarlo, o escríbenos por WhatsApp.'};
+  }
+
+  /* El gateway devuelve un identificador del mensaje guardado. Si viene, se
+     enseña: es la prueba de que esto llegó a algún sitio y es lo que el
+     visitante puede citarnos si algo se pierde por el camino. Si no viene, no
+     se inventa ninguno. */
+  function referencia(d,hondo){
+    if(!d||typeof d!=='object'||(hondo||0)>3)return'';
+    const claves=['folio','id','identificador','referencia','ticket','mensajeId','messageId'];
+    for(let i=0;i<claves.length;i++){
+      const v=d[claves[i]];
+      if(typeof v==='string'||typeof v==='number'){
+        const s=String(v).trim();
+        if(s&&s.length<=64)return s;
+      }
+    }
+    const anidados=['dato','datos','data','resultado','contacto'];
+    for(let i=0;i<anidados.length;i++){
+      const v=referencia(d[anidados[i]],(hondo||0)+1);
+      if(v)return v;
+    }
+    return'';
+  }
+
+  function dice(texto,mal){
+    salida.className=mal?'form-msg mal':'form-msg';
+    salida.textContent=texto;
+  }
+
+  let ocupado=false;
+  f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(ocupado)return;
+    dice('',false);
+    if(!validaTodo())return;
+    /* Se recorta aquí y no en el servidor: lo que se valida arriba y lo que
+       viaja tiene que ser exactamente lo mismo, o un espacio de más convierte
+       un campo aprobado en un 400. */
+    const datos={};
+    NOMBRES.forEach(k=>{datos[k]=campos[k].value.trim();});
+
+    ocupado=true;boton.disabled=true;boton.textContent='Enviando…';
+    try{
+      const respuesta=await envia(datos);
+      /* AQUÍ, Y SÓLO AQUÍ. El servidor contestó 2xx: el mensaje existe en algún
+         sitio que no es esta pestaña. Ahora sí se puede decir "recibido" y
+         ahora sí se pueden vaciar los campos. */
+      NOMBRES.forEach(k=>{
+        if(campos[k].tagName!=='SELECT')campos[k].value='';
+        marca(k,'');
+      });
+      const ref=referencia(respuesta,0).replace(/[^\w.:-]/g,'').slice(0,64);
+      dice('◆ Recibido. Te contactamos en menos de 24 horas.'+(ref?' Tu referencia: '+ref+'.':''),false);
+      /* La firma sonora va aparte y con red debajo: un fallo del audio —un
+         contexto que el navegador no deja crear, una pestaña silenciada— caería
+         en el catch de abajo y convertiría un envío que SÍ llegó en un mensaje
+         de error. Es exactamente la mentira que este formulario existe para no
+         volver a decir, sólo que del revés. */
+      try{SIG.confirma();}catch(_){}
+    }catch(err){
+      const q=diagnostico(err);
+      if(q.campos){
+        Object.keys(q.campos).forEach(k=>marca(k,q.campos[k]));
+        enfoca(campos[Object.keys(q.campos)[0]]);
+      }
+      dice(q.texto,true);
+      /* Los campos no se tocan. Es la mitad del motivo por el que este
+         formulario existe. */
+    }finally{
+      ocupado=false;boton.disabled=false;boton.textContent=ETIQUETA;
+    }
+  });
+})();
 
 /* ---------- FIRMA SONORA ----------
    Sintetizada con Web Audio: cero archivos, cero peticiones y cero KB. Nace
@@ -3335,7 +3865,9 @@ function haceQue(ms){
 /* ---------- DIAGNÓSTICO SEO ----------
    El navegador no puede leer otro dominio: la política de origen cruzado lo
    impide. El análisis lo hace el Worker de cloudflare/seo-audit.js y aquí sólo
-   se pinta. Si AUDITOR sigue vacío, el formulario lo dice en vez de fingir. */
+   se pinta. Si AUDITOR sigue vacío, el diagnóstico lo dice en vez de fingir.
+   («El formulario» decía esto antes de que existiera el de contacto; ahora hay
+   dos y hacía falta distinguirlos.) */
 /* ── ÚNICO valor a tocar si cambia el Worker ────────────────────────────────
    El Worker se sirve desde un subdominio propio, no desde la URL de
    *.workers.dev que devuelve `npx wrangler deploy`. Vivir en la zona propia no
@@ -3343,7 +3875,7 @@ function haceQue(ms){
    de peticiones— y las reglas de la zona. Además deja de publicar el
    subdominio de la cuenta de Cloudflare en la cabecera de seguridad.
    Si algún día cambia, hay que tocarlo aquí Y en connect-src de app/_headers.
-   Mientras siga vacío el formulario lo dice en lugar de fingir un análisis. */
+   Mientras siga vacío, el diagnóstico lo dice en lugar de fingir un análisis. */
 window.SYC_AUDITOR='https://audit.sycsolutions.company';
 
 (()=>{
@@ -3745,21 +4277,15 @@ window.SYC_AUDITOR='https://audit.sycsolutions.company';
      La sitekey es pública por diseño —va en el HTML y cualquiera la ve—; lo que
      no puede salir de aquí es el secreto, que vive en el Worker. Si alguien la
      devuelve al marcador PENDIENTE_SITEKEY, el formulario avisa en vez de
-     fingir, igual que hace SYC_AUDITOR cuando está vacío. */
-  const SITEKEY='0x4AAAAAAEKjpagA_DLwswxz';
-  let tsCarga=null,tsId=null,tsToken=null,tsPend=null;
+     fingir, igual que hace SYC_AUDITOR cuando está vacío.
 
-  function cargaTs(){
-    if(tsCarga)return tsCarga;
-    tsCarga=new Promise((ok,mal)=>{
-      const s=document.createElement('script');
-      s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-      s.async=true;s.defer=true;
-      s.onload=()=>ok();s.onerror=()=>mal(new Error('sin-verificacion'));
-      document.head.appendChild(s);
-    });
-    return tsCarga;
-  }
+     El cargador del script y la clave son ahora los compartidos con el
+     formulario de contacto (cargaTurnstile / TS_SITEKEY, más arriba). Cargar
+     api.js dos veces reinicializa la API de Cloudflare y deja al primer widget
+     que se hubiera renderizado sin responder. El widget de aquí sigue siendo
+     propio: su propia caja, su propia acción y su propio ciclo de vida. */
+  const SITEKEY=TS_SITEKEY;
+  let tsId=null,tsToken=null,tsPend=null;
 
   function cajaTs(){
     let c=document.getElementById('aud-ts');
@@ -3771,7 +4297,7 @@ window.SYC_AUDITOR='https://audit.sycsolutions.company';
   async function pideToken(){
     if(tsToken)return tsToken;
     if(SITEKEY==='PENDIENTE_SITEKEY')throw new Error('sin-verificacion');
-    await cargaTs();
+    await cargaTurnstile();
     if(tsId===null){
       tsId=window.turnstile.render(cajaTs(),{
         sitekey:SITEKEY,action:'diagnostico-seo',appearance:'interaction-only',
@@ -3888,10 +4414,10 @@ window.SYC_AUDITOR='https://audit.sycsolutions.company';
    Quien ya se auditó llega a la sección de contacto con su propio dato delante.
    El aviso sale de localStorage, así que es información suya que nunca salió de
    su equipo.
-   Antes esto además escribía el mensaje dentro del formulario. Al retirarse el
-   formulario no queda dónde escribirlo, así que el puente hace lo único que
-   sigue siendo cierto: enseñar la nota y los fallos para que los tenga a la
-   vista mientras escribe por WhatsApp o por correo. */
+   Hubo una versión que además escribía el mensaje dentro del formulario. No
+   vuelve: redactar en nombre de alguien lo que va a mandarnos presupone
+   demasiado, y el texto salía igual para todo el mundo. El puente enseña la
+   nota y los fallos, y quien escribe es quien escribe. */
 function pintaPuente(){
   const caja=document.getElementById('puente');
   if(!caja)return;
