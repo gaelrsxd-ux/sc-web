@@ -1217,7 +1217,7 @@ footer .legal a:hover{color:var(--bronze)}
 
 /* Visor de certificados */
 #visor{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;
-  padding:clamp(20px,4vw,56px);background:rgba(6,7,9,.94);opacity:0;visibility:hidden;
+  padding:clamp(20px,4vw,56px);background:rgba(6,7,9,.985);opacity:0;visibility:hidden;
   transition:opacity .45s ease,visibility .45s}
 #visor.on{opacity:1;visibility:visible}
 /* Sin esto, el display:flex de arriba gana al atributo hidden del navegador y
@@ -1764,6 +1764,57 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .prod-mini img{width:calc(50% - 5px);height:auto;display:block;border:1px solid var(--line-soft);
   opacity:.82;transition:opacity .35s ease}
 .prod-mini img:hover{opacity:1}
+/* ---------- EL VISOR, AHORA GALERÍA ----------
+   Nació para un solo certificado y ahora lo comparten los certificados y las
+   fotos del producto. Con una imagen se comporta igual que antes —la botonera
+   ni se pinta—; con varias aparecen el paso y la cuenta.
+   Cuatro maneras de salir, que es lo que pedía el encargo: la equis, tocar
+   fuera de la foto, la tecla Escape y —en el móvil— deslizar hacia abajo. */
+#visor .vnav{position:absolute;left:50%;bottom:clamp(16px,3vh,30px);transform:translateX(-50%);
+  display:flex;align-items:center;gap:14px;padding:7px 10px;border:1px solid var(--line);
+  background:rgba(var(--bg-rgb),.9)}
+#visor .vnav[hidden]{display:none}
+/* 48 px: el objetivo tactil que no se falla, y separados para que pasar de foto
+   no se convierta en cerrar por error. */
+#visor .vb{width:48px;height:48px;border:1px solid var(--line-soft);background:none;
+  color:var(--bronze-hi);font-family:var(--serif);font-size:26px;line-height:1;cursor:pointer;
+  transition:background-color .3s,color .3s,border-color .3s}
+#visor .vb:hover{background:var(--bronze);color:var(--on-bronze);border-color:var(--bronze)}
+#visor .vb:focus-visible,#visor .cerrar:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+#visor .vcuenta{min-width:52px;text-align:center;font-size:10px;letter-spacing:3px;color:var(--muted)}
+/* Con botonera abajo, la foto cede el sitio para no quedar debajo de ella. */
+#visor.galeria img{max-height:66vh}
+#visor.galeria figcaption{margin-bottom:66px}
+/* La foto se pasa con un empujón corto, no con un desvanecido: dice en qué
+   dirección vas, que es la mitad de la información de una galería. */
+#visor img{transition:opacity .22s ease,transform .22s ease}
+#visor.pasa-izq img{opacity:0;transform:translateX(-26px)}
+#visor.pasa-der img{opacity:0;transform:translateX(26px)}
+@media(prefers-reduced-motion:reduce){#visor img{transition:opacity .2s ease}
+  #visor.pasa-izq img,#visor.pasa-der img{transform:none}}
+/* Las fotos del producto, pulsables: el cursor y el marco lo anuncian. */
+.prod-foto,.prod-mini img{cursor:zoom-in}
+.prod-foto:focus-visible,.prod-mini button:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+.prod-abre{display:block;padding:0;border:0;background:none;width:100%;cursor:zoom-in}
+.prod-lupa{position:absolute;right:12px;bottom:12px;display:flex;align-items:center;gap:7px;
+  padding:7px 12px;border:1px solid var(--line);background:rgba(var(--bg-rgb),.86);
+  font-size:9px;letter-spacing:2.4px;text-transform:uppercase;color:var(--bronze-hi);pointer-events:none}
+.prod-envoltura{position:relative;width:min(100%,400px)}
+/* Las fotos crecen: la principal de 340 a 400 px y las dos de apoyo con
+   ella. Todas a 3:4, asi que la fila de abajo casa de altura sola. */
+.prod-abre{position:relative;display:block;padding:0;border:0;background:none;width:100%;cursor:zoom-in}
+.prod-foto{width:100%;height:auto;display:block;border:1px solid var(--line-soft);
+  box-shadow:0 24px 44px rgba(0,0,0,.55)}
+.prod-fig>.prod-abre{width:min(100%,400px)}
+.prod-mini{display:flex;gap:12px;margin-top:12px;width:min(100%,400px)}
+.prod-mini .prod-abre{width:calc(50% - 6px)}
+.prod-mini img{width:100%;height:auto;display:block;border:1px solid var(--line-soft);
+  opacity:.82;transition:opacity .35s ease}
+.prod-mini .prod-abre:hover img,.prod-mini .prod-abre:focus-visible img{opacity:1}
+.prod-abre:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:4px}
+/* La lupa se retira en el movil: ahi no hay puntero que la justifique y tapa
+   parte de la foto, que es justo lo que se ha ido a mirar. */
+@media(max-width:560px){.prod-lupa{display:none}}
 </style>
 </head>
 <body>
@@ -1823,12 +1874,20 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <div class="rail r"><span>Est. MMXXVI — Hecho con precisión</span></div>
 
 <!-- Visor de certificados -->
-<div id="visor" role="dialog" aria-modal="true" aria-label="Certificado" hidden>
-  <button class="cerrar" type="button" aria-label="Cerrar el certificado">&#10005;</button>
+<div id="visor" role="dialog" aria-modal="true" aria-label="Imagen ampliada" hidden>
+  <button class="cerrar" type="button" aria-label="Cerrar">&#10005;</button>
   <figure>
     <img id="visor-img" src="" alt="">
     <figcaption id="visor-pie"></figcaption>
   </figure>
+  <!-- La botonera sólo aparece cuando hay más de una imagen. Va abajo y
+       centrada, no a los lados: en un móvil las flechas laterales caen justo
+       donde está la foto y se pulsa la imagen queriendo pasarla. -->
+  <div class="vnav" id="visor-nav" hidden>
+    <button class="vb" type="button" data-paso="-1" aria-label="Imagen anterior">&#8249;</button>
+    <span class="vcuenta" id="visor-cuenta" aria-live="polite"></span>
+    <button class="vb" type="button" data-paso="1" aria-label="Imagen siguiente">&#8250;</button>
+  </div>
 </div>
 
 <!-- Con el riel izquierdo convertido en índice ya hay dos navegaciones en la
@@ -1943,41 +2002,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
       </article>
     </div>
 
-    <!-- ============ CALCULADORA DEL TRABAJO MANUAL ============
-         Cierra la sección respondiendo a la única objeción que aparece siempre:
-         "¿y esto para qué lo quiero?". Las dos cifras las pone el visitante con
-         sus propias horas y su propio coste; aquí no se estima nada por él ni
-         se promete ningún ahorro. El resultado es una multiplicación que puede
-         rehacer en una servilleta, y por eso se la cree. -->
-    <div class="costo rv" id="costo">
-      <p class="ck">Antes de seguir</p>
-      <h3>¿Cuánto te cuesta <em>hacerlo a mano</em>?</h3>
-      <div class="costo-grid">
-        <div class="costo-campo">
-          <label for="costo-h">Horas a la semana en tareas repetidas</label>
-          <p class="val"><span id="costo-hv">8</span><small>horas</small></p>
-          <input id="costo-h" type="range" min="1" max="60" step="1" value="8"
-                 aria-describedby="costo-out">
-        </div>
-        <div class="costo-campo">
-          <label for="costo-c">Lo que te cuesta una hora de tu equipo</label>
-          <p class="val">$<span id="costo-cv">250</span><small>por hora</small></p>
-          <input id="costo-c" type="range" min="50" max="2000" step="10" value="250"
-                 aria-describedby="costo-out">
-        </div>
-        <div class="costo-res" id="costo-out" aria-live="polite">
-          <p class="rk">Se te va cada mes</p>
-          <p class="rn" id="costo-mes">$8,660</p>
-          <p class="ry">Al año: <b id="costo-anio">$104,000</b></p>
-        </div>
-      </div>
-      <div class="costo-pie">
-        <p>Son tus dos cifras multiplicadas, nada más: horas × coste × 4,33 semanas.
-          No incluye los errores que provoca el trabajo manual ni lo que dejas de
-          hacer mientras lo haces, porque eso no lo sabemos y no vamos a inventarlo.</p>
-        <a href="#contacto" id="costo-cta"><span class="dia" aria-hidden="true"></span>Quiero automatizarlo</a>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1998,23 +2022,40 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
     <article class="prod rv">
 <div class="prod-fig">
-        <!-- Fotos reales del producto, no un render. Las tres que hizo Santiago:
-             de frente, de perfil y por detras. Pesaban 6,5 MB en PNG y salen a
-             109 KB en WebP; el srcset evita mandarle 900 px de ancho a un movil
-             que va a pintar 340. `width` y `height` van declarados para que el
-             hueco este reservado antes de que la imagen llegue: sin ellos, la
-             ficha entera salta cuando cargan. -->
-        <img class="prod-foto"
-             src="assets/producto-resenas-frontal-900.webp"
-             srcset="assets/producto-resenas-frontal-480.webp 480w, assets/producto-resenas-frontal-900.webp 900w"
-             sizes="(max-width:899px) 76vw, 28vw"
-             width="900" height="1219" loading="lazy" decoding="async"
-             alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;.">
+        <!-- Fotos reales del producto. Las tres a 3:4 EXACTO para que casen de
+             altura, y con algo mas de fondo que el recorte anterior: cerradas
+             sobre el objeto se perdia la mesa, que es lo que dice donde vive.
+             Pesaban 6,5 MB en PNG; salen a 464 KB en WebP con calidad 82.
+             Las tres son pulsables y abren el mismo visor con flechas. La de
+             1400 px solo se descarga al ampliar. -->
+        <button class="prod-abre" type="button" data-galeria="producto"
+                data-grande="assets/producto-resenas-frontal-1400.webp"
+                data-pie="De frente" data-alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;."
+                aria-label="Ampliar la foto: de frente">
+          <img class="prod-foto" src="assets/producto-resenas-frontal-900.webp"
+               srcset="assets/producto-resenas-frontal-480.webp 480w, assets/producto-resenas-frontal-900.webp 900w"
+               sizes="(max-width:899px) 82vw, 30vw" width="900" height="1200" loading="lazy" decoding="async"
+               alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;."><span class="prod-lupa">Ampliar</span>
+        </button>
         <div class="prod-mini">
-          <img src="assets/producto-resenas-perfil.webp" width="420" height="633" loading="lazy" decoding="async"
+          <button class="prod-abre" type="button" data-galeria="producto"
+                data-grande="assets/producto-resenas-perfil-1400.webp"
+                data-pie="De perfil" data-alt="La misma placa vista de lado: se aprecia la inclinaci&#243;n y la base triangular sobre la que se apoya."
+                aria-label="Ampliar la foto: de perfil">
+          <img class="" src="assets/producto-resenas-perfil-900.webp"
+               srcset="assets/producto-resenas-perfil-480.webp 480w, assets/producto-resenas-perfil-900.webp 900w"
+               sizes="(max-width:899px) 40vw, 15vw" width="900" height="1200" loading="lazy" decoding="async"
                alt="La misma placa vista de lado: se aprecia la inclinaci&#243;n y la base triangular sobre la que se apoya.">
-          <img src="assets/producto-resenas-trasera.webp" width="420" height="633" loading="lazy" decoding="async"
+        </button>
+          <button class="prod-abre" type="button" data-galeria="producto"
+                data-grande="assets/producto-resenas-trasera-1400.webp"
+                data-pie="Por detr&#225;s" data-alt="El reverso de la placa, negro liso y sin impresi&#243;n, apoyado en su base."
+                aria-label="Ampliar la foto: por detr&#225;s">
+          <img class="" src="assets/producto-resenas-trasera-900.webp"
+               srcset="assets/producto-resenas-trasera-480.webp 480w, assets/producto-resenas-trasera-900.webp 900w"
+               sizes="(max-width:899px) 40vw, 15vw" width="900" height="1200" loading="lazy" decoding="async"
                alt="El reverso de la placa, negro liso y sin impresi&#243;n, apoyado en su base.">
+        </button>
         </div>
       </div>
 
@@ -2044,6 +2085,60 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           te llega configurada y lista para usar: s&#243;lo hay que ponerla de pie.</p>
       </div>
     </article>
+  </div>
+</section>
+
+<!-- ============ EL COSTE DE HACERLO A MANO ============
+     ESTABA DENTRO DE SERVICIOS y por eso el recorrido salia torcido: servicios,
+     el coste, y despues los productos. Lo que se vende primero y lo que cuesta
+     no hacerlo despues, con el catalogo partido en dos por una calculadora.
+     Ahora cierra el bloque comercial entero: primero lo que hacemos por ti
+     (Servicios), luego lo que te llevas (Productos) y por ultimo la cifra de
+     no hacer ninguna de las dos cosas. La objecion se responde una vez, al
+     final, y no a mitad de catalogo.
+
+     VA SIN NUMERO Y ES DELIBERADO. No es un tramo del recorrido sino una
+     herramienta que lo remata, igual que el manifiesto, la frase de cierre y
+     la banda viva. Numerarla obligaria a meter un septimo hueco en un menu que
+     ya se oculta por debajo de 1080 px, y a renumerar cuatro secciones para
+     ganar un renglon que nadie busca por su nombre. -->
+<section class="coste-mano">
+  <div class="wrap">
+<!-- ============ CALCULADORA DEL TRABAJO MANUAL ============
+       Cierra la sección respondiendo a la única objeción que aparece siempre:
+       "¿y esto para qué lo quiero?". Las dos cifras las pone el visitante con
+       sus propias horas y su propio coste; aquí no se estima nada por él ni
+       se promete ningún ahorro. El resultado es una multiplicación que puede
+       rehacer en una servilleta, y por eso se la cree. -->
+  <div class="costo rv" id="costo">
+    <p class="ck">Antes de seguir</p>
+    <h3>¿Cuánto te cuesta <em>hacerlo a mano</em>?</h3>
+    <div class="costo-grid">
+      <div class="costo-campo">
+        <label for="costo-h">Horas a la semana en tareas repetidas</label>
+        <p class="val"><span id="costo-hv">8</span><small>horas</small></p>
+        <input id="costo-h" type="range" min="1" max="60" step="1" value="8"
+               aria-describedby="costo-out">
+      </div>
+      <div class="costo-campo">
+        <label for="costo-c">Lo que te cuesta una hora de tu equipo</label>
+        <p class="val">$<span id="costo-cv">250</span><small>por hora</small></p>
+        <input id="costo-c" type="range" min="50" max="2000" step="10" value="250"
+               aria-describedby="costo-out">
+      </div>
+      <div class="costo-res" id="costo-out" aria-live="polite">
+        <p class="rk">Se te va cada mes</p>
+        <p class="rn" id="costo-mes">$8,660</p>
+        <p class="ry">Al año: <b id="costo-anio">$104,000</b></p>
+      </div>
+    </div>
+    <div class="costo-pie">
+      <p>Son tus dos cifras multiplicadas, nada más: horas × coste × 4,33 semanas.
+        No incluye los errores que provoca el trabajo manual ni lo que dejas de
+        hacer mientras lo haces, porque eso no lo sabemos y no vamos a inventarlo.</p>
+      <a href="#contacto" id="costo-cta"><span class="dia" aria-hidden="true"></span>Quiero automatizarlo</a>
+    </div>
+  </div>
   </div>
 </section>
 
@@ -3881,57 +3976,119 @@ const SIG=(()=>{
   document.addEventListener('click',e=>{if(e.target.closest(PULSABLE))SIG.clic();},{passive:true});
 })();
 
-/* ---------- VISOR DE CERTIFICADOS ----------
-   Cada tarjeta declara su imagen en data-img. Se precarga: sólo si el archivo
-   existe de verdad la tarjeta se vuelve pulsable. Prometer "ver certificado" y
-   abrir un cuadro vacío destruye justo la confianza que la sección construye. */
+/* ---------- VISOR: CERTIFICADOS Y FOTOS DEL PRODUCTO ----------
+   Naci&#243; para un solo certificado. Ahora lo comparten los certificados y las
+   tres fotos del producto, y por eso pasa de "una imagen" a "una lista con un
+   &#237;ndice". Con un solo elemento se comporta EXACTAMENTE como antes: la
+   botonera no se pinta y no hay nada nuevo que aprender.
+
+   Reutilizar este visor en vez de escribir un segundo es deliberado: dos
+   visores son dos comportamientos que divergen en cuanto alguien toque uno.
+
+   CUATRO SALIDAS, porque el encargo ped&#237;a que fuera f&#225;cil salir: la equis,
+   tocar fuera de la foto, la tecla Escape y deslizar hacia abajo en el m&#243;vil.
+   Y dos formas de pasar: las flechas —del teclado y de la botonera— y deslizar
+   a los lados. */
 (()=>{
   const visor=document.getElementById('visor');
   if(!visor)return;
   const img=document.getElementById('visor-img'),
         pie=document.getElementById('visor-pie'),
-        cerrar=visor.querySelector('.cerrar');
-  let previo=null;
+        cerrar=visor.querySelector('.cerrar'),
+        nav=document.getElementById('visor-nav'),
+        cuenta=document.getElementById('visor-cuenta');
+  let previo=null,lista=[],i=0;
 
-  function abre(ruta,texto){
-    img.src=ruta;img.alt='Certificado: '+texto;pie.textContent=texto;
+  function pinta(dir){
+    const it=lista[i];
+    const aplica=()=>{
+      img.src=it.src;img.alt=it.alt;pie.textContent=it.pie;
+      cuenta.textContent=lista.length>1?(i+1)+' / '+lista.length:'';
+      visor.setAttribute('aria-label',it.pie||'Imagen ampliada');
+      visor.classList.remove('pasa-izq','pasa-der');
+    };
+    if(!dir){aplica();return;}
+    visor.classList.add(dir>0?'pasa-izq':'pasa-der');
+    setTimeout(aplica,190);
+  }
+  /* Circular a proposito: en una galeria de tres, toparse con un tope al
+     tercer toque se lee como que algo se ha roto. */
+  function pasa(d){if(lista.length<2)return;i=(i+d+lista.length)%lista.length;pinta(d);}
+
+  function abre(items,idx){
+    lista=items;i=idx||0;
+    const varias=lista.length>1;
+    nav.hidden=!varias;
+    visor.classList.toggle('galeria',varias);
+    pinta(0);
     previo=document.activeElement;
     visor.hidden=false;
-    visor.getBoundingClientRect();          /* reflujo: la transición arranca sin rAF */
+    visor.getBoundingClientRect();          /* reflujo: la transici&#243;n arranca sin rAF */
     visor.classList.add('on');
     cerrar.focus();
     document.body.style.overflow='hidden';
   }
   function tapa(){
-    visor.classList.remove('on');
+    visor.classList.remove('on','pasa-izq','pasa-der');
     document.body.style.overflow='';
     setTimeout(()=>{visor.hidden=true;img.src='';},450);
     if(previo&&previo.focus)previo.focus();
   }
+
   cerrar.addEventListener('click',tapa);
   visor.addEventListener('click',e=>{if(e.target===visor)tapa();});
+  nav.querySelectorAll('.vb').forEach(b=>b.addEventListener('click',()=>pasa(+b.dataset.paso)));
+
+  /* El tabulador se encierra dentro del di&#225;logo. Antes bastaba devolverlo a la
+     equis porque era el unico control; ahora hay hasta tres y hay que ciclar. */
+  const focos=()=>[cerrar].concat(nav.hidden?[]:[...nav.querySelectorAll('.vb')]);
   addEventListener('keydown',e=>{
     if(visor.hidden)return;
-    if(e.key==='Escape')tapa();
-    /* Encierra el tabulador: con un solo control, devolverlo al botón basta */
-    else if(e.key==='Tab'){e.preventDefault();cerrar.focus();}
+    if(e.key==='Escape'){tapa();return;}
+    if(e.key==='ArrowRight'){pasa(1);return;}
+    if(e.key==='ArrowLeft'){pasa(-1);return;}
+    if(e.key==='Tab'){
+      e.preventDefault();
+      const f=focos(),n=f.indexOf(document.activeElement);
+      f[(n+(e.shiftKey?-1:1)+f.length)%f.length].focus();
+    }
   });
 
+  /* Deslizar. El umbral de 44 px y la comparaci&#243;n con el eje vertical evitan
+     que un desplazamiento torcido pase de foto sin querer. */
+  let x0=null,y0=null;
+  visor.addEventListener('touchstart',e=>{const t=e.changedTouches[0];x0=t.clientX;y0=t.clientY;},{passive:true});
+  visor.addEventListener('touchend',e=>{
+    if(x0===null)return;
+    const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+    x0=null;
+    if(Math.abs(dx)>44&&Math.abs(dx)>Math.abs(dy))pasa(dx<0?1:-1);
+    else if(dy>90&&Math.abs(dy)>Math.abs(dx))tapa();
+  },{passive:true});
+
+  /* LOS CERTIFICADOS. Cada tarjeta declara su imagen en data-img. Se precarga:
+     s&#243;lo si el archivo existe de verdad la tarjeta se vuelve pulsable. Prometer
+     "ver certificado" y abrir un cuadro vac&#237;o destruye justo la confianza que
+     la secci&#243;n construye. Abren con lista de UNO: sin botonera. */
   document.querySelectorAll('.cred[data-img]').forEach(t=>{
     const ruta=t.dataset.img,texto=t.dataset.cert||'';
-    /* Los sellos son <button> nativos: ya reciben foco y ya emiten click con
-       Enter y con la barra espaciadora. Añadir aquí un keydown propio abriría
-       el visor dos veces por cada pulsación. */
     t.setAttribute('aria-label','Ver el certificado: '+texto);
     const prueba=new Image();
     prueba.onload=()=>{
       t.classList.add('tiene');
-      t.addEventListener('click',()=>{abre(ruta,texto);EXP.marca('cred');});
+      t.addEventListener('click',()=>{abre([{src:ruta,alt:'Certificado: '+texto,pie:texto}],0);EXP.marca('cred');});
     };
-    /* Sin imagen el sello sigue ahí como insignia, pero no promete abrir nada */
     prueba.onerror=()=>{t.disabled=true;t.setAttribute('aria-label',texto);};
     prueba.src=ruta;
   });
+
+  /* LAS FOTOS DEL PRODUCTO. Una sola lista compartida por los tres botones, asi
+     que entrar por la segunda foto y seguir a la derecha da la tercera. */
+  const fotos=[...document.querySelectorAll('[data-galeria="producto"]')];
+  if(fotos.length){
+    const items=fotos.map(el=>({src:el.dataset.grande,alt:el.dataset.alt||'',pie:el.dataset.pie||''}));
+    fotos.forEach((el,n)=>el.addEventListener('click',()=>abre(items,n)));
+  }
 })();
 
 /* ---------- AVANCE DE LECTURA E ÍNDICE DEL RECORRIDO ----------
