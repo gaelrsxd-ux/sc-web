@@ -10,10 +10,16 @@ y pendientes.
 
 Sitio web **one-page** de **S&C Solutions Company**, agencia que vende:
 
-- Sitios web premium
-- Automatización con IA
-- CRM a medida
-- Otros (proyectos a medida / consultoría)
+- Sitios Web Premium para tu Negocio
+- Agentes de IA para tu Negocio
+- Aplicación Privada para tu Negocio
+- Automatización de Procesos en tu Negocio
+
+Son **cuatro y sólo cuatro**, y estos nombres son literales: el desplegable
+«¿Qué necesitas?» del formulario manda el valor tal cual al sistema, que lo
+compara contra su catálogo. El CRM dejó de ser una categoría propia (agosto de
+2026); las capacidades de tipo CRM que sigan haciendo falta van dentro de
+Aplicación Privada.
 
 **Eslogan de marca:** Ambición · Estrategia · Resultados
 **Tono:** Wolf of Wall Street elegante — seguro, provocador, serio, premium.
@@ -179,6 +185,9 @@ desarrollo-con-ia-bigschool.jpg     curso-ia-2026-bigschool.jpg
 Pendiente de datos reales: la bio de Bruno Damián Martínez.
 
 ## 9. Prompt maestro original (por si quieres regenerar o crear variaciones)
+
+> Se conserva **tal cual se escribió**, como registro histórico. Ojo al leerlo:
+> menciona el CRM, que ya no es una de las categorías (ver sección 1).
 
 Crear sitio one-page en español para agencia de webs/IA/CRM. Estilo: lujo
 editorial sobrio tipo firma boutique (SERIO, ELEGANTE, CARO). Paleta: negro
