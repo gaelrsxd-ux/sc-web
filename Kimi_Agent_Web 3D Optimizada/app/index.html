@@ -239,6 +239,16 @@ html[data-tema="claro"]{
   --bronze:#8C6A1C; --bronze-hi:#7A5C1E; --on-bronze:#FFFFFF;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+/* EL ATRIBUTO `hidden` DICE LA VERDAD, Y AQUI ES DONDE SE LE OBLIGA.
+   El navegador lo aplica con `display:none` de hoja de usuario, asi que
+   CUALQUIER regla de autor con un `display` propio —.p3d{display:grid},
+   #visor{display:flex}, .prod-mini{display:flex}, .prod-abre{display:block}—
+   le gana por especificidad y el elemento se queda a la vista con el atributo
+   puesto. Ya habia tres parches sueltos por lo mismo y el conmutador de vista
+   del producto pico el cuarto: al pasar a «Girar en 3D» la foto frontal seguia
+   pintada debajo del modelo, y el JS decia que estaba oculta. Una regla, una
+   vez, y `el.hidden=true` vuelve a significar lo que dice. */
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 /* La barra de navegación es fija y mide 82 px, así que un salto a #servicios
    dejaba el antetítulo y parte del titular escondidos detrás de ella. Con esto
@@ -1220,10 +1230,6 @@ footer .legal a:hover{color:var(--bronze)}
   padding:clamp(20px,4vw,56px);background:rgba(6,7,9,.985);opacity:0;visibility:hidden;
   transition:opacity .45s ease,visibility .45s}
 #visor.on{opacity:1;visibility:visible}
-/* Sin esto, el display:flex de arriba gana al atributo hidden del navegador y
-   el diálogo queda "oculto" solo por la opacidad: el atributo dejaría de decir
-   la verdad y el nodo seguiría ocupando su capa. */
-#visor[hidden]{display:none}
 #visor figure{max-width:1080px;width:100%;text-align:center;transform:translateY(18px) scale(.985);
   transition:transform .5s cubic-bezier(.2,.7,.2,1)}
 #visor.on figure{transform:none}
@@ -1774,7 +1780,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 #visor .vnav{position:absolute;left:50%;bottom:clamp(16px,3vh,30px);transform:translateX(-50%);
   display:flex;align-items:center;gap:14px;padding:7px 10px;border:1px solid var(--line);
   background:rgba(var(--bg-rgb),.9)}
-#visor .vnav[hidden]{display:none}
 /* 48 px: el objetivo tactil que no se falla, y separados para que pasar de foto
    no se convierta en cerrar por error. */
 #visor .vb{width:48px;height:48px;border:1px solid var(--line-soft);background:none;
@@ -1816,6 +1821,93 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 /* La lupa se retira en el movil: ahi no hay puntero que la justifique y tapa
    parte de la foto, que es justo lo que se ha ido a mirar. */
 @media(max-width:560px){.prod-lupa{display:none}}
+/* ================== EL PRODUCTO, GIRABLE EN 3D ==================
+   POR QUE UN MODELO Y NO UN 360 DE FOTOS. Un 360 fotografico de verdad son 24
+   o 36 tomas sobre un plato giratorio con luz constante. Hay TRES fotos.
+   Arrastrar tres fotos no es una rotacion, es un pase de diapositivas roto, y
+   se nota al primer gesto. La placa, en cambio, es geometria simple —un plano
+   con canto y una base— y eso si se modela exacto.
+
+   Y se modela con transformaciones CSS, sin una sola libreria ni un solo KB de
+   descarga: es lo mismo que presume el resto de la pagina, aplicado donde de
+   verdad se ve. WebGL para una caja plana habria sido traer un motor para
+   dibujar un folio.
+
+   ⚠ SE PRESENTA COMO MODELO, NO COMO FOTO. Las fotos reales mandan y son la
+   vista por defecto; esto es el complemento que deja verlo por detras y de
+   canto. Ensenar un render diciendo que es el producto seria justo la clase de
+   afirmacion sin medir que esta web se niega a hacer. */
+.prod-vista{display:flex;border:1px solid var(--line);width:min(100%,400px);margin-bottom:12px}
+.prod-vista .pv{flex:1;min-height:42px;border:0;background:none;cursor:pointer;
+  font-size:9.5px;letter-spacing:2.4px;text-transform:uppercase;font-weight:500;color:var(--dim);
+  transition:color .3s ease,background-color .3s ease}
+.prod-vista .pv+.pv{border-left:1px solid var(--line-soft)}
+.prod-vista .pv.aqui{color:var(--on-bronze);background:var(--bronze)}
+.prod-vista .pv:not(.aqui):hover{color:var(--bronze-hi)}
+.prod-vista .pv:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:-3px}
+
+:root{--pw:176px;--ph:286px;--pt:9px;--bd:115px}
+/* La altura la manda la PIEZA, no el ancho. Con aspect-ratio la caja crecia
+   con la pantalla mientras el modelo apenas cambiaba, y en escritorio
+   quedaban cien pixeles muertos encima de la placa. 1.42 es el hueco que
+   necesita: la placa, la base tumbada por delante y la linea de la pista. */
+.p3d{width:min(100%,400px);height:calc(var(--ph)*1.42);perspective:1150px;perspective-origin:50% 44%;
+  display:grid;place-items:center;position:relative;cursor:grab;
+  /* pan-y y NO none: en un movil, un visor que se traga el desplazamiento
+     vertical es una trampa de la que no se sale. El giro se toma del gesto
+     horizontal, que es el eje que importa, y la pagina sigue bajando. */
+  touch-action:pan-y;border:1px solid var(--line-soft);background:
+    radial-gradient(120% 90% at 50% 12%,rgba(200,169,106,.09),transparent 68%)}
+.p3d.arrastra{cursor:grabbing}
+.p3d:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+.p3d-esc{transform-style:preserve-3d;
+  /* En porcentaje y no en pixeles: es porcentaje de la propia pieza, asi que
+     el encuadre se mantiene igual en movil que en escritorio. */
+  transform:translateY(-8%) rotateX(var(--rx,-10deg)) rotateY(var(--ry,-26deg))}
+.p3d-pieza{position:relative;transform-style:preserve-3d;width:var(--pw);height:var(--ph)}
+.p3d .c{position:absolute;backface-visibility:hidden;left:0;top:0}
+/* La placa gira sobre su CANTO INFERIOR: al inclinarse no se despega de la base. */
+.p3d .pl{position:absolute;inset:0;transform-origin:50% 100%;transform:rotateX(-14deg);transform-style:preserve-3d}
+.p3d .pl .c{width:var(--pw);height:var(--ph);border-radius:9px}
+/* A media chapa EXACTA. Con la cara medio pixel por detras del canto, el
+   filo salia punteado en pantallas 2x; y el recuadro blanco interior que
+   llevaba antes duplicaba en 2D el canto que ya existe en 3D. El borde
+   blanco del producto son las cuatro caras .ci/.cd/.ct/.cu, no un dibujo. */
+.p3d .cf{background:#0d0e11;transform:translateZ(calc(var(--pt)/2));overflow:hidden}
+.p3d .cf svg{width:100%;height:100%;display:block}
+/* El reverso es negro liso —asi es el producto— pero un rectangulo de un solo
+   tono sobre un fondo casi negro no se lee como un objeto: se lee como un
+   agujero. El degradado hace de reflejo en el acrilico y le devuelve el
+   volumen sin inventarle nada que no tenga. */
+.p3d .cb{background:linear-gradient(122deg,#1c1d24 0%,#101117 44%,#191a21 100%);
+  transform:rotateY(180deg) translateZ(calc(var(--pt)/2))}
+/* El filo blanco es la firma del producto: sin el, el modelo es una caja negra. */
+/* Los cantos se meten 9 px por cada extremo: el frente esta redondeado a 9 px
+   y una tira recta a lo largo de todo el lado asoma por la esquina como una
+   pua blanca. Se acortan, no se redondean: el filo tiene que seguir recto. */
+.p3d .ci,.p3d .cd{width:var(--pt) !important;left:calc(50% - var(--pt)/2) !important;
+  height:calc(var(--ph) - 18px) !important;top:9px !important;background:#f0f0f0}
+.p3d .ci{transform:rotateY(-90deg) translateZ(calc(var(--pw)/-2 + var(--pt)/2))}
+.p3d .cd{transform:rotateY(90deg)  translateZ(calc(var(--pw)/2 - var(--pt)/2))}
+.p3d .ct,.p3d .cu{height:var(--pt) !important;top:calc(50% - var(--pt)/2) !important;
+  width:calc(var(--pw) - 18px) !important;left:9px !important;background:#ececec}
+.p3d .ct{transform:rotateX(90deg)  translateZ(calc(var(--ph)/2 - var(--pt)/2))}
+.p3d .cu{transform:rotateX(-90deg) translateZ(calc(var(--ph)/2 - var(--pt)/2))}
+/* La base cuelga del MISMO canto y se tumba hacia delante. */
+.p3d .ba{position:absolute;left:0;top:100%;width:var(--pw);height:var(--bd);
+  transform-origin:50% 0;transform:rotateX(90deg);transform-style:preserve-3d}
+.p3d .ba .c{width:var(--pw);height:var(--bd);border-radius:7px}
+.p3d .bt{background:#141519;transform:translateZ(2.5px);box-shadow:inset 0 0 0 1.4px #dcdcdc}
+.p3d .bb{background:#0b0c0f;transform:rotateY(180deg) translateZ(4px)}
+.p3d-piso{position:absolute;left:50%;top:100%;width:250px;height:170px;
+  transform:translate(-50%,-10%) rotateX(90deg) translateZ(-9px);
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.7),transparent 66%);filter:blur(9px)}
+.p3d-pista{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);margin:0;
+  font-size:9px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim);
+  white-space:nowrap;pointer-events:none;transition:opacity .5s ease}
+.p3d.tocado .p3d-pista{opacity:0}
+@media(max-width:400px){:root{--pw:152px;--ph:247px;--bd:99px}
+  .p3d-pista{letter-spacing:1.8px}}
 </style>
 </head>
 <body>
@@ -2023,7 +2115,56 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
     <article class="prod rv">
 <div class="prod-fig">
-        <!-- Fotos reales del producto. Las tres a 3:4 EXACTO para que casen de
+        <div class="prod-vista" role="group" aria-label="C&#243;mo ver el producto">
+          <button type="button" class="pv aqui" data-vista="foto">Fotos</button>
+          <button type="button" class="pv" data-vista="3d">Girar en 3D</button>
+        </div>
+        <div class="p3d" id="p3d" hidden tabindex="0" role="img"
+             aria-label="Modelo tridimensional de la placa. Arrastra en horizontal para girarlo, o usa las flechas del teclado.">
+          <div class="p3d-esc" id="p3d-esc"><div class="p3d-pieza">
+            <div class="p3d-piso"></div>
+            <div class="ba"><div class="c bt"></div><div class="c bb"></div></div>
+            <div class="pl">
+              <div class="c cf"><svg viewBox="32 10 156 262" role="img"
+                       aria-label="Placa de sobremesa negra con el logotipo de Google, cinco estrellas y un c&#243;digo QR, apoyada en su base inclinada">
+                    
+                    <!-- el frente -->
+                    
+                    <text x="110" y="42" text-anchor="middle" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="10.5" font-weight="700">We&#8217;d love your feedback</text>
+                    <g transform="translate(110 100)">
+                      <path d="M-19.09 -19.09 A27.0 27.0 0 0 1 13.50 -23.38" fill="none" stroke="#EA4335" stroke-width="13" stroke-linecap="butt"/>
+                      <path d="M13.50 -23.38 A27.0 27.0 0 0 1 27.00 0.00" fill="none" stroke="#4285F4" stroke-width="13" stroke-linecap="butt"/>
+                      <path d="M25.95 7.44 A27.0 27.0 0 0 1 -13.50 23.38" fill="none" stroke="#34A853" stroke-width="13" stroke-linecap="butt"/>
+                      <path d="M-13.50 23.38 A27.0 27.0 0 0 1 -19.09 -19.09" fill="none" stroke="#FBBC05" stroke-width="13" stroke-linecap="butt"/>
+                      <rect x="3" y="-6.5" width="30.5" height="13" fill="#4285F4"/>
+                    </g>
+                    <g fill="#FBBC05">
+                      <path d="M56 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+                      <path d="M83 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+                      <path d="M110 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+                      <path d="M137 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+                      <path d="M164 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+                    </g>
+                    <!-- el QR, esquematizado: tres patrones de esquina y trama -->
+                    <g fill="#ffffff"><rect x="76" y="172" width="17" height="17"/><rect x="127" y="172" width="17" height="17"/><rect x="76" y="223" width="17" height="17"/></g>
+                    <g fill="#0d0e11"><rect x="80" y="176" width="9" height="9"/><rect x="131" y="176" width="9" height="9"/><rect x="80" y="227" width="9" height="9"/></g>
+                    <g fill="#ffffff"><rect x="100" y="176" width="5" height="5"/><rect x="110" y="184" width="5" height="5"/><rect x="100" y="194" width="5" height="5"/><rect x="118" y="196" width="5" height="5"/><rect x="78" y="200" width="5" height="5"/><rect x="90" y="208" width="5" height="5"/><rect x="108" y="204" width="5" height="5"/><rect x="128" y="208" width="5" height="5"/><rect x="136" y="196" width="5" height="5"/><rect x="100" y="218" width="5" height="5"/><rect x="118" y="226" width="5" height="5"/><rect x="108" y="236" width="5" height="5"/><rect x="138" y="220" width="5" height="5"/><rect x="88" y="190" width="5" height="5"/><rect x="126" y="232" width="5" height="5"/></g>
+                    <text x="110" y="256" text-anchor="middle" fill="#dcdcdc" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="600">Tap &#183; NFC &#183; or Scan</text>
+                    <g>
+                      <rect x="46" y="263" width="32" height="3.4" fill="#4285F4"/>
+                      <rect x="78" y="263" width="32" height="3.4" fill="#34A853"/>
+                      <rect x="110" y="263" width="32" height="3.4" fill="#FBBC05"/>
+                      <rect x="142" y="263" width="32" height="3.4" fill="#EA4335"/>
+                    </g>
+                  </svg></div>
+              <div class="c cb"></div>
+              <div class="c ci"></div><div class="c cd"></div>
+              <div class="c ct"></div><div class="c cu"></div>
+            </div>
+          </div></div>
+          <p class="p3d-pista" id="p3d-pista">Arrastra para girarlo</p>
+        </div>
+                <!-- Fotos reales del producto. Las tres a 3:4 EXACTO para que casen de
              altura, y con algo mas de fondo que el recorte anterior: cerradas
              sobre el objeto se perdia la mesa, que es lo que dice donde vive.
              Pesaban 6,5 MB en PNG; salen a 464 KB en WebP con calidad 82.
@@ -3975,6 +4116,84 @@ const SIG=(()=>{
     else if(!t)ultimo=null;
   },{passive:true});
   document.addEventListener('click',e=>{if(e.target.closest(PULSABLE))SIG.clic();},{passive:true});
+})();
+
+
+/* ---------- EL PRODUCTO, GIRABLE ----------
+   Gira solo hasta que alguien lo toca: el movimiento es lo unico que dice
+   "esto se puede mover" sin escribirlo encima. En cuanto hay gesto, el mando
+   pasa al visitante y no se lo quita nadie — un giro automatico que vuelve a
+   arrancar mientras lo estas mirando pelea contra el dedo.
+
+   Tres cautelas que no son adorno:
+   · No se anima fuera de pantalla. Un rAF girando una pieza que nadie ve es
+     bateria regalada, y esta pagina ya para todo lo demas por lo mismo.
+   · Con `prefers-reduced-motion` no hay giro automatico. Arrastrar sigue.
+   · El gesto vertical NO se captura (touch-action:pan-y): en un movil, un
+     visor que se traga el desplazamiento es una trampa. El eje que importa es
+     el horizontal, y es el que se toma. */
+(()=>{
+  const caja=document.getElementById('p3d');
+  if(!caja)return;
+  const esc=document.getElementById('p3d-esc'),
+        botones=[...document.querySelectorAll('.prod-vista .pv')],
+        fig=document.querySelector('.prod-fig');
+  if(!esc||!botones.length)return;
+  const fotos=[...fig.querySelectorAll('.prod-abre, .prod-mini')];
+
+  let rx=-10,ry=-26,auto=true,ve=false,arr=false,raf=0,x0=0,y0=0,rx0=0,ry0=0;
+  const suave=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pinta=()=>{esc.style.setProperty('--rx',rx.toFixed(2)+'deg');
+                   esc.style.setProperty('--ry',ry.toFixed(2)+'deg');};
+  function bucle(){
+    raf=0;
+    if(!(auto&&ve&&suave&&!caja.hidden))return;
+    ry-=.26;pinta();
+    raf=requestAnimationFrame(bucle);
+  }
+  const arranca=()=>{if(!raf)raf=requestAnimationFrame(bucle);};
+
+  new IntersectionObserver(es=>{ve=es[0].isIntersecting;arranca();},{threshold:.15}).observe(caja);
+
+  function manda(){          /* el visitante toma el control, y no se le devuelve */
+    auto=false;caja.classList.add('tocado');
+    if(raf){cancelAnimationFrame(raf);raf=0;}
+  }
+  caja.addEventListener('pointerdown',e=>{
+    arr=true;manda();caja.classList.add('arrastra');
+    x0=e.clientX;y0=e.clientY;rx0=rx;ry0=ry;
+    try{caja.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  caja.addEventListener('pointermove',e=>{
+    if(!arr)return;
+    ry=ry0+(e.clientX-x0)*.55;
+    /* La inclinacion se topa. Hacia arriba, en -46: mas alla la pieza se ve por
+       dentro. Hacia abajo, en 14 y no en 28: pasado ese punto se mira el
+       producto DESDE DEBAJO DE LA MESA, la base tapa media placa y no queda
+       ninguna vista que ensene nada. Un tope que corta antes de la vista inutil
+       es lo que hace que arrastrar no pueda salir mal. */
+    rx=Math.max(-46,Math.min(14,rx0-(e.clientY-y0)*.35));
+    pinta();
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(t=>
+    caja.addEventListener(t,()=>{arr=false;caja.classList.remove('arrastra');}));
+  caja.addEventListener('keydown',e=>{
+    const k={ArrowLeft:[0,-12],ArrowRight:[0,12],ArrowUp:[-8,0],ArrowDown:[8,0]}[e.key];
+    if(!k)return;
+    e.preventDefault();manda();
+    rx=Math.max(-46,Math.min(14,rx+k[0]));ry+=k[1];pinta();
+  });
+
+  /* El conmutador. La vista por defecto son las FOTOS: son el producto real y
+     el modelo es el complemento, no al reves. */
+  botones.forEach(b=>b.addEventListener('click',()=>{
+    const tresD=b.dataset.vista==='3d';
+    botones.forEach(o=>o.classList.toggle('aqui',o===b));
+    caja.hidden=!tresD;
+    fotos.forEach(f=>{f.hidden=tresD;});
+    if(tresD){pinta();arranca();caja.focus({preventScroll:true});}
+  }));
+  pinta();
 })();
 
 /* ---------- VISOR: CERTIFICADOS Y FOTOS DEL PRODUCTO ----------
