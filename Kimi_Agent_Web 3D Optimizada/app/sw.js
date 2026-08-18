@@ -30,8 +30,19 @@
      · -e  la clave de Turnstile CORRECTA para ese gateway. Aquí subirla no es
            higiene: la copia guardada lleva incrustada la clave equivocada, y
            quien la conserve seguiría enviando tokens que el gateway rechaza con
-           un 403 aunque el sitio publicado ya esté arreglado. */
-const VERSION = 'syc-2026-08-e';
+           un 403 aunque el sitio publicado ya esté arreglado.
+     · -f  fuera el CRM y fuera el precargador.
+           Nota honesta sobre esta subida: HOY no cambia nada para nadie, porque
+           este archivo NO está registrado —index.html da de baja cualquier
+           copia instalada y le vacía las cachés; ver el bloque «FUNCIONAR SIN
+           CONEXIÓN: APAGADO MIENTRAS SE CONSTRUYE» al final del HTML—. Se sube
+           igual, y por dos motivos: el contrato de este archivo dice que la
+           versión sube en toda publicación que cambie el HTML, y el día que se
+           vuelva a encender el registro, una caché con número viejo serviría
+           como copia de emergencia sin red un documento con el precargador
+           dentro. Subirla ahora cuesta un carácter; olvidarla entonces cuesta
+           un fallo que nadie sabrá explicar. */
+const VERSION = 'syc-2026-08-f';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 

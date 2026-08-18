@@ -1,0 +1,87 @@
+# ============================================================================
+# Finales de línea y tipos de archivo
+#
+# Por qué existe este archivo: sin él, cada máquina decide por su cuenta. Git
+# para Windows viene con core.autocrlf=true, así que el mismo archivo se guarda
+# con CRLF allí y con LF en cualquier otro sitio, y el primer commit que salga
+# de la máquina equivocada convierte un cambio de dos líneas en un diff de
+# cuatro mil. Con esto la decisión deja de depender de la configuración local
+# de nadie: la toma el repositorio.
+#
+# Aquí, además, no es cosmético. Los hashes sha256 de la CSP se calculan sobre
+# el contenido de los <script> del HTML, y el navegador normaliza los saltos de
+# línea al parsear: un archivo guardado con CRLF y un hash calculado sobre esos
+# mismos bytes NO coinciden, y la web se publica sin JavaScript.
+# tools/csp-hashes.mjs ya normaliza a LF antes de calcular precisamente por eso
+# —ver el comentario largo de ese archivo—, pero esa red de seguridad tapa el
+# síntoma. Guardando LF en todas partes, el problema no llega a existir.
+#
+# Estado al añadirlo (comprobado con `git ls-files --eol`): los 40 archivos de
+# texto versionados YA estaban en LF dentro del repositorio, y los 11 binarios
+# ya estaban marcados como tales. Por eso el commit de normalización que
+# acompaña a este archivo no cambia ni un byte de contenido: no había nada
+# desnormalizado. Lo que este archivo evita es que vuelva a desnormalizarse.
+# ============================================================================
+
+# Por defecto: Git decide si un archivo es texto y, si lo es, lo guarda con LF
+# en el repositorio Y lo deja con LF en la copia de trabajo, en toda máquina.
+* text=auto eol=lf
+
+# ---------- Texto, explícito ----------
+# No se deja a la heurística lo que ya se sabe. Un archivo de estos que Git
+# clasificara mal se guardaría como binario y dejaría de tener diff legible.
+*.html   text eol=lf
+*.css    text eol=lf
+*.js     text eol=lf
+*.mjs    text eol=lf
+*.cjs    text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.txt    text eol=lf
+*.xml    text eol=lf
+*.svg    text eol=lf
+*.toml   text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.sh     text eol=lf
+_headers text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+
+# ---------- La excepción, y es de verdad una ----------
+# Un .bat lo ejecuta cmd.exe en Windows. El intérprete de lotes lee el archivo
+# a medida que lo ejecuta y con LF puede cortar mal una etiqueta o un `goto`.
+# Es el único archivo del repositorio que necesita CRLF, así que se dice aquí
+# en vez de dejarlo al azar de la máquina.
+*.bat    text eol=crlf
+
+# ---------- Binarios: ni diff, ni fusión, ni conversión de saltos ----------
+# Marcarlos evita dos cosas: que Git intente "arreglar" sus saltos de línea
+# —que los corrompe— y que un diff imprima un megabyte de basura en pantalla.
+*.webp   binary
+*.jpg    binary
+*.jpeg   binary
+*.png    binary
+*.gif    binary
+*.ico    binary
+*.mp4    binary
+*.webm   binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.eot    binary
+*.pdf    binary
+*.zip    binary
+*.gz     binary
+*.7z     binary
+
+# ---------- Lo que no debe salir en un paquete de código ----------
+# `export-ignore` sólo afecta a `git archive`: quita del paquete lo que no es
+# el sitio. No tiene efecto sobre el despliegue de Pages, que publica el
+# directorio de salida configurado en el proyecto y no un archivo comprimido.
+.githooks/       export-ignore
+.github/         export-ignore
+tools/           export-ignore
+.gitattributes   export-ignore
+.gitignore       export-ignore
