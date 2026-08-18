@@ -1822,21 +1822,32 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    parte de la foto, que es justo lo que se ha ido a mirar. */
 @media(max-width:560px){.prod-lupa{display:none}}
 /* ================== EL PRODUCTO, GIRABLE EN 3D ==================
-   POR QUE UN MODELO Y NO UN 360 DE FOTOS. Un 360 fotografico de verdad son 24
-   o 36 tomas sobre un plato giratorio con luz constante. Hay TRES fotos.
-   Arrastrar tres fotos no es una rotacion, es un pase de diapositivas roto, y
-   se nota al primer gesto. La placa, en cambio, es geometria simple —un plano
-   con canto y una base— y eso si se modela exacto.
+   LA FOTO REAL, GIRANDO. Un 360 fotografico de verdad son 24 o 36 tomas sobre
+   un plato giratorio con luz constante, y hay TRES fotos: arrastrar tres fotos
+   no es una rotacion, es un pase de diapositivas roto. Y generarlas con IA
+   tampoco vale, por una razon que no es de gusto: un modelo generativo no
+   copia un QR, lo IMITA —sale un cuadrado con ruido que no lleva a ninguna
+   parte—, y escanear ese QR es lo unico que el cliente va a hacer con la placa.
 
-   Y se modela con transformaciones CSS, sin una sola libreria ni un solo KB de
-   descarga: es lo mismo que presume el resto de la pagina, aplicado donde de
-   verdad se ve. WebGL para una caja plana habria sido traer un motor para
-   dibujar un folio.
+   Asi que ni diapositivas ni invento: la placa es geometria simple —un plano
+   con canto y un pie doblado en L— y se modela exacta en CSS 3D, PERO LA CARA
+   DE DELANTE ES LA FOTO. La frontal que mando Santiago, enderezada por
+   homografia desde las cuatro esquinas de la placa (aisladas por ser negro
+   neutro contra una mesa calida, con los lados ajustados por Theil-Sen y las
+   esquinas obtenidas al cruzar las rectas, porque van redondeadas y el punto
+   extremo miente) y recortada con su propia silueta. Lo que gira lleva EL QR,
+   la G, las estrellas y la franja de colores de verdad. 52 KB.
 
-   ⚠ SE PRESENTA COMO MODELO, NO COMO FOTO. Las fotos reales mandan y son la
-   vista por defecto; esto es el complemento que deja verlo por detras y de
-   canto. Ensenar un render diciendo que es el producto seria justo la clase de
-   afirmacion sin medir que esta web se niega a hacer. */
+   Las medidas salen de esa misma foto: 1:1.7164 medido, 1:1.7618 una vez
+   corregido el escorzo de los 13 grados que la placa va echada. Y el pie sale
+   por DETRAS, como en la foto trasera, no por delante.
+
+   Sin una sola libreria: WebGL para una caja plana habria sido traer un motor
+   para dibujar un folio.
+
+   ⚠ LAS FOTOS SIGUEN MANDANDO. Son la vista por defecto; esto es el
+   complemento que deja verlo por detras y de canto, angulos de los que no hay
+   foto. La cara impresa no se dibuja: se fotografia. */
 .prod-vista{display:flex;border:1px solid var(--line);width:min(100%,400px);margin-bottom:12px}
 .prod-vista .pv{flex:1;min-height:42px;border:0;background:none;cursor:pointer;
   font-size:9.5px;letter-spacing:2.4px;text-transform:uppercase;font-weight:500;color:var(--dim);
@@ -1846,12 +1857,19 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .prod-vista .pv:not(.aqui):hover{color:var(--bronze-hi)}
 .prod-vista .pv:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:-3px}
 
-:root{--pw:176px;--ph:286px;--pt:9px;--bd:115px}
+/* Las medidas NO son inventadas: salen de la foto frontal. Se aisla la placa
+   (negro neutro contra mesa calida), se ajustan los cuatro lados y se cruzan
+   para dar las esquinas —redondeadas, asi que el punto extremo no vale—, y
+   de ahi 1:1.7164 en la foto; corregido el escorzo de los 13 grados que la
+   placa va echada hacia atras, 1:1.7618. Es la proporcion de la textura. */
+:root{--pw:176px;--ph:310px;--pt:9px;--bd:112px}
 /* La altura la manda la PIEZA, no el ancho. Con aspect-ratio la caja crecia
    con la pantalla mientras el modelo apenas cambiaba, y en escritorio
-   quedaban cien pixeles muertos encima de la placa. 1.42 es el hueco que
-   necesita: la placa, la base tumbada por delante y la linea de la pista. */
-.p3d{width:min(100%,400px);height:calc(var(--ph)*1.42);perspective:1150px;perspective-origin:50% 44%;
+   quedaban cien pixeles muertos encima de la placa. 1.32 es el hueco que
+   necesita: la placa, el vuelco de la inclinacion y la linea de la pista.
+   Era 1.42 cuando el pie salia por delante y ocupaba abajo; ahora sale por
+   detras, que es donde va, y ese aire sobraba. */
+.p3d{width:min(100%,400px);height:calc(var(--ph)*1.32);perspective:1150px;perspective-origin:50% 44%;
   display:grid;place-items:center;position:relative;cursor:grab;
   /* pan-y y NO none: en un movil, un visor que se traga el desplazamiento
      vertical es una trampa de la que no se sale. El giro se toma del gesto
@@ -1863,17 +1881,26 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .p3d-esc{transform-style:preserve-3d;
   /* En porcentaje y no en pixeles: es porcentaje de la propia pieza, asi que
      el encuadre se mantiene igual en movil que en escritorio. */
-  transform:translateY(-8%) rotateX(var(--rx,-10deg)) rotateY(var(--ry,-26deg))}
+  transform:translateY(-3%) rotateX(var(--rx,-10deg)) rotateY(var(--ry,-26deg))}
 .p3d-pieza{position:relative;transform-style:preserve-3d;width:var(--pw);height:var(--ph)}
 .p3d .c{position:absolute;backface-visibility:hidden;left:0;top:0}
-/* La placa gira sobre su CANTO INFERIOR: al inclinarse no se despega de la base. */
-.p3d .pl{position:absolute;inset:0;transform-origin:50% 100%;transform:rotateX(-14deg);transform-style:preserve-3d}
-.p3d .pl .c{width:var(--pw);height:var(--ph);border-radius:9px}
-/* A media chapa EXACTA. Con la cara medio pixel por detras del canto, el
-   filo salia punteado en pantallas 2x; y el recuadro blanco interior que
-   llevaba antes duplicaba en 2D el canto que ya existe en 3D. El borde
-   blanco del producto son las cuatro caras .ci/.cd/.ct/.cu, no un dibujo. */
-.p3d .cf{background:#0d0e11;transform:translateZ(calc(var(--pt)/2));overflow:hidden}
+/* La placa gira sobre su CANTO INFERIOR: al inclinarse no se despega del pie.
+   Y se echa hacia ATRAS (+14, no -14). Con el signo cambiado la placa se
+   venia hacia delante y el pie salia por delante de ella: comparado con la
+   foto de perfil, el objeto estaba del reves. */
+.p3d .pl{position:absolute;inset:0;transform-origin:50% 100%;transform:rotateX(14deg);transform-style:preserve-3d}
+.p3d .pl .c{width:var(--pw);height:var(--ph);border-radius:8px}
+/* LA CARA DE DELANTE ES LA FOTO. No un dibujo que se le parece: es la foto
+   frontal que mando Santiago, enderezada por homografia a partir de las
+   cuatro esquinas de la placa y recortada con su propia silueta. Por eso el
+   QR que gira es EL QR, y no un cuadrado con ruido que lo imita: un QR
+   inventado no lleva a ninguna parte, y es lo unico que el cliente va a
+   hacer con la placa. 52 KB, y no se descarga hasta pulsar «Girar en 3D»
+   porque hasta entonces .p3d va en display:none.
+   A media chapa EXACTA: con la cara medio pixel por detras del canto, el
+   filo salia punteado en pantallas 2x. */
+.p3d .cf{background:#0d0e11 url(assets/placa-cara-frontal.webp) center/100% 100% no-repeat;
+  transform:translateZ(calc(var(--pt)/2));overflow:hidden}
 .p3d .cf svg{width:100%;height:100%;display:block}
 /* El reverso es negro liso —asi es el producto— pero un rectangulo de un solo
    tono sobre un fondo casi negro no se lee como un objeto: se lee como un
@@ -1893,20 +1920,28 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   width:calc(var(--pw) - 18px) !important;left:9px !important;background:#ececec}
 .p3d .ct{transform:rotateX(90deg)  translateZ(calc(var(--ph)/2 - var(--pt)/2))}
 .p3d .cu{transform:rotateX(-90deg) translateZ(calc(var(--ph)/2 - var(--pt)/2))}
-/* La base cuelga del MISMO canto y se tumba hacia delante. */
+/* El pie cuelga del MISMO canto y se tumba hacia ATRAS. Es lo que ensena la
+   foto trasera: la placa es una chapa doblada en L, y la pata sale por
+   detras. Con rotateX(90) salia por delante, tapando la parte baja de la
+   cara impresa. */
 .p3d .ba{position:absolute;left:0;top:100%;width:var(--pw);height:var(--bd);
-  transform-origin:50% 0;transform:rotateX(90deg);transform-style:preserve-3d}
+  transform-origin:50% 0;transform:rotateX(-90deg);transform-style:preserve-3d}
 .p3d .ba .c{width:var(--pw);height:var(--bd);border-radius:7px}
-.p3d .bt{background:#141519;transform:translateZ(2.5px);box-shadow:inset 0 0 0 1.4px #dcdcdc}
-.p3d .bb{background:#0b0c0f;transform:rotateY(180deg) translateZ(4px)}
+/* Con el pie tumbado hacia atras, la cara que mira ARRIBA es .bb y la que
+   mira a la mesa es .bt: van intercambiadas respecto a la version anterior.
+   La de arriba lleva un degradado —recoge la luz de la mesa y sin el el pie
+   se leia como un alambre blanco hueco— y el filo blanco del canto. */
+.p3d .bt{background:#0b0c0f;transform:translateZ(2.5px)}
+.p3d .bb{background:linear-gradient(180deg,#26272e,#131419 72%);
+  transform:rotateY(180deg) translateZ(2.5px);box-shadow:inset 0 0 0 1.4px #dcdcdc}
 .p3d-piso{position:absolute;left:50%;top:100%;width:250px;height:170px;
-  transform:translate(-50%,-10%) rotateX(90deg) translateZ(-9px);
+  transform:translate(-50%,-10%) rotateX(-90deg) translateZ(-9px);
   background:radial-gradient(ellipse at center,rgba(0,0,0,.7),transparent 66%);filter:blur(9px)}
 .p3d-pista{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);margin:0;
   font-size:9px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim);
   white-space:nowrap;pointer-events:none;transition:opacity .5s ease}
 .p3d.tocado .p3d-pista{opacity:0}
-@media(max-width:400px){:root{--pw:152px;--ph:247px;--bd:99px}
+@media(max-width:400px){:root{--pw:152px;--ph:268px;--bd:97px}
   .p3d-pista{letter-spacing:1.8px}}
 </style>
 </head>
@@ -2120,43 +2155,12 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           <button type="button" class="pv" data-vista="3d">Girar en 3D</button>
         </div>
         <div class="p3d" id="p3d" hidden tabindex="0" role="img"
-             aria-label="Modelo tridimensional de la placa. Arrastra en horizontal para girarlo, o usa las flechas del teclado.">
+             aria-label="La placa en tres dimensiones, con la foto real en la cara impresa. Arrastra en horizontal para girarla, o usa las flechas del teclado.">
           <div class="p3d-esc" id="p3d-esc"><div class="p3d-pieza">
             <div class="p3d-piso"></div>
             <div class="ba"><div class="c bt"></div><div class="c bb"></div></div>
             <div class="pl">
-              <div class="c cf"><svg viewBox="32 10 156 262" role="img"
-                       aria-label="Placa de sobremesa negra con el logotipo de Google, cinco estrellas y un c&#243;digo QR, apoyada en su base inclinada">
-                    
-                    <!-- el frente -->
-                    
-                    <text x="110" y="42" text-anchor="middle" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="10.5" font-weight="700">We&#8217;d love your feedback</text>
-                    <g transform="translate(110 100)">
-                      <path d="M-19.09 -19.09 A27.0 27.0 0 0 1 13.50 -23.38" fill="none" stroke="#EA4335" stroke-width="13" stroke-linecap="butt"/>
-                      <path d="M13.50 -23.38 A27.0 27.0 0 0 1 27.00 0.00" fill="none" stroke="#4285F4" stroke-width="13" stroke-linecap="butt"/>
-                      <path d="M25.95 7.44 A27.0 27.0 0 0 1 -13.50 23.38" fill="none" stroke="#34A853" stroke-width="13" stroke-linecap="butt"/>
-                      <path d="M-13.50 23.38 A27.0 27.0 0 0 1 -19.09 -19.09" fill="none" stroke="#FBBC05" stroke-width="13" stroke-linecap="butt"/>
-                      <rect x="3" y="-6.5" width="30.5" height="13" fill="#4285F4"/>
-                    </g>
-                    <g fill="#FBBC05">
-                      <path d="M56 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-                      <path d="M83 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-                      <path d="M110 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-                      <path d="M137 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-                      <path d="M164 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-                    </g>
-                    <!-- el QR, esquematizado: tres patrones de esquina y trama -->
-                    <g fill="#ffffff"><rect x="76" y="172" width="17" height="17"/><rect x="127" y="172" width="17" height="17"/><rect x="76" y="223" width="17" height="17"/></g>
-                    <g fill="#0d0e11"><rect x="80" y="176" width="9" height="9"/><rect x="131" y="176" width="9" height="9"/><rect x="80" y="227" width="9" height="9"/></g>
-                    <g fill="#ffffff"><rect x="100" y="176" width="5" height="5"/><rect x="110" y="184" width="5" height="5"/><rect x="100" y="194" width="5" height="5"/><rect x="118" y="196" width="5" height="5"/><rect x="78" y="200" width="5" height="5"/><rect x="90" y="208" width="5" height="5"/><rect x="108" y="204" width="5" height="5"/><rect x="128" y="208" width="5" height="5"/><rect x="136" y="196" width="5" height="5"/><rect x="100" y="218" width="5" height="5"/><rect x="118" y="226" width="5" height="5"/><rect x="108" y="236" width="5" height="5"/><rect x="138" y="220" width="5" height="5"/><rect x="88" y="190" width="5" height="5"/><rect x="126" y="232" width="5" height="5"/></g>
-                    <text x="110" y="256" text-anchor="middle" fill="#dcdcdc" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="600">Tap &#183; NFC &#183; or Scan</text>
-                    <g>
-                      <rect x="46" y="263" width="32" height="3.4" fill="#4285F4"/>
-                      <rect x="78" y="263" width="32" height="3.4" fill="#34A853"/>
-                      <rect x="110" y="263" width="32" height="3.4" fill="#FBBC05"/>
-                      <rect x="142" y="263" width="32" height="3.4" fill="#EA4335"/>
-                    </g>
-                  </svg></div>
+              <div class="c cf"></div>
               <div class="c cb"></div>
               <div class="c ci"></div><div class="c cd"></div>
               <div class="c ct"></div><div class="c cu"></div>
