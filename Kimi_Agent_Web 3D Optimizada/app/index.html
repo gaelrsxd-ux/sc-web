@@ -118,6 +118,24 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "sameAs":[]
   },
   {
+   "@type":"Product",
+   "@id":"https://sycsolutions.company/#placa-resenas",
+   "name":"Placa de reseñas para Google (NFC + QR)",
+   "description":"Placa de sobremesa con NFC y código QR que lleva al cliente directo a la ficha de Google del negocio para dejar su reseña. Sin pilas, sin aplicación y con una vida útil de 5 a 10 años.",
+   "category":"Señalización NFC para reseñas",
+   "brand":{"@id":"https://sycsolutions.company/#organizacion"},
+   "offers":{
+    "@type":"Offer",
+    "url":"https://sycsolutions.company/#productos",
+    "price":"389",
+    "priceCurrency":"MXN",
+    "availability":"https://schema.org/InStock",
+    "itemCondition":"https://schema.org/NewCondition",
+    "eligibleQuantity":{"@type":"QuantitativeValue","value":1,"unitText":"unidad"},
+    "seller":{"@id":"https://sycsolutions.company/#organizacion"}
+   }
+  },
+  {
    "@type":"FAQPage",
    "@id":"https://sycsolutions.company/#faq",
    "isPartOf":{"@id":"https://sycsolutions.company/#web"},
@@ -1468,7 +1486,7 @@ footer .legal a:hover{color:var(--bronze)}
 /* ---------- MODO PRESENTACIÓN ----------
    Para enseñar la web en una reunión sin hacer scroll delante del cliente. No
    cambia el contenido: apaga el cromo y mueve de sección en sección. */
-html.pres nav.principal,html.pres .rail,html.pres #avance,html.pres .snd,html.pres .tema{display:none!important}
+html.pres nav.principal,html.pres .rail,html.pres .cat-barra,html.pres #avance,html.pres .snd,html.pres .tema{display:none!important}
 html.pres{scroll-behavior:smooth}
 /* Sin barra fija arriba, el margen de anclaje que la compensaba deja un hueco */
 html.pres section[id],html.pres .hero{scroll-margin-top:0}
@@ -1611,7 +1629,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 @media print{
   @page{margin:16mm 14mm}
   /* El lienzo de fondo, los rieles y todo lo que sólo sirve en pantalla */
-  #descenso,#avance,.rail,nav,.snd,.oro-aviso,.pres-idx,
+  #descenso,#avance,.rail,nav,.cat-barra,.snd,.oro-aviso,.pres-idx,
   .bait-btn,.costo input[type=range],#visor,
   .aud-form,.aud-rival,.aud-cta,.works-fin a,.svc-btn,
   .frame button,.ts-caja,.can-alt,
@@ -1653,6 +1671,91 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   footer .wordmark,footer .wordmark em{color:#14161A!important}
   footer small,footer .motto,footer .fl a{color:#6B6355!important}
 }
+
+/* ================== CATEGORÍAS: SERVICIOS Y PRODUCTOS ==================
+   Hasta ahora la página era una lista de servicios y nada más. Con un producto
+   físico dentro, "lo que hacemos por ti" y "lo que te llevas" dejan de ser lo
+   mismo y el visitante tiene que saber SIEMPRE en cuál de las dos está.
+
+   ⚠ Y EL PROBLEMA ERA DE MÓVIL, QUE ES DONDE MÁS SE USA. En escritorio ya había
+   dos señales —el riel izquierdo y el menú—, pero el riel se oculta por debajo
+   de 920 px y el menú por debajo de 1080: justo en el móvil no quedaba ninguna.
+   Por eso la señal nueva es una barra propia y no un retoque del riel.
+
+   La barra se pega bajo el menú y sólo existe mientras se recorre una de las
+   dos secciones: fuera de ahí no dice nada útil y estorbaría. Marca la actual
+   en bronce sólido, que es el único relleno de ese color en toda la página y
+   por eso no se confunde con un botón más. */
+.cat-barra{position:fixed;top:82px;left:0;right:0;z-index:45;display:flex;justify-content:center;
+  padding:9px var(--wrap-pad) 13px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(var(--bg-rgb),.97),rgba(var(--bg-rgb),.78) 62%,transparent);
+  opacity:0;visibility:hidden;transform:translateY(-12px);
+  transition:opacity .38s ease,transform .38s cubic-bezier(.2,.7,.2,1),visibility .38s}
+.cat-barra.ver{opacity:1;visibility:visible;transform:none}
+.cat-seg{display:flex;border:1px solid var(--line);background:rgba(var(--bg2-rgb),.94);pointer-events:auto}
+/* 44 px de alto mínimo: es el objetivo táctil que no se falla con el pulgar. */
+.cat-seg a{display:flex;align-items:center;justify-content:center;min-height:44px;
+  padding:0 clamp(18px,5vw,34px);font-size:10px;letter-spacing:2.6px;text-transform:uppercase;
+  font-weight:500;color:var(--dim);white-space:nowrap;
+  transition:color .3s ease,background-color .3s ease}
+.cat-seg a+a{border-left:1px solid var(--line-soft)}
+.cat-seg a.aqui{color:var(--on-bronze);background:var(--bronze)}
+.cat-seg a:not(.aqui):hover{color:var(--bronze-hi)}
+.cat-seg a:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+/* El rótulo de la categoría dentro de la propia sección. Repite lo que dice la
+   barra, y esa repetición es el punto: quien llega por un ancla directo —o con
+   el JS caído— tiene la respuesta en el sitio donde está mirando. */
+.cat-sello{display:inline-flex;align-items:center;gap:9px;margin-top:18px;padding:7px 14px;
+  border:1px solid var(--line);font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  font-weight:500;color:var(--bronze-hi)}
+.cat-sello::before{content:"";width:6px;height:6px;background:var(--bronze);transform:rotate(45deg)}
+
+/* ---------------------------- LA FICHA DEL PRODUCTO ----------------------------
+   Un producto no es un servicio y no se presenta igual: aquí hay una cosa
+   concreta, con precio cerrado y con una vida útil. La ficha lo dice en ese
+   orden —qué es, qué hace, cuánto dura, cuánto cuesta— porque es el orden en
+   que se pregunta.
+   Una sola columna en móvil y dos en escritorio, con la imagen primero en las
+   dos: es el único elemento de la página que se puede reconocer de un vistazo. */
+.prod{display:grid;grid-template-columns:1fr;gap:0;margin-top:clamp(30px,3.4vw,48px);
+  border:1px solid var(--line-soft);background:var(--bg2);position:relative}
+.prod::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);
+  transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.7,0,.2,1)}
+.prod:hover::after{transform:scaleX(1)}
+.prod-fig{display:flex;align-items:center;justify-content:center;padding:clamp(28px,4vw,52px);
+  background:radial-gradient(120% 90% at 50% 15%,rgba(200,169,106,.10),transparent 70%);
+  border-bottom:1px solid var(--line-soft)}
+.prod-fig svg{width:min(100%,290px);height:auto;display:block;
+  filter:drop-shadow(0 22px 34px rgba(0,0,0,.55))}
+.prod-cuerpo{padding:clamp(28px,3.4vw,48px)}
+.prod-cuerpo h3{font-size:clamp(24px,2.6vw,33px);margin:14px 0 14px;color:var(--bronze);line-height:1.15}
+.prod-cuerpo>p{color:var(--muted);font-size:15px;line-height:1.8;max-width:560px}
+.prod-cuerpo>p b{color:var(--ink);font-weight:500}
+.prod-ul{list-style:none;margin-top:22px;display:flex;flex-wrap:wrap;gap:9px}
+.prod-ul li{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
+  border:1px solid var(--line);padding:7px 13px}
+/* El precio, la única cifra grande de la página, y por eso lleva su unidad
+   pegada: "389" a secas invita a suponer, y aquí no hay nada que suponer. */
+.prod-precio{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin-top:26px;
+  padding-top:24px;border-top:1px solid var(--line-soft)}
+.prod-precio .cifra{font-family:var(--serif);font-size:clamp(38px,5vw,52px);line-height:1;color:var(--ink)}
+.prod-precio .u{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim)}
+.prod-nota{margin-top:20px;padding:16px 18px;border:1px solid var(--line-soft);
+  background:rgba(200,169,106,.05);color:var(--muted);font-size:13.5px;line-height:1.75}
+.prod-nota b{color:var(--bronze-hi);font-weight:500}
+.prod-cuerpo .svc-btn{margin-top:24px}
+@media(min-width:900px){
+  .prod{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
+  .prod-fig{border-bottom:0;border-right:1px solid var(--line-soft)}
+}
+/* Por debajo de 400 px las dos píldoras del conmutador pedían más ancho que la
+   pantalla. Se recorta el interletrado y el relleno, nunca el tamaño de letra:
+   lo que hay que poder leer es justo la palabra que dice dónde estás. */
+@media(max-width:400px){
+  .cat-seg a{padding:0 15px;letter-spacing:1.8px}
+  .cat-barra{padding-inline:12px}
+}
+#servicios,#productos{scroll-margin-top:158px}
 </style>
 </head>
 <body>
@@ -1701,10 +1804,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <nav class="rail l" id="riel" aria-label="Índice del recorrido">
   <div class="idxr">
     <a href="#servicios"  data-sec="servicios">01<b>Servicios</b></a>
-    <a href="#proyectos"  data-sec="proyectos">02<b>Proyectos</b></a>
-    <a href="#nosotros"   data-sec="nosotros">03<b>Sobre nosotros</b></a>
-    <a href="#diagnostico" data-sec="diagnostico">04<b>Diagnóstico</b></a>
-    <a href="#contacto"   data-sec="contacto">05<b>Contacto</b></a>
+    <a href="#productos"  data-sec="productos">02<b>Productos</b></a>
+    <a href="#proyectos"  data-sec="proyectos">03<b>Proyectos</b></a>
+    <a href="#nosotros"   data-sec="nosotros">04<b>Sobre nosotros</b></a>
+    <a href="#diagnostico" data-sec="diagnostico">05<b>Diagnóstico</b></a>
+    <a href="#contacto"   data-sec="contacto">06<b>Contacto</b></a>
     <span class="sello" aria-hidden="true"></span>
   </div>
 </nav>
@@ -1729,6 +1833,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   </a>
   <ul>
     <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#productos">Productos</a></li>
     <li><a href="#proyectos">Proyectos</a></li>
     <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="#diagnostico">Diagnóstico</a></li>
@@ -1764,6 +1869,17 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 </header>
 
 <!-- ============ SERVICIOS ============ -->
+<!-- El conmutador de categoría. Va aquí y no dentro de una de las dos
+     secciones porque pertenece a las dos: es lo que dice en cuál estás.
+     `aria-hidden` no se usa —el lector de pantalla debe poder alcanzarlo—; lo
+     que se oculta fuera de las dos secciones es visual, con visibility. -->
+<div class="cat-barra" id="cat-barra">
+  <nav class="cat-seg" aria-label="Categoría: servicios o productos">
+    <a href="#servicios" data-cat="servicios">Servicios</a>
+    <a href="#productos" data-cat="productos">Productos</a>
+  </nav>
+</div>
+
 <section id="servicios">
   <div class="wrap">
     <span class="sec-tag"><span class="n">01 —</span> Servicios</span>
@@ -1857,6 +1973,91 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   </div>
 </section>
 
+
+<!-- ============ PRODUCTOS ============
+     La primera sección de la página que NO vende trabajo, sino una cosa que se
+     entrega. Va pegada a Servicios a propósito: son las dos mitades de la misma
+     pregunta —qué hacemos por ti y qué te llevas— y separarlas por media página
+     habría dejado el producto como una nota al pie.
+     El conmutador de arriba y el sello de esta cabecera dicen los dos en cuál
+     de las dos está el visitante. Es deliberado que lo digan dos veces: quien
+     entra por #productos directamente no ha visto pasar la barra. -->
+<section id="productos">
+  <div class="wrap">
+    <span class="sec-tag"><span class="n">02 —</span> Productos</span>
+    <h2 class="title" data-split>Lo que te <em>llevas</em></h2>
+    <span class="cat-sello">Producto físico · no es un servicio</span>
+
+    <article class="prod rv">
+      <!-- La ilustración es SVG y no una foto: pesa 2 KB, no pide una petición
+           más y se ve nítida en cualquier pantalla. Cuando haya foto de estudio
+           del producto real, sustituir este <svg> por un <img> con width/height
+           declarados para que no salte la maquetación al cargar. -->
+      <div class="prod-fig">
+        <svg viewBox="0 0 220 320" role="img"
+             aria-label="Placa de sobremesa negra con el logotipo de Google, cinco estrellas y un c&#243;digo QR, apoyada en su base inclinada">
+          <!-- la base sobre la que se apoya -->
+          <path d="M40 272 L180 272 L204 302 L64 302 Z" fill="#16171b" stroke="#5f6169" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- el frente -->
+          <rect x="32" y="10" width="156" height="262" rx="12" fill="#0d0e11" stroke="#f2f2f2" stroke-width="2.5"/>
+          <text x="110" y="42" text-anchor="middle" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="12" font-weight="700">We&#8217;d love your feedback</text>
+          <g transform="translate(110 100)">
+            <path d="M-19.09 -19.09 A27.0 27.0 0 0 1 13.50 -23.38" fill="none" stroke="#EA4335" stroke-width="13" stroke-linecap="butt"/>
+            <path d="M13.50 -23.38 A27.0 27.0 0 0 1 27.00 0.00" fill="none" stroke="#4285F4" stroke-width="13" stroke-linecap="butt"/>
+            <path d="M25.95 7.44 A27.0 27.0 0 0 1 -13.50 23.38" fill="none" stroke="#34A853" stroke-width="13" stroke-linecap="butt"/>
+            <path d="M-13.50 23.38 A27.0 27.0 0 0 1 -19.09 -19.09" fill="none" stroke="#FBBC05" stroke-width="13" stroke-linecap="butt"/>
+            <rect x="3" y="-6.5" width="30.5" height="13" fill="#4285F4"/>
+          </g>
+          <g fill="#FBBC05">
+            <path d="M56 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+            <path d="M83 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+            <path d="M110 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+            <path d="M137 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+            <path d="M164 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
+          </g>
+          <!-- el QR, esquematizado: tres patrones de esquina y trama -->
+          <g fill="#ffffff"><rect x="76" y="172" width="17" height="17"/><rect x="127" y="172" width="17" height="17"/><rect x="76" y="223" width="17" height="17"/></g>
+          <g fill="#0d0e11"><rect x="80" y="176" width="9" height="9"/><rect x="131" y="176" width="9" height="9"/><rect x="80" y="227" width="9" height="9"/></g>
+          <g fill="#ffffff"><rect x="100" y="176" width="5" height="5"/><rect x="110" y="184" width="5" height="5"/><rect x="100" y="194" width="5" height="5"/><rect x="118" y="196" width="5" height="5"/><rect x="78" y="200" width="5" height="5"/><rect x="90" y="208" width="5" height="5"/><rect x="108" y="204" width="5" height="5"/><rect x="128" y="208" width="5" height="5"/><rect x="136" y="196" width="5" height="5"/><rect x="100" y="218" width="5" height="5"/><rect x="118" y="226" width="5" height="5"/><rect x="108" y="236" width="5" height="5"/><rect x="138" y="220" width="5" height="5"/><rect x="88" y="190" width="5" height="5"/><rect x="126" y="232" width="5" height="5"/></g>
+          <text x="110" y="256" text-anchor="middle" fill="#dcdcdc" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="600">Tap &#183; NFC &#183; or Scan</text>
+          <g>
+            <rect x="46" y="263" width="32" height="3.4" fill="#4285F4"/>
+            <rect x="78" y="263" width="32" height="3.4" fill="#34A853"/>
+            <rect x="110" y="263" width="32" height="3.4" fill="#FBBC05"/>
+            <rect x="142" y="263" width="32" height="3.4" fill="#EA4335"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="prod-cuerpo">
+        <h3>Placa de rese&#241;as para Google</h3>
+        <p><b>Las rese&#241;as no llegan solas: hay que pedirlas, y pedirlas cansa.</b>
+          Esta placa se queda en tu mostrador y lo hace por ti. El cliente acerca
+          el m&#243;vil o escanea el c&#243;digo y aterriza directo en tu ficha de Google,
+          en la pantalla de escribir la rese&#241;a. Sin buscarte, sin instalar nada y
+          sin escribir una direcci&#243;n.</p>
+        <ul class="prod-ul">
+          <li>NFC y QR</li>
+          <li>Sin pilas ni enchufe</li>
+          <li>Sin aplicaci&#243;n</li>
+          <li>Apunta a tu ficha</li>
+          <li>Dura de 5 a 10 a&#241;os</li>
+        </ul>
+        <div class="prod-precio">
+          <span class="cifra">$389</span>
+          <span class="u">MXN &#183; una unidad</span>
+        </div>
+        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(NFC%20%2B%20QR)." class="svc-btn" target="_blank" rel="noopener noreferrer"
+           aria-label="Escribir por WhatsApp para pedir la placa de rese&#241;as para Google"><span class="dia"></span>La quiero</a>
+        <p class="prod-nota"><b>&#191;Tu negocio est&#225; en San Luis Potos&#237;?</b> Vamos nosotros.
+          La llevamos, la configuramos con tu ficha de Google y la dejamos
+          funcionando en cinco minutos, sin coste de instalaci&#243;n. Si est&#225;s fuera,
+          te llega configurada y lista para usar: s&#243;lo hay que ponerla de pie.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
 <!-- Aquí iba la banda de cifras. Retirada por decisión de Santiago: ninguna de
      las cuatro se podía acreditar. Se va la sección entera y no queda hueco: la
      banda viva del diagnóstico y los proyectos quedan seguidos, que era como
@@ -1878,7 +2079,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <section id="proyectos">
   <div class="wrap">
     <div class="sec-cab">
-      <span class="sec-tag"><span class="n">02 —</span> Proyectos</span>
+      <span class="sec-tag"><span class="n">03 —</span> Proyectos</span>
       <h2 class="title" data-split>Lo que <em>construimos</em></h2>
     </div>
     <div class="works baraja" data-baraja="caso">
@@ -1951,7 +2152,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <section id="nosotros">
   <div class="wrap">
 
-    <span class="sec-tag rv"><span class="n">03 —</span> Sobre nosotros</span>
+    <span class="sec-tag rv"><span class="n">04 —</span> Sobre nosotros</span>
     <h2 class="title" data-split>¿Quién <em>construye</em> tu proyecto?</h2>
     <p class="lead rv" style="margin-top:26px">Somos dos. No una agencia con veinte intermediarios entre tu
       idea y quien la escribe. Hablas con quien construye, y eso cambia el resultado.</p>
@@ -2101,7 +2302,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      leer otro dominio (CORS); el endpoint se configura en AUDITOR abajo. -->
 <section id="diagnostico">
   <div class="wrap">
-    <span class="sec-tag rv"><span class="n">04 —</span> Diagnóstico</span>
+    <span class="sec-tag rv"><span class="n">05 —</span> Diagnóstico</span>
     <h2 class="title" data-split>Tu web, <em>auditada</em> en 10 segundos</h2>
     <div class="aud-grid">
       <div class="rv">
@@ -2129,7 +2330,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <!-- ============ CONTACTO ============ -->
 <section id="contacto">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">05 —</span> Contacto</span>
+    <span class="sec-tag"><span class="n">06 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
       <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
@@ -2347,6 +2548,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <p class="motto">Ambición · Estrategia · Resultados</p>
   <div class="fl">
     <a href="#servicios">Servicios</a>
+    <a href="#productos">Productos</a>
     <a href="#proyectos">Proyectos</a>
     <a href="#nosotros">Nosotros</a>
     <a href="#diagnostico">Diagnóstico</a>
@@ -2412,6 +2614,49 @@ const EXP=(()=>{
    `i×0,06 s`: empieza antes y termina antes.
    Si algún día vuelve a hacer falta tapar la página mientras carga algo, que no
    sea un temporizador: un temporizador no mide la carga, la finge. */
+
+
+/* ---------- CONMUTADOR DE CATEGORÍA (Servicios / Productos) ----------
+   Lo que resuelve: con un producto físico dentro de una página que hasta ahora
+   sólo vendía servicios, el visitante tiene que saber en todo momento en cuál
+   de las dos está. En escritorio ya lo decían el riel y el menú; en MÓVIL no lo
+   decía nada, porque el riel se oculta bajo 920 px y el menú bajo 1080.
+
+   La barra sólo aparece mientras una de las dos secciones cruza la banda
+   central de la pantalla. Fuera de ahí no tiene nada que decir y se retira: una
+   barra permanente en una página de seis secciones sería cromo, no información.
+
+   El margen -40%/-40% deja activa la que cruza el centro exacto, que es el
+   mismo criterio que usa el riel. Con dos secciones adyacentes eso garantiza
+   que nunca hay dos encendidas ni un hueco entre medias.
+
+   Si el JS no corre, la barra se queda invisible y no pasa nada: el rótulo de
+   cada sección y el sello «Producto físico» siguen diciendo dónde estás. */
+(()=>{
+  const barra=document.getElementById('cat-barra');
+  if(!barra)return;
+  const pastillas=[...barra.querySelectorAll('[data-cat]')];
+  const secciones=pastillas.map(a=>document.getElementById(a.dataset.cat));
+  if(secciones.some(x=>!x))return;
+
+  const dentro=new Set();
+  function pinta(){
+    barra.classList.toggle('ver',dentro.size>0);
+    /* En orden de página, no en orden de llegada del observador: el orden de
+       las entradas no dice nada de cuál se está mirando. */
+    const act=(secciones.find(x=>dentro.has(x))||{}).id;
+    pastillas.forEach(a=>{
+      const on=a.dataset.cat===act;
+      a.classList.toggle('aqui',on);
+      if(on)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');
+    });
+  }
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>e.isIntersecting?dentro.add(e.target):dentro.delete(e.target));
+    pinta();
+  },{rootMargin:'-40% 0px -40% 0px'});
+  secciones.forEach(x=>obs.observe(x));
+})();
 
 /* ---------- SPLIT DE TITULARES (palabra por palabra) ---------- */
 function splitWords(el){
