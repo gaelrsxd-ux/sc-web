@@ -1754,6 +1754,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .cat-barra{padding-inline:12px}
 }
 #servicios,#productos{scroll-margin-top:158px}
+#coste{scroll-margin-top:96px}
 .prod-fig{flex-direction:column}
 .prod-foto{width:min(100%,340px);height:auto;display:block;border:1px solid var(--line-soft);
   box-shadow:0 24px 44px rgba(0,0,0,.55)}
@@ -2102,7 +2103,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      la banda viva. Numerarla obligaria a meter un septimo hueco en un menu que
      ya se oculta por debajo de 1080 px, y a renumerar cuatro secciones para
      ganar un renglon que nadie busca por su nombre. -->
-<section class="coste-mano">
+<section class="coste-mano" id="coste">
   <div class="wrap">
 <!-- ============ CALCULADORA DEL TRABAJO MANUAL ============
        Cierra la sección respondiendo a la única objeción que aparece siempre:
@@ -5016,7 +5017,11 @@ if(DIAG.lee())EXP.marca('diag');
   const idx=document.getElementById('pres-idx');
   if(!idx)return;
   const paradas=[document.querySelector('.hero'),
-    ...['servicios','proyectos','nosotros','diagnostico','contacto']
+    /* ⚠ LISTA CABLEADA: una seccion nueva NO entra sola. Productos se quedo
+       fuera al crearse y el modo presentacion se la saltaba entera en una
+       reunion. Y el coste entra tambien: en una reunion es la parada que
+       cierra el argumento, no un adorno. Quien anada una seccion, aqui. */
+    ...['servicios','productos','coste','proyectos','nosotros','diagnostico','contacto']
       .map(i=>document.getElementById(i))].filter(Boolean);
   if(paradas.length<2)return;
   const total=document.getElementById('pres-t'),
