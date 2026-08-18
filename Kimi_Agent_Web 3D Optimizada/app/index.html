@@ -1740,14 +1740,18 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   border:1px solid var(--line);padding:7px 13px}
 /* El precio, la única cifra grande de la página, y por eso lleva su unidad
    pegada: "389" a secas invita a suponer, y aquí no hay nada que suponer. */
-.prod-precio{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin-top:26px;
-  padding-top:24px;border-top:1px solid var(--line-soft)}
+/* El precio y el boton van JUNTOS Y CENTRADOS: son la misma decision —cuanto
+   cuesta y donde se pide— y separados a la izquierda se leian como dos
+   parrafos mas. Centrado, el bloque para el ojo. */
+.prod-cta{margin-top:26px;padding-top:26px;border-top:1px solid var(--line-soft);
+  display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+.prod-precio{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;justify-content:center}
 .prod-precio .cifra{font-family:var(--serif);font-size:clamp(38px,5vw,52px);line-height:1;color:var(--ink)}
 .prod-precio .u{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim)}
 .prod-nota{margin-top:20px;padding:16px 18px;border:1px solid var(--line-soft);
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13.5px;line-height:1.75}
 .prod-nota b{color:var(--bronze-hi);font-weight:500}
-.prod-cuerpo .svc-btn{margin-top:24px}
+.prod-cuerpo .prod-cta .svc-btn{margin-top:0}
 @media(min-width:900px){
   .prod{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
   .prod-fig{border-bottom:0;border-right:1px solid var(--line-soft)}
@@ -1961,10 +1965,21 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    arriba y se apaga abajo. Plano parecia una barra encendida pegada al
    producto; con el degradado parece el canto que es. */
 .p3d .ci,.p3d .cd{width:var(--pt) !important;left:calc(50% - var(--pt)/2) !important;
-  height:calc(var(--ph) - 18px) !important;top:9px !important;
+  height:calc(var(--ph) - 16px) !important;top:8px !important;
   background:linear-gradient(180deg,#26282d 0,#f2f2f4 4%,#e2e3e5 22%,#b4b6bb 66%,#8a8c92 96%,#26282d 100%)}
-.p3d .ci{transform:rotateY(-90deg) translateZ(calc(var(--pw)/-2 + var(--pt)/2))}
-.p3d .cd{transform:rotateY(90deg)  translateZ(calc(var(--pw)/2 - var(--pt)/2))}
+/* ⚠ AQUI HABIA DOS FALLOS, Y SON LOS QUE SE VEIAN EN EL MOVIL.
+   1) LOS DOS CANTOS ESTABAN EN EL MISMO LADO. Medido a giro cero: .ci y .cd
+      caian ambos en x=427 sobre una placa que va de 255 a 431. El lado
+      izquierdo no tenia canto NINGUNO. No era que «solo se viera uno» por
+      como funciona backface-visibility: es que solo habia uno.
+      El signo: tras rotateY(-90) el eje Z local apunta a -X, asi que para
+      llevar la cara a la izquierda el desplazamiento va en POSITIVO.
+   2) IBAN METIDOS MEDIO GROSOR. El desplazamiento correcto es la mitad del
+      ancho, a secas: el canto ES el plano del borde. Con el -pt/2 quedaba
+      4 px por dentro y las caras sobresalian por fuera de el; casi de canto
+      ese sobrante se proyectaba como una punta oscura mas alla de la placa. */
+.p3d .ci{transform:rotateY(-90deg) translateZ(calc(var(--pw)/2))}
+.p3d .cd{transform:rotateY(90deg)  translateZ(calc(var(--pw)/2))}
 /* ⚠ LOS CANTOS DE ARRIBA Y ABAJO, Y LA «MANCHA BLANCA» QUE SALIA AL GIRAR.
    Medido: casi de canto (ry ≈ -268) la cara de arriba se proyecta en 14x13
    px sobre una placa cuya silueta ahi mide unos 10. Aritmeticamente es
@@ -1975,7 +1990,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    porque mira a la luz y el de abajo apagado porque mira a la mesa, y con
    las puntas casi rectas para que parezcan un canto y no una pestana. */
 .p3d .ct,.p3d .cu{height:var(--pt) !important;top:calc(50% - var(--pt)/2) !important;
-  width:calc(var(--pw) - 20px) !important;left:10px !important;border-radius:2px}
+  width:calc(var(--pw) - 16px) !important;left:8px !important;border-radius:2px}
 /* Y LAS PUNTAS SE APAGAN. El degradado no va solo de arriba abajo: va
    tambien A LO LARGO, y en los dos extremos baja al tono de la placa. Es
    justo por las puntas por donde estos cantos asoman cuando la pieza esta
@@ -1986,8 +2001,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   #bcbfc5 56%,#1a1b20 76%,#1a1b20 100%)}
 .p3d .cu{background:linear-gradient(90deg,#121317 0,#121317 24%,#54575e 46%,#54575e 54%,
   #121317 76%,#121317 100%)}
-.p3d .ct{transform:rotateX(90deg)  translateZ(calc(var(--ph)/2 - var(--pt)/2))}
-.p3d .cu{transform:rotateX(-90deg) translateZ(calc(var(--ph)/2 - var(--pt)/2))}
+.p3d .ct{transform:rotateX(90deg)  translateZ(calc(var(--ph)/2))}
+.p3d .cu{transform:rotateX(-90deg) translateZ(calc(var(--ph)/2))}
 /* El pie cuelga del MISMO canto y se tumba hacia ATRAS. Es lo que ensena la
    foto trasera: la placa es una chapa doblada en L, y la pata sale por
    detras. Con rotateX(90) salia por delante, tapando la parte baja de la
@@ -2020,12 +2035,20 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      que para una sombra difusa es exactamente lo mismo y no cuesta una capa. */
   background:radial-gradient(ellipse at 50% 44%,rgba(0,0,0,.86) 0%,rgba(0,0,0,.66) 18%,
     rgba(0,0,0,.34) 40%,rgba(0,0,0,.12) 58%,transparent 74%)}
-.p3d-pista{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);margin:0;
-  font-size:9px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim);
-  white-space:nowrap;pointer-events:none;transition:opacity .5s ease}
-.p3d.tocado .p3d-pista{opacity:0}
+/* LA BARRA DE GIRAR. 52 px de alto y todo el ancho de la ficha: no hay que
+   atinarle. Y touch-action:none, asi que aqui NINGUN arrastre se lo lleva la
+   pagina —ni el torcido ni el vertical—, que es justo lo que pasaba al
+   intentar girar sobre la pieza y acabar dos secciones mas abajo. */
+.p3d-mando{width:min(100%,400px);height:52px;margin-top:10px;display:grid;place-items:center;
+  border:1px solid var(--line-soft);cursor:grab;touch-action:none;user-select:none;
+  -webkit-user-select:none;transition:border-color .3s ease,background-color .3s ease;
+  background:linear-gradient(90deg,rgba(200,169,106,.04),rgba(200,169,106,.11),rgba(200,169,106,.04))}
+.p3d-mando:hover{border-color:var(--line)}
+.p3d-mando.arrastra{cursor:grabbing;border-color:var(--bronze-hi)}
+.p3d-mando span{font-size:9px;letter-spacing:2.6px;text-transform:uppercase;
+  color:var(--dim);pointer-events:none}
 @media(max-width:400px){:root{--pw:152px;--ph:268px;--bd:97px}
-  .p3d-pista{letter-spacing:1.8px}}
+  .p3d-mando span{letter-spacing:1.9px}}
 </style>
 </head>
 <body>
@@ -2249,7 +2272,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
               <div class="c ct"></div><div class="c cu"></div>
             </div>
           </div></div>
-          <p class="p3d-pista" id="p3d-pista">Arrastra para girarlo</p>
+        </div>
+        <!-- La barra de girar. Existe porque sobre la pieza el arrastre convive
+             con el desplazamiento de la pagina y hay que salir recto; aqui no:
+             52 px de alto, todo el ancho y touch-action:none. Va aria-hidden
+             porque no anade nada nuevo —el propio visor es enfocable y se gira
+             con las flechas— y anunciarla dos veces solo estorba. -->
+        <div class="p3d-mando" id="p3d-mando" hidden aria-hidden="true">
+          <span>&#9666;&#160;&#160;arrastra aqu&#237; para girar&#160;&#160;&#9656;</span>
         </div>
                 <!-- Fotos reales del producto. Las tres a 3:4 EXACTO para que casen de
              altura, y con algo mas de fondo que el recorte anterior: cerradas
@@ -2290,11 +2320,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
       <div class="prod-cuerpo">
         <h3>Placa de rese&#241;as para Google</h3>
-        <p><b>Las rese&#241;as no llegan solas: hay que pedirlas, y pedirlas cansa.</b>
-          Esta placa se queda en tu mostrador y lo hace por ti. El cliente acerca
-          el m&#243;vil o escanea el c&#243;digo y aterriza directo en tu ficha de Google,
-          en la pantalla de escribir la rese&#241;a. Sin buscarte, sin instalar nada y
-          sin escribir una direcci&#243;n.</p>
+        <p><b>Las rese&#241;as no llegan solas: hay que pedirlas.</b>
+          Esta placa lo hace por ti desde el mostrador. El cliente acerca el
+          m&#243;vil o escanea el c&#243;digo y cae directo en la pantalla de escribir tu
+          rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
         <ul class="prod-ul">
           <li>NFC y QR</li>
           <li>Sin pilas ni enchufe</li>
@@ -2302,16 +2331,17 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           <li>Apunta a tu ficha</li>
           <li>Dura de 5 a 10 a&#241;os</li>
         </ul>
-        <div class="prod-precio">
-          <span class="cifra">$389</span>
-          <span class="u">MXN &#183; una unidad</span>
+        <div class="prod-cta">
+          <div class="prod-precio">
+            <span class="cifra">$389</span>
+            <span class="u">MXN &#183; una unidad</span>
+          </div>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(NFC%20%2B%20QR)." class="svc-btn" target="_blank" rel="noopener noreferrer"
+             aria-label="Escribir por WhatsApp para pedir la placa de rese&#241;as para Google"><span class="dia"></span>La quiero</a>
         </div>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(NFC%20%2B%20QR)." class="svc-btn" target="_blank" rel="noopener noreferrer"
-           aria-label="Escribir por WhatsApp para pedir la placa de rese&#241;as para Google"><span class="dia"></span>La quiero</a>
-        <p class="prod-nota"><b>&#191;Tu negocio est&#225; en San Luis Potos&#237;?</b> Vamos nosotros.
-          La llevamos, la configuramos con tu ficha de Google y la dejamos
-          funcionando en cinco minutos, sin coste de instalaci&#243;n. Si est&#225;s fuera,
-          te llega configurada y lista para usar: s&#243;lo hay que ponerla de pie.</p>
+        <p class="prod-nota"><b>&#191;Est&#225;s en San Luis Potos&#237;?</b> Vamos nosotros:
+          la llevamos, la enlazamos con tu ficha y la dejamos lista en cinco
+          minutos, sin coste. Fuera de San Luis te llega ya configurada.</p>
       </div>
     </article>
   </div>
@@ -4223,12 +4253,13 @@ const SIG=(()=>{
   const caja=document.getElementById('p3d');
   if(!caja)return;
   const esc=document.getElementById('p3d-esc'),
+        mando=document.getElementById('p3d-mando'),
         botones=[...document.querySelectorAll('.prod-vista .pv')],
         fig=document.querySelector('.prod-fig');
   if(!esc||!botones.length)return;
   const fotos=[...fig.querySelectorAll('.prod-abre, .prod-mini')];
 
-  let rx=-10,ry=-26,auto=true,ve=false,arr=false,raf=0,x0=0,y0=0,rx0=0,ry0=0;
+  let rx=-10,ry=-26,auto=true,ve=false,arr=false,raf=0,x0=0,y0=0,rx0=0,ry0=0,vel=0;
   const suave=!matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* --espec es el SENO del angulo de giro, de -1 a 1. La luz esta fija arriba;
      lo que cambia al girar es donde se ve su reflejo, y eso va como el seno.
@@ -4239,41 +4270,69 @@ const SIG=(()=>{
   const pinta=()=>{esc.style.setProperty('--rx',rx.toFixed(2)+'deg');
                    esc.style.setProperty('--ry',ry.toFixed(2)+'deg');
                    esc.style.setProperty('--espec',Math.sin(ry*Math.PI/180).toFixed(3));};
+  /* Un solo bucle para dos trabajos: el giro de cortesia mientras nadie toca,
+     y la INERCIA cuando alguien suelta. Nunca corren a la vez —en cuanto hay
+     gesto, `auto` queda apagado para siempre— asi que no hacen falta dos rAF
+     ni un solo condicional de mas. */
   function bucle(){
     raf=0;
-    if(!(auto&&ve&&suave&&!caja.hidden))return;
-    ry-=.26;pinta();
-    raf=requestAnimationFrame(bucle);
+    if(caja.hidden)return;
+    if(auto&&ve&&suave){ry-=.26;pinta();raf=requestAnimationFrame(bucle);return;}
+    if(!arr&&Math.abs(vel)>.08){ry+=vel;vel*=.915;pinta();raf=requestAnimationFrame(bucle);}
   }
   const arranca=()=>{if(!raf)raf=requestAnimationFrame(bucle);};
 
   new IntersectionObserver(es=>{ve=es[0].isIntersecting;arranca();},{threshold:.15}).observe(caja);
 
   function manda(){          /* el visitante toma el control, y no se le devuelve */
-    auto=false;caja.classList.add('tocado');
+    auto=false;
     if(raf){cancelAnimationFrame(raf);raf=0;}
   }
-  caja.addEventListener('pointerdown',e=>{
-    arr=true;manda();caja.classList.add('arrastra');
-    x0=e.clientX;y0=e.clientY;rx0=rx;ry0=ry;
-    try{caja.setPointerCapture(e.pointerId);}catch(_){}
-  });
-  caja.addEventListener('pointermove',e=>{
-    if(!arr)return;
-    ry=ry0+(e.clientX-x0)*.55;
-    /* La inclinacion se topa. Hacia arriba, en -46: mas alla la pieza se ve por
-       dentro. Hacia abajo, en 14 y no en 28: pasado ese punto se mira el
-       producto DESDE DEBAJO DE LA MESA, la base tapa media placa y no queda
-       ninguna vista que ensene nada. Hacia abajo el tope es 2 y no 14: con 14
-       la camara se metia POR DEBAJO DEL PLANO DE LA MESA, y una placa vista
-       desde debajo de la mesa en la que se apoya no es un angulo, es un error.
-       Un tope que corta antes de la vista inutil es lo que hace que arrastrar
-       no pueda salir mal. */
-    rx=Math.max(-46,Math.min(2,rx0-(e.clientY-y0)*.35));
-    pinta();
-  });
-  ['pointerup','pointercancel','pointerleave'].forEach(t=>
-    caja.addEventListener(t,()=>{arr=false;caja.classList.remove('arrastra');}));
+  /* ── EL MISMO GESTO EN DOS SITIOS ──────────────────────────────────────
+     Sobre la PIEZA el arrastre convive con el desplazamiento de la pagina
+     (touch-action:pan-y), y eso tiene un precio real: si el dedo sale un poco
+     torcido, el navegador se queda el gesto y te vas dos secciones abajo. Por
+     eso hay ademas una BARRA con touch-action:none, ancha y de 52 px de alto:
+     ahi no hay que atinarle a nada ni salir recto, cualquier arrastre gira.
+     La sensibilidad sube de 0,55 a 0,75 grados por pixel (0,95 en la barra):
+     el ancho de un movil da media vuelta larga en vez de un cuarto.
+     ⚠ El preventDefault SOLO en la barra. En la pieza cancelaria el
+     desplazamiento que touch-action:pan-y esta concediendo a proposito. */
+  function gesto(el,sx,sy,bloquea){
+    let x1=0;
+    el.addEventListener('pointerdown',e=>{
+      arr=true;manda();vel=0;
+      caja.classList.add('arrastra');el.classList.add('arrastra');
+      x0=x1=e.clientX;y0=e.clientY;rx0=rx;ry0=ry;
+      try{el.setPointerCapture(e.pointerId);}catch(_){}
+      if(bloquea)e.preventDefault();
+    });
+    el.addEventListener('pointermove',e=>{
+      if(!arr)return;
+      ry=ry0+(e.clientX-x0)*sx;
+      /* La inclinacion se topa. Hacia arriba en -46: mas alla la pieza se ve
+         por dentro. Hacia abajo en 2: con mas, la camara se mete POR DEBAJO
+         DEL PLANO DE LA MESA, y una placa vista desde debajo de la mesa en la
+         que se apoya no es un angulo, es un error. Un tope que corta antes de
+         la vista inutil es lo que hace que arrastrar no pueda salir mal. */
+      rx=Math.max(-46,Math.min(2,rx0-(e.clientY-y0)*sy));
+      /* Para la inercia al soltar. Con tope: sin el, un golpe seco daba tres
+         vueltas y el objeto dejaba de parecer un objeto. Con 9 y una caida
+         del 8,5% por fotograma, un golpe fuerte da algo menos de un tercio
+         de vuelta y se para solo en poco mas de medio segundo. */
+      vel=Math.max(-9,Math.min(9,vel*.6+(e.clientX-x1)*sx*.4));
+      x1=e.clientX;
+      pinta();
+    });
+    ['pointerup','pointercancel','pointerleave'].forEach(t=>
+      el.addEventListener(t,()=>{
+        if(!arr)return;
+        arr=false;caja.classList.remove('arrastra');el.classList.remove('arrastra');
+        if(Math.abs(vel)>.35)arranca();   /* un golpe corto da media vuelta */
+      }));
+  }
+  gesto(caja,.75,.35,false);
+  if(mando)gesto(mando,.95,.42,true);
   caja.addEventListener('keydown',e=>{
     const k={ArrowLeft:[0,-12],ArrowRight:[0,12],ArrowUp:[-8,0],ArrowDown:[8,0]}[e.key];
     if(!k)return;
@@ -4287,6 +4346,7 @@ const SIG=(()=>{
     const tresD=b.dataset.vista==='3d';
     botones.forEach(o=>o.classList.toggle('aqui',o===b));
     caja.hidden=!tresD;
+    if(mando)mando.hidden=!tresD;
     fotos.forEach(f=>{f.hidden=tresD;});
     if(tresD){pinta();arranca();caja.focus({preventScroll:true});}
   }));
