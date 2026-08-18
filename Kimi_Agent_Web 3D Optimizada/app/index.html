@@ -1725,8 +1725,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .prod-fig{display:flex;align-items:center;justify-content:center;padding:clamp(28px,4vw,52px);
   background:radial-gradient(120% 90% at 50% 15%,rgba(200,169,106,.10),transparent 70%);
   border-bottom:1px solid var(--line-soft)}
-.prod-fig svg{width:min(100%,290px);height:auto;display:block;
-  filter:drop-shadow(0 22px 34px rgba(0,0,0,.55))}
 .prod-cuerpo{padding:clamp(28px,3.4vw,48px)}
 .prod-cuerpo h3{font-size:clamp(24px,2.6vw,33px);margin:14px 0 14px;color:var(--bronze);line-height:1.15}
 .prod-cuerpo>p{color:var(--muted);font-size:15px;line-height:1.8;max-width:560px}
@@ -1756,6 +1754,16 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .cat-barra{padding-inline:12px}
 }
 #servicios,#productos{scroll-margin-top:158px}
+.prod-fig{flex-direction:column}
+.prod-foto{width:min(100%,340px);height:auto;display:block;border:1px solid var(--line-soft);
+  box-shadow:0 24px 44px rgba(0,0,0,.55)}
+/* Las dos secundarias no son decoracion: una ensena la inclinacion —que es lo
+   que hace que se sostenga sola en el mostrador— y la otra que el reverso va
+   liso. Son las dos preguntas que se hacen sobre un objeto que no se toca. */
+.prod-mini{display:flex;gap:10px;margin-top:10px;width:min(100%,340px)}
+.prod-mini img{width:calc(50% - 5px);height:auto;display:block;border:1px solid var(--line-soft);
+  opacity:.82;transition:opacity .35s ease}
+.prod-mini img:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -1989,44 +1997,25 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <span class="cat-sello">Producto físico · no es un servicio</span>
 
     <article class="prod rv">
-      <!-- La ilustración es SVG y no una foto: pesa 2 KB, no pide una petición
-           más y se ve nítida en cualquier pantalla. Cuando haya foto de estudio
-           del producto real, sustituir este <svg> por un <img> con width/height
-           declarados para que no salte la maquetación al cargar. -->
-      <div class="prod-fig">
-        <svg viewBox="0 0 220 320" role="img"
-             aria-label="Placa de sobremesa negra con el logotipo de Google, cinco estrellas y un c&#243;digo QR, apoyada en su base inclinada">
-          <!-- la base sobre la que se apoya -->
-          <path d="M40 272 L180 272 L204 302 L64 302 Z" fill="#16171b" stroke="#5f6169" stroke-width="1.5" stroke-linejoin="round"/>
-          <!-- el frente -->
-          <rect x="32" y="10" width="156" height="262" rx="12" fill="#0d0e11" stroke="#f2f2f2" stroke-width="2.5"/>
-          <text x="110" y="42" text-anchor="middle" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="12" font-weight="700">We&#8217;d love your feedback</text>
-          <g transform="translate(110 100)">
-            <path d="M-19.09 -19.09 A27.0 27.0 0 0 1 13.50 -23.38" fill="none" stroke="#EA4335" stroke-width="13" stroke-linecap="butt"/>
-            <path d="M13.50 -23.38 A27.0 27.0 0 0 1 27.00 0.00" fill="none" stroke="#4285F4" stroke-width="13" stroke-linecap="butt"/>
-            <path d="M25.95 7.44 A27.0 27.0 0 0 1 -13.50 23.38" fill="none" stroke="#34A853" stroke-width="13" stroke-linecap="butt"/>
-            <path d="M-13.50 23.38 A27.0 27.0 0 0 1 -19.09 -19.09" fill="none" stroke="#FBBC05" stroke-width="13" stroke-linecap="butt"/>
-            <rect x="3" y="-6.5" width="30.5" height="13" fill="#4285F4"/>
-          </g>
-          <g fill="#FBBC05">
-            <path d="M56 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-            <path d="M83 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-            <path d="M110 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-            <path d="M137 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-            <path d="M164 146 l2.7 5.6 6.1.9 -4.4 4.3 1 6.1 -5.4-2.9 -5.4 2.9 1-6.1 -4.4-4.3 6.1-.9z"/>
-          </g>
-          <!-- el QR, esquematizado: tres patrones de esquina y trama -->
-          <g fill="#ffffff"><rect x="76" y="172" width="17" height="17"/><rect x="127" y="172" width="17" height="17"/><rect x="76" y="223" width="17" height="17"/></g>
-          <g fill="#0d0e11"><rect x="80" y="176" width="9" height="9"/><rect x="131" y="176" width="9" height="9"/><rect x="80" y="227" width="9" height="9"/></g>
-          <g fill="#ffffff"><rect x="100" y="176" width="5" height="5"/><rect x="110" y="184" width="5" height="5"/><rect x="100" y="194" width="5" height="5"/><rect x="118" y="196" width="5" height="5"/><rect x="78" y="200" width="5" height="5"/><rect x="90" y="208" width="5" height="5"/><rect x="108" y="204" width="5" height="5"/><rect x="128" y="208" width="5" height="5"/><rect x="136" y="196" width="5" height="5"/><rect x="100" y="218" width="5" height="5"/><rect x="118" y="226" width="5" height="5"/><rect x="108" y="236" width="5" height="5"/><rect x="138" y="220" width="5" height="5"/><rect x="88" y="190" width="5" height="5"/><rect x="126" y="232" width="5" height="5"/></g>
-          <text x="110" y="256" text-anchor="middle" fill="#dcdcdc" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="600">Tap &#183; NFC &#183; or Scan</text>
-          <g>
-            <rect x="46" y="263" width="32" height="3.4" fill="#4285F4"/>
-            <rect x="78" y="263" width="32" height="3.4" fill="#34A853"/>
-            <rect x="110" y="263" width="32" height="3.4" fill="#FBBC05"/>
-            <rect x="142" y="263" width="32" height="3.4" fill="#EA4335"/>
-          </g>
-        </svg>
+<div class="prod-fig">
+        <!-- Fotos reales del producto, no un render. Las tres que hizo Santiago:
+             de frente, de perfil y por detras. Pesaban 6,5 MB en PNG y salen a
+             109 KB en WebP; el srcset evita mandarle 900 px de ancho a un movil
+             que va a pintar 340. `width` y `height` van declarados para que el
+             hueco este reservado antes de que la imagen llegue: sin ellos, la
+             ficha entera salta cuando cargan. -->
+        <img class="prod-foto"
+             src="assets/producto-resenas-frontal-900.webp"
+             srcset="assets/producto-resenas-frontal-480.webp 480w, assets/producto-resenas-frontal-900.webp 900w"
+             sizes="(max-width:899px) 76vw, 28vw"
+             width="900" height="1219" loading="lazy" decoding="async"
+             alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;.">
+        <div class="prod-mini">
+          <img src="assets/producto-resenas-perfil.webp" width="420" height="633" loading="lazy" decoding="async"
+               alt="La misma placa vista de lado: se aprecia la inclinaci&#243;n y la base triangular sobre la que se apoya.">
+          <img src="assets/producto-resenas-trasera.webp" width="420" height="633" loading="lazy" decoding="async"
+               alt="El reverso de la placa, negro liso y sin impresi&#243;n, apoyado en su base.">
+        </div>
       </div>
 
       <div class="prod-cuerpo">

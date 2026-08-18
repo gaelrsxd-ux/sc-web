@@ -42,7 +42,7 @@
            como copia de emergencia sin red un documento con el precargador
            dentro. Subirla ahora cuesta un carácter; olvidarla entonces cuesta
            un fallo que nadie sabrá explicar. */
-const VERSION = 'syc-2026-08-h';
+const VERSION = 'syc-2026-08-i';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
