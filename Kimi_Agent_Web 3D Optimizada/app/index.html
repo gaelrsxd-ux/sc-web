@@ -298,14 +298,19 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
 .rail.l.casi .sello{opacity:.55;transform:rotate(45deg) scale(.86);border-color:var(--line)}
 .rail.l.fin .sello{opacity:1;transform:rotate(45deg) scale(1);background:var(--bronze-hi);border-color:var(--bronze-hi)}
 
-/* ---------- PRELOADER ---------- */
-#preloader{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;transition:opacity .8s ease,visibility .8s}
-#preloader.done{opacity:0;visibility:hidden}
-#preloader img{width:min(320px,70vw)}
-.load-line{width:min(260px,54vw);height:1px;background:var(--line);position:relative;overflow:hidden}
-.load-line i{position:absolute;inset:0;background:var(--bronze);transform:translateX(-100%);animation:load 1.7s cubic-bezier(.7,0,.3,1) forwards}
-@keyframes load{to{transform:translateX(0)}}
-#preloader small{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--dim)}
+/* ---------- AQUÍ VIVÍA EL PRECARGADOR ----------
+   Era un panel opaco a pantalla completa (z-index 100) con el logo y una barra
+   de carga de adorno: la barra tardaba 1,7 s en llenarse midiendo nada, y el
+   panel no se apartaba hasta 1,9 s DESPUÉS del evento load, más 0,8 s de
+   fundido. Medido antes de retirarlo: 3,06 s hasta que se veía la web, de los
+   cuales 2,61 s eran espera pura después de que el navegador ya lo tuviera todo.
+   Retirado entero —marcado, estilos y guion— por decisión de Santiago: hay
+   tráfico real entrando y una tarjeta de bienvenida delante de la web es una
+   puerta cerrada, no una presentación. No se ha acortado la espera: no queda
+   espera. La entrada del titular la sigue disparando el mismo observador que
+   usa el resto de titulares de la página, y arranca en el primer fotograma.
+   Ver también: el selector de la escena `ciudad`, más abajo, que colgaba de
+   `#preloader.done` y ahora arranca solo. */
 
 /* ---------- NAV ----------
    .principal y no "nav:not(.rail)": esta barra se identifica por lo que es, no
@@ -537,7 +542,13 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    Los fotogramas clave sólo llevan números literales —el desplazamiento del
    puntero entra aparte, por la propiedad translate—, y así la animación puede
    vivir en la GPU en vez de recalcularse a mano en cada fotograma. */
-#preloader.done ~ #descenso .esc.ciudad::after{animation:entraCerca 5s cubic-bezier(.4,0,.2,1) both,dronCerca 36s linear 5s infinite}
+/* Colgaba de `#preloader.done ~ …`: la entrada de la escena esperaba a que el
+   precargador se apartara. Sin precargador ese selector no casaría nunca y el
+   fondo se quedaría quieto para siempre, así que la regla pasa a aplicarse
+   directamente. Arranca en el primer fotograma y no retrasa nada: es el fondo
+   moviéndose por detrás de un titular que ya se está leyendo. Con movimiento
+   reducido, el bloque de prefers-reduced-motion la apaga entera. */
+#descenso .esc.ciudad::after{animation:entraCerca 5s cubic-bezier(.4,0,.2,1) both,dronCerca 36s linear 5s infinite}
 /* --mx/--my los escribe el puntero, con el 100% del desplazamiento ya que
    sólo queda un plano. Va en la propiedad translate, NO dentro de transform,
    y esa separación es la diferencia entre una página fluida y una atascada:
@@ -1600,7 +1611,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 @media print{
   @page{margin:16mm 14mm}
   /* El lienzo de fondo, los rieles y todo lo que sólo sirve en pantalla */
-  #descenso,#avance,#preloader,.rail,nav,.snd,.oro-aviso,.pres-idx,
+  #descenso,#avance,.rail,nav,.snd,.oro-aviso,.pres-idx,
   .bait-btn,.costo input[type=range],#visor,
   .aud-form,.aud-rival,.aud-cta,.works-fin a,.svc-btn,
   .frame button,.ts-caja,.can-alt,
@@ -1646,15 +1657,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 </head>
 <body>
 
-<div id="preloader">
-  <img src="assets/logo.svg" alt="S&C Solutions">
-  <div class="load-line"><i></i></div>
-  <small>Ambición · Estrategia · Resultados</small>
-</div>
-
 <!-- ============ DESCENSO ============
-     Lienzo único fijo detrás de toda la página. Va después del preloader para
-     que el selector #preloader.done ~ #descenso pueda alcanzarlo.
+     Lienzo único fijo detrás de toda la página. Es el primer elemento del
+     cuerpo: antes iba detrás del precargador porque el selector
+     `#preloader.done ~ #descenso` necesitaba alcanzarlo como hermano
+     posterior. Retirado aquél, la escena arranca sola.
      La escena "ciudad" no lleva data-src: pinta la foto en sus dos pseudo-
      elementos, con las máscaras y el paralaje que antes vivían en .hero-bg.
      Al ser fija, la misma imagen sirve al hero y al manifiesto: no hay dos
@@ -2389,17 +2396,19 @@ const EXP=(()=>{
   };
 })();
 
-/* ---------- PRELOADER + INTRO (con red de seguridad por redes lentas) ---------- */
-function intro(){
-  const p=document.getElementById('preloader');
-  if(p.classList.contains('done'))return;
-  p.classList.add('done');
-  const h=document.querySelector('.hero h1');
-  h.classList.add('in');
-  h.querySelectorAll('.w').forEach((w,i)=>w.style.transitionDelay=(0.2+i*0.07)+'s');
-}
-addEventListener('load',()=>setTimeout(intro,1900));
-setTimeout(intro,4200);
+/* ---------- LA INTRO YA NO EXISTE ----------
+   Aquí estaba `intro()`, que apartaba el precargador y de paso encendía el
+   titular del hero. Se disparaba con `load + 1900 ms`, y con un temporizador de
+   red de seguridad a 4200 ms para las conexiones lentas. Los dos plazos eran la
+   espera entera que veía el visitante.
+   No hace falta sustituirlo por nada: el titular lleva `data-split` y ya estaba
+   dado de alta en el IntersectionObserver de más abajo, el mismo que enciende
+   todos los titulares de la página. Al estar el hero a la vista desde el
+   principio, el observador dispara en el primer fotograma tras la maquetación,
+   sin plazo que esperar. El desfase por palabra pasa de `0,2 + i×0,07 s` a
+   `i×0,06 s`: empieza antes y termina antes.
+   Si algún día vuelve a hacer falta tapar la página mientras carga algo, que no
+   sea un temporizador: un temporizador no mide la carga, la finge. */
 
 /* ---------- SPLIT DE TITULARES (palabra por palabra) ---------- */
 function splitWords(el){
