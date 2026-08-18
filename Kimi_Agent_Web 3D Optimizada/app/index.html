@@ -2254,8 +2254,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <!-- Región viva: aquí cae tanto el "Recibido" como el motivo exacto del
              fallo, y en los dos casos se anuncia a quien no ve la pantalla. -->
         <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
-        <p class="form-nota">Al enviar, estos datos entran en nuestro sistema para
-          poder responderte. Nada más: ni boletines, ni publicidad, ni cesión a
+        <!-- Dice las DOS cosas que pasan con el mensaje, porque las dos pasan:
+             se guarda en el sistema y además llega por correo al buzón interno.
+             Decir sólo una de las dos era lo que hacía esta línea hasta hoy, y
+             el aviso de privacidad ya lo corrigió: si el formulario promete
+             menos de lo que hace, el que queda mal es el aviso. -->
+        <p class="form-nota">Al enviar, estos datos entran en nuestro sistema y
+          nos llegan también por correo a un buzón interno, para poder
+          responderte. Nada más: ni boletines, ni publicidad, ni cesión a
           terceros. <a href="aviso-de-privacidad.html">Aviso de privacidad</a>.</p>
         <!-- Los dos canales directos siguen aquí, y en formato pequeño a
              propósito: quien prefiere WhatsApp lo tiene a un toque sin que le
