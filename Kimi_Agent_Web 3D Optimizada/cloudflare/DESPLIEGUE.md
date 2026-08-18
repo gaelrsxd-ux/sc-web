@@ -185,6 +185,99 @@ console.log(r.status, r.headers.get('X-Limitador'));   // esperado: 200 "ok"
 | Repetir la misma URL ya cacheada, en ráfaga | sigue cortando en 20 |
 | Esperar 60 s sin tráfico | vuelve a `200` |
 
+### Comprobación de que el Worker DESPLEGADO valida Turnstile — 18 ago 2026
+
+Contexto: el panel de Cloudflare mostró el aviso *«Siteverify isn't being called
+for SyC Diagnostico SEO. Without a server-side siteverify call, widget tokens
+aren't validated. The forms these widgets protect remain open to bots.»*
+
+**El código sí llama a siteverify.** Entró en `ccfedc6` (8 ago 2026):
+`verificaTurnstile()` en `seo-audit.js` hace `POST` a
+`https://challenges.cloudflare.com/turnstile/v0/siteverify` con
+`env.TURNSTILE_SECRET`, comprueba `success`, `hostname` y `action`, rechaza las
+secret keys de prueba fuera de desarrollo, y **falla cerrado**: sin secreto no
+analiza, responde `503`.
+
+**Y el Worker desplegado lleva ese código.** Se comprobó con un canario nuevo
+que funciona desde fuera, sin navegador y sin cabeceras propias:
+
+```bash
+curl -sS -D- https://audit.sycsolutions.company/robots.txt
+```
+
+Respuesta obtenida el 18 ago 2026, 06:39 UTC:
+
+```
+HTTP/2 200
+content-type: text/plain; charset=utf-8
+content-length: 26
+cache-control: public, max-age=86400
+x-content-type-options: nosniff
+
+User-agent: *
+Disallow: /
+```
+
+Por qué esto demuestra la versión: la ruta `/robots.txt` del Worker **no existía
+antes de `ccfedc6`** (verificado con `git show ccfedc6^:…/seo-audit.js`), y esas
+tres cabeceras exactas más los 26 bytes exactos sólo los produce el bloque
+introducido en ese commit. Y por qué funciona cuando lo demás no: Super Bot
+Fight Mode deja pasar las extensiones estáticas —`.txt`, `.js`, `.xml`— y bloquea
+con `403` todo lo demás, incluida la ruta `/` del diagnóstico. Es la única
+sonda de versión que sobrevive a esa capa.
+
+**Lo que el canario NO demuestra:** que `TURNSTILE_SECRET` esté puesto, y que sea
+el del widget correcto. Eso no se puede ver desde fuera. Y son justamente las dos
+causas que producirían el aviso del panel con el código ya desplegado:
+
+| Estado del secreto | Qué hace el Worker | Qué ve el visitante | Qué ve el panel |
+|---|---|---|---|
+| Correcto (widget `SyC Diagnostico SEO`) | valida y analiza | el informe | siteverify llamado |
+| **Ausente** | `503` `X-Limitador: turnstile-sin-secreto` | «El diagnóstico no está disponible ahora mismo» | **cero llamadas → el aviso** |
+| **El del widget del CONTACTO** | siteverify responde `invalid-input-response` → `403` | «La verificación anti-bots caducó» | **cero llamadas para ESTE widget → el aviso** |
+
+**La comprobación, y no hace falta ninguna herramienta.** Abre
+`https://sycsolutions.company`, baja al diagnóstico, escribe cualquier dirección
+y pulsa **Analizar**:
+
+- **Sale el informe** → el secreto es el correcto. No hay nada que hacer; el
+  aviso del panel es anterior al despliegue del 8 de agosto.
+- **«El diagnóstico no está disponible ahora mismo»** → falta `TURNSTILE_SECRET`.
+- **«La verificación anti-bots caducó»**, y se repite al reintentar → el secreto
+  puesto es de otro widget.
+
+En los dos casos malos, el arreglo es el mismo y **lo tiene que hacer Santiago**,
+porque implica manejar una clave:
+
+1. Panel de Cloudflare → **Turnstile** → widget **`SyC Diagnostico SEO`**
+   (sitekey `0x4AAAAAAEKjpagA_DLwswxz`) → copiar su **Secret Key**.
+   ⚠ El widget del formulario de contacto es OTRO (`SyC OS Gateway`, sitekey
+   `0x4AAAAAAEK4XVI_9s0X_JX9`) y su secreto vive en el gateway, no aquí.
+   Confundirlos es exactamente el fallo de la tercera fila de la tabla.
+2. En este directorio:
+
+```bash
+npx wrangler@4.120.0 secret put TURNSTILE_SECRET
+```
+
+   El nombre exacto de la variable es **`TURNSTILE_SECRET`**, y va como **secreto
+   del Worker `syc-seo-audit`**, nunca en un archivo del repositorio. Wrangler la
+   pide por teclado y no la muestra.
+3. Confirmar sin verla, junto con la otra:
+
+```bash
+npx wrangler@4.120.0 secret list
+```
+
+   Tienen que aparecer `SAL_LIMITE` y `TURNSTILE_SECRET`.
+4. Repetir la comprobación del navegador.
+
+**No se ha quitado el widget, y no es una opción.** Este endpoint abre hasta 13
+subpeticiones salientes por análisis contra dominios que elige quien llama, y
+gasta invocaciones de Worker y operaciones de Durable Object: es una factura
+esperando a ocurrir. Un endpoint así se valida y se limita; no se deja sin
+candado.
+
 ### El 429 con mensaje propio: pendiente de verificación en producción
 
 No se puede provocar a mano con facilidad y **no se relaja nada para poder
