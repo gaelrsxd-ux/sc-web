@@ -1845,6 +1845,16 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    Sin una sola libreria: WebGL para una caja plana habria sido traer un motor
    para dibujar un folio.
 
+   Y LA ESCENA TAMBIEN ES LA SUYA: el fondo es la misma mesa de madera de las
+   fotos, recortada por la derecha donde no hay placa, desenfocada y bajada de
+   tono en capas CSS que se pueden ajustar sin reexportar nada. Con la luz
+   cenital encima, la vinneta y la sombra de contacto, la pieza no flota
+   delante de una foto: se apoya en la mesa en la que se apoya de verdad.
+   Los dos archivos —cara y escena— pesan 57 KB juntos y NO se descargan hasta
+   que alguien pulsa «Girar en 3D»: hasta entonces .p3d va en display:none y
+   el navegador no pide fondos de lo que no se pinta. Comprobado contando
+   peticiones antes y despues del clic.
+
    ⚠ LAS FOTOS SIGUEN MANDANDO. Son la vista por defecto; esto es el
    complemento que deja verlo por detras y de canto, angulos de los que no hay
    foto. La cara impresa no se dibuja: se fotografia. */
@@ -1862,7 +1872,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    para dar las esquinas —redondeadas, asi que el punto extremo no vale—, y
    de ahi 1:1.7164 en la foto; corregido el escorzo de los 13 grados que la
    placa va echada hacia atras, 1:1.7618. Es la proporcion de la textura. */
-:root{--pw:176px;--ph:310px;--pt:9px;--bd:112px}
+:root{--pw:176px;--ph:310px;--pt:8px;--bd:112px}
 /* La altura la manda la PIEZA, no el ancho. Con aspect-ratio la caja crecia
    con la pantalla mientras el modelo apenas cambiaba, y en escritorio
    quedaban cien pixeles muertos encima de la placa. 1.32 es el hueco que
@@ -1874,8 +1884,19 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   /* pan-y y NO none: en un movil, un visor que se traga el desplazamiento
      vertical es una trampa de la que no se sale. El giro se toma del gesto
      horizontal, que es el eje que importa, y la pagina sigue bajando. */
-  touch-action:pan-y;border:1px solid var(--line-soft);background:
-    radial-gradient(120% 90% at 50% 12%,rgba(200,169,106,.09),transparent 68%)}
+  touch-action:pan-y;border:1px solid var(--line-soft);
+  /* LA ESCENA ES LA MESA DE VERDAD. Recortada de la foto trasera por la
+     derecha, donde no hay placa; desenfocada porque en la foto ya lo estaba
+     y porque el fondo no puede competir con el objeto. 4,5 KB: el desenfoque
+     comprime casi a nada. Encima, en capas y no quemadas en el archivo para
+     poder ajustarlas sin reexportar: la luz cenital, una vinneta que despega
+     el producto de la madera, y un velo que la baja al tono de la pagina. */
+  background:
+    radial-gradient(70% 44% at 50% -12%,rgba(255,244,220,.26),transparent 62%),
+    radial-gradient(128% 104% at 50% 50%,transparent 24%,rgba(6,7,9,.40) 64%,rgba(6,7,9,.86) 100%),
+    linear-gradient(180deg,rgba(6,7,9,.74),rgba(6,7,9,.44) 40%,rgba(6,7,9,.30)),
+    url(assets/placa-escena-mesa.webp) 50% 64%/cover no-repeat,
+    #0d0b09}
 .p3d.arrastra{cursor:grabbing}
 .p3d:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
 .p3d-esc{transform-style:preserve-3d;
@@ -1899,25 +1920,72 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    porque hasta entonces .p3d va en display:none.
    A media chapa EXACTA: con la cara medio pixel por detras del canto, el
    filo salia punteado en pantallas 2x. */
-.p3d .cf{background:#0d0e11 url(assets/placa-cara-frontal.webp) center/100% 100% no-repeat;
-  transform:translateZ(calc(var(--pt)/2));overflow:hidden}
-.p3d .cf svg{width:100%;height:100%;display:block}
+/* EL FILO, EN LOS DOS LADOS. El canto real en 3D solo se ve por el lado que
+   te mira —es lo correcto—, pero eso dejaba el otro lado sin nada de grosor
+   y la placa se leia torcida. Estas dos lineas finas a izquierda y derecha
+   son el filo blanco asomando por el borde de la cara, que es lo que se ve
+   en la foto frontal: alli el canto tampoco se ve entero, se intuye. Van en
+   la cara y no en geometria nueva porque un plano de 1,4 px girando es una
+   fabrica de dientes de sierra. */
+.p3d .cf{transform:translateZ(calc(var(--pt)/2));overflow:hidden;background:
+    linear-gradient(90deg,rgba(255,255,255,.62) 0 1.6px,rgba(255,255,255,.16) 1.6px 3px,transparent 3px),
+    linear-gradient(270deg,rgba(255,255,255,.62) 0 1.6px,rgba(255,255,255,.16) 1.6px 3px,transparent 3px),
+    linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.03) 26%,transparent 52%),
+    url(assets/placa-cara-frontal.webp) center/100% 100% no-repeat,
+    #0d0e11}
 /* El reverso es negro liso —asi es el producto— pero un rectangulo de un solo
    tono sobre un fondo casi negro no se lee como un objeto: se lee como un
    agujero. El degradado hace de reflejo en el acrilico y le devuelve el
    volumen sin inventarle nada que no tenga. */
-.p3d .cb{background:linear-gradient(122deg,#1c1d24 0%,#101117 44%,#191a21 100%);
-  transform:rotateY(180deg) translateZ(calc(var(--pt)/2))}
-/* El filo blanco es la firma del producto: sin el, el modelo es una caja negra. */
-/* Los cantos se meten 9 px por cada extremo: el frente esta redondeado a 9 px
-   y una tira recta a lo largo de todo el lado asoma por la esquina como una
-   pua blanca. Se acortan, no se redondean: el filo tiene que seguir recto. */
+.p3d .cb{transform:rotateY(180deg) translateZ(calc(var(--pt)/2));background:
+    linear-gradient(90deg,rgba(255,255,255,.42) 0 1.4px,transparent 2.8px),
+    linear-gradient(270deg,rgba(255,255,255,.42) 0 1.4px,transparent 2.8px),
+    linear-gradient(180deg,#26272f,#15161d 38%,#0e0f14)}
+/* EL BRILLO QUE SE MUEVE CON EL DEDO. La luz esta arriba y quieta; lo que
+   cambia al girar es DONDE la ves reflejada, y eso va como el seno del
+   angulo. El JS escribe ese seno en --espec (de -1 a 1) y aqui solo se
+   traduce a un desplazamiento: sin condicionales, sin un rAF extra, y el
+   reflejo cruza la placa mientras alguien la gira. En el reverso va al
+   reves porque la cara esta espejada. */
+.p3d .cf::after,.p3d .cb::after{content:"";position:absolute;inset:0;
+  border-radius:inherit;pointer-events:none;background:
+    linear-gradient(102deg,transparent 28%,rgba(255,255,255,.11) 45%,
+      rgba(255,255,255,.04) 55%,transparent 70%)}
+.p3d .cf::after{transform:translateX(calc(var(--espec,0) * -40%))}
+.p3d .cb::after{transform:translateX(calc(var(--espec,0) * 40%))}
+/* El filo blanco es la firma del producto: sin el, el modelo es una caja
+   negra. Los dos cantos son IDENTICOS —mismo grosor, mismo degradado— y se
+   meten 9 px por cada extremo: la cara va redondeada a 8 px y una tira recta
+   a lo largo de todo el lado asomaba por la esquina como una pua.
+   Y ya no son blanco plano: con la luz arriba, un canto vertical se aclara
+   arriba y se apaga abajo. Plano parecia una barra encendida pegada al
+   producto; con el degradado parece el canto que es. */
 .p3d .ci,.p3d .cd{width:var(--pt) !important;left:calc(50% - var(--pt)/2) !important;
-  height:calc(var(--ph) - 18px) !important;top:9px !important;background:#f0f0f0}
+  height:calc(var(--ph) - 18px) !important;top:9px !important;
+  background:linear-gradient(180deg,#26282d 0,#f2f2f4 4%,#e2e3e5 22%,#b4b6bb 66%,#8a8c92 96%,#26282d 100%)}
 .p3d .ci{transform:rotateY(-90deg) translateZ(calc(var(--pw)/-2 + var(--pt)/2))}
 .p3d .cd{transform:rotateY(90deg)  translateZ(calc(var(--pw)/2 - var(--pt)/2))}
+/* ⚠ LOS CANTOS DE ARRIBA Y ABAJO, Y LA «MANCHA BLANCA» QUE SALIA AL GIRAR.
+   Medido: casi de canto (ry ≈ -268) la cara de arriba se proyecta en 14x13
+   px sobre una placa cuya silueta ahi mide unos 10. Aritmeticamente es
+   correcto —la cara mide 158 px de largo y a 92 grados eso sigue dando 5,5
+   px, mas los 8 del grosor— pero en BLANCO PURO y con las puntas redondeadas
+   a 4,5 px se leia como una banderita pegada a la punta de la placa. No es
+   un fallo de geometria: es de tono. Van en gris, el de arriba mas claro
+   porque mira a la luz y el de abajo apagado porque mira a la mesa, y con
+   las puntas casi rectas para que parezcan un canto y no una pestana. */
 .p3d .ct,.p3d .cu{height:var(--pt) !important;top:calc(50% - var(--pt)/2) !important;
-  width:calc(var(--pw) - 18px) !important;left:9px !important;background:#ececec}
+  width:calc(var(--pw) - 20px) !important;left:10px !important;border-radius:2px}
+/* Y LAS PUNTAS SE APAGAN. El degradado no va solo de arriba abajo: va
+   tambien A LO LARGO, y en los dos extremos baja al tono de la placa. Es
+   justo por las puntas por donde estos cantos asoman cuando la pieza esta
+   casi de canto; apagadas, lo que se ve ahi ya no es una pestana clara sino
+   la continuacion del cuerpo. Y es lo que hace un canto real: en el radio de
+   la esquina la luz se va. */
+.p3d .ct{background:linear-gradient(90deg,#1a1b20 0,#1a1b20 24%,#bcbfc5 44%,#c4c7cd 50%,
+  #bcbfc5 56%,#1a1b20 76%,#1a1b20 100%)}
+.p3d .cu{background:linear-gradient(90deg,#121317 0,#121317 24%,#54575e 46%,#54575e 54%,
+  #121317 76%,#121317 100%)}
 .p3d .ct{transform:rotateX(90deg)  translateZ(calc(var(--ph)/2 - var(--pt)/2))}
 .p3d .cu{transform:rotateX(-90deg) translateZ(calc(var(--ph)/2 - var(--pt)/2))}
 /* El pie cuelga del MISMO canto y se tumba hacia ATRAS. Es lo que ensena la
@@ -1931,12 +1999,27 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    mira a la mesa es .bt: van intercambiadas respecto a la version anterior.
    La de arriba lleva un degradado —recoge la luz de la mesa y sin el el pie
    se leia como un alambre blanco hueco— y el filo blanco del canto. */
-.p3d .bt{background:#0b0c0f;transform:translateZ(2.5px)}
-.p3d .bb{background:linear-gradient(180deg,#26272e,#131419 72%);
-  transform:rotateY(180deg) translateZ(2.5px);box-shadow:inset 0 0 0 1.4px #dcdcdc}
-.p3d-piso{position:absolute;left:50%;top:100%;width:250px;height:170px;
-  transform:translate(-50%,-10%) rotateX(-90deg) translateZ(-9px);
-  background:radial-gradient(ellipse at center,rgba(0,0,0,.7),transparent 66%);filter:blur(9px)}
+.p3d .bt{background:#08090b;transform:translateZ(2.5px)}
+.p3d .bb{background:linear-gradient(180deg,#2e2f37,#191a20 46%,#101116);
+  transform:rotateY(180deg) translateZ(2.5px);
+  box-shadow:inset 0 0 0 1.3px rgba(233,234,237,.70)}
+/* La sombra de contacto. Con la mesa detras deja de ser adorno: es lo unico
+   que dice que la pieza esta APOYADA y no flotando delante de una foto.
+   ⚠ EL SIGNO DEL translateZ. Tras rotateX(-90) el eje Z local apunta hacia
+   ABAJO, asi que el -16px de antes levantaba la sombra 16 px POR ENCIMA del
+   plano de la mesa: quedaba justo detras del pie, que es opaco, y no se veia
+   ni un pixel de ella. En positivo se hunde bajo el pie y asoma alrededor,
+   que es lo que hace una sombra. */
+.p3d-piso{position:absolute;left:50%;top:100%;width:calc(var(--pw)*1.52);height:calc(var(--bd)*1.8);
+  transform:translate(-50%,-50%) rotateX(-90deg)
+            translate(0,calc(var(--bd)*.34)) translateZ(8px);
+  /* ⚠ SIN filter:blur(). Un elemento con `filter` deja de participar en el
+     contexto 3D del padre —el navegador lo aplana— y la sombra desaparecia
+     de la escena aunque estuviera bien colocada: se comprobo pintandola de
+     rojo y quitandole el filtro. El desenfoque lo hace el propio degradado,
+     que para una sombra difusa es exactamente lo mismo y no cuesta una capa. */
+  background:radial-gradient(ellipse at 50% 44%,rgba(0,0,0,.86) 0%,rgba(0,0,0,.66) 18%,
+    rgba(0,0,0,.34) 40%,rgba(0,0,0,.12) 58%,transparent 74%)}
 .p3d-pista{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);margin:0;
   font-size:9px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim);
   white-space:nowrap;pointer-events:none;transition:opacity .5s ease}
@@ -4147,8 +4230,15 @@ const SIG=(()=>{
 
   let rx=-10,ry=-26,auto=true,ve=false,arr=false,raf=0,x0=0,y0=0,rx0=0,ry0=0;
   const suave=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* --espec es el SENO del angulo de giro, de -1 a 1. La luz esta fija arriba;
+     lo que cambia al girar es donde se ve su reflejo, y eso va como el seno.
+     Se escribe aqui, sin unidad, y el CSS lo convierte en un desplazamiento:
+     el brillo cruza la placa mientras alguien la mueve, sin un rAF aparte y
+     sin un solo condicional. Es periodico por construccion, asi que da igual
+     cuantas vueltas se le den. */
   const pinta=()=>{esc.style.setProperty('--rx',rx.toFixed(2)+'deg');
-                   esc.style.setProperty('--ry',ry.toFixed(2)+'deg');};
+                   esc.style.setProperty('--ry',ry.toFixed(2)+'deg');
+                   esc.style.setProperty('--espec',Math.sin(ry*Math.PI/180).toFixed(3));};
   function bucle(){
     raf=0;
     if(!(auto&&ve&&suave&&!caja.hidden))return;
@@ -4174,9 +4264,12 @@ const SIG=(()=>{
     /* La inclinacion se topa. Hacia arriba, en -46: mas alla la pieza se ve por
        dentro. Hacia abajo, en 14 y no en 28: pasado ese punto se mira el
        producto DESDE DEBAJO DE LA MESA, la base tapa media placa y no queda
-       ninguna vista que ensene nada. Un tope que corta antes de la vista inutil
-       es lo que hace que arrastrar no pueda salir mal. */
-    rx=Math.max(-46,Math.min(14,rx0-(e.clientY-y0)*.35));
+       ninguna vista que ensene nada. Hacia abajo el tope es 2 y no 14: con 14
+       la camara se metia POR DEBAJO DEL PLANO DE LA MESA, y una placa vista
+       desde debajo de la mesa en la que se apoya no es un angulo, es un error.
+       Un tope que corta antes de la vista inutil es lo que hace que arrastrar
+       no pueda salir mal. */
+    rx=Math.max(-46,Math.min(2,rx0-(e.clientY-y0)*.35));
     pinta();
   });
   ['pointerup','pointercancel','pointerleave'].forEach(t=>
@@ -4185,7 +4278,7 @@ const SIG=(()=>{
     const k={ArrowLeft:[0,-12],ArrowRight:[0,12],ArrowUp:[-8,0],ArrowDown:[8,0]}[e.key];
     if(!k)return;
     e.preventDefault();manda();
-    rx=Math.max(-46,Math.min(14,rx+k[0]));ry+=k[1];pinta();
+    rx=Math.max(-46,Math.min(2,rx+k[0]));ry+=k[1];pinta();
   });
 
   /* El conmutador. La vista por defecto son las FOTOS: son el producto real y
