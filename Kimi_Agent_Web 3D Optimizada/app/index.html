@@ -893,17 +893,6 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .work:hover .res-tapa .dia{transform:rotate(225deg)}
 .work .res-tapa:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
 .work .res.abierto .res-tapa{opacity:0;pointer-events:none}
-/* Recompensa por destaparlos todos: la única frase de la página que hay que
-   ganarse. Quien llega aquí ya ha invertido cuatro gestos en los casos. */
-.works-fin{margin-top:clamp(26px,3vw,38px);text-align:center;opacity:0;transform:translateY(12px);
-  transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1);pointer-events:none}
-.works-fin.on{opacity:1;transform:none;pointer-events:auto}
-.works-fin p{font-family:var(--serif);font-style:italic;font-size:clamp(19px,2vw,25px);color:var(--muted)}
-.works-fin p em{font-style:italic;color:var(--bronze-hi)}
-.works-fin a{display:inline-flex;align-items:center;gap:10px;margin-top:16px;font-size:10px;
-  letter-spacing:3.4px;text-transform:uppercase;font-weight:500;color:var(--bronze-hi);
-  border-bottom:1px solid var(--line);padding-bottom:7px;transition:border-color .35s,color .35s}
-.works-fin a:hover{color:var(--bronze);border-color:var(--bronze)}
 
 /* La banda de firmantes y sus estilos se retiraron con los nombres de negocio
    inventados que desfilaban en ella. */
@@ -1106,11 +1095,19 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    Cada selector usa el pseudo-elemento que tenía libre: ::before en .res-tapa
    y ::after en el resto, porque los contrarios ya llevan anillos y subrayados. */
 @media(pointer:coarse){
-  .snd,.btn,.svc-btn,.res-tapa,.works-fin a,footer .fl a{position:relative}
+  .snd,.btn,.svc-btn,.res-tapa,
+  .tema,#costo-cta,.c-enl,.form-nota a,.faq .faq-r a{position:relative}
   .snd::after,.btn::after,.svc-btn::after,.res-tapa::before,
-  .works-fin a::after,footer .fl a::after{
+  .tema::after,#costo-cta::after,.c-enl::before,
+  .form-nota a::after,.faq .faq-r a::after{
     content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:max(100%,44px);height:max(100%,44px)}
+  /* .c-enl gasta el ::after en la flecha ↗, asi que aqui va el ::before. */
+  /* El del tema NO se ensancha: con 44 —y con 40— rozaba la caja de la marca,
+     y dos zonas tactiles que se pisan son peores que una estrecha. Crece solo
+     a lo alto, que es la dimension en la que falla un pulgar. */
+  .tema::after{width:100%}
+
 }
 
 /* ---------- FOOTER ---------- */
@@ -1524,7 +1521,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      los casos se muestran puestos desde el principio. */
   .work .res-dato{filter:none;opacity:1;transform:none}
   .work .res-tapa{display:none}
-  .works-fin{opacity:1;transform:none;pointer-events:auto}
 }
 
 /* ==================================================================
@@ -1637,7 +1633,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   /* El lienzo de fondo, los rieles y todo lo que sólo sirve en pantalla */
   #descenso,#avance,.rail,nav,.cat-barra,.snd,.oro-aviso,.pres-idx,
   .bait-btn,.costo input[type=range],#visor,
-  .aud-form,.aud-rival,.aud-cta,.works-fin a,.svc-btn,
+  .aud-form,.aud-rival,.aud-cta,.svc-btn,
   .frame button,.ts-caja,.can-alt,
   .res-tapa,.bar-idx,.met{display:none!important}
   html,body{background:#fff!important;color:#14161A!important}
@@ -1646,7 +1642,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     text-shadow:none!important;box-shadow:none!important}
   /* Todo lo que en pantalla se descubre al desplazar llega ya descubierto:
      en papel no hay scroll que lo dispare y saldría media hoja en blanco. */
-  .rv,.w,.zoomsec,.works-fin,.met{opacity:1!important;transform:none!important;visibility:visible!important}
+  .rv,.w,.zoomsec,.met{opacity:1!important;transform:none!important;visibility:visible!important}
   .work .res-dato{filter:none!important;opacity:1!important;transform:none!important}
   section{padding:10mm 0!important;break-inside:auto}
   .wrap{max-width:none!important;padding:0!important}
@@ -2049,6 +2045,82 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   color:var(--dim);pointer-events:none}
 @media(max-width:400px){:root{--pw:152px;--ph:268px;--bd:97px}
   .p3d-mando span{letter-spacing:1.9px}}
+/* ============ DEDO GORDO, SEGUNDA PASADA ============
+   Va al FINAL de la hoja a proposito. El bloque @media(pointer:coarse) de mas
+   arriba solo reparte parches invisibles; estos selectores necesitan CAMBIAR
+   medidas que se declaran mas abajo (.bar-b vive dentro del media de la baraja,
+   el deslizador se dibuja en la calculadora), y una regla de la misma
+   especificidad puesta antes pierde. Medido en un movil de 390 antes de esto:
+   el indice de la baraja daba 20x22, el deslizador UN pixel de alto, el boton
+   de copiar 95x38 y los enlaces legales del pie 11. */
+@media(pointer:coarse){
+  /* Crecen de verdad, sin parche: son botones sueltos con sitio alrededor, y un
+     objetivo que se ve del tamano que es siempre es mejor que uno que miente. */
+  .bar-b{padding:17px 12px 14px}
+  .c-copia{min-height:44px}
+  /* Las dos filas del pie, con relleno real y no con parche: con parches de 44
+     las zonas de una fila se metian en la de al lado —«Servicios» pisaba a
+     «Nosotros»— y el enlace que respondia no era el que se veia. */
+  footer .fl a,footer .legal a{display:inline-block;padding:15px 6px}
+  footer .fl{gap:0 20px;margin:6px 0}
+  footer .legal{gap:0 16px;margin-bottom:4px}
+
+  /* ⚠ EL DESLIZADOR MEDIA UN PIXEL. Con raton se acierta; con el dedo no. El
+     control pasa a 44 y la pista se dibuja aparte, asi que se sigue viendo la
+     misma linea fina: crece la zona que responde, no el dibujo. */
+  .costo input[type=range]{height:44px;background:transparent}
+  .costo input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--line)}
+  .costo input[type=range]::-webkit-slider-thumb{margin-top:-7px}
+  .costo input[type=range]::-moz-range-track{height:1px;background:var(--line)}
+  .costo input[type=range]::-moz-range-thumb{transform:rotate(45deg)}
+}
+/* ============ LAS ETIQUETAS, EN MOVIL ============
+   Con 250 px de ancho util dentro de la tarjeta, cada recuadro se comia un
+   renglon entero: tres etiquetas eran tres barras apiladas que parecian
+   botones y no caracteristicas. En vez de encoger la letra hasta que quepan
+   —que las deja ilegibles— se retira la caja y se enhebran en una sola linea
+   con el rombo de la pagina entre medias. Ocupa una linea o dos en vez de
+   tres, pesa menos y sigue siendo el mismo lenguaje: el rombo ya esta en los
+   botones, en la calculadora y en el pie. */
+@media(max-width:560px){
+  .svc ul,.m-tags,.prod-ul{gap:0;row-gap:4px;align-items:baseline}
+  .svc li,.m-tags li,.prod-ul li{border:0;padding:0;font-size:9.5px;letter-spacing:2.2px}
+  /* El rombo va detras del elemento y no delante: asi, cuando la linea se
+     parte, el separador se queda con la etiqueta anterior en vez de abrir el
+     renglon siguiente. Es la convencion tipografica de toda la vida. */
+  .svc li:not(:last-child)::after,.m-tags li:not(:last-child)::after,
+  .prod-ul li:not(:last-child)::after{
+    content:"\25C6";margin:0 8px;font-size:5.5px;color:var(--line);
+    vertical-align:middle;letter-spacing:0}
+}
+/* ============ TRES ARREGLOS DE MOVIL, MEDIDOS EN UN 390 ============ */
+@media(max-width:560px){
+  /* 1 · EL RESULTADO DE CADA CASO, APILADO. En una columna de 250 px, el dato
+     y su rotulo peleaban por el mismo renglon: la frase en cursiva partida en
+     dos y el rotulo en mayusculas partido en otras dos, uno al lado del otro.
+     Apilados se leen de un vistazo, que es justo lo que se acaba de destapar. */
+  .work .res-dato{flex-direction:column;align-items:flex-start;gap:7px}
+  /* Y tapado se ve MENOS tapado: con desenfoque de 9 y opacidad .26 en una
+     pantalla pequena no se intuia nada debajo, y el hueco parecia un error de
+     maquetacion en vez de una promesa. */
+  .work .res-dato{filter:blur(6px);opacity:.4}
+
+  /* 2 · EL DIAGNOSTICO, EN DOS PISOS. En una sola fila el campo se quedaba en
+     nada y «Analizar» era un rotulo suelto de 9 px sin caja: la accion mas
+     importante de la seccion parecia texto de relleno. Ahora el campo ocupa el
+     ancho entero y el boton es un boton, con el rombo de la casa y 48 px de
+     alto que no hay que buscar. */
+  .aud-form{flex-direction:column;border-bottom:none;gap:14px}
+  .aud-form input{border-bottom:1px solid var(--line);padding:12px 2px 14px;width:100%}
+  .aud-form button{align-self:stretch;min-height:48px;padding:0;
+    border:1px solid var(--line);letter-spacing:3.4px;
+    display:flex;align-items:center;justify-content:center;gap:11px;
+    transition:color .3s,border-color .3s,background-color .3s}
+  .aud-form button::before{content:"\25C6";font-size:7px;color:var(--bronze);
+    transform:translateY(-1px)}
+  .aud-form button:disabled{border-color:var(--line-soft)}
+  .aud-form button:disabled::before{color:var(--dim)}
+}
 </style>
 </head>
 <body>
@@ -2202,7 +2274,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <span class="idx">/ 01</span>
         <h3>Sitios Web Premium para tu Negocio</h3>
         <p><b>Cada visitante que abandona una página web poco profesional es una oportunidad que probablemente no volverá.</b> Diseñamos sitios web que generan confianza desde el primer segundo y convierten visitas en clientes reales.</p>
-        <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Todos tus contactos</li><li>Fácil de actualizar</li></ul>
+        <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
         <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Sitios Web Premium para tu Negocio"><span class="dia"></span>Solicitar</a>
       </article>
       <article class="svc rv">
@@ -2218,7 +2290,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <span class="idx">/ 03</span>
         <h3>Aplicación Privada para tu Negocio</h3>
         <p><b>Cuando tu empresa depende de procesos manuales, cada error puede convertirse en retrasos, costos innecesarios y clientes insatisfechos.</b> Creamos una aplicación exclusiva para centralizar tu operación y ayudarte a trabajar con mayor control, velocidad y eficiencia.</p>
-        <ul><li>PC, móvil, iPad</li><li>Accesos personalizados</li><li>Fácil de usar</li><li>Para todo el equipo</li></ul>
+        <ul><li>PC, móvil, iPad</li><li>Accesos por persona</li><li>Fácil de usar</li></ul>
         <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20una%20aplicaci%C3%B3n%20privada%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Aplicación Privada para tu Negocio"><span class="dia"></span>Solicitar</a>
       </article>
       <!-- Aquí vivía la regla `ancha` para la quinta ficha: con cinco en dos
@@ -2324,11 +2396,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           Esta placa lo hace por ti desde el mostrador. El cliente acerca el
           m&#243;vil o escanea el c&#243;digo y cae directo en la pantalla de escribir tu
           rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
+        <!-- Dos: como funciona y cuanto dura. Las otras tres o repetian el
+             parrafo de arriba («sin aplicacion», «apunta a tu ficha») o eran
+             detalle que nadie duda de una placa impresa. -->
         <ul class="prod-ul">
           <li>NFC y QR</li>
-          <li>Sin pilas ni enchufe</li>
-          <li>Sin aplicaci&#243;n</li>
-          <li>Apunta a tu ficha</li>
           <li>Dura de 5 a 10 a&#241;os</li>
         </ul>
         <div class="prod-cta">
@@ -2467,11 +2539,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         </div>
       </article>
     </div>
-    <!-- Sólo aparece con las cuatro tarjetas destapadas -->
-    <div class="works-fin" id="works-fin" aria-live="polite">
-      <p>Cuatro formas de empezar. <em>La quinta la definimos contigo.</em></p>
-      <a href="#contacto"><span class="dia" aria-hidden="true"></span>Hablar de mi proyecto</a>
-    </div>
 
   </div>
 
@@ -2512,17 +2579,20 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <p class="m-bio">Construye agentes que trabajan solos y webs que cargan antes de que al
           visitante le dé tiempo a arrepentirse. Ni plantillas ni librerías: el código va escrito
           a mano, y por eso vuela.</p>
+        <!-- Dos, no cuatro. Cuatro etiquetas se leen como un curriculum y se
+             olvidan; dos se leen como una especialidad y se recuerdan. Fuera
+             «Automatización» —lo mismo que dicen los agentes— y fuera «Vibe
+             Coding», que ademas contradecia la linea de arriba: la bio presume
+             de codigo escrito a mano y esa etiqueta dice lo contrario. -->
         <ul class="m-tags">
           <li>Agentes de IA</li>
-          <li>Automatización</li>
           <li>Desarrollo web</li>
-          <li>Vibe Coding</li>
         </ul>
       </article>
 
       <article class="member rv">
         <div class="m-head">
-          <div class="m-face" aria-hidden="true">BM</div>
+          <div class="m-face" aria-hidden="true">BD</div>
           <div>
             <p class="m-role">Cofundador</p>
             <h3>Bruno Damián</h3>
@@ -2531,10 +2601,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <p class="m-bio">Lo que sostiene todo por debajo: base de datos, integraciones e
           infraestructura que no se cae un martes a las tres. Pregunta «¿y cuando entren mil a la
           vez?» antes de que entren mil a la vez.</p>
+        <!-- Las dos concretas. «Backend» es un paraguas que no dice nada a
+             quien contrata, e «Integraciones» ya viaja dentro de la bio. -->
         <ul class="m-tags">
-          <li>Backend</li>
           <li>Bases de datos</li>
-          <li>Integraciones</li>
           <li>Infraestructura</li>
         </ul>
       </article>
@@ -4679,7 +4749,6 @@ function haceQue(ms){
 (()=>{
   const tapas=[...document.querySelectorAll('.work .res-tapa')];
   if(!tapas.length)return;
-  const fin=document.getElementById('works-fin');
   let abiertos=0;
   tapas.forEach(b=>{
     b.addEventListener('click',()=>{
@@ -4688,13 +4757,11 @@ function haceQue(ms){
       res.classList.add('abierto');
       b.setAttribute('aria-expanded','true');
       abiertos++;
-      if(abiertos===tapas.length)EXP.marca('casos');
-      if(abiertos===tapas.length&&fin){
-        /* El aviso llega con retraso deliberado: si aparece a la vez que el
-           cuarto dato, el visitante lo lee como parte del efecto y no como
-           conclusión de lo que acaba de hacer. */
-        setTimeout(()=>{fin.classList.add('on');SIG.confirma();},700);
-      }
+      /* Destapar las cuatro era el gesto completo y sigue sonando, pero ya no
+         aparece nada debajo: el bloque que salia ahi repetia la llamada del
+         final de la pagina y hacia crecer la seccion justo cuando el visitante
+         acababa de terminarla. */
+      if(abiertos===tapas.length){EXP.marca('casos');setTimeout(()=>SIG.confirma(),700);}
     });
   });
 })();
