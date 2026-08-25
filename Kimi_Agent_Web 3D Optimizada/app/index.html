@@ -127,7 +127,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "offers":{
     "@type":"Offer",
     "url":"https://sycsolutions.company/#productos",
-    "price":"389",
+    "price":"499",
     "priceCurrency":"MXN",
     "availability":"https://schema.org/InStock",
     "itemCondition":"https://schema.org/NewCondition",
@@ -1096,10 +1096,10 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    y ::after en el resto, porque los contrarios ya llevan anillos y subrayados. */
 @media(pointer:coarse){
   .snd,.btn,.svc-btn,.res-tapa,
-  .tema,#costo-cta,.c-enl,.form-nota a,.faq .faq-r a{position:relative}
+  .tema,#costo-cta,.c-enl,.form-nota a,.faq .faq-r a,.pm-n a{position:relative}
   .snd::after,.btn::after,.svc-btn::after,.res-tapa::before,
   .tema::after,#costo-cta::after,.c-enl::before,
-  .form-nota a::after,.faq .faq-r a::after{
+  .form-nota a::after,.faq .faq-r a::after,.pm-n a::after{
     content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:max(100%,44px);height:max(100%,44px)}
   /* .c-enl gasta el ::after en la flecha ↗, asi que aqui va el ::before. */
@@ -1664,6 +1664,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   /* Las respuestas plegadas se imprimen abiertas: en papel nadie puede pulsar */
   .faq details>*{display:block!important}
   .faq summary{list-style:none;color:#14161A!important}
+  /* Y con ellas la tabla de mayoreo, por lo mismo: en una hoja impresa el
+     precio por volumen no puede quedarse detrás de un control que no responde. */
+  .prod-mayoreo>*{display:block!important}
+  .prod-mayoreo{border:1px solid #C9C4B8!important;break-inside:avoid}
+  .prod-mayoreo summary{list-style:none;color:#14161A!important}
+  .pm-p{color:#14161A!important}
+  .pm-q,.pm-n{color:#3A3D44!important}
   /* Un enlace impreso sin su dirección no es un enlace, es una palabra suelta */
   a[href^="http"]::after,a[href^="mailto"]::after{content:" (" attr(href) ")";
     font-size:8pt;color:#6B6355;word-break:break-all}
@@ -1735,7 +1742,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .prod-ul li{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
   border:1px solid var(--line);padding:7px 13px}
 /* El precio, la única cifra grande de la página, y por eso lleva su unidad
-   pegada: "389" a secas invita a suponer, y aquí no hay nada que suponer. */
+   pegada: "499" a secas invita a suponer, y aquí no hay nada que suponer. */
 /* El precio y el boton van JUNTOS Y CENTRADOS: son la misma decision —cuanto
    cuesta y donde se pide— y separados a la izquierda se leian como dos
    parrafos mas. Centrado, el bloque para el ojo. */
@@ -1748,6 +1755,66 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13.5px;line-height:1.75}
 .prod-nota b{color:var(--bronze-hi);font-weight:500}
 .prod-cuerpo .prod-cta .svc-btn{margin-top:0}
+
+/* ---------------------------- PRECIOS POR MAYOREO ----------------------------
+   El mismo <details> nativo que las preguntas frecuentes, y por los mismos
+   motivos: abre sin una línea de JS, se navega con teclado y el buscador lee la
+   tabla aunque esté plegada. No hace falta un componente nuevo para esto.
+
+   VA PLEGADO Y VA DEBAJO DEL BOTÓN, y las dos cosas son deliberadas. La cifra
+   que se ve al llegar es la de una unidad —$499—, que es lo que compra la
+   inmensa mayoría; enseñar "desde $399" arriba abarataría el producto delante
+   de quien sólo quiere una. El descuento por volumen es la respuesta a una
+   pregunta que sólo hace quien va a pedir varias, así que se guarda donde se
+   hace: un renglón más abajo, y sólo si se pulsa.
+
+   Cada fila es cantidad a la izquierda y precio a la derecha, como una carta:
+   con el hairline de la casa entre medias se lee de un vistazo y no parece una
+   tabla pegada. La última fila no lleva cifra sino la cursiva de acento, porque
+   no es un precio más: es la única que obliga a escribir. */
+.prod-mayoreo{margin-top:20px;border:1px solid var(--line-soft)}
+.prod-mayoreo summary{list-style:none;cursor:pointer;position:relative;
+  display:flex;align-items:center;gap:10px;min-height:48px;padding:0 42px 0 17px;
+  font-size:10px;letter-spacing:2.6px;text-transform:uppercase;font-weight:500;
+  color:var(--bronze-hi);transition:color .3s}
+.prod-mayoreo summary::-webkit-details-marker{display:none}
+/* El rombo de la casa: el mismo que llevan los botones, la calculadora y el
+   pie. Es lo que hace que esta línea no parezca un control importado. */
+.prod-mayoreo summary::before{content:"";flex:none;width:6px;height:6px;
+  background:var(--bronze);transform:rotate(45deg)}
+/* Cheurón: gira al abrir. Sólo transform, sin reflujo. */
+.prod-mayoreo summary::after{content:"";position:absolute;right:17px;top:50%;
+  width:7px;height:7px;margin-top:-5px;
+  border-right:1px solid var(--bronze);border-bottom:1px solid var(--bronze);
+  transform:rotate(45deg);transition:transform .35s ease}
+.prod-mayoreo[open] summary::after{transform:rotate(-135deg);margin-top:-2px}
+.prod-mayoreo summary:hover,.prod-mayoreo[open] summary{color:var(--ink)}
+.prod-mayoreo summary:focus-visible{outline:1px solid var(--bronze);outline-offset:3px}
+.pm-c{padding:0 17px 18px;border-top:1px solid var(--line-soft)}
+.pm-k{padding:17px 0 8px;font-size:9px;letter-spacing:4px;
+  text-transform:uppercase;color:var(--dim)}
+.pm-lista{list-style:none}
+.pm-lista li{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:11px 0;border-bottom:1px solid var(--line-soft)}
+.pm-lista li:last-child{border-bottom:0;padding-bottom:0}
+.pm-q{font-size:13.5px;color:var(--muted)}
+.pm-p{font-family:var(--serif);font-size:20px;line-height:1.1;color:var(--ink);
+  white-space:nowrap}
+.pm-lista li:last-child .pm-p{font-style:italic;font-size:18px;
+  color:var(--bronze-hi);white-space:normal;text-align:right}
+.pm-n{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-soft);
+  font-size:13px;line-height:1.7;color:var(--dim)}
+.pm-n a{color:var(--bronze-hi);border-bottom:1px solid var(--line)}
+/* Con 250 px de ancho útil, «Cotización personalizada» y su cantidad no caben
+   en el mismo renglón: sólo esa fila se apila. Las otras cinco siguen a dos
+   columnas, que es donde la lista se lee de un vistazo. */
+@media(max-width:560px){
+  .prod-mayoreo summary{padding-inline:14px 38px;letter-spacing:2.2px}
+  .prod-mayoreo summary::after{right:14px}
+  .pm-c{padding-inline:14px}
+  .pm-lista li:last-child{flex-direction:column;align-items:flex-start;gap:6px}
+  .pm-lista li:last-child .pm-p{text-align:left}
+}
 @media(min-width:900px){
   .prod{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
   .prod-fig{border-bottom:0;border-right:1px solid var(--line-soft)}
@@ -2405,12 +2472,36 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         </ul>
         <div class="prod-cta">
           <div class="prod-precio">
-            <span class="cifra">$389</span>
+            <span class="cifra">$499</span>
             <span class="u">MXN &#183; una unidad</span>
           </div>
           <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(NFC%20%2B%20QR)." class="svc-btn" target="_blank" rel="noopener noreferrer"
              aria-label="Escribir por WhatsApp para pedir la placa de rese&#241;as para Google"><span class="dia"></span>La quiero</a>
         </div>
+        <!-- Los precios por volumen, plegados. El precio de referencia sigue
+             siendo el de arriba; esto es la respuesta a quien pide varias, y
+             sólo aparece si la pide. Sin JS: <details> nativo, como las
+             preguntas frecuentes. -->
+        <details class="prod-mayoreo">
+          <summary>Ver precios por mayoreo</summary>
+          <div class="pm-c">
+            <p class="pm-k">Precios por cantidad</p>
+            <ul class="pm-lista">
+              <li><span class="pm-q">1 pieza</span><span class="pm-p">$499 MXN c/u</span></li>
+              <li><span class="pm-q">2 a 3 piezas</span><span class="pm-p">$469 MXN c/u</span></li>
+              <li><span class="pm-q">4 a 6 piezas</span><span class="pm-p">$439 MXN c/u</span></li>
+              <li><span class="pm-q">7 a 10 piezas</span><span class="pm-p">$419 MXN c/u</span></li>
+              <li><span class="pm-q">11 a 20 piezas</span><span class="pm-p">$399 MXN c/u</span></li>
+              <li><span class="pm-q">21 piezas o m&#225;s</span><span class="pm-p">Cotizaci&#243;n personalizada</span></li>
+            </ul>
+            <!-- El mismo WhatsApp que el bot&#243;n de arriba, con el texto ya
+                 escrito: no hay un canal nuevo, s&#243;lo otra puerta al de siempre. -->
+            <p class="pm-n">&#191;Necesitas 21 piezas o m&#225;s?
+              <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20una%20cotizaci%C3%B3n%20por%20mayoreo%20de%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(21%20piezas%20o%20m%C3%A1s)."
+                 target="_blank" rel="noopener noreferrer">Cont&#225;ctanos</a>
+              para recibir una cotizaci&#243;n personalizada.</p>
+          </div>
+        </details>
         <p class="prod-nota"><b>&#191;Est&#225;s en San Luis Potos&#237;?</b> Vamos nosotros:
           la llevamos, la enlazamos con tu ficha y la dejamos lista en cinco
           minutos, sin coste. Fuera de San Luis te llega ya configurada.</p>
