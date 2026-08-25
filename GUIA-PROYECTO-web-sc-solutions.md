@@ -12,14 +12,18 @@ Sitio web **one-page** de **S&C Solutions Company**, agencia que vende:
 
 - Sitios Web Premium para tu Negocio
 - Agentes de IA para tu Negocio
-- Aplicación Privada para tu Negocio
 - Automatización de Procesos en tu Negocio
 
-Son **cuatro y sólo cuatro**, y estos nombres son literales: el desplegable
+Son **tres y sólo tres**, y estos nombres son literales: el desplegable
 «¿Qué necesitas?» del formulario manda el valor tal cual al sistema, que lo
-compara contra su catálogo. El CRM dejó de ser una categoría propia (agosto de
-2026); las capacidades de tipo CRM que sigan haciendo falta van dentro de
-Aplicación Privada.
+compara contra su catálogo.
+
+Dos categorías se retiraron por el camino, y conviene saberlo antes de
+«recuperarlas»: el CRM dejó de serlo en agosto de 2026, y **Aplicación Privada
+para tu Negocio** en agosto de 2026 también, por decisión comercial. La ficha,
+su oferta en el JSON-LD, su opción del desplegable y sus menciones en los
+metadatos salieron con ella. Con tres fichas en dos columnas la última ocupa la
+fila entera (`.svc:last-child`), que es lo que evita la media fila vacía.
 
 **Eslogan de marca:** Ambición · Estrategia · Resultados
 **Tono:** Wolf of Wall Street elegante — seguro, provocador, serio, premium.
@@ -113,7 +117,7 @@ servidor, build, ni dependencias. El JS es 100% vanilla (sin librerías).
 
 - Title, meta description, keywords, canonical, robots
 - Open Graph + Twitter Cards (con hero-og.jpg)
-- JSON-LD Schema.org `Organization` con los 4 servicios en `makesOffer`
+- JSON-LD Schema.org `Organization` con los 3 servicios en `makesOffer`
 - HTML semántico, un solo h1, alt/aria en imágenes
 
 ## 8. PENDIENTES (datos a reemplazar)

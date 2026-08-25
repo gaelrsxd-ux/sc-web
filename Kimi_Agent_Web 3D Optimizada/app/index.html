@@ -10,8 +10,8 @@
 try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAttribute('data-tema','claro');}catch(_){}
 </script>
 <title>S&C Solutions — Webs, Automatización e IA para Negocios</title>
-<meta name="description" content="Construimos negocios que se ven tan bien como funcionan: sitios web premium, aplicaciones privadas, agentes de IA y automatización de procesos. S&C Solutions.">
-<meta name="keywords" content="diseño web premium, aplicaciones privadas a medida, agentes de IA, automatización de procesos, inteligencia artificial para negocios">
+<meta name="description" content="Construimos negocios que se ven tan bien como funcionan: sitios web premium, agentes de IA y automatización de procesos. S&C Solutions.">
+<meta name="keywords" content="diseño web premium, agentes de IA, automatización de procesos, inteligencia artificial para negocios">
 <meta name="author" content="S&C Solutions">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://sycsolutions.company/">
@@ -20,7 +20,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
 <meta property="og:site_name" content="S&C Solutions">
 <meta property="og:url" content="https://sycsolutions.company/">
 <meta property="og:title" content="S&C Solutions — Ambición · Estrategia · Resultados">
-<meta property="og:description" content="Webs premium, apps privadas, agentes de IA y automatización para negocios que piensan en grande.">
+<meta property="og:description" content="Webs premium, agentes de IA y automatización para negocios que piensan en grande.">
 <meta property="og:image" content="https://sycsolutions.company/assets/hero-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -44,7 +44,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "name":"S&C Solutions",
    "url":"https://sycsolutions.company/",
    "slogan":"Ambición · Estrategia · Resultados",
-   "description":"Sitios web premium, aplicaciones privadas, agentes de IA y automatización de procesos para negocios.",
+   "description":"Sitios web premium, agentes de IA y automatización de procesos para negocios.",
    "logo":{"@type":"ImageObject","url":"https://sycsolutions.company/assets/logo.svg"},
    "image":"https://sycsolutions.company/assets/hero-og.jpg",
    "foundingDate":"2026",
@@ -61,7 +61,6 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "makesOffer":[
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Sitios Web Premium para tu Negocio","serviceType":"Diseño y desarrollo web"}},
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Agentes de IA para tu Negocio","serviceType":"Agentes conversacionales con inteligencia artificial"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Aplicación Privada para tu Negocio","serviceType":"Desarrollo de software interno a medida"}},
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización de Procesos en tu Negocio","serviceType":"Automatización de procesos"}}
    ]
   },
@@ -147,7 +146,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
     {"@type":"Question","name":"¿Cuánto tardan en responderme?",
      "acceptedAnswer":{"@type":"Answer","text":"Menos de 24 horas. Atendemos de lunes a viernes de 9:00 a 23:00, y sábados y domingos de 10:00 a 22:00. Fuera de ese horario también solemos responder: tu mensaje entra igual."}},
     {"@type":"Question","name":"¿Qué hacen exactamente?",
-     "acceptedAnswer":{"@type":"Answer","text":"Cuatro cosas: sitios web premium, agentes de IA que atienden a tus clientes, aplicaciones privadas para tu equipo y automatización de procesos."}},
+     "acceptedAnswer":{"@type":"Answer","text":"Tres cosas: sitios web premium, agentes de IA que atienden a tus clientes y automatización de procesos."}},
     {"@type":"Question","name":"¿Cuánto cuesta el diagnóstico de mi web?",
      "acceptedAnswer":{"@type":"Answer","text":"Nada, y no hace falta registrarse. Analizamos únicamente la página pública que nos indiques: no guardamos la dirección ni la compartimos. Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a tu negocio."}},
     {"@type":"Question","name":"No sé qué necesito exactamente. ¿Puedo escribir igual?",
@@ -632,28 +631,11 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .scroll-cue i{display:block;width:1px;height:42px;background:linear-gradient(180deg,var(--bronze),transparent);animation:drop 2.1s ease-in-out infinite}
 @keyframes drop{0%{transform:scaleY(0);transform-origin:top}55%{transform:scaleY(1);transform-origin:top}56%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* ---------- MANIFIESTO ---------- */
-/* El resplandor va en el propio background: el ::before original lo definía
-   sin position ni tamaño, así que era una caja de cero píxeles y no se veía. */
-/* El velo arranca casi opaco: el hero tiene fondo propio y se desplaza con el
-   scroll, mientras el lienzo va fijo. Sin esta apertura gradual se vería la
-   costura entre ambos como una línea horizontal. */
-/* Sin fondo propio: lo aporta el velo único del lienzo. */
-.manifesto{position:relative;text-align:center;padding-bottom:clamp(24px,3vw,44px);overflow:hidden}
-/* La bruma del hero desciende hasta aquí: la misma foto que ya está cacheada,
-   ampliada y casi apagada. Encadena las dos secciones y cuesta 0 KB. */
-/* La bruma que antes se pintaba aquí la aporta ahora la escena 0 del lienzo */
-/* Aquí había una marca de agua: un "&" gigante en contorno, en Garamond
-   itálica. A 620 px y recortado por el borde derecho no se leía como la
-   ampersand de la marca sino como una clave de sol, así que se retira. El
-   fondo del lienzo ya da profundidad de sobra a la sección. */
-.manifesto .wrap{position:relative;z-index:1}
-.manifesto blockquote{font-family:var(--serif);font-size:clamp(28px,4.6vw,66px);line-height:1.35;font-weight:500;max-width:1220px;margin:auto}
-.manifesto blockquote em{font-style:italic;color:var(--bronze-hi)}
-.manifesto .sig{margin-top:32px;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--muted)}
-
 /* ---------- BAIT: mejor proyecto ---------- */
-.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(30px,3.6vw,54px)}
+/* El padding-top era 0 mientras el manifiesto iba justo encima y cerraba con
+   el suyo. Retirado aquél, sin esta línea el señuelo quedaba pegado al final
+   de "Sobre nosotros". Vuelve al valor de cualquier otra sección. */
+.bait{position:relative;overflow:hidden;text-align:center;padding-bottom:clamp(30px,3.6vw,54px)}
 .bait .wrap{position:relative;z-index:1}
 .bait .q{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--muted);margin-bottom:34px}
 /* El hueco entre los dos renglones es de línea, no de bloque: son una sola
@@ -706,6 +688,14 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
   background-image:linear-gradient(var(--line-soft),var(--line-soft))}
 /* En móvil no se apila: .svc-grid lleva también la clase baraja y pasa a
    deslizarse de lado. Ver el bloque BARAJAS MÓVILES. */
+/* TRES FICHAS EN DOS COLUMNAS: la última cae sola y deja media fila vacía. Ese
+   hueco no se ve como un hueco sino como un panel muerto, porque la retícula la
+   dibuja el contenedor y la celda sin ficha se queda del color del fondo. Que
+   ocupe la fila entera cierra el bloque y además jerarquiza: la que se lee
+   entera al final es la última que se quiere recordar.
+   Va con min-width porque por debajo de 760 px esto no es una retícula sino una
+   baraja horizontal (display:flex), donde grid-column no pinta nada. */
+@media(min-width:761px){.svc-grid>.svc:last-child{grid-column:1/-1}}
 .svc{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
 .svc:hover{background:var(--panel)}
 .svc::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.7,0,.2,1)}
@@ -1531,7 +1521,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    aplicarse nunca. Los ajustes responsivos van después de lo que ajustan.
    ================================================================== */
 /* ---------- BARAJAS MÓVILES ----------
-   En escritorio estas tres secciones se componen: cuatro servicios en 2×2,
+   En escritorio estas tres secciones se componen: los servicios en retícula,
    cuatro casos en 2×2, dos perfiles lado a lado. Apiladas en una columna esa
    composición desaparece y hay que recorrer cuatro pantallas para entender que
    hay cuatro cosas. Medido en un móvil de 402 px: servicios ocupaba 2,2
@@ -2324,9 +2314,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wrap">
     <span class="sec-tag"><span class="n">01 —</span> Servicios</span>
     <h2 class="title" data-split>Lo que <em>dominamos</em></h2>
-    <!-- Los cuatro "Solicitar" abren WhatsApp con el servicio ya escrito en el
+    <!-- Los tres "Solicitar" abren WhatsApp con el servicio ya escrito en el
          mensaje. Se quedan así aunque el formulario haya vuelto: el desplegable
-         de contacto ofrece los mismos cuatro servicios, y un enlace que abre una
+         de contacto ofrece los mismos tres servicios, y un enlace que abre una
          conversación de un toque convierte mejor que uno que baja media página
          hasta un campo pre-seleccionado.
          El texto va codificado en el propio href y no lo compone el JavaScript:
@@ -2352,22 +2342,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
         <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Agentes de IA para tu Negocio"><span class="dia"></span>Solicitar</a>
       </article>
+      <!-- Aquí iba "Aplicación Privada para tu Negocio", la 03. Retirada del
+           catálogo: son TRES servicios. Con tres en dos columnas la última ficha
+           queda sola en su fila, así que vuelve a hacer falta que ocupe la fila
+           entera —ver .svc:last-child en la hoja—. Es el mismo problema que
+           tuvo la quinta ficha en su día, con la misma solución. -->
       <article class="svc rv">
         <span class="go">↗</span>
         <span class="idx">/ 03</span>
-        <h3>Aplicación Privada para tu Negocio</h3>
-        <p><b>Cuando tu empresa depende de procesos manuales, cada error puede convertirse en retrasos, costos innecesarios y clientes insatisfechos.</b> Creamos una aplicación exclusiva para centralizar tu operación y ayudarte a trabajar con mayor control, velocidad y eficiencia.</p>
-        <ul><li>PC, móvil, iPad</li><li>Accesos por persona</li><li>Fácil de usar</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20una%20aplicaci%C3%B3n%20privada%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Aplicación Privada para tu Negocio"><span class="dia"></span>Solicitar</a>
-      </article>
-      <!-- Aquí vivía la regla `ancha` para la quinta ficha: con cinco en dos
-           columnas, la última quedaba sola a la izquierda y rompía la retícula.
-           Retirada la categoría de CRM son cuatro, la retícula cierra 2×2 sola y
-           ninguna ficha necesita ocupar la fila entera. La regla .svc.ancha se
-           va con ella: sin elemento que la lleve, era CSS muerto. -->
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 04</span>
         <h3>Automatización de Procesos en tu Negocio</h3>
         <p><b>Cada proceso manual puede hacer que tu equipo desperdicie decenas de horas de trabajo cada mes.</b> Automatizamos tareas para reducir errores, acelerar la operación y permitir que tu empresa se enfoque en crecer, no en repetir el mismo trabajo todos los días.</p>
         <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
@@ -2459,10 +2441,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
       <div class="prod-cuerpo">
         <h3>Placa de rese&#241;as para Google</h3>
-        <p><b>Las rese&#241;as no llegan solas: hay que pedirlas.</b>
-          Esta placa lo hace por ti desde el mostrador. El cliente acerca el
-          m&#243;vil o escanea el c&#243;digo y cae directo en la pantalla de escribir tu
-          rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
+        <!-- Antes abría con una idea ("las reseñas no llegan solas") y dejaba para
+             la tercera línea QUÉ ES la cosa que se vende. Ahora lo dice en las
+             primeras cuatro palabras: es una placa, va en el mostrador. Lo demás
+             es el gesto del cliente, que es lo único que hay que entender. -->
+        <p><b>Una placa para el mostrador de tu negocio.</b>
+          El cliente acerca el m&#243;vil o escanea el c&#243;digo y va directo a
+          dejarte una rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
         <!-- Dos: como funciona y cuanto dura. Las otras tres o repetian el
              parrafo de arriba («sin aplicacion», «apunta a tu ficha») o eran
              detalle que nadie duda de una placa impresa. -->
@@ -2502,9 +2487,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
               para recibir una cotizaci&#243;n personalizada.</p>
           </div>
         </details>
-        <p class="prod-nota"><b>&#191;Est&#225;s en San Luis Potos&#237;?</b> Vamos nosotros:
-          la llevamos, la enlazamos con tu ficha y la dejamos lista en cinco
-          minutos, sin coste. Fuera de San Luis te llega ya configurada.</p>
+        <!-- Dos frases y dos casos: si estás en San Luis, y si no. Antes lo mismo
+             ocupaba cuatro renglones con detalles que no cambian la decisión
+             ("en cinco minutos", "la enlazamos con tu ficha"). -->
+        <p class="prod-nota"><b>&#191;Est&#225;s en San Luis Potos&#237;?</b> Te la llevamos e
+          instalamos sin coste. Fuera de San Luis te llega lista para usar.</p>
       </div>
     </article>
   </div>
@@ -2645,7 +2632,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      Va después de los casos, no al principio. Abrir la página con
      "somos dos" respondía una pregunta que el visitante todavía no se había
      hecho, y le robaba el sitio al único tema que Google y el cliente buscan
-     aquí: los cuatro servicios. Llegando en este punto ya está convencido de lo
+     aquí: los tres servicios. Llegando en este punto ya está convencido de lo
      que hacemos y lo que pregunta es con quién trata, así que las credenciales
      rematan la confianza en lugar de abrir con una presentación.
      La antesala de credenciales sigue viéndose antes que el titular: la sección
@@ -2764,17 +2751,12 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   </div>
 </section>
 
-<!-- ============ MANIFIESTO ============
-     Cierra el recorrido de la prueba: servicios, casos, reseñas y quiénes
-     somos. Es además el único sitio donde el señuelo que va debajo se sostiene,
-     porque "…pero si tuviéramos que elegir uno" necesita que ya se hayan visto
-     varios proyectos; puesto más arriba, ese "uno" no se refería a nada. -->
-<section class="manifesto">
-  <div class="wrap">
-    <blockquote data-split-observer>Mientras tú lees esto, alguien está cerrando tus clientes. <em>Nosotros construimos el sistema para que sea al revés.</em></blockquote>
-    <p class="sig rv">— S&amp;C Solutions</p>
-  </div>
-</section>
+<!-- Aquí vivía el MANIFIESTO: una cita a pantalla completa ("Mientras tú lees
+     esto, alguien está cerrando tus clientes") con su firma. Se retira porque
+     no aportaba información que no estuviera ya en el hero, y entre los casos y
+     el señuelo metía una pantalla entera de scroll sin dato nuevo.
+     El señuelo no lo echa de menos: su "…pero si tuviéramos que elegir uno"
+     depende de haber visto varios proyectos, y Proyectos sigue estando arriba. -->
 
 <!-- ============ BAIT: MEJOR PROYECTO ============ -->
 <section class="bait">
@@ -2813,9 +2795,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <h2 class="title" data-split>Tu web, <em>auditada</em> en 10 segundos</h2>
     <div class="aud-grid">
       <div class="rv">
-        <p class="lead">Pega la dirección de tu sitio. Revisamos lo que Google mira primero —título,
-          descripción, encabezados, datos estructurados, imágenes, sitemap— y te devolvemos la nota
-          junto a los fallos concretos. Sin registro y sin coste.</p>
+        <!-- La lista de las seis cosas que se revisan estaba de más: quien no sabe
+             qué es un dato estructurado no la lee, y quien lo sabe no la necesita.
+             "Sin registro y sin coste" tampoco se repite: ya lo dice la banda de
+             arriba y el aviso de debajo. Queda lo que el visitante tiene que
+             hacer y lo que recibe. -->
+        <p class="lead">Pega la dirección de tu web y te decimos qué falla en lo que Google
+          mira primero, con una nota y los errores concretos.</p>
         <form class="aud-form" id="aud-form">
           <label for="aud-url" class="sr-only"
                  style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dirección de tu web</label>
@@ -2931,8 +2917,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
                placeholder="Con clave de país si no es de México"
                aria-describedby="telefono-av">
         <p class="aviso" id="telefono-av"></p>
-        <!-- Las cuatro primeras opciones son, palabra por palabra, los cuatro
-             servicios que anuncia la sección 01 de esta misma página. La quinta
+        <!-- Las tres primeras opciones son, palabra por palabra, los tres
+             servicios que anuncia la sección 01 de esta misma página. La cuarta
              es la que las preguntas frecuentes prometen unas líneas más abajo.
              ⚠ El valor viaja tal cual al sistema, que lo compara contra su
              catálogo: cualquier retoque —una tilde, un guion, el orden— hace que
@@ -2941,7 +2927,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <select id="servicio" name="servicio" required aria-describedby="servicio-av">
           <option>Sitios Web Premium para tu Negocio</option>
           <option>Agentes de IA para tu Negocio</option>
-          <option>Aplicación Privada para tu Negocio</option>
           <option>Automatización de Procesos en tu Negocio</option>
           <option>No lo sé aún — asesórenme</option>
         </select>
@@ -3024,9 +3009,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
       </details>
       <details>
         <summary>¿Qué hacen exactamente?</summary>
-        <p class="faq-r">Cuatro cosas: sitios web premium, agentes de IA que atienden
-          a tus clientes, aplicaciones privadas para tu equipo y automatización de
-          procesos. Puedes verlas con detalle en
+        <p class="faq-r">Tres cosas: sitios web premium, agentes de IA que atienden
+          a tus clientes y automatización de procesos. Puedes verlas con detalle en
           <a href="#servicios">lo que dominamos</a>.</p>
       </details>
       <details>
