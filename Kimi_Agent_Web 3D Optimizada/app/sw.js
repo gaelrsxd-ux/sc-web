@@ -41,8 +41,14 @@
            vuelva a encender el registro, una caché con número viejo serviría
            como copia de emergencia sin red un documento con el precargador
            dentro. Subirla ahora cuesta un carácter; olvidarla entonces cuesta
-           un fallo que nadie sabrá explicar. */
-const VERSION = 'syc-2026-08-q';
+           un fallo que nadie sabrá explicar.
+     · -r  el precio de la placa de reseñas pasa de $389 a $499 y se añade la
+           tabla de precios por mayoreo. Vale aquí lo dicho en -f —el archivo
+           sigue sin registrarse—, con un motivo más: de todo lo que este
+           documento guarda, un precio es lo peor que puede servirse caducado.
+           Una copia vieja enseñaría $389 a alguien que ya no puede comprarlo
+           por ese dinero. */
+const VERSION = 'syc-2026-08-r';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
