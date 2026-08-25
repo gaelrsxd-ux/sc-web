@@ -1086,10 +1086,10 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    y ::after en el resto, porque los contrarios ya llevan anillos y subrayados. */
 @media(pointer:coarse){
   .snd,.btn,.svc-btn,.res-tapa,
-  .tema,#costo-cta,.c-enl,.form-nota a,.faq .faq-r a,.pm-n a{position:relative}
+  .tema,#costo-cta,.c-enl,.form-nota a,.faq .faq-r a{position:relative}
   .snd::after,.btn::after,.svc-btn::after,.res-tapa::before,
   .tema::after,#costo-cta::after,.c-enl::before,
-  .form-nota a::after,.faq .faq-r a::after,.pm-n a::after{
+  .form-nota a::after,.faq .faq-r a::after{
     content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:max(100%,44px);height:max(100%,44px)}
   /* .c-enl gasta el ::after en la flecha ↗, asi que aqui va el ::before. */
@@ -1659,6 +1659,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .prod-mayoreo>*{display:block!important}
   .prod-mayoreo{border:1px solid #C9C4B8!important;break-inside:avoid}
   .prod-mayoreo summary{list-style:none;color:#14161A!important}
+  /* En papel, cada fila imprimir&#237;a su wa.me entero —cien caracteres de texto
+     codificado por fila— y la tabla dejar&#237;a de leerse. El tel&#233;fono ya sale
+     completo en la secci&#243;n de contacto, as&#237; que aqu&#237; no se pierde nada. */
+  .pm-lista a::after{content:""!important}
   .pm-p{color:#14161A!important}
   .pm-q,.pm-n{color:#3A3D44!important}
   /* Un enlace impreso sin su dirección no es un enlace, es una palabra suelta */
@@ -1784,17 +1788,34 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .pm-k{padding:17px 0 8px;font-size:9px;letter-spacing:4px;
   text-transform:uppercase;color:var(--dim)}
 .pm-lista{list-style:none}
-.pm-lista li{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
-  padding:11px 0;border-bottom:1px solid var(--line-soft)}
-.pm-lista li:last-child{border-bottom:0;padding-bottom:0}
-.pm-q{font-size:13.5px;color:var(--muted)}
+.pm-lista li{border-bottom:1px solid var(--line-soft)}
+.pm-lista li:last-child{border-bottom:0}
+/* La fila ENTERA es el enlace: 46 px de alto por todo el ancho. El m&#237;nimo
+   t&#225;ctil son 44 y aqu&#237; no se recorta, porque estas seis filas son ahora la
+   acci&#243;n principal del bloque y no una tabla que se mira. */
+.pm-lista a{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  min-height:46px;padding:11px 24px 11px 0;position:relative;
+  transition:color .3s,opacity .3s}
+/* La flecha va SIEMPRE visible, no s&#243;lo bajo el puntero: en un m&#243;vil no hay
+   puntero, y una lista de precios sin ninguna se&#241;al no se lee como pulsable.
+   En reposo va del tono de las l&#237;neas para no competir con el precio. */
+.pm-lista a::after{content:"\2197";position:absolute;right:0;top:50%;margin-top:-8px;
+  font-size:12px;line-height:1;color:var(--line);
+  transition:color .3s,transform .3s}
+.pm-lista a:hover::after,.pm-lista a:focus-visible::after{color:var(--bronze);
+  transform:translate(2px,-2px)}
+.pm-lista a:hover .pm-p{color:var(--bronze-hi)}
+.pm-lista a:hover .pm-q{color:var(--ink)}
+.pm-lista a:focus-visible{outline:1px solid var(--bronze);outline-offset:2px}
+/* Sin nowrap, «11 a 20 piezas» part&#237;a en dos renglones al estrecharse la
+   columna: se lee como dos datos en vez de como una cantidad. */
+.pm-q{font-size:13.5px;color:var(--muted);white-space:nowrap;transition:color .3s}
 .pm-p{font-family:var(--serif);font-size:20px;line-height:1.1;color:var(--ink);
-  white-space:nowrap}
+  white-space:nowrap;transition:color .3s}
 .pm-lista li:last-child .pm-p{font-style:italic;font-size:18px;
   color:var(--bronze-hi);white-space:normal;text-align:right}
 .pm-n{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-soft);
   font-size:13px;line-height:1.7;color:var(--dim)}
-.pm-n a{color:var(--bronze-hi);border-bottom:1px solid var(--line)}
 /* Con 250 px de ancho útil, «Cotización personalizada» y su cantidad no caben
    en el mismo renglón: sólo esa fila se apila. Las otras cinco siguen a dos
    columnas, que es donde la lista se lee de un vistazo. */
@@ -1802,7 +1823,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .prod-mayoreo summary{padding-inline:14px 38px;letter-spacing:2.2px}
   .prod-mayoreo summary::after{right:14px}
   .pm-c{padding-inline:14px}
-  .pm-lista li:last-child{flex-direction:column;align-items:flex-start;gap:6px}
+  /* Con 260 px de ancho &#250;til, la cifra en serif y la flecha no dejaban sitio a
+     la cantidad. Se recorta lo que no cuesta legibilidad —el hueco, el reservado
+     de la flecha y dos puntos de la cifra— en vez de partir el rengl&#243;n. */
+  .pm-lista a{gap:10px;padding-right:18px}
+  .pm-lista a::after{font-size:11px}
+  .pm-p{font-size:18px}
+  .pm-lista li:last-child a{flex-direction:column;align-items:flex-start;gap:6px}
   .pm-lista li:last-child .pm-p{text-align:left}
 }
 @media(min-width:900px){
@@ -2471,20 +2498,34 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           <summary>Ver precios por mayoreo</summary>
           <div class="pm-c">
             <p class="pm-k">Precios por cantidad</p>
+            <!-- CADA TRAMO ES UN ENLACE, y la zona pulsable es la FILA ENTERA, no un
+                 bot&#243;n a un lado. En un m&#243;vil una fila completa es un objetivo de
+                 46 px que no se falla con el pulgar, y seis botones nuevos habr&#237;an
+                 convertido en formulario un bloque que se quer&#237;a limpio.
+                 Cada mensaje lleva ya escrito SU tramo y SU precio unitario: quien
+                 recibe el WhatsApp sabe qu&#233; le piden sin preguntar nada. Los de
+                 rango dicen el tramo y no una cantidad inventada, as&#237; que el
+                 mensaje sigue siendo cierto aunque se env&#237;e sin tocarlo. -->
             <ul class="pm-lista">
-              <li><span class="pm-q">1 pieza</span><span class="pm-p">$499 MXN c/u</span></li>
-              <li><span class="pm-q">2 a 3 piezas</span><span class="pm-p">$469 MXN c/u</span></li>
-              <li><span class="pm-q">4 a 6 piezas</span><span class="pm-p">$439 MXN c/u</span></li>
-              <li><span class="pm-q">7 a 10 piezas</span><span class="pm-p">$419 MXN c/u</span></li>
-              <li><span class="pm-q">11 a 20 piezas</span><span class="pm-p">$399 MXN c/u</span></li>
-              <li><span class="pm-q">21 piezas o m&#225;s</span><span class="pm-p">Cotizaci&#243;n personalizada</span></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%201%20placa%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Precio%3A%20%24499%20MXN." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir 1 pieza por WhatsApp, 499 pesos"><span class="pm-q">1 pieza</span><span class="pm-p">$499 MXN c/u</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%3A%20de%202%20a%203%20piezas%2C%20a%20%24469%20MXN%20c%2Fu." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir de 2 a 3 piezas por WhatsApp, 469 pesos cada una"><span class="pm-q">2 a 3 piezas</span><span class="pm-p">$469 MXN c/u</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%3A%20de%204%20a%206%20piezas%2C%20a%20%24439%20MXN%20c%2Fu." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir de 4 a 6 piezas por WhatsApp, 439 pesos cada una"><span class="pm-q">4 a 6 piezas</span><span class="pm-p">$439 MXN c/u</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%3A%20de%207%20a%2010%20piezas%2C%20a%20%24419%20MXN%20c%2Fu." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir de 7 a 10 piezas por WhatsApp, 419 pesos cada una"><span class="pm-q">7 a 10 piezas</span><span class="pm-p">$419 MXN c/u</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%3A%20de%2011%20a%2020%20piezas%2C%20a%20%24399%20MXN%20c%2Fu." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir de 11 a 20 piezas por WhatsApp, 399 pesos cada una"><span class="pm-q">11 a 20 piezas</span><span class="pm-p">$399 MXN c/u</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20una%20cotizaci%C3%B3n%20de%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%20para%2021%20piezas%20o%20m%C3%A1s." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir cotizaci&#243;n para 21 piezas o m&#225;s por WhatsApp"><span class="pm-q">21 piezas o m&#225;s</span><span class="pm-p">Cotizaci&#243;n personalizada</span></a></li>
             </ul>
-            <!-- El mismo WhatsApp que el bot&#243;n de arriba, con el texto ya
-                 escrito: no hay un canal nuevo, s&#243;lo otra puerta al de siempre. -->
-            <p class="pm-n">&#191;Necesitas 21 piezas o m&#225;s?
-              <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20una%20cotizaci%C3%B3n%20por%20mayoreo%20de%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(21%20piezas%20o%20m%C3%A1s)."
-                 target="_blank" rel="noopener noreferrer">Cont&#225;ctanos</a>
-              para recibir una cotizaci&#243;n personalizada.</p>
+            <!-- Sustituye a la nota que enlazaba a WhatsApp s&#243;lo para 21+: ahora esa
+                 fila enlaza sola, y repetir el enlace veinte p&#237;xeles m&#225;s abajo era
+                 decir dos veces lo mismo. Lo que hac&#237;a falta en su lugar era decir
+                 que las filas se pulsan, porque una lista de precios no lo parece. -->
+            <p class="pm-n">Pulsa la cantidad que necesitas y se abre WhatsApp con tu
+              pedido ya escrito. A partir de 21 piezas, te cotizamos a medida.</p>
           </div>
         </details>
         <!-- Dos frases y dos casos: si estás en San Luis, y si no. Antes lo mismo
