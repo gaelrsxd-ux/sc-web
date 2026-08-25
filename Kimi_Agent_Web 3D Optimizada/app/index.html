@@ -10,8 +10,8 @@
 try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAttribute('data-tema','claro');}catch(_){}
 </script>
 <title>S&C Solutions — Webs, Automatización e IA para Negocios</title>
-<meta name="description" content="Construimos negocios que se ven tan bien como funcionan: sitios web premium, aplicaciones privadas, agentes de IA y automatización de procesos. S&C Solutions.">
-<meta name="keywords" content="diseño web premium, aplicaciones privadas a medida, agentes de IA, automatización de procesos, inteligencia artificial para negocios">
+<meta name="description" content="Construimos negocios que se ven tan bien como funcionan: sitios web premium, agentes de IA y automatización de procesos. S&C Solutions.">
+<meta name="keywords" content="diseño web premium, agentes de IA, automatización de procesos, inteligencia artificial para negocios">
 <meta name="author" content="S&C Solutions">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://sycsolutions.company/">
@@ -20,7 +20,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
 <meta property="og:site_name" content="S&C Solutions">
 <meta property="og:url" content="https://sycsolutions.company/">
 <meta property="og:title" content="S&C Solutions — Ambición · Estrategia · Resultados">
-<meta property="og:description" content="Webs premium, apps privadas, agentes de IA y automatización para negocios que piensan en grande.">
+<meta property="og:description" content="Webs premium, agentes de IA y automatización para negocios que piensan en grande.">
 <meta property="og:image" content="https://sycsolutions.company/assets/hero-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -44,7 +44,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "name":"S&C Solutions",
    "url":"https://sycsolutions.company/",
    "slogan":"Ambición · Estrategia · Resultados",
-   "description":"Sitios web premium, aplicaciones privadas, agentes de IA y automatización de procesos para negocios.",
+   "description":"Sitios web premium, agentes de IA y automatización de procesos para negocios.",
    "logo":{"@type":"ImageObject","url":"https://sycsolutions.company/assets/logo.svg"},
    "image":"https://sycsolutions.company/assets/hero-og.jpg",
    "foundingDate":"2026",
@@ -61,7 +61,6 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "makesOffer":[
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Sitios Web Premium para tu Negocio","serviceType":"Diseño y desarrollo web"}},
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Agentes de IA para tu Negocio","serviceType":"Agentes conversacionales con inteligencia artificial"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Aplicación Privada para tu Negocio","serviceType":"Desarrollo de software interno a medida"}},
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización de Procesos en tu Negocio","serviceType":"Automatización de procesos"}}
    ]
   },
@@ -147,7 +146,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
     {"@type":"Question","name":"¿Cuánto tardan en responderme?",
      "acceptedAnswer":{"@type":"Answer","text":"Menos de 24 horas. Atendemos de lunes a viernes de 9:00 a 23:00, y sábados y domingos de 10:00 a 22:00. Fuera de ese horario también solemos responder: tu mensaje entra igual."}},
     {"@type":"Question","name":"¿Qué hacen exactamente?",
-     "acceptedAnswer":{"@type":"Answer","text":"Cuatro cosas: sitios web premium, agentes de IA que atienden a tus clientes, aplicaciones privadas para tu equipo y automatización de procesos."}},
+     "acceptedAnswer":{"@type":"Answer","text":"Tres cosas: sitios web premium, agentes de IA que atienden a tus clientes y automatización de procesos."}},
     {"@type":"Question","name":"¿Cuánto cuesta el diagnóstico de mi web?",
      "acceptedAnswer":{"@type":"Answer","text":"Nada, y no hace falta registrarse. Analizamos únicamente la página pública que nos indiques: no guardamos la dirección ni la compartimos. Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a tu negocio."}},
     {"@type":"Question","name":"No sé qué necesito exactamente. ¿Puedo escribir igual?",
@@ -689,6 +688,14 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
   background-image:linear-gradient(var(--line-soft),var(--line-soft))}
 /* En móvil no se apila: .svc-grid lleva también la clase baraja y pasa a
    deslizarse de lado. Ver el bloque BARAJAS MÓVILES. */
+/* TRES FICHAS EN DOS COLUMNAS: la última cae sola y deja media fila vacía. Ese
+   hueco no se ve como un hueco sino como un panel muerto, porque la retícula la
+   dibuja el contenedor y la celda sin ficha se queda del color del fondo. Que
+   ocupe la fila entera cierra el bloque y además jerarquiza: la que se lee
+   entera al final es la última que se quiere recordar.
+   Va con min-width porque por debajo de 760 px esto no es una retícula sino una
+   baraja horizontal (display:flex), donde grid-column no pinta nada. */
+@media(min-width:761px){.svc-grid>.svc:last-child{grid-column:1/-1}}
 .svc{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
 .svc:hover{background:var(--panel)}
 .svc::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.7,0,.2,1)}
@@ -1514,7 +1521,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    aplicarse nunca. Los ajustes responsivos van después de lo que ajustan.
    ================================================================== */
 /* ---------- BARAJAS MÓVILES ----------
-   En escritorio estas tres secciones se componen: cuatro servicios en 2×2,
+   En escritorio estas tres secciones se componen: los servicios en retícula,
    cuatro casos en 2×2, dos perfiles lado a lado. Apiladas en una columna esa
    composición desaparece y hay que recorrer cuatro pantallas para entender que
    hay cuatro cosas. Medido en un móvil de 402 px: servicios ocupaba 2,2
@@ -2307,9 +2314,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   <div class="wrap">
     <span class="sec-tag"><span class="n">01 —</span> Servicios</span>
     <h2 class="title" data-split>Lo que <em>dominamos</em></h2>
-    <!-- Los cuatro "Solicitar" abren WhatsApp con el servicio ya escrito en el
+    <!-- Los tres "Solicitar" abren WhatsApp con el servicio ya escrito en el
          mensaje. Se quedan así aunque el formulario haya vuelto: el desplegable
-         de contacto ofrece los mismos cuatro servicios, y un enlace que abre una
+         de contacto ofrece los mismos tres servicios, y un enlace que abre una
          conversación de un toque convierte mejor que uno que baja media página
          hasta un campo pre-seleccionado.
          El texto va codificado en el propio href y no lo compone el JavaScript:
@@ -2335,22 +2342,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
         <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Agentes de IA para tu Negocio"><span class="dia"></span>Solicitar</a>
       </article>
+      <!-- Aquí iba "Aplicación Privada para tu Negocio", la 03. Retirada del
+           catálogo: son TRES servicios. Con tres en dos columnas la última ficha
+           queda sola en su fila, así que vuelve a hacer falta que ocupe la fila
+           entera —ver .svc:last-child en la hoja—. Es el mismo problema que
+           tuvo la quinta ficha en su día, con la misma solución. -->
       <article class="svc rv">
         <span class="go">↗</span>
         <span class="idx">/ 03</span>
-        <h3>Aplicación Privada para tu Negocio</h3>
-        <p><b>Cuando tu empresa depende de procesos manuales, cada error puede convertirse en retrasos, costos innecesarios y clientes insatisfechos.</b> Creamos una aplicación exclusiva para centralizar tu operación y ayudarte a trabajar con mayor control, velocidad y eficiencia.</p>
-        <ul><li>PC, móvil, iPad</li><li>Accesos por persona</li><li>Fácil de usar</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20una%20aplicaci%C3%B3n%20privada%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Aplicación Privada para tu Negocio"><span class="dia"></span>Solicitar</a>
-      </article>
-      <!-- Aquí vivía la regla `ancha` para la quinta ficha: con cinco en dos
-           columnas, la última quedaba sola a la izquierda y rompía la retícula.
-           Retirada la categoría de CRM son cuatro, la retícula cierra 2×2 sola y
-           ninguna ficha necesita ocupar la fila entera. La regla .svc.ancha se
-           va con ella: sin elemento que la lleve, era CSS muerto. -->
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 04</span>
         <h3>Automatización de Procesos en tu Negocio</h3>
         <p><b>Cada proceso manual puede hacer que tu equipo desperdicie decenas de horas de trabajo cada mes.</b> Automatizamos tareas para reducir errores, acelerar la operación y permitir que tu empresa se enfoque en crecer, no en repetir el mismo trabajo todos los días.</p>
         <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
@@ -2633,7 +2632,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      Va después de los casos, no al principio. Abrir la página con
      "somos dos" respondía una pregunta que el visitante todavía no se había
      hecho, y le robaba el sitio al único tema que Google y el cliente buscan
-     aquí: los cuatro servicios. Llegando en este punto ya está convencido de lo
+     aquí: los tres servicios. Llegando en este punto ya está convencido de lo
      que hacemos y lo que pregunta es con quién trata, así que las credenciales
      rematan la confianza en lugar de abrir con una presentación.
      La antesala de credenciales sigue viéndose antes que el titular: la sección
@@ -2918,8 +2917,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
                placeholder="Con clave de país si no es de México"
                aria-describedby="telefono-av">
         <p class="aviso" id="telefono-av"></p>
-        <!-- Las cuatro primeras opciones son, palabra por palabra, los cuatro
-             servicios que anuncia la sección 01 de esta misma página. La quinta
+        <!-- Las tres primeras opciones son, palabra por palabra, los tres
+             servicios que anuncia la sección 01 de esta misma página. La cuarta
              es la que las preguntas frecuentes prometen unas líneas más abajo.
              ⚠ El valor viaja tal cual al sistema, que lo compara contra su
              catálogo: cualquier retoque —una tilde, un guion, el orden— hace que
@@ -2928,7 +2927,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         <select id="servicio" name="servicio" required aria-describedby="servicio-av">
           <option>Sitios Web Premium para tu Negocio</option>
           <option>Agentes de IA para tu Negocio</option>
-          <option>Aplicación Privada para tu Negocio</option>
           <option>Automatización de Procesos en tu Negocio</option>
           <option>No lo sé aún — asesórenme</option>
         </select>
@@ -3011,9 +3009,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
       </details>
       <details>
         <summary>¿Qué hacen exactamente?</summary>
-        <p class="faq-r">Cuatro cosas: sitios web premium, agentes de IA que atienden
-          a tus clientes, aplicaciones privadas para tu equipo y automatización de
-          procesos. Puedes verlas con detalle en
+        <p class="faq-r">Tres cosas: sitios web premium, agentes de IA que atienden
+          a tus clientes y automatización de procesos. Puedes verlas con detalle en
           <a href="#servicios">lo que dominamos</a>.</p>
       </details>
       <details>
