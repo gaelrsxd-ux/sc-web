@@ -126,7 +126,7 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "offers":{
     "@type":"Offer",
     "url":"https://sycsolutions.company/#productos",
-    "price":"499",
+    "price":"429",
     "priceCurrency":"MXN",
     "availability":"https://schema.org/InStock",
     "itemCondition":"https://schema.org/NewCondition",
@@ -1664,7 +1664,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      completo en la secci&#243;n de contacto, as&#237; que aqu&#237; no se pierde nada. */
   .pm-lista a::after{content:""!important}
   .pm-p{color:#14161A!important}
-  .pm-q,.pm-n{color:#3A3D44!important}
+  .pm-q,.pm-n,.pm-e{color:#3A3D44!important}
+  .pm-lista li.pm-destaca{background:none!important;box-shadow:none!important}
   /* Un enlace impreso sin su dirección no es un enlace, es una palabra suelta */
   a[href^="http"]::after,a[href^="mailto"]::after{content:" (" attr(href) ")";
     font-size:8pt;color:#6B6355;word-break:break-all}
@@ -1745,6 +1746,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .prod-precio{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;justify-content:center}
 .prod-precio .cifra{font-family:var(--serif);font-size:clamp(38px,5vw,52px);line-height:1;color:var(--ink)}
 .prod-precio .u{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim)}
+/* El margen negativo la acerca al precio: .prod-cta reparte 18 px entre sus
+   hijos y con ese hueco la condición de envío se leía como un párrafo suelto en
+   vez de como la letra pequeña de la cifra que tiene encima. */
+.prod-envio{margin-top:-10px;font-size:9.5px;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--dim)}
 .prod-nota{margin-top:20px;padding:16px 18px;border:1px solid var(--line-soft);
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13.5px;line-height:1.75}
 .prod-nota b{color:var(--bronze-hi);font-weight:500}
@@ -1756,16 +1762,19 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    tabla aunque esté plegada. No hace falta un componente nuevo para esto.
 
    VA PLEGADO Y VA DEBAJO DEL BOTÓN, y las dos cosas son deliberadas. La cifra
-   que se ve al llegar es la de una unidad —$499—, que es lo que compra la
-   inmensa mayoría; enseñar "desde $399" arriba abarataría el producto delante
-   de quien sólo quiere una. El descuento por volumen es la respuesta a una
-   pregunta que sólo hace quien va a pedir varias, así que se guarda donde se
-   hace: un renglón más abajo, y sólo si se pulsa.
+   que se ve al llegar es la de una pieza —$429—, que es lo que compra la
+   inmensa mayoría; abrir con el paquete de veinte abarataría el producto
+   delante de quien sólo quiere uno.
 
-   Cada fila es cantidad a la izquierda y precio a la derecha, como una carta:
-   con el hairline de la casa entre medias se lee de un vistazo y no parece una
-   tabla pegada. La última fila no lleva cifra sino la cursiva de acento, porque
-   no es un precio más: es la única que obliga a escribir. */
+   ⚠ SON PRECIOS TOTALES DE PAQUETE, NO PRECIOS UNITARIOS. Esta lista decía
+   "$469 MXN c/u" y el cliente multiplicaba; ahora dice "$699 MXN" y es lo que
+   paga. No se vuelva a escribir "c/u" aquí sin cambiar también las cifras.
+
+   Cada fila lleva TRES datos y en este orden: cantidad, total y envío. El envío
+   es el más callado de los tres a propósito —es una condición, no un precio que
+   compita con el total— salvo cuando es gratis, que entonces es argumento de
+   venta y va en bronce. La fila de 10 piezas, la primera con envío gratis, va
+   además con un filete y un fondo tenue: es el salto que interesa enseñar. */
 .prod-mayoreo{margin-top:20px;border:1px solid var(--line-soft)}
 .prod-mayoreo summary{list-style:none;cursor:pointer;position:relative;
   display:flex;align-items:center;gap:10px;min-height:48px;padding:0 42px 0 17px;
@@ -1793,9 +1802,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 /* La fila ENTERA es el enlace: 46 px de alto por todo el ancho. El m&#237;nimo
    t&#225;ctil son 44 y aqu&#237; no se recorta, porque estas seis filas son ahora la
    acci&#243;n principal del bloque y no una tabla que se mira. */
-.pm-lista a{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
-  min-height:46px;padding:11px 24px 11px 0;position:relative;
-  transition:color .3s,opacity .3s}
+.pm-lista a{display:grid;grid-template-columns:1fr auto;align-items:baseline;
+  column-gap:14px;row-gap:4px;min-height:56px;padding:12px 22px 12px 0;
+  position:relative;transition:color .3s}
 /* La flecha va SIEMPRE visible, no s&#243;lo bajo el puntero: en un m&#243;vil no hay
    puntero, y una lista de precios sin ninguna se&#241;al no se lee como pulsable.
    En reposo va del tono de las l&#237;neas para no competir con el precio. */
@@ -1807,13 +1816,23 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .pm-lista a:hover .pm-p{color:var(--bronze-hi)}
 .pm-lista a:hover .pm-q{color:var(--ink)}
 .pm-lista a:focus-visible{outline:1px solid var(--bronze);outline-offset:2px}
-/* Sin nowrap, «11 a 20 piezas» part&#237;a en dos renglones al estrecharse la
-   columna: se lee como dos datos en vez de como una cantidad. */
-.pm-q{font-size:13.5px;color:var(--muted);white-space:nowrap;transition:color .3s}
-.pm-p{font-family:var(--serif);font-size:20px;line-height:1.1;color:var(--ink);
+/* Sin nowrap la cantidad puede partirse al estrecharse la columna, y se lee
+   como dos datos en vez de como una cantidad. */
+.pm-q{grid-area:1/1;font-size:14px;color:var(--muted);white-space:nowrap;transition:color .3s}
+.pm-p{grid-area:1/2;font-family:var(--serif);font-size:20px;line-height:1.1;color:var(--ink);
   white-space:nowrap;transition:color .3s}
-.pm-lista li:last-child .pm-p{font-style:italic;font-size:18px;
-  color:var(--bronze-hi);white-space:normal;text-align:right}
+/* El tercer dato, en su propio renglón y en el tipo pequeño de la interfaz: el
+   envío es una condición de la compra, no una segunda cifra que compita con el
+   total. Cuando es gratis sube a bronce, porque entonces sí es argumento. */
+.pm-e{grid-column:1/-1;grid-row:2;font-size:9.5px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--dim);transition:color .3s}
+.pm-e.gratis{color:var(--bronze-hi)}
+/* La primera fila con envío gratis. Un filete de dos píxeles y un fondo al 5%
+   —el mismo de la nota de San Luis—, que es cuanto hace falta para marcar el
+   salto sin convertir la lista en un cuadro de ofertas. */
+.pm-lista li.pm-destaca{background:rgba(200,169,106,.05);
+  box-shadow:inset 2px 0 0 var(--bronze)}
+.pm-lista li.pm-destaca a{padding-left:12px}
 .pm-n{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-soft);
   font-size:13px;line-height:1.7;color:var(--dim)}
 /* Con 250 px de ancho útil, «Cotización personalizada» y su cantidad no caben
@@ -1826,11 +1845,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   /* Con 260 px de ancho &#250;til, la cifra en serif y la flecha no dejaban sitio a
      la cantidad. Se recorta lo que no cuesta legibilidad —el hueco, el reservado
      de la flecha y dos puntos de la cifra— en vez de partir el rengl&#243;n. */
-  .pm-lista a{gap:10px;padding-right:18px}
+  .pm-lista a{column-gap:10px;padding-right:18px}
   .pm-lista a::after{font-size:11px}
   .pm-p{font-size:18px}
-  .pm-lista li:last-child a{flex-direction:column;align-items:flex-start;gap:6px}
-  .pm-lista li:last-child .pm-p{text-align:left}
+  .pm-e{letter-spacing:1.6px}
 }
 @media(min-width:900px){
   .prod{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
@@ -2484,9 +2502,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
         </ul>
         <div class="prod-cta">
           <div class="prod-precio">
-            <span class="cifra">$499</span>
-            <span class="u">MXN &#183; una unidad</span>
+            <span class="cifra">$429</span>
+            <span class="u">MXN &#183; una pieza</span>
           </div>
+          <!-- El env&#237;o va aparte y NO sumado a la cifra: son dos conceptos y el
+               cliente tiene que poder distinguirlos. Va aqu&#237; arriba y no s&#243;lo
+               dentro del desplegable porque quien ve «$429» y no abre nada
+               merece saber que hay un env&#237;o antes de escribir. -->
+          <p class="prod-envio">Env&#237;o $149 MXN &#183; gratis desde 10 piezas</p>
           <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(NFC%20%2B%20QR)." class="svc-btn" target="_blank" rel="noopener noreferrer"
              aria-label="Escribir por WhatsApp para pedir la placa de rese&#241;as para Google"><span class="dia"></span>La quiero</a>
         </div>
@@ -2507,25 +2530,36 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
                  rango dicen el tramo y no una cantidad inventada, as&#237; que el
                  mensaje sigue siendo cierto aunque se env&#237;e sin tocarlo. -->
             <ul class="pm-lista">
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%201%20placa%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Precio%3A%20%24499%20MXN." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir 1 pieza por WhatsApp, 499 pesos"><span class="pm-q">1 pieza</span><span class="pm-p">$499 MXN c/u</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%3A%20de%202%20a%203%20piezas%2C%20a%20%24469%20MXN%20c%2Fu." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir de 2 a 3 piezas por WhatsApp, 469 pesos cada una"><span class="pm-q">2 a 3 piezas</span><span class="pm-p">$469 MXN c/u</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%3A%20de%204%20a%206%20piezas%2C%20a%20%24439%20MXN%20c%2Fu." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir de 4 a 6 piezas por WhatsApp, 439 pesos cada una"><span class="pm-q">4 a 6 piezas</span><span class="pm-p">$439 MXN c/u</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%3A%20de%207%20a%2010%20piezas%2C%20a%20%24419%20MXN%20c%2Fu." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir de 7 a 10 piezas por WhatsApp, 419 pesos cada una"><span class="pm-q">7 a 10 piezas</span><span class="pm-p">$419 MXN c/u</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%3A%20de%2011%20a%2020%20piezas%2C%20a%20%24399%20MXN%20c%2Fu." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir de 11 a 20 piezas por WhatsApp, 399 pesos cada una"><span class="pm-q">11 a 20 piezas</span><span class="pm-p">$399 MXN c/u</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20una%20cotizaci%C3%B3n%20de%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29%20para%2021%20piezas%20o%20m%C3%A1s." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir cotizaci&#243;n para 21 piezas o m&#225;s por WhatsApp"><span class="pm-q">21 piezas o m&#225;s</span><span class="pm-p">Cotizaci&#243;n personalizada</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%201%20placa%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24429%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 1 pieza por WhatsApp, 429 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">1 pieza</span><span class="pm-p">$429 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%202%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24699%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 2 piezas por WhatsApp, 699 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">2 piezas</span><span class="pm-p">$699 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%203%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24799%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 3 piezas por WhatsApp, 799 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">3 piezas</span><span class="pm-p">$799 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%204%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24949%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 4 piezas por WhatsApp, 949 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">4 piezas</span><span class="pm-p">$949 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%205%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C099%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 5 piezas por WhatsApp, 1099 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">5 piezas</span><span class="pm-p">$1,099 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%206%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C249%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 6 piezas por WhatsApp, 1249 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">6 piezas</span><span class="pm-p">$1,249 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%208%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C599%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 8 piezas por WhatsApp, 1599 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">8 piezas</span><span class="pm-p">$1,599 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
+              <li class="pm-destaca"><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2010%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C899%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 10 piezas por WhatsApp, 1899 pesos con env&#237;o gratis"><span class="pm-q">10 piezas</span><span class="pm-p">$1,899 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2012%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%242%2C199%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 12 piezas por WhatsApp, 2199 pesos con env&#237;o gratis"><span class="pm-q">12 piezas</span><span class="pm-p">$2,199 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2015%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%242%2C649%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 15 piezas por WhatsApp, 2649 pesos con env&#237;o gratis"><span class="pm-q">15 piezas</span><span class="pm-p">$2,649 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2020%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%243%2C399%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 20 piezas por WhatsApp, 3399 pesos con env&#237;o gratis"><span class="pm-q">20 piezas</span><span class="pm-p">$3,399 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
             </ul>
             <!-- Sustituye a la nota que enlazaba a WhatsApp s&#243;lo para 21+: ahora esa
                  fila enlaza sola, y repetir el enlace veinte p&#237;xeles m&#225;s abajo era
                  decir dos veces lo mismo. Lo que hac&#237;a falta en su lugar era decir
                  que las filas se pulsan, porque una lista de precios no lo parece. -->
-            <p class="pm-n">Pulsa la cantidad que necesitas y se abre WhatsApp con tu
-              pedido ya escrito. A partir de 21 piezas, te cotizamos a medida.</p>
+            <p class="pm-n">Precios totales por paquete, no por pieza. Env&#237;o $149 MXN,
+              gratis a partir de 10 piezas. Pulsa el paquete que necesitas y se abre
+              WhatsApp con tu pedido ya escrito.</p>
           </div>
         </details>
         <!-- Dos frases y dos casos: si estás en San Luis, y si no. Antes lo mismo

@@ -47,8 +47,13 @@
            sigue sin registrarse—, con un motivo más: de todo lo que este
            documento guarda, un precio es lo peor que puede servirse caducado.
            Una copia vieja enseñaría $389 a alguien que ya no puede comprarlo
-           por ese dinero. */
-const VERSION = 'syc-2026-08-r';
+           por ese dinero.
+     · -s  precios nuevos: la placa pasa a $429 y la lista de mayoreo deja de ser
+           por unidad para ser por paquete, con el envío como tercer dato. Vale
+           lo dicho en -r y con más razón: una copia caducada no enseñaría un
+           precio viejo sino un MODELO de precio viejo —«$469 c/u»—, y quien
+           multiplicara por seis pediría un paquete que ya no existe. */
+const VERSION = 'syc-2026-08-s';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
