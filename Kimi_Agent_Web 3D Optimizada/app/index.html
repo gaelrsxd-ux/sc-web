@@ -632,28 +632,11 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .scroll-cue i{display:block;width:1px;height:42px;background:linear-gradient(180deg,var(--bronze),transparent);animation:drop 2.1s ease-in-out infinite}
 @keyframes drop{0%{transform:scaleY(0);transform-origin:top}55%{transform:scaleY(1);transform-origin:top}56%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* ---------- MANIFIESTO ---------- */
-/* El resplandor va en el propio background: el ::before original lo definía
-   sin position ni tamaño, así que era una caja de cero píxeles y no se veía. */
-/* El velo arranca casi opaco: el hero tiene fondo propio y se desplaza con el
-   scroll, mientras el lienzo va fijo. Sin esta apertura gradual se vería la
-   costura entre ambos como una línea horizontal. */
-/* Sin fondo propio: lo aporta el velo único del lienzo. */
-.manifesto{position:relative;text-align:center;padding-bottom:clamp(24px,3vw,44px);overflow:hidden}
-/* La bruma del hero desciende hasta aquí: la misma foto que ya está cacheada,
-   ampliada y casi apagada. Encadena las dos secciones y cuesta 0 KB. */
-/* La bruma que antes se pintaba aquí la aporta ahora la escena 0 del lienzo */
-/* Aquí había una marca de agua: un "&" gigante en contorno, en Garamond
-   itálica. A 620 px y recortado por el borde derecho no se leía como la
-   ampersand de la marca sino como una clave de sol, así que se retira. El
-   fondo del lienzo ya da profundidad de sobra a la sección. */
-.manifesto .wrap{position:relative;z-index:1}
-.manifesto blockquote{font-family:var(--serif);font-size:clamp(28px,4.6vw,66px);line-height:1.35;font-weight:500;max-width:1220px;margin:auto}
-.manifesto blockquote em{font-style:italic;color:var(--bronze-hi)}
-.manifesto .sig{margin-top:32px;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--muted)}
-
 /* ---------- BAIT: mejor proyecto ---------- */
-.bait{position:relative;overflow:hidden;text-align:center;padding-top:0;padding-bottom:clamp(30px,3.6vw,54px)}
+/* El padding-top era 0 mientras el manifiesto iba justo encima y cerraba con
+   el suyo. Retirado aquél, sin esta línea el señuelo quedaba pegado al final
+   de "Sobre nosotros". Vuelve al valor de cualquier otra sección. */
+.bait{position:relative;overflow:hidden;text-align:center;padding-bottom:clamp(30px,3.6vw,54px)}
 .bait .wrap{position:relative;z-index:1}
 .bait .q{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--muted);margin-bottom:34px}
 /* El hueco entre los dos renglones es de línea, no de bloque: son una sola
@@ -2459,10 +2442,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
       <div class="prod-cuerpo">
         <h3>Placa de rese&#241;as para Google</h3>
-        <p><b>Las rese&#241;as no llegan solas: hay que pedirlas.</b>
-          Esta placa lo hace por ti desde el mostrador. El cliente acerca el
-          m&#243;vil o escanea el c&#243;digo y cae directo en la pantalla de escribir tu
-          rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
+        <!-- Antes abría con una idea ("las reseñas no llegan solas") y dejaba para
+             la tercera línea QUÉ ES la cosa que se vende. Ahora lo dice en las
+             primeras cuatro palabras: es una placa, va en el mostrador. Lo demás
+             es el gesto del cliente, que es lo único que hay que entender. -->
+        <p><b>Una placa para el mostrador de tu negocio.</b>
+          El cliente acerca el m&#243;vil o escanea el c&#243;digo y va directo a
+          dejarte una rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
         <!-- Dos: como funciona y cuanto dura. Las otras tres o repetian el
              parrafo de arriba («sin aplicacion», «apunta a tu ficha») o eran
              detalle que nadie duda de una placa impresa. -->
@@ -2502,9 +2488,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
               para recibir una cotizaci&#243;n personalizada.</p>
           </div>
         </details>
-        <p class="prod-nota"><b>&#191;Est&#225;s en San Luis Potos&#237;?</b> Vamos nosotros:
-          la llevamos, la enlazamos con tu ficha y la dejamos lista en cinco
-          minutos, sin coste. Fuera de San Luis te llega ya configurada.</p>
+        <!-- Dos frases y dos casos: si estás en San Luis, y si no. Antes lo mismo
+             ocupaba cuatro renglones con detalles que no cambian la decisión
+             ("en cinco minutos", "la enlazamos con tu ficha"). -->
+        <p class="prod-nota"><b>&#191;Est&#225;s en San Luis Potos&#237;?</b> Te la llevamos e
+          instalamos sin coste. Fuera de San Luis te llega lista para usar.</p>
       </div>
     </article>
   </div>
@@ -2764,17 +2752,12 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   </div>
 </section>
 
-<!-- ============ MANIFIESTO ============
-     Cierra el recorrido de la prueba: servicios, casos, reseñas y quiénes
-     somos. Es además el único sitio donde el señuelo que va debajo se sostiene,
-     porque "…pero si tuviéramos que elegir uno" necesita que ya se hayan visto
-     varios proyectos; puesto más arriba, ese "uno" no se refería a nada. -->
-<section class="manifesto">
-  <div class="wrap">
-    <blockquote data-split-observer>Mientras tú lees esto, alguien está cerrando tus clientes. <em>Nosotros construimos el sistema para que sea al revés.</em></blockquote>
-    <p class="sig rv">— S&amp;C Solutions</p>
-  </div>
-</section>
+<!-- Aquí vivía el MANIFIESTO: una cita a pantalla completa ("Mientras tú lees
+     esto, alguien está cerrando tus clientes") con su firma. Se retira porque
+     no aportaba información que no estuviera ya en el hero, y entre los casos y
+     el señuelo metía una pantalla entera de scroll sin dato nuevo.
+     El señuelo no lo echa de menos: su "…pero si tuviéramos que elegir uno"
+     depende de haber visto varios proyectos, y Proyectos sigue estando arriba. -->
 
 <!-- ============ BAIT: MEJOR PROYECTO ============ -->
 <section class="bait">
@@ -2813,9 +2796,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <h2 class="title" data-split>Tu web, <em>auditada</em> en 10 segundos</h2>
     <div class="aud-grid">
       <div class="rv">
-        <p class="lead">Pega la dirección de tu sitio. Revisamos lo que Google mira primero —título,
-          descripción, encabezados, datos estructurados, imágenes, sitemap— y te devolvemos la nota
-          junto a los fallos concretos. Sin registro y sin coste.</p>
+        <!-- La lista de las seis cosas que se revisan estaba de más: quien no sabe
+             qué es un dato estructurado no la lee, y quien lo sabe no la necesita.
+             "Sin registro y sin coste" tampoco se repite: ya lo dice la banda de
+             arriba y el aviso de debajo. Queda lo que el visitante tiene que
+             hacer y lo que recibe. -->
+        <p class="lead">Pega la dirección de tu web y te decimos qué falla en lo que Google
+          mira primero, con una nota y los errores concretos.</p>
         <form class="aud-form" id="aud-form">
           <label for="aud-url" class="sr-only"
                  style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dirección de tu web</label>
