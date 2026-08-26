@@ -135,7 +135,7 @@ servidor, build, ni dependencias. El JS es 100% vanilla (sin librerías).
 Archivos nuevos fuera de `app/index.html`:
 
 ```
-app/robots.txt          app/sitemap.xml          app/assets/certs/
+app/robots.txt          app/sitemap.xml
 cloudflare/seo-audit.js cloudflare/wrangler.toml cloudflare/README.md
 ```
 
@@ -143,9 +143,10 @@ Secciones nuevas y renumeración: **01 Sobre nosotros** (entre el hero y el
 manifiesto) y **03 Diagnóstico** (tras servicios). Servicios pasó de 01 a 02,
 proyectos de 02 a 04, reseñas de 03 a 05 y contacto de 04 a 06.
 
-- **Sobre nosotros** abre con la antesala de certificados, que se ve antes que
-  el titular: la sección se presenta con la prueba y no con la promesa. El
-  sello es SVG y tipografía, cero peso en imágenes.
+> Registro de julio; se deja fechado. «Sobre nosotros» y el manifiesto ya no
+> existen: ver «Sobre nosotros y los certificados: RETIRADOS» más abajo para la
+> numeración vigente.
+
 - **Diagnóstico** audita la web que le indiquen. El análisis lo hace el Worker
   de `cloudflare/`; ver su README. El único valor a tocar es `SYC_AUDITOR`.
 - **Música ambiente**: sintetizada con Web Audio, sin archivos. Cuatro voces de
@@ -163,30 +164,26 @@ proyectos de 02 a 04, reseñas de 03 a 05 y contacto de 04 a 06.
 - **Casos con resultado tapado**: la cifra está en el HTML desde el principio
   —solo desenfocada por CSS—, así que Google la indexa igual.
 
-### Certificados
+### Sobre nosotros y los certificados: RETIRADOS (agosto de 2026)
 
-Cuatro, todos de 2026, **26 horas** en total. Los datos salen de los diplomas
-originales y están en el JSON-LD como `hasCredential` de Gael:
+La sección **04 Sobre nosotros** —«¿Quién construye tu proyecto?», con las dos
+fichas de los cofundadores y la antesala de cuatro certificados— se retiró
+entera por decisión de producto: la página contaba quiénes somos antes de que
+nadie lo preguntara, y entre los casos y el diagnóstico metía dos pantallas de
+scroll que no ayudaban a decidir.
 
-| Curso | Emisor | Horas | Fecha |
-|---|---|---:|---|
-| Curso de IA. De 0 a Agentes | BIG school · Jon Hernández | 6 | 21.07.2026 |
-| Inmersión IA en la Práctica | Daxus Latam · Zaira Hurtado | 8 | 16.07.2026 |
-| Iniciación al Desarrollo con IA | BIG school · Brais Moure | 6 | 30.05.2026 |
-| Vibe Coding y Automatizaciones | BIG school · Jon Hernández | 6 | 17.04.2026 |
+Con ella salieron las fichas `.member`, la baraja `.team`, el bloque `.creds`,
+los cuatro sellos `.cred` con su visor, los dos nodos `Person` del JSON-LD con
+sus `hasCredential`, el tramo del riel, las cuatro imágenes de
+`app/assets/certs/` y el manejador de JS del visor de credenciales.
 
-Cada tarjeta declara su diploma en `data-img`. El JS **precarga la imagen y solo
-si existe** añade la clase `tiene`, que es la que muestra «Ver certificado» y
-abre el visor. Una tarjeta sin imagen se queda informativa en vez de prometer
-algo que no puede cumplir. Para activarlas basta con dejar los cuatro archivos
-en `app/assets/certs/` con estos nombres exactos:
+**El recorrido quedó en cinco tramos:** 01 Servicios, 02 Productos, 03
+Proyectos, 04 Diagnóstico, 05 Contacto. Si algún día vuelve, hay que renumerar
+otra vez los rótulos visibles, el riel (`.idxr`) y la lista de tramos del JS.
 
-```
-de-cero-a-agentes-bigschool.jpg     inmersion-ia-daxus.jpg
-desarrollo-con-ia-bigschool.jpg     curso-ia-2026-bigschool.jpg
-```
-
-Pendiente de datos reales: la bio de Bruno Damián Martínez.
+Los nombres de los dos cofundadores siguen publicados, pero en otro sitio y por
+otro motivo: son los responsables del tratamiento de datos en el aviso de
+privacidad y en los términos. Eso no depende de esta sección.
 
 ## 9. Prompt maestro original (por si quieres regenerar o crear variaciones)
 

@@ -57,8 +57,12 @@
            (precios, transferencia de IP al sitio analizado, caché de una hora) y
            política de cookies con las cuatro claves reales en vez de dos. Aquí
            la copia caducada no enseñaría un precio viejo sino un AVISO LEGAL
-           viejo, que es lo único de este sitio que puede acabar en una queja. */
-const VERSION = 'syc-2026-08-t';
+           viejo, que es lo único de este sitio que puede acabar en una queja.
+     · -u  fuera la sección «Sobre nosotros» entera y el diagnóstico compactado.
+           Aquí la copia caducada no enseñaría un dato viejo sino una PÁGINA que
+           ya no existe: una sección retirada, un riel con seis tramos donde hay
+           cinco y enlaces a un ancla muerta. */
+const VERSION = 'syc-2026-08-u';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 

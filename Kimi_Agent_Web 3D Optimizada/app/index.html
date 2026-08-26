@@ -53,68 +53,12 @@ try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAtt
    "areaServed":[{"@type":"Country","name":"México"},{"@type":"Place","name":"Latinoamérica"}],
    "address":{"@type":"PostalAddress","addressLocality":"San Luis Potosí","addressRegion":"San Luis Potosí","addressCountry":"MX"},
    "knowsAbout":["Diseño web","Inteligencia artificial","Automatización de procesos","Análisis de datos"],
-   "founder":[
-    {"@id":"https://sycsolutions.company/#gael"},
-    {"@id":"https://sycsolutions.company/#bruno"}
-   ],
    "sameAs":[],
    "makesOffer":[
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Sitios Web Premium para tu Negocio","serviceType":"Diseño y desarrollo web"}},
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Agentes de IA para tu Negocio","serviceType":"Agentes conversacionales con inteligencia artificial"}},
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización de Procesos en tu Negocio","serviceType":"Automatización de procesos"}}
    ]
-  },
-  {
-   "@type":"Person",
-   "@id":"https://sycsolutions.company/#gael",
-   "name":"Gael Ramírez",
-   "jobTitle":"Cofundador",
-   "worksFor":{"@id":"https://sycsolutions.company/#organizacion"},
-   "knowsAbout":["Inteligencia artificial","Agentes de IA","Automatización de procesos","Desarrollo web","Vibe Coding"],
-   "hasCredential":[
-    {
-     "@type":"EducationalOccupationalCredential",
-     "name":"Curso de IA. De 0 a Agentes",
-     "description":"Domina la IA, gana competitividad y aprende cómo los agentes trabajan por ti. 6 horas.",
-     "credentialCategory":"certificate",
-     "recognizedBy":{"@type":"Organization","name":"BIG school"},
-     "dateCreated":"2026-07-21"
-    },
-    {
-     "@type":"EducationalOccupationalCredential",
-     "name":"Inmersión Inteligencia Artificial en la Práctica",
-     "description":"Evento formativo de 8 horas sobre aplicación práctica de la inteligencia artificial.",
-     "credentialCategory":"certificate",
-     "recognizedBy":{"@type":"Organization","name":"Daxus Latam"},
-     "dateCreated":"2026-07-16"
-    },
-    {
-     "@type":"EducationalOccupationalCredential",
-     "name":"Curso de Iniciación al Desarrollo con IA",
-     "description":"Jornadas formativas de desarrollo de software asistido por inteligencia artificial. 6 horas.",
-     "credentialCategory":"certificate",
-     "recognizedBy":{"@type":"Organization","name":"BIG school"},
-     "dateCreated":"2026-05-30"
-    },
-    {
-     "@type":"EducationalOccupationalCredential",
-     "name":"Curso de IA 2026 — Vibe Coding y Automatizaciones",
-     "description":"Jornadas de inteligencia artificial sobre Vibe Coding y automatizaciones. 6 horas.",
-     "credentialCategory":"certificate",
-     "recognizedBy":{"@type":"Organization","name":"BIG school"},
-     "dateCreated":"2026-04-17"
-    }
-   ],
-   "sameAs":[]
-  },
-  {
-   "@type":"Person",
-   "@id":"https://sycsolutions.company/#bruno",
-   "name":"Bruno Damián",
-   "jobTitle":"Cofundador",
-   "worksFor":{"@id":"https://sycsolutions.company/#organizacion"},
-   "knowsAbout":["Marketing","Estrategia de marca","Captación de clientes"],
-   "sameAs":[]
   },
   {
    "@type":"Product",
@@ -633,8 +577,9 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 
 /* ---------- BAIT: mejor proyecto ---------- */
 /* El padding-top era 0 mientras el manifiesto iba justo encima y cerraba con
-   el suyo. Retirado aquél, sin esta línea el señuelo quedaba pegado al final
-   de "Sobre nosotros". Vuelve al valor de cualquier otra sección. */
+   el suyo. Retirados aquél y la sección que le seguía, sin esta línea el
+   señuelo quedaría pegado al final de Proyectos, que ahora es lo que tiene
+   justo encima. Vuelve al valor de cualquier otra sección. */
 .bait{position:relative;overflow:hidden;text-align:center;padding-bottom:clamp(30px,3.6vw,54px)}
 .bait .wrap{position:relative;z-index:1}
 .bait .q{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--muted);margin-bottom:34px}
@@ -1169,95 +1114,19 @@ footer .legal a:hover{color:var(--bronze)}
 @keyframes eqb{from{height:3px}to{height:11px}}
 @media(max-width:840px){.snd .snd-t{display:none}.snd{padding:9px 11px}}
 
-/* ---------- SOBRE NOSOTROS ---------- */
-#nosotros{padding-top:clamp(38px,4.2vw,62px)}
-
-/* Antes esta sección eran cuatro tarjetas de certificado a página completa más
-   los dos perfiles: en móvil se apilaba todo y el visitante tenía que recorrer
-   nueve bloques antes de llegar al manifiesto. Las credenciales pasan a ser una
-   franja de sellos al pie de la sección: siguen visibles de entrada —no hay
-   acordeón ni pantalla intermedia— pero una fila de círculos mide lo mismo haya
-   cuatro certificados o diez. El detalle completo lo da el visor, que ya
-   existía. */
-.creds{margin-top:clamp(40px,4.4vw,60px);border:1px solid var(--line-soft);
-  background:rgba(var(--bg2-rgb),.55);padding:clamp(20px,2.4vw,28px) clamp(18px,2.4vw,32px);
-  display:flex;align-items:center;gap:clamp(18px,2.6vw,36px);flex-wrap:wrap;justify-content:center}
-.creds-txt{flex:1 1 260px;min-width:0}
-.creds-suma{font-family:var(--serif);font-size:clamp(21px,2.2vw,28px);font-weight:600;line-height:1.25}
-.creds-suma em{font-style:italic;color:var(--bronze-hi);font-weight:500}
-.creds-k{margin-top:7px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim)}
-.creds-row{display:flex;gap:clamp(10px,1.4vw,16px);flex-wrap:wrap;justify-content:center}
-
-/* Cada sello es el certificado entero reducido a un disco. El área táctil son
-   los 46px completos, por encima del mínimo cómodo para el pulgar. */
-.cred{position:relative;width:46px;height:46px;flex-shrink:0;padding:0;border:none;
-  background:none;font:inherit;color:inherit;display:block;transition:transform .4s cubic-bezier(.2,.7,.2,1)}
-.cred svg{width:100%;height:100%;display:block}
-.cred .ring{transform-origin:50% 50%;animation:sello 26s linear infinite}
-@keyframes sello{to{transform:rotate(360deg)}}
-.cred.tiene{cursor:pointer}
-.cred.tiene:hover,.cred.tiene:focus-visible{transform:translateY(-4px) scale(1.06)}
-.cred .astro{transition:fill .35s}
-.cred.tiene:hover .astro{fill:var(--bronze-hi)}
-/* Rótulo al pasar por encima: en móvil no se muestra —no hay hover— y ahí el
-   sello se toca directamente, que es más rápido que leer una etiqueta. */
-.cred-tip{position:absolute;bottom:calc(100% + 11px);left:50%;transform:translateX(-50%) translateY(4px);
-  white-space:nowrap;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
-  background:rgba(var(--bg-rgb),.96);border:1px solid var(--line);padding:7px 12px;pointer-events:none;
-  opacity:0;transition:opacity .3s,transform .3s;z-index:3}
-.cred.tiene:hover .cred-tip,.cred.tiene:focus-visible .cred-tip{opacity:1;transform:translateX(-50%)}
-@media(hover:none){.cred-tip{display:none}}
-@media(max-width:560px){
-  .creds{flex-direction:column;text-align:center;gap:20px}
-  .creds-txt{flex:none}
-}
-
-/* Visor de certificados */
-#visor{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;
-  padding:clamp(20px,4vw,56px);background:rgba(6,7,9,.985);opacity:0;visibility:hidden;
-  transition:opacity .45s ease,visibility .45s}
-#visor.on{opacity:1;visibility:visible}
-#visor figure{max-width:1080px;width:100%;text-align:center;transform:translateY(18px) scale(.985);
-  transition:transform .5s cubic-bezier(.2,.7,.2,1)}
-#visor.on figure{transform:none}
-#visor img{width:100%;height:auto;max-height:76vh;object-fit:contain;border:1px solid var(--line)}
-#visor figcaption{margin-top:20px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted)}
-#visor .cerrar{position:absolute;top:clamp(16px,2.4vw,30px);right:clamp(16px,2.4vw,30px);
-  width:46px;height:46px;border:1px solid var(--line);background:none;color:var(--bronze-hi);
-  font-family:var(--serif);font-size:23px;line-height:1;cursor:pointer;transition:.35s}
-#visor .cerrar:hover{background:var(--bronze);color:var(--on-bronze);border-color:var(--bronze)}
-/* Perfiles */
-/* Mismo panel opaco que la rejilla de servicios y por el mismo motivo: mientras
-   los dos perfiles entran, su celda no puede ser una ventana a la foto del
-   fondo. Va escrito aquí y no arriba junto al de servicios porque esta regla es
-   posterior en la hoja y el atajo «background» de antes lo pisaba entero. */
-.team{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
-  background-color:var(--bg2);background-image:linear-gradient(var(--line-soft),var(--line-soft));
-  border:1px solid var(--line-soft);margin-top:clamp(32px,3.6vw,50px)}
-/* En móvil pasa a baraja: Gael, deslizas, Bruno. Las dos biografías se leen
-   enteras sin recortar una palabra, y la sección baja de dos pantallas a una. */
-.member{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
-.member:hover{background:var(--panel)}
-.member::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);
-  transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.7,0,.2,1)}
-.member:hover::after{transform:scaleX(1)}
-/* Monograma: se sustituye por <img> cuando haya retrato, sin tocar el resto */
-.m-face{width:clamp(78px,8vw,104px);height:clamp(78px,8vw,104px);border:1px solid var(--line);
-  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;
-  font-size:clamp(26px,2.8vw,34px);color:var(--bronze-hi);object-fit:cover;flex-shrink:0}
-.m-head{display:flex;align-items:center;gap:clamp(18px,2vw,26px)}
-.m-role{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
-.member h3{font-size:clamp(23px,2.4vw,31px);margin:9px 0 0;transition:color .35s}
-.member:hover h3{color:var(--bronze-hi)}
-.m-bio{color:var(--muted);font-size:15px;line-height:1.8;margin-top:24px}
-.m-tags{list-style:none;margin-top:22px;display:flex;flex-wrap:wrap;gap:9px}
-.m-tags li{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
-  border:1px solid var(--line);padding:7px 13px}
-
 /* ---------- DIAGNÓSTICO (auditor SEO) ---------- */
-.aud-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(40px,6vw,84px);margin-top:clamp(32px,3.6vw,50px);align-items:start}
-@media(max-width:960px){.aud-grid{grid-template-columns:1fr}}
-.aud-form{display:flex;gap:0;border-bottom:1px solid var(--line);margin-top:34px}
+/* La sección entera va más apretada que el resto de la página, y es
+   deliberado: es una herramienta, no un tramo que se lea. Lo que el visitante
+   tiene que hacer aquí cabe en un renglón —pegar una dirección y pulsar—, así
+   que el aire que en Servicios o en Proyectos ayuda a leer, aquí sólo aleja el
+   campo del dedo. */
+#diagnostico{padding-block:clamp(34px,4vw,54px)}
+#diagnostico .title{font-size:clamp(27px,4.4vw,44px)}
+.aud-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(30px,4.4vw,64px);margin-top:clamp(22px,2.6vw,34px);align-items:start}
+/* Apilada, el hueco entre el formulario y el resultado no separa dos columnas
+   sino dos cosas que se leen seguidas: se recorta a la mitad. */
+@media(max-width:960px){.aud-grid{grid-template-columns:1fr;gap:clamp(20px,3.4vw,28px)}}
+.aud-form{display:flex;gap:0;border-bottom:1px solid var(--line);margin-top:24px}
 .aud-form input{flex:1;min-width:0;background:transparent;border:none;color:var(--ink);
   font-family:var(--serif);font-size:clamp(18px,1.9vw,23px);padding:12px 2px;outline:none;border-radius:0}
 .aud-form input::placeholder{color:var(--dim)}
@@ -1275,12 +1144,22 @@ footer .legal a:hover{color:var(--bronze)}
 .aud-ts:empty{margin-top:0}
 @keyframes pideclic{0%,100%{opacity:1}50%{opacity:.35}}
 @media(prefers-reduced-motion:reduce){.aud-form button.pide-clic{animation:none}}
-.aud-note{margin-top:14px;font-size:11px;letter-spacing:1px;color:var(--dim);line-height:1.7}
+.aud-note{margin-top:11px;font-size:10.5px;letter-spacing:.8px;color:var(--dim);line-height:1.6}
 /* Panel de resultados */
 .aud-out{border:1px solid var(--line-soft);background:rgba(var(--bg-rgb),.9);padding:clamp(26px,3.2vw,42px);
   min-height:290px;display:flex;flex-direction:column;justify-content:center;position:relative}
+/* ⚠ EN REPOSO LA CAJA NO RESERVA UNA PANTALLA. Los 290 px de alto mínimo están
+   para que el informe no dé un salto al aparecer, y para eso siguen. Pero
+   mientras no hay informe eran 290 px de nada, y en móvil —donde la rejilla se
+   apila— empujaban el contacto casi una pantalla hacia abajo por una frase de
+   seis palabras.
+   Con `:has()` la caja distingue su propio estado: encogida mientras sólo
+   contiene el aviso, con el alto mínimo en cuanto el JS mete contenido real.
+   El salto que se quería evitar se sigue evitando, porque ocurre al llegar el
+   informe y no al perderlo. */
+.aud-out:has(.aud-idle){min-height:0;padding:clamp(18px,2.2vw,26px)}
 .aud-out::before{content:"";position:absolute;inset:7px;border:1px solid var(--line-soft);pointer-events:none}
-.aud-idle{text-align:center;color:var(--dim);font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.7}
+.aud-idle{text-align:center;color:var(--dim);font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.6}
 /* Progreso del análisis. Cada línea nombra un trabajo que el Worker hace de
    verdad —pedir la página, leer lo que ve Google, medir el tiempo, comprobar
    robots y sitemap—, así que el visitante no espera delante de una barra muda:
@@ -1585,9 +1464,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   /* La ficha centrada recibe el mismo trato que la que está bajo el puntero en
      escritorio. Es lo que hace que deslizar se sienta vivo en vez de parecer un
      cambio de página. */
-  .svc.centro,.member.centro{background:var(--panel)}
-  .svc.centro::after,.member.centro::after{transform:scaleX(1)}
-  .svc.centro h3,.member.centro h3{color:var(--bronze-hi)}
+  .svc.centro{background:var(--panel)}
+  .svc.centro::after{transform:scaleX(1)}
+  .svc.centro h3{color:var(--bronze-hi)}
   .svc.centro .go{color:var(--bronze);transform:translate(4px,-4px)}
   /* La ficha centrada enciende sus escuadras: es el equivalente exacto del
      hover de escritorio, ahora que no hay borde que cambiar de color. */
@@ -1643,12 +1522,12 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   em,b,strong{color:#7A5C1E!important}
   .sec-tag,.sec-tag .n{color:#7A5C1E!important}
   /* Las fichas dejan de flotar sobre una foto y pasan a ser bloques con marco */
-  .svc,.work,.member,.frame,.aud-out,.costo,.puente,.faq details{
+  .svc,.work,.frame,.aud-out,.costo,.puente,.faq details{
     background:#fff!important;border:1px solid #C9C4B8!important;break-inside:avoid;
     padding:6mm!important}
   .work::before,.work::after,.svc::after,.frame::before,.aud-out::before,
   .costo::before,#proyectos::after{display:none!important}
-  .svc-grid,.works,.team{gap:4mm!important;background:none!important;border:none!important}
+  .svc-grid,.works{gap:4mm!important;background:none!important;border:none!important}
   .svc li{color:#7A5C1E!important;border-color:#C9C4B8!important}
   .work .ghost{color:transparent!important;-webkit-text-stroke:1px #D8D3C6!important}
   /* Las respuestas plegadas se imprimen abiertas: en papel nadie puede pulsar */
@@ -2185,12 +2064,12 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    tres, pesa menos y sigue siendo el mismo lenguaje: el rombo ya esta en los
    botones, en la calculadora y en el pie. */
 @media(max-width:560px){
-  .svc ul,.m-tags,.prod-ul{gap:0;row-gap:4px;align-items:baseline}
-  .svc li,.m-tags li,.prod-ul li{border:0;padding:0;font-size:9.5px;letter-spacing:2.2px}
+  .svc ul,.prod-ul{gap:0;row-gap:4px;align-items:baseline}
+  .svc li,.prod-ul li{border:0;padding:0;font-size:9.5px;letter-spacing:2.2px}
   /* El rombo va detras del elemento y no delante: asi, cuando la linea se
      parte, el separador se queda con la etiqueta anterior en vez de abrir el
      renglon siguiente. Es la convencion tipografica de toda la vida. */
-  .svc li:not(:last-child)::after,.m-tags li:not(:last-child)::after,
+  .svc li:not(:last-child)::after,
   .prod-ul li:not(:last-child)::after{
     content:"\25C6";margin:0 8px;font-size:5.5px;color:var(--line);
     vertical-align:middle;letter-spacing:0}
@@ -2238,9 +2117,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      copias que alinear, y por tanto no hay costura posible entre ambos. -->
 <div id="descenso" aria-hidden="true">
   <!-- El fundido entre escenas da por hecho que sus anclas van en el orden del
-       documento. "Sobre nosotros" bajó hasta después de las reseñas, así que la
-       ciudad se ancla al hero: es lo primero de la página, siempre, y da igual
-       cómo se reordenen las secciones de abajo. -->
+       documento, y ese orden ha cambiado ya varias veces. Por eso la ciudad se
+       ancla al hero: es lo primero de la página, siempre, y da igual cómo se
+       reordenen —o se retiren— las secciones de abajo. -->
   <!-- El vídeo va DENTRO de la escena, no en su lugar: la foto sigue pintada en
        el ::after y hace de cartel mientras el vídeo carga (y si no carga, o si
        el visitante pidió menos movimiento, se queda ella). Ambos comparten el
@@ -2273,9 +2152,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <a href="#servicios"  data-sec="servicios">01<b>Servicios</b></a>
     <a href="#productos"  data-sec="productos">02<b>Productos</b></a>
     <a href="#proyectos"  data-sec="proyectos">03<b>Proyectos</b></a>
-    <a href="#nosotros"   data-sec="nosotros">04<b>Sobre nosotros</b></a>
-    <a href="#diagnostico" data-sec="diagnostico">05<b>Diagnóstico</b></a>
-    <a href="#contacto"   data-sec="contacto">06<b>Contacto</b></a>
+    <a href="#diagnostico" data-sec="diagnostico">04<b>Diagnóstico</b></a>
+    <a href="#contacto"   data-sec="contacto">05<b>Contacto</b></a>
     <span class="sello" aria-hidden="true"></span>
   </div>
 </nav>
@@ -2310,7 +2188,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <li><a href="#servicios">Servicios</a></li>
     <li><a href="#productos">Productos</a></li>
     <li><a href="#proyectos">Proyectos</a></li>
-    <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="#diagnostico">Diagnóstico</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
@@ -2703,128 +2580,17 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
        hayan dado su permiso. -->
 </section>
 
-<!-- ============ SOBRE NOSOTROS ============
-     Va después de los casos, no al principio. Abrir la página con
-     "somos dos" respondía una pregunta que el visitante todavía no se había
-     hecho, y le robaba el sitio al único tema que Google y el cliente buscan
-     aquí: los tres servicios. Llegando en este punto ya está convencido de lo
-     que hacemos y lo que pregunta es con quién trata, así que las credenciales
-     rematan la confianza en lugar de abrir con una presentación.
-     La antesala de credenciales sigue viéndose antes que el titular: la sección
-     se presenta con la prueba, no con la promesa. -->
-<section id="nosotros">
-  <div class="wrap">
-
-    <span class="sec-tag rv"><span class="n">04 —</span> Sobre nosotros</span>
-    <h2 class="title" data-split>¿Quién <em>construye</em> tu proyecto?</h2>
-    <p class="lead rv" style="margin-top:26px">Somos dos. No una agencia con veinte intermediarios entre tu
-      idea y quien la escribe. Hablas con quien construye, y eso cambia el resultado.</p>
-
-    <div class="team baraja" data-baraja="perfil">
-      <article class="member rv">
-        <div class="m-head">
-          <div class="m-face" aria-hidden="true">GR</div>
-          <div>
-            <p class="m-role">Cofundador</p>
-            <h3>Gael Ramírez</h3>
-          </div>
-        </div>
-        <p class="m-bio">Construye agentes que trabajan solos y webs que cargan antes de que al
-          visitante le dé tiempo a arrepentirse. Ni plantillas ni librerías: el código va escrito
-          a mano, y por eso vuela.</p>
-        <!-- Dos, no cuatro. Cuatro etiquetas se leen como un curriculum y se
-             olvidan; dos se leen como una especialidad y se recuerdan. Fuera
-             «Automatización» —lo mismo que dicen los agentes— y fuera «Vibe
-             Coding», que ademas contradecia la linea de arriba: la bio presume
-             de codigo escrito a mano y esa etiqueta dice lo contrario. -->
-        <ul class="m-tags">
-          <li>Agentes de IA</li>
-          <li>Desarrollo web</li>
-        </ul>
-      </article>
-
-      <article class="member rv">
-        <div class="m-head">
-          <div class="m-face" aria-hidden="true">BD</div>
-          <div>
-            <p class="m-role">Cofundador</p>
-            <h3>Bruno Damián</h3>
-          </div>
-        </div>
-        <p class="m-bio">Se ocupa de que lo que construimos se vea: a quién le hablamos, qué le
-          decimos y por dónde. Ninguna campaña sale sin un número detrás, y la que no trae clientes
-          se cambia el mes siguiente.</p>
-        <!-- La otra mitad del negocio, no la otra mitad del codigo: dos tecnicos
-             seguidos dejaban la ficha sin nadie que respondiera a «y esto quien
-             me lo trae». Se pierde a proposito la palabra que mas se repite en
-             las webs de agencia —«resultados»— porque la frase de arriba ya
-             dice cual es el resultado y cuando se revisa. -->
-        <ul class="m-tags">
-          <li>Marketing</li>
-          <li>Estrategia</li>
-        </ul>
-      </article>
-    </div>
-
-    <!-- Franja de credenciales. Cada sello lleva su diploma en data-img; el JS
-         precarga la imagen y sólo si existe de verdad vuelve el sello pulsable,
-         para no ofrecer un visor vacío. -->
-    <div class="creds rv">
-      <div class="creds-txt">
-        <p class="creds-suma"><em>26 horas</em> de formación certificada en IA</p>
-        <p class="creds-k">Cuatro certificados · 2026</p>
-      </div>
-      <div class="creds-row">
-
-        <button class="cred" type="button" data-img="assets/certs/de-cero-a-agentes-bigschool.jpg"
-                data-cert="Curso de IA. De 0 a Agentes — BIG school, 21 de julio de 2026"
-                data-corto="De 0 a Agentes · 6 h">
-          <span class="cred-tip" aria-hidden="true">De 0 a Agentes · 6 h</span>
-          <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
-            <circle class="ring" cx="23" cy="23" r="21.5" stroke="rgba(200,169,106,.42)" stroke-width="1" stroke-dasharray="3 6"/>
-            <circle cx="23" cy="23" r="17" stroke="rgba(200,169,106,.28)" stroke-width="1"/>
-            <path class="astro" d="M23 13.5l2.5 6.2 6.6.5-5 4.3 1.5 6.5L23 27.7l-5.6 3.3 1.5-6.5-5-4.3 6.6-.5z" fill="rgba(228,205,154,.9)"/>
-          </svg>
-        </button>
-
-        <button class="cred" type="button" data-img="assets/certs/inmersion-ia-daxus.jpg"
-                data-cert="Inmersión Inteligencia Artificial en la Práctica — Daxus Latam, 16 de julio de 2026"
-                data-corto="Inmersión IA · 8 h">
-          <span class="cred-tip" aria-hidden="true">Inmersión IA · 8 h</span>
-          <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
-            <circle class="ring" cx="23" cy="23" r="21.5" stroke="rgba(200,169,106,.42)" stroke-width="1" stroke-dasharray="3 6"/>
-            <circle cx="23" cy="23" r="17" stroke="rgba(200,169,106,.28)" stroke-width="1"/>
-            <path class="astro" d="M23 13.5l2.5 6.2 6.6.5-5 4.3 1.5 6.5L23 27.7l-5.6 3.3 1.5-6.5-5-4.3 6.6-.5z" fill="rgba(228,205,154,.9)"/>
-          </svg>
-        </button>
-
-        <button class="cred" type="button" data-img="assets/certs/desarrollo-con-ia-bigschool.jpg"
-                data-cert="Curso de Iniciación al Desarrollo con IA — BIG school, 30 de mayo de 2026"
-                data-corto="Desarrollo con IA · 6 h">
-          <span class="cred-tip" aria-hidden="true">Desarrollo con IA · 6 h</span>
-          <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
-            <circle class="ring" cx="23" cy="23" r="21.5" stroke="rgba(200,169,106,.42)" stroke-width="1" stroke-dasharray="3 6"/>
-            <circle cx="23" cy="23" r="17" stroke="rgba(200,169,106,.28)" stroke-width="1"/>
-            <path class="astro" d="M23 13.5l2.5 6.2 6.6.5-5 4.3 1.5 6.5L23 27.7l-5.6 3.3 1.5-6.5-5-4.3 6.6-.5z" fill="rgba(228,205,154,.9)"/>
-          </svg>
-        </button>
-
-        <button class="cred" type="button" data-img="assets/certs/curso-ia-2026-bigschool.jpg"
-                data-cert="Curso de IA 2026, Vibe Coding y Automatizaciones — BIG school, 17 de abril de 2026"
-                data-corto="Vibe Coding · 6 h">
-          <span class="cred-tip" aria-hidden="true">Vibe Coding · 6 h</span>
-          <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
-            <circle class="ring" cx="23" cy="23" r="21.5" stroke="rgba(200,169,106,.42)" stroke-width="1" stroke-dasharray="3 6"/>
-            <circle cx="23" cy="23" r="17" stroke="rgba(200,169,106,.28)" stroke-width="1"/>
-            <path class="astro" d="M23 13.5l2.5 6.2 6.6.5-5 4.3 1.5 6.5L23 27.7l-5.6 3.3 1.5-6.5-5-4.3 6.6-.5z" fill="rgba(228,205,154,.9)"/>
-          </svg>
-        </button>
-
-      </div>
-    </div>
-
-  </div>
-</section>
+<!-- Aquí vivía SOBRE NOSOTROS (04): «¿Quién construye tu proyecto?», con las
+     dos fichas de los cofundadores y la antesala de cuatro certificados.
+     Se retira entera. La página contaba quiénes somos antes de que nadie lo
+     preguntara, y entre los casos y el diagnóstico metía dos pantallas de
+     scroll que no ayudaban a decidir. Quien quiera saber con quién trata lo
+     pregunta por WhatsApp, que está a un toque desde cualquier punto.
+     Con ella se van: las fichas .member, la baraja .team, el bloque .creds y
+     los cuatro sellos .cred con su visor, los dos nodos Person del JSON-LD con
+     sus credenciales, el tramo del riel y las cuatro imágenes de certificados.
+     Los tramos siguientes suben un número: Diagnóstico 05 -> 04 y Contacto
+     06 -> 05. -->
 
 <!-- Aquí vivía el MANIFIESTO: una cita a pantalla completa ("Mientras tú lees
      esto, alguien está cerrando tus clientes") con su firma. Se retira porque
@@ -2866,7 +2632,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      leer otro dominio (CORS); el endpoint se configura en AUDITOR abajo. -->
 <section id="diagnostico">
   <div class="wrap">
-    <span class="sec-tag rv"><span class="n">05 —</span> Diagnóstico</span>
+    <span class="sec-tag rv"><span class="n">04 —</span> Diagnóstico</span>
     <h2 class="title" data-split>Tu web, <em>auditada</em> en 10 segundos</h2>
     <div class="aud-grid">
       <div class="rv">
@@ -2898,7 +2664,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <!-- ============ CONTACTO ============ -->
 <section id="contacto">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">06 —</span> Contacto</span>
+    <span class="sec-tag"><span class="n">05 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
       <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
@@ -3118,7 +2884,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
     <a href="#servicios">Servicios</a>
     <a href="#productos">Productos</a>
     <a href="#proyectos">Proyectos</a>
-    <a href="#nosotros">Nosotros</a>
     <a href="#diagnostico">Diagnóstico</a>
     <a href="#contacto">Contacto</a>
   </div>
@@ -3153,7 +2918,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    más abajo, y quien avisa —los casos, las credenciales, el diagnóstico— es
    siempre distinto de quien escucha. */
 const EXP=(()=>{
-  const hecho={casos:false,cred:false,diag:false};
+  const hecho={casos:false,diag:false};
   const oyentes=[];
   const cuenta=()=>Object.keys(hecho).filter(k=>hecho[k]).length;
   return {
@@ -4449,7 +4214,7 @@ const SIG=(()=>{
   /* Roce sobre lo pulsable y pulso al hacer clic. Delegado en el documento:
      un solo par de escuchas para toda la página, incluidos los nodos que el
      JS crea después (los puntos de las reseñas, por ejemplo). */
-  const PULSABLE='a,button,.svc-btn,.cred';
+  const PULSABLE='a,button,.svc-btn';
   let ultimo=null;
   document.addEventListener('pointerover',e=>{
     if(e.pointerType!=='mouse')return;
@@ -4672,17 +4437,6 @@ const SIG=(()=>{
      s&#243;lo si el archivo existe de verdad la tarjeta se vuelve pulsable. Prometer
      "ver certificado" y abrir un cuadro vac&#237;o destruye justo la confianza que
      la secci&#243;n construye. Abren con lista de UNO: sin botonera. */
-  document.querySelectorAll('.cred[data-img]').forEach(t=>{
-    const ruta=t.dataset.img,texto=t.dataset.cert||'';
-    t.setAttribute('aria-label','Ver el certificado: '+texto);
-    const prueba=new Image();
-    prueba.onload=()=>{
-      t.classList.add('tiene');
-      t.addEventListener('click',()=>{abre([{src:ruta,alt:'Certificado: '+texto,pie:texto}],0);EXP.marca('cred');});
-    };
-    prueba.onerror=()=>{t.disabled=true;t.setAttribute('aria-label',texto);};
-    prueba.src=ruta;
-  });
 
   /* LAS FOTOS DEL PRODUCTO. Una sola lista compartida por los tres botones, asi
      que entrar por la segunda foto y seguir a la derecha da la tercera. */
@@ -5619,7 +5373,7 @@ if(DIAG.lee())EXP.marca('diag');
        fuera al crearse y el modo presentacion se la saltaba entera en una
        reunion. Y el coste entra tambien: en una reunion es la parada que
        cierra el argumento, no un adorno. Quien anada una seccion, aqui. */
-    ...['servicios','productos','coste','proyectos','nosotros','diagnostico','contacto']
+    ...['servicios','productos','coste','proyectos','diagnostico','contacto']
       .map(i=>document.getElementById(i))].filter(Boolean);
   if(paradas.length<2)return;
   const total=document.getElementById('pres-t'),
