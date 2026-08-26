@@ -51,10 +51,11 @@ jobs:
       - name: Hashes de la CSP sincronizados con el HTML
         run: node tools/csp-hashes.mjs --check
 
-      # Avisa, no falla. Mismo motivo que en el hook de pre-commit: los datos
-      # que faltan sólo los tiene el titular. Cuando estén, convertir en fallo.
+      # Falla. Durante un tiempo sólo avisaba, porque los datos que faltaban
+      # sólo los tenía el titular; ya están puestos, así que la barrera muerde.
       - name: Documentos legales sin marcadores de relleno
         run: |
           if grep -rn "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null; then
-            echo "::warning::Quedan marcadores «POR COMPLETAR» en documentos legales publicados."
+            echo "::error::Hay marcadores «POR COMPLETAR» en documentos legales publicados."
+            exit 1
           fi
