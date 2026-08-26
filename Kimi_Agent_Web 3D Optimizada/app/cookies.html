@@ -38,10 +38,11 @@
   </div>
 
   <h2 id="que"><span class="n">01</span>Entonces, ¿qué guarda esta web?</h2>
-  <p>Dos preferencias, y las guarda <b>en tu propio navegador</b> mediante una
-    tecnología llamada <code>localStorage</code>. La diferencia con una cookie
-    importa: una cookie viaja al servidor en cada visita; esto no sale nunca de
-    tu equipo. Nosotros no podemos leerlo ni sabemos que existe.</p>
+  <p>Cuatro preferencias, y las guarda <b>en tu propio navegador</b> mediante
+    dos tecnologías llamadas <code>localStorage</code> y
+    <code>sessionStorage</code>. La diferencia con una cookie importa: una cookie
+    viaja al servidor en cada visita; esto no sale nunca de tu equipo. Nosotros
+    no podemos leerlo ni sabemos que existe.</p>
 
   <div class="tabla-scroll">
     <table>
@@ -60,8 +61,23 @@
           <td><code>syc-diag</code></td>
           <td>Recordar el resultado del diagnóstico que hiciste, para poder
             enseñártelo y no obligarte a repetirlo</td>
-          <td>La dirección que analizaste, la nota obtenida y la hora</td>
+          <td>La dirección que analizaste, la nota obtenida, la hora y hasta
+            tres títulos de los fallos detectados</td>
           <td>Siete días; después caduca solo</td>
+        </tr>
+        <tr>
+          <td><code>sc_tema</code></td>
+          <td>Recordar si elegiste el tema claro o el oscuro, para no volver a
+            cambiártelo en la siguiente visita</td>
+          <td>La palabra «claro» o «oscuro»</td>
+          <td>Hasta que lo borres</td>
+        </tr>
+        <tr>
+          <td><code>syc-sw-limpio</code></td>
+          <td>Recordar, durante esta misma visita, que ya se hizo una limpieza
+            técnica del navegador, para no repetirla en cada página</td>
+          <td>Un uno</td>
+          <td>Hasta que cierres la pestaña</td>
         </tr>
       </tbody>
     </table>

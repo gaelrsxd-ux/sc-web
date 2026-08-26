@@ -60,11 +60,34 @@ if (!fs.existsSync(path.join(raiz, 'index.html'))) {
 }
 
 const servidor = http.createServer((req, res) => {
-  let rel = decodeURIComponent(req.url.split('?')[0]);
+  /* decodeURIComponent LANZA ante cualquier %-encoding malformado —"/%", "/%zz",
+     "/%c0%af"—, y una excepción síncrona dentro del manejador se convierte en
+     uncaughtException: el proceso MUERE. No hace falta ni estar en la misma red:
+     cualquier página abierta en este navegador tumbaba el servidor con un
+     <img src="http://localhost:8090/%">. */
+  let rel;
+  try {
+    rel = decodeURIComponent(req.url.split('?')[0]);
+  } catch (_) {
+    res.writeHead(400, { 'Content-Type': 'text/plain' }).end('400');
+    return;
+  }
+  /* El byte nulo va aparte y no lo cubre el try de arriba: readFile lo rechaza
+     con un throw SÍNCRONO —no por callback—, así que el catch de su callback no
+     lo ve y el proceso muere igual. */
+  if (rel.includes('\0')) {
+    res.writeHead(400, { 'Content-Type': 'text/plain' }).end('400');
+    return;
+  }
   if (rel === '/') rel = '/index.html';
   const destino = path.join(raiz, rel);
-  /* Nunca servir fuera de la raíz */
-  if (!destino.startsWith(raiz)) { res.writeHead(403).end('403'); return; }
+  /* Nunca servir fuera de la raíz. El separador final es necesario: sin él,
+     startsWith deja pasar un directorio HERMANO cuyo nombre empiece igual
+     ("app-privado" contiene "app"). Hoy no existe ninguno, pero la comprobación
+     no debería depender de cómo se llamen las carpetas de al lado. */
+  if (destino !== raiz && !destino.startsWith(raiz + path.sep)) {
+    res.writeHead(403).end('403'); return;
+  }
   fs.readFile(destino, (err, buf) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }).end('404'); return; }
     const cabeceras = {

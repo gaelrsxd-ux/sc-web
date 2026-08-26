@@ -170,4 +170,36 @@ describe('filtro de destinos', () => {
       'https://xn--ejemplo-9za.test/', 'https://ejemplo.test/ñandú'
     ]) permite(v);
   });
+
+  /* REGRESIÓN — El agujero que esta suite no podía ver.
+     Los 190 vectores de arriba son todos SINTÁCTICOS: comprueban que la cadena
+     del hostname no sea una IP prohibida escrita de alguna forma rara. Pero
+     `inseguro()` decidía sólo sobre la cadena, y un NOMBRE que resuelve a una IP
+     privada la atravesaba entera. No hacía falta ni registrar un dominio: los
+     servicios de DNS comodín resuelven a la IP que llevan escrita en el nombre,
+     son públicos y son gratis.
+     La defensa real es la comprobación tras resolver —`ipDeDestinoProhibida`,
+     que consulta DNS y por tanto no se puede probar aquí sin red—, pero estos
+     sufijos se rechazan además léxicamente, y eso sí se prueba y es lo que hace
+     que la barrera siga en pie aunque el resolvedor no conteste. */
+  test('REGRESIÓN: los servicios de DNS comodín no pasan', () => {
+    for (const v of [
+      '127.0.0.1.nip.io', 'http://169.254.169.254.nip.io/latest/meta-data/',
+      '10.0.0.1.sslip.io', '192.168.1.1.sslip.io', 'https://1.2.3.4.xip.io/',
+      'localtest.me', 'app.localtest.me', 'lvh.me', 'algo.vcap.me',
+      'x.traefik.me', '1.2.3.4.1u.ms'
+    ]) bloquea(v, 'DNS comodín: resuelve a la IP escrita en el nombre');
+  });
+
+  /* Y la otra mitad de la misma moneda: el rechazo va anclado al final del
+     nombre, así que un dominio legítimo que CONTENGA esas letras sigue pasando.
+     Sin el anclaje, "nipon.io" o cualquier cliente cuyo dominio terminara en
+     "-nip.io" habría dejado de poder auditarse, y un filtro que rechaza clientes
+     reales se acaba desactivando entero. */
+  test('REGRESIÓN: dominios legítimos parecidos a los comodín sí pasan', () => {
+    for (const v of [
+      'https://nipon.io/', 'https://minip.io.ejemplo.com/', 'https://sslip.ejemplo.com/',
+      'https://localtest.mexico.mx/', 'https://ejemplo.com/nip.io'
+    ]) permite(v);
+  });
 });

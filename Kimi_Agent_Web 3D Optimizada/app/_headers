@@ -20,6 +20,15 @@
   # La web no necesita cámara, micrófono, ubicación ni pagos: se renuncia a
   # todo ello de forma explícita para que ningún script pueda pedirlo.
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  # Aísla esta pestaña de cualquier ventana que la abra o que ella abra. Con
+  # X-Frame-Options ya nadie puede meterla en un iframe; esto cierra la otra
+  # mitad, la de window.opener, y de paso habilita el aislamiento de origen que
+  # protege de la familia Spectre.
+  Cross-Origin-Opener-Policy: same-origin
+  # Ningún otro sitio puede incrustar los recursos de este como si fueran suyos.
+  # No rompe nada: las tipografías de Google se cargan como documento propio y
+  # esta directiva sólo gobierna quién puede incrustarnos a NOSOTROS.
+  Cross-Origin-Resource-Policy: same-origin
   # Política de contenido. Cada origen listado está aquí porque la web lo usa de
   # verdad: las tipografías de Google y el Worker del diagnóstico. Todo lo demás
   # queda bloqueado.

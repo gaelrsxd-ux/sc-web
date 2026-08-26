@@ -51,7 +51,12 @@ class_name = "LimitadorIP"
 tag = "v1"
 new_sqlite_classes = ["LimitadorIP"]
 
-# El Worker no guarda nada de lo que analiza: lee la página, puntúa y responde.
+# El Worker no guarda en base de datos nada de lo que analiza: lee la página,
+# puntúa y responde. Con un matiz que conviene tener escrito y no descubrir
+# leyendo el código: el informe SÍ queda hasta una hora en la caché de borde
+# —clave e importe incluidos— para no repetir peticiones salientes contra el
+# mismo destino. Es memoria temporal, no almacenamiento, y así lo dice ahora el
+# aviso de privacidad.
 # El único estado propio son los contadores del limitador, que sólo contienen
 # marcas de tiempo, y la caché de borde.
 #

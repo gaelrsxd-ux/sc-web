@@ -52,8 +52,13 @@
            por unidad para ser por paquete, con el envío como tercer dato. Vale
            lo dicho en -r y con más razón: una copia caducada no enseñaría un
            precio viejo sino un MODELO de precio viejo —«$469 c/u»—, y quien
-           multiplicara por seis pediría un paquete que ya no existe. */
-const VERSION = 'syc-2026-08-s';
+           multiplicara por seis pediría un paquete que ya no existe.
+     · -t  correcciones de la auditoría de seguridad: textos legales exactos
+           (precios, transferencia de IP al sitio analizado, caché de una hora) y
+           política de cookies con las cuatro claves reales en vez de dos. Aquí
+           la copia caducada no enseñaría un precio viejo sino un AVISO LEGAL
+           viejo, que es lo único de este sitio que puede acabar en una queja. */
+const VERSION = 'syc-2026-08-t';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
