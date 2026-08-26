@@ -30,7 +30,7 @@ registerHooks({
   }
 });
 
-const { inseguro } = await import('../seo-audit.js');
+const { inseguro, rangoProhibido, ipv6Prohibida } = await import('../seo-audit.js');
 
 /** Igual que hace el Worker: antepone https si no hay esquema. */
 function veto(cruda) {
@@ -168,6 +168,64 @@ describe('filtro de destinos', () => {
       'https://sycsolutions.company', 'sycsolutions.company', 'www.sycsolutions.company',
       'https://ejemplo.test/una/ruta?con=query#y-fragmento',
       'https://xn--ejemplo-9za.test/', 'https://ejemplo.test/ñandú'
+    ]) permite(v);
+  });
+
+  /* REGRESIÓN — El agujero que esta suite no podía ver.
+     Los 190 vectores de arriba son todos SINTÁCTICOS: comprueban que la cadena
+     del hostname no sea una IP prohibida escrita de alguna forma rara. Pero
+     `inseguro()` decidía sólo sobre la cadena, y un NOMBRE que resuelve a una IP
+     privada la atravesaba entera. No hacía falta ni registrar un dominio: los
+     servicios de DNS comodín resuelven a la IP que llevan escrita en el nombre,
+     son públicos y son gratis.
+     La defensa real es la comprobación tras resolver —`ipDeDestinoProhibida`,
+     que consulta DNS y por tanto no se puede probar aquí sin red—, pero estos
+     sufijos se rechazan además léxicamente, y eso sí se prueba y es lo que hace
+     que la barrera siga en pie aunque el resolvedor no conteste. */
+  test('REGRESIÓN: los servicios de DNS comodín no pasan', () => {
+    for (const v of [
+      '127.0.0.1.nip.io', 'http://169.254.169.254.nip.io/latest/meta-data/',
+      '10.0.0.1.sslip.io', '192.168.1.1.sslip.io', 'https://1.2.3.4.xip.io/',
+      'localtest.me', 'app.localtest.me', 'lvh.me', 'algo.vcap.me',
+      'x.traefik.me', '1.2.3.4.1u.ms'
+    ]) bloquea(v, 'DNS comodín: resuelve a la IP escrita en el nombre');
+  });
+
+  /* REGRESIÓN — LA TABLA DE RANGOS ES /24 DONDE EL RANGO RESERVADO ES /24.
+     Estaban escritas como /16 y durante mucho tiempo fue inocuo: la tabla sólo
+     veía IPs que el visitante escribía a mano, y nadie audita su web por IP.
+     Desde que la comprobación tras resolver pasa por aquí cada registro A de
+     cada dominio, cada /16 de más son ~65.000 direcciones PÚBLICAS a cuyos
+     dueños se les respondería «no se pueden analizar direcciones internas».
+     Estas cuatro tienen que PASAR. Si alguna falla, se ha vuelto a ampliar una
+     regla a /16 y hay clientes reales que no pueden usar el diagnóstico. */
+  test('REGRESIÓN: el espacio público vecino de los /24 reservados NO se bloquea', () => {
+    for (const [a, b, c] of [[203, 0, 50], [198, 51, 42], [192, 0, 66], [192, 88, 1]])
+      assert.equal(rangoProhibido(a, b, c), false, `${a}.${b}.${c}.7 es público y debe pasar`);
+  });
+
+  test('los /24 reservados de verdad sí se bloquean', () => {
+    for (const [a, b, c] of [[192, 0, 0], [192, 0, 2], [198, 51, 100], [203, 0, 113], [192, 88, 99]])
+      assert.equal(rangoProhibido(a, b, c), true, `${a}.${b}.${c}.0/24 está reservado`);
+  });
+
+  test('rangos IPv6 internos', () => {
+    for (const v of ['::1', '::', 'fc00::1', 'fd12:3456::1', 'fe80::1', 'fec0::1',
+                     'ff02::1', '64:ff9b::7f00:1', '2002:a00:1::', '::ffff:127.0.0.1', '::7f00:1'])
+      assert.equal(ipv6Prohibida(v), true, `${v} es interna o traduce a interna`);
+    for (const v of ['2606:2800::1', '2a00:1450:4001::2004', '2001:db8::1'])
+      assert.equal(ipv6Prohibida(v), false, `${v} es pública y debe pasar`);
+  });
+
+  /* Y la otra mitad de la misma moneda: el rechazo va anclado al final del
+     nombre, así que un dominio legítimo que CONTENGA esas letras sigue pasando.
+     Sin el anclaje, "nipon.io" o cualquier cliente cuyo dominio terminara en
+     "-nip.io" habría dejado de poder auditarse, y un filtro que rechaza clientes
+     reales se acaba desactivando entero. */
+  test('REGRESIÓN: dominios legítimos parecidos a los comodín sí pasan', () => {
+    for (const v of [
+      'https://nipon.io/', 'https://minip.io.ejemplo.com/', 'https://sslip.ejemplo.com/',
+      'https://localtest.mexico.mx/', 'https://ejemplo.com/nip.io'
     ]) permite(v);
   });
 });

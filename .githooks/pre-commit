@@ -1,4 +1,36 @@
 #!/bin/sh
-# Bloquea el commit si aparece algo con pinta de secreto en lo preparado.
-# Se activa con:  git config core.hooksPath .githooks
+# Barreras que se ejecutan antes de cada commit.
+# Se activa una vez por clon con:  git config core.hooksPath .githooks
+#
+# Son tres y las tres son baratas. Si alguna tarda, el problema es la barrera,
+# no el commit: ninguna debe pasar de un segundo.
+
+# 1 · Nada con pinta de secreto entra en el repositorio.
 node tools/scan-secretos.mjs || exit 1
+
+# 2 · Los hashes de la CSP cuadran con el HTML.
+#     Sin esto, editar un script en línea y publicar deja la web SIN JavaScript
+#     en producción, de forma silenciosa: el navegador bloquea los tres bloques
+#     por huella caducada y no hay error visible en ningún sitio. La herramienta
+#     existía desde el principio; lo que faltaba era que algo la ejecutara.
+#
+#     ⚠ LEE DEL DISCO, NO DEL ÍNDICE. A diferencia del escáner de secretos —que
+#     usa `git show :archivo`—, csp-hashes.mjs abre los ficheros con readFileSync.
+#     Con un commit parcial (`git add -p`, o índice y árbol divergentes) puede
+#     dar verde sobre un HTML que no es el que se está guardando. Es la mejor
+#     aproximación barata que hay aquí; la red de verdad es el CI, que trabaja
+#     sobre el árbol ya commiteado y por tanto no tiene esta ambigüedad.
+node tools/csp-hashes.mjs --check || exit 1
+
+# 3 · Ningún documento legal debería salir a producción con marcadores de
+#     relleno. HOY AVISA Y NO BLOQUEA, y es deliberado: los cuatro datos que
+#     faltan —razón social, domicilio fiscal y los dos encargados— sólo los
+#     tiene el titular del negocio, y una barrera que nadie puede satisfacer se
+#     desactiva con --no-verify a la tercera vez, que es peor que no tenerla.
+#     EN CUANTO ESTÉN RELLENOS: cambiar el `echo` final por `exit 1`. A partir
+#     de ese momento la barrera sí es satisfacible y debe morder.
+if grep -rl "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null | grep -q .; then
+  echo "pre-commit AVISO: quedan marcadores «POR COMPLETAR» en documentos legales"
+  echo "                  publicados. Complétalos y convierte este aviso en fallo:"
+  grep -rn "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null | sed 's/^/                  /'
+fi

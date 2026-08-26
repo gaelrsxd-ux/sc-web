@@ -1,0 +1,60 @@
+# Barreras que no dependen de que nadie se acuerde.
+#
+# Este archivo sustituye a `verificacion.yml.propuesta`, que llevaba meses sin
+# ejecutarse porque GitHub sólo corre `.yml`. Se activa recortado a propósito:
+# de las cuatro comprobaciones que proponía aquél, aquí van SÓLO las dos que no
+# necesitan red ni levantar `wrangler dev`.
+#
+# Por qué el recorte y no el archivo entero: la suite del limitador arranca
+# varios `wrangler dev`, tarda ~65 s en una máquina local y varias de sus
+# pruebas llaman al siteverify REAL de Cloudflare. En un runner compartido eso
+# falla por motivos que no son el suyo, y un CI que falla por ruido se ignora a
+# la semana. Las dos que quedan corren en segundos, no necesitan ningún secreto
+# y son exactamente las que cubren los dos fallos que de verdad tumban esta web:
+# un secreto commiteado y una huella de CSP desfasada.
+#
+# Para añadir la suite del Worker hace falta antes resolver lo que documenta
+# `verificacion.yml.propuesta`: puertos libres en el runner y una variante sin
+# red de las pruebas de Turnstile.
+
+name: verificación
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # Fijadas por SHA y no por etiqueta: una etiqueta móvil se puede
+      # reapuntar, y este job corre sobre el contenido del repositorio.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          # El escáner con --todo mira los archivos versionados; el historial
+          # completo permite ampliarlo a los commits el día que haga falta.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
+        with:
+          node-version: '24'
+
+      - name: Escáner de secretos
+        run: node tools/scan-secretos.mjs --todo
+
+      - name: Hashes de la CSP sincronizados con el HTML
+        run: node tools/csp-hashes.mjs --check
+
+      # Avisa, no falla. Mismo motivo que en el hook de pre-commit: los datos
+      # que faltan sólo los tiene el titular. Cuando estén, convertir en fallo.
+      - name: Documentos legales sin marcadores de relleno
+        run: |
+          if grep -rn "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null; then
+            echo "::warning::Quedan marcadores «POR COMPLETAR» en documentos legales publicados."
+          fi

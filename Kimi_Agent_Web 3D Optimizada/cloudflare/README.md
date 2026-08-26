@@ -11,8 +11,8 @@ que se anuncie como «100 % en el navegador» o miente o no analiza nada.
 
 ```bash
 cd "C:\Users\gaelr\OneDrive\Desktop\WEB\Kimi_Agent_Web 3D Optimizada\cloudflare"
-npx wrangler login
-npx wrangler deploy
+npx wrangler@4.120.0 login
+npx wrangler@4.120.0 deploy
 ```
 
 `deploy` imprime una URL de `*.workers.dev`, pero **no es la que usa la web**.
@@ -51,7 +51,7 @@ la usa la web.
 
 ```bash
 cd "C:\Users\gaelr\OneDrive\Desktop\WEB\Kimi_Agent_Web 3D Optimizada\cloudflare"
-npx wrangler dev --port 8788 --local
+npx wrangler@4.120.0 dev --port 8788 --local
 ```
 
 ```bash

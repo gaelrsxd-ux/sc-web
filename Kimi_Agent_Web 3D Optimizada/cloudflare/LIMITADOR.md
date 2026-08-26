@@ -288,6 +288,12 @@ segunda se puede alterar.
 Referencia: la sección «CF-Connecting-IP in Worker subrequests» de la página de
 cabeceras HTTP de Cloudflare.
 
+**HECHO (agosto de 2026):** el aviso de privacidad ya lo recoge, en la sección
+«Cuando usas el diagnóstico gratuito», con estas palabras: el servidor del sitio
+analizado recibe la dirección IP desde la que se pidió el análisis, es inherente
+al funcionamiento de una petición y no se puede evitar.
+
+Redacción original del pendiente, que se conserva por trazabilidad:
 **Esto tiene que reflejarse en el aviso de privacidad del sitio**: quien usa el
 diagnóstico debe saber que su dirección IP llega al sitio que pide analizar. Es
 una acción de negocio, fuera de este repositorio.
