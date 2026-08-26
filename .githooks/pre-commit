@@ -23,14 +23,15 @@ node tools/scan-secretos.mjs || exit 1
 node tools/csp-hashes.mjs --check || exit 1
 
 # 3 · Ningún documento legal debería salir a producción con marcadores de
-#     relleno. HOY AVISA Y NO BLOQUEA, y es deliberado: los cuatro datos que
-#     faltan —razón social, domicilio fiscal y los dos encargados— sólo los
-#     tiene el titular del negocio, y una barrera que nadie puede satisfacer se
-#     desactiva con --no-verify a la tercera vez, que es peor que no tenerla.
-#     EN CUANTO ESTÉN RELLENOS: cambiar el `echo` final por `exit 1`. A partir
-#     de ese momento la barrera sí es satisfacible y debe morder.
+#     relleno. AHORA BLOQUEA. Durante un tiempo sólo avisaba, porque los datos
+#     que faltaban —responsables, domicilio y los dos encargados— sólo los tenía
+#     el titular del negocio, y una barrera que nadie puede satisfacer se
+#     desactiva con --no-verify a la tercera vez. Ya están rellenos, así que la
+#     barrera es satisfacible y muerde: ningún documento legal a medias vuelve a
+#     publicarse por descuido.
 if grep -rl "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null | grep -q .; then
-  echo "pre-commit AVISO: quedan marcadores «POR COMPLETAR» en documentos legales"
-  echo "                  publicados. Complétalos y convierte este aviso en fallo:"
-  grep -rn "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null | sed 's/^/                  /'
+  echo "pre-commit: hay marcadores «POR COMPLETAR» en documentos legales publicados."
+  echo "            Un aviso de privacidad a medias no puede salir a producción."
+  grep -rn "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null | sed 's/^/            /'
+  exit 1
 fi
