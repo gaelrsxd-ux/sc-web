@@ -96,10 +96,28 @@ new_sqlite_classes = ["LimitadorIP"]
 #
 # subrequests: MEDIDO en local instrumentando el fetch global. Un análisis de un
 #   sitio real gasta 3 (página + robots.txt + sitemap.xml) más 1 de la
-#   validación del token: 4 en total. Un dominio que no resuelve gasta 2. El
-#   peor caso posible según el código son 12 del análisis —cada uno de esos tres
-#   con hasta 3 redirecciones— más 1 del token: 13. 50 deja casi cuatro veces
-#   ese peor caso y sigue muy por debajo del techo del plan.
+#   validación del token, más 2 de la comprobación de DNS de la entrada: 6 en
+#   total. Un dominio que no resuelve gasta 4.
+#
+#   ⚠ EL PEOR CASO CRECIÓ CON LA COMPROBACIÓN DE DNS Y HAY QUE REHACER LA CUENTA
+#   CADA VEZ QUE SE TOQUE. Antes eran 13 y el margen era de casi cuatro veces;
+#   ya no. Desglose actual:
+#       1  token de Turnstile
+#     + 2  DNS (A y AAAA) del destino de entrada
+#     + 12 peticiones al sitio, que es MAX_SUBPETICIONES: las tres cadenas
+#          —página, robots.txt, sitemap.xml— con hasta 3 redirecciones cada una
+#     + 18 DNS de las redirecciones que cambian de host (hasta 9 saltos × 2)
+#     ──────
+#      ~33 fetch, más 2 llamadas al Durable Object y unas 4 de Cache API.
+#
+#   Es decir, unas 39 de 50: el margen pasó de 4× a 1,3×. Subir SALTOS_MAX a 4 o
+#   añadir un tercer tipo de registro DNS revienta el límite, y al pasarse
+#   Cloudflare mata la invocación sin un mensaje que el visitante entienda.
+#
+#   Y una precisión que importa: las consultas de DNS NO consumen de
+#   MAX_SUBPETICIONES —ese contador mide golpes contra el sitio analizado, no
+#   contra el resolvedor—, así que ese contador ya no acota el total de
+#   subpeticiones de la invocación. Lo acota este valor y nada más.
 # cpu_ms: el análisis es de espera, no de cálculo —12 s de presupuesto de red y
 #   un tope de 1,5 MB de HTML que HTMLRewriter procesa en flujo—. Medido en
 #   local, un análisis completo de un sitio real tarda 378 ms de RELOJ, casi

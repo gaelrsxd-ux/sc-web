@@ -13,6 +13,13 @@ node tools/scan-secretos.mjs || exit 1
 #     en producción, de forma silenciosa: el navegador bloquea los tres bloques
 #     por huella caducada y no hay error visible en ningún sitio. La herramienta
 #     existía desde el principio; lo que faltaba era que algo la ejecutara.
+#
+#     ⚠ LEE DEL DISCO, NO DEL ÍNDICE. A diferencia del escáner de secretos —que
+#     usa `git show :archivo`—, csp-hashes.mjs abre los ficheros con readFileSync.
+#     Con un commit parcial (`git add -p`, o índice y árbol divergentes) puede
+#     dar verde sobre un HTML que no es el que se está guardando. Es la mejor
+#     aproximación barata que hay aquí; la red de verdad es el CI, que trabaja
+#     sobre el árbol ya commiteado y por tanto no tiene esta ambigüedad.
 node tools/csp-hashes.mjs --check || exit 1
 
 # 3 · Ningún documento legal debería salir a producción con marcadores de

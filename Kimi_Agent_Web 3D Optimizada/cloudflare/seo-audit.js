@@ -363,7 +363,10 @@ export default {
         return json(
           { error: 'el diagnóstico está recibiendo mucho tráfico; inténtalo en un minuto' },
           503,
-          { ...cors, 'Retry-After': String(glob.esperaS || 60) }
+          /* Redondeada, como el resto de los 503: devolver el segundo exacto
+             sincroniza a todos los rechazados en el mismo instante y provoca la
+             estampida que el 503 venía a evitar. */
+          { ...cors, 'Retry-After': String(esperaRedondeada(glob.esperaS || 60)) }
         );
       }
 
@@ -599,11 +602,20 @@ async function topeGlobal(env) {
         reloj = setTimeout(() => falla(new Error('presupuesto agotado')), PRESUPUESTO_DO_MS);
       })
     ]);
-    if (!r || r.ok !== true || typeof r.permitido !== 'boolean') return { permitido: true, estado: 'global-degradado' };
+    if (!r || r.ok !== true || typeof r.permitido !== 'boolean') {
+      /* El techo que acota la factura puede estar caído indefinidamente. Si
+         además calla, nadie se entera hasta que llega el recibo: la cabecera
+         X-Limitador no sirve de nada aquí porque no hay
+         Access-Control-Expose-Headers, así que el JS del navegador no la lee
+         nunca; el único canal real es el log. */
+      registra('techo-global-degradado', { motivo: 'respuesta-invalida' });
+      return { permitido: true, estado: 'global-degradado' };
+    }
     return r.permitido
       ? { permitido: true, estado: 'global-ok' }
       : { permitido: false, estado: 'global-limite', esperaS: r.esperaS };
-  } catch (_) {
+  } catch (e) {
+    registra('techo-global-degradado', { motivo: e && e.overloaded ? 'saturado' : 'error' });
     return { permitido: true, estado: 'global-degradado' };
   } finally {
     clearTimeout(reloj);
@@ -868,7 +880,10 @@ async function dentroDelTope(quien, ctx) {
    únicamente usa el export por defecto y las clases de Durable Object, así que
    exportarla no cambia nada del Worker desplegado.
    Ver test/ssrf.test.mjs. */
-export { inseguro };
+/* `rangoProhibido` e `ipv6Prohibida` salen aquí para que las pruebas puedan
+   cubrirlas SIN RED. Es justo lo que le faltaba a la suite anterior: sus 190
+   vectores eran todos sintácticos porque lo único exportado era `inseguro`. */
+export { inseguro, rangoProhibido, ipv6Prohibida };
 
 /** Rechaza destinos que no deben alcanzarse desde el borde.
  *
@@ -886,19 +901,57 @@ export { inseguro };
  * segundo consumidor —la comprobación de la IP REALMENTE resuelta— y dos copias
  * de esta tabla se desincronizan el día que se añada un rango a una sola.
  */
-function rangoProhibido(a, b) {
+function rangoProhibido(a, b, c) {
   return a === 0 || a === 10 || a === 127 || a >= 224 ||
     (a === 172 && b >= 16 && b <= 31) ||
     (a === 192 && b === 168) ||
     (a === 169 && b === 254) ||
     (a === 100 && b >= 64 && b <= 127) ||
-    /* Benchmarking (198.18/15), IETF protocol assignments (192.0.0/24) y las
-       tres TEST-NET de documentación. */
-    (a === 198 && b >= 18 && b <= 19) ||
-    (a === 192 && b === 0) ||
-    (a === 198 && b === 51) ||
-    (a === 203 && b === 0) ||
-    (a === 192 && b === 88);   /* relé anycast 6to4, 192.88.99.0/24 */
+    (a === 198 && b >= 18 && b <= 19) ||   /* benchmarking, 198.18/15 */
+    /* ⚠ ESTOS CINCO SON /24 Y HAY QUE COMPARAR EL TERCER OCTETO.
+       Estaban escritos como /16 y durante mucho tiempo dio igual: la tabla sólo
+       veía direcciones que el visitante ESCRIBÍA a mano, y nadie audita su web
+       poniendo una IP. Desde que la comprobación tras resolver pasa por aquí
+       CADA registro A de CADA dominio, un /16 de más deja de ser inocuo: son
+       ~65.000 direcciones PÚBLICAS por regla —espacio real de ARIN y APNIC— a
+       cuyos dueños se les respondería «no se pueden analizar direcciones
+       internas», acusándoles de estar en una red interna, y con el rechazo
+       cacheado cinco minutos para todo el mundo.
+       Un cliente en 203.0.50.7 es un cliente perdido por un paréntesis. */
+    (a === 192 && b === 0 && c === 0) ||     /* IETF protocol assignments */
+    (a === 192 && b === 0 && c === 2) ||     /* TEST-NET-1 */
+    (a === 198 && b === 51 && c === 100) ||  /* TEST-NET-2 */
+    (a === 203 && b === 0 && c === 113) ||   /* TEST-NET-3 */
+    (a === 192 && b === 88 && c === 99);     /* relé anycast 6to4 */
+}
+
+/**
+ * Rangos IPv6 que no se deben alcanzar.
+ *
+ * Fuera de `ipDeDestinoProhibida` y por el mismo motivo que `rangoProhibido`:
+ * un predicado suelto se puede probar sin red, y esta lista va a crecer.
+ *
+ * ⚠ DEPENDE DE QUE EL RESOLVEDOR DEVUELVA FORMA CANÓNICA COMPRIMIDA, que es lo
+ * que hace cloudflare-dns.com. `0:0:0:0:0:0:0:1` no casaría con nada de esto.
+ * Es la misma clase de dependencia implícita que `inseguro()` tiene con el
+ * parser de URL, y conviene que esté escrita en vez de descubrirse.
+ */
+function ipv6Prohibida(v6) {
+  const h = String(v6 || '').toLowerCase();
+  return h === '::1' || h === '::' ||
+    /^f[cd]/.test(h) ||        /* fc00::/7  únicas locales */
+    /^fe[89ab]/.test(h) ||     /* fe80::/10 enlace local */
+    /^fe[c-f]/.test(h) ||      /* fec0::/10 site-local, deprecado pero enrutado */
+    /^ff/.test(h) ||           /* ff00::/8  multicast — en IPv4 sí se bloqueaba
+                                  (a >= 224) y aquí faltaba: misma amenaza, misma
+                                  respuesta */
+    /^64:ff9b:/.test(h) ||     /* NAT64: traduce a IPv4 en una pasarela */
+    /^2002:/.test(h) ||        /* 6to4: lleva la IPv4 incrustada */
+    /* Las dos formas de meter una IPv4 dentro de una IPv6. `::ffff:` es la
+       mapeada de siempre; `::` seguido de más de un grupo es la "compatible",
+       deprecada, y por ahí entraba ::7f00:1 = ::127.0.0.1. */
+    h.startsWith('::ffff:') ||
+    (h.startsWith('::') && h.length > 2 && !/^::[0-9a-f]{0,4}$/.test(h));
 }
 
 /* Resolvedor público de Cloudflare, en su interfaz JSON. Se consulta desde el
@@ -916,6 +969,23 @@ const DOH_ESPERA_MS = 2_000;
  * con un registro A hacia 169.254.169.254 atravesaba el filtro entero. Es un
  * TOCTOU de manual: se valida un nombre y se conecta a una dirección.
  *
+ * ⚠ ESTO NO CIERRA EL TOCTOU, Y NO DEBE PRESENTARSE COMO SI LO HICIERA.
+ * Hay dos agujeros que quedan abiertos por construcción y conviene tenerlos
+ * escritos, porque el día que alguien quiera relajar `inseguro()` o la lista
+ * léxica de comodines "porque ya está la comprobación de DNS", la respuesta
+ * está aquí:
+ *   1. Quien controla el dominio controla también su servidor autoritativo, así
+ *      que puede retrasar la respuesta por encima de DOH_ESPERA_MS y forzar el
+ *      fallo abierto. Este control caza al atacante que no se molesta.
+ *   2. Se resuelve por cloudflare-dns.com y después `fetch()` vuelve a resolver
+ *      por su cuenta: un nombre con TTL 0 que conteste una IP pública a la
+ *      consulta y una privada a la conexión lo atraviesa entero. Conectar por IP
+ *      con el nombre en la cabecera Host —la única forma de cerrarlo de verdad—
+ *      no es posible en Workers.
+ * Es defensa en profundidad contra destinos mal configurados y contra el uso
+ * casual de los servicios de DNS comodín. La barrera que sí aguanta sola es la
+ * léxica de `inseguro()`.
+ *
  * CÓMO FALLA, que es lo que importa en un control de seguridad:
  *   · resuelve a un rango prohibido  -> CIERRA. Es el caso que se viene a cerrar.
  *   · el resolvedor no contesta, tarda o devuelve basura -> ABRE, y lo registra.
@@ -928,10 +998,19 @@ const DOH_ESPERA_MS = 2_000;
  * Se consultan A y AAAA a la vez: un nombre sólo con AAAA hacia ::1 se saltaba
  * la comprobación si sólo se miraba A.
  */
-async function ipDeDestinoProhibida(hostname) {
+async function ipDeDestinoProhibida(hostname, señalExterna = null) {
   const pide = async tipo => {
     const ctl = new AbortController();
     const reloj = setTimeout(() => ctl.abort(), DOH_ESPERA_MS);
+    /* La señal del análisis se encadena con la propia. Sin esto, el peor caso
+       sumaba los 2 s de cada consulta POR ENCIMA del techo de 12 s del análisis
+       y el total se iba por encima de los 20 s a los que el navegador aborta:
+       el visitante veía un error de red en vez de un informe. */
+    const corta = () => { try { ctl.abort(); } catch (_) {} };
+    if (señalExterna) {
+      if (señalExterna.aborted) { clearTimeout(reloj); return null; }
+      señalExterna.addEventListener('abort', corta, { once: true });
+    }
     try {
       const r = await fetch(
         DOH_URL + '?name=' + encodeURIComponent(hostname) + '&type=' + tipo,
@@ -939,33 +1018,45 @@ async function ipDeDestinoProhibida(hostname) {
       );
       if (!r.ok) return null;
       const d = await r.json();
+      /* EL ESTADO DNS, QUE ES LO QUE FALTABA. La interfaz JSON responde HTTP 200
+         también cuando la resolución fracasa: SERVFAIL (2) y REFUSED (5) llegan
+         con `ok` y sin `Answer`. Sin mirar `Status`, «el resolvedor no pudo» y
+         «resuelve limpio» eran el mismo camino, y el primero abría en silencio.
+         0 = todo bien, 3 = NXDOMAIN (respuesta legítima: el nombre no existe).
+         Cualquier otro valor es «no se pudo saber». */
+      const est = d && typeof d.Status === 'number' ? d.Status : 0;
+      if (est !== 0 && est !== 3) return null;
       return Array.isArray(d && d.Answer) ? d.Answer : [];
     } catch (_) {
       return null;               /* nulo = no se pudo saber, no = está limpio */
     } finally {
       clearTimeout(reloj);
+      if (señalExterna) { try { señalExterna.removeEventListener('abort', corta); } catch (_) {} }
     }
   };
 
   const [a4, a6] = await Promise.all([pide('A'), pide('AAAA')]);
-  if (a4 === null && a6 === null) {
-    registra('dns-sin-respuesta', { host: hostname });
-    return null;                 /* abre: ver el bloque de arriba */
+
+  /* Registra si falló CUALQUIERA de las dos, no sólo si fallaron ambas.
+     Con la condición anterior (`a4 === null && a6 === null`), un fallo parcial
+     abría sin dejar rastro: bastaba retrasar la consulta A —la que llevaría la
+     IP privada— y contestar rápido la AAAA para que la función devolviera
+     «limpio» sin haber mirado ni un registro A y sin escribir una línea.
+     Se sigue abriendo, que es la política; lo que no puede pasar es que no se
+     sepa que se abrió a ciegas. */
+  if (a4 === null || a6 === null) {
+    registra('dns-sin-respuesta', { host: hostname, a: a4 !== null, aaaa: a6 !== null });
   }
+  if (a4 === null && a6 === null) return null;
 
   for (const reg of (a4 || [])) {
     if (reg.type !== 1) continue;               /* 1 = A; los CNAME no traen IP */
     const m = String(reg.data || '').match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-    if (m && rangoProhibido(+m[1], +m[2])) return 'no se pueden analizar direcciones internas';
+    if (m && rangoProhibido(+m[1], +m[2], +m[3])) return 'no se pueden analizar direcciones internas';
   }
   for (const reg of (a6 || [])) {
     if (reg.type !== 28) continue;              /* 28 = AAAA */
-    const v6 = String(reg.data || '').toLowerCase();
-    /* Loopback, no especificada, únicas locales (fc00::/7), enlace local
-       (fe80::/10) y las IPv4 mapeadas, que son la vía corta a 127.0.0.1. */
-    if (v6 === '::1' || v6 === '::' || /^f[cd]/.test(v6) || /^fe[89ab]/.test(v6) ||
-        v6.startsWith('::ffff:'))
-      return 'no se pueden analizar direcciones internas';
+    if (ipv6Prohibida(reg.data)) return 'no se pueden analizar direcciones internas';
   }
   return null;
 }
@@ -1029,7 +1120,7 @@ function inseguro(u) {
   const ip = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if (ip) {
     if (ip.slice(1).some(n => +n > 255)) return 'dirección IP no válida';
-    if (rangoProhibido(+ip[1], +ip[2]))
+    if (rangoProhibido(+ip[1], +ip[2], +ip[3]))
       return 'no se pueden analizar direcciones de red privada';
   } else if (!h.includes('.')) {
     /* Host de una sola etiqueta: `metadata`, `router`, `consul`,
@@ -1106,7 +1197,7 @@ async function trae(url, señal, metodo = 'GET', presupuesto = null) {
        No consume del presupuesto de subpeticiones a propósito: ese contador
        mide golpes contra el sitio analizado, y esto va al resolvedor. */
     if (nueva.hostname !== actual.hostname) {
-      const vetoIP = await ipDeDestinoProhibida(nueva.hostname);
+      const vetoIP = await ipDeDestinoProhibida(nueva.hostname, señal);
       if (vetoIP) throw new Error(vetoIP);
     }
     actual = nueva;
@@ -1117,12 +1208,27 @@ async function trae(url, señal, metodo = 'GET', presupuesto = null) {
     Antes el comentario decía esto mismo pero el cuerpo se quedaba abierto y sin
     tope: un /robots.txt de 2 GB se descargaba entero. Ahora se cancela nada más
     conocer el estado, que es lo único que interesa. */
+/* ⚠ El catch de esta función se traga CUALQUIER error, veto de destino interno
+   incluido. No abre ningún agujero —la conexión sí se impidió— pero deja un
+   punto ciego en la telemetría: `registra('destino-interno')` sólo se dispara en
+   la puerta de entrada, así que una cadena de redirecciones de robots.txt o
+   sitemap.xml hacia una IP privada se resolvía como «no tiene robots.txt» y no
+   aparecía en ningún sitio. Ahora se distingue antes de tragárselo. */
 async function existe(base, ruta, señal, presupuesto = null) {
   try {
     const { r } = await trae(new URL(ruta, base), señal, 'GET', presupuesto);
     if (r.body) { try { await r.body.cancel(); } catch { /* ya cerrado */ } }
     return r.status >= 200 && r.status < 300;
-  } catch {
+  } catch (e) {
+    /* Un veto de destino interno no es «este sitio no tiene robots.txt»: es un
+       intento de alcanzar red privada por una cadena de redirecciones auxiliar.
+       El resultado para el informe es el mismo —false—, pero al log tiene que
+       llegar, porque si no la única traza de este ataque son las cadenas que
+       pasan por la puerta de entrada, que son un tercio de las que se siguen. */
+    const m = mensaje(e);
+    if (/direcciones internas|red privada/.test(m)) {
+      registra('destino-interno', { host: base && base.hostname, via: ruta });
+    }
     return false;
   }
 }
