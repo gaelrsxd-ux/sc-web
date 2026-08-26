@@ -1394,21 +1394,22 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
 /* ==================================================================
    AJUSTES MÓVILES AL FINAL DE LA HOJA
-   Van aquí a propósito. Las rejillas de cada sección (.svc-grid, .works,
-   .team) se declaran más arriba con la misma especificidad que estas reglas,
-   así que puestas antes perdían por orden de cascada y la baraja no llegaba a
+   Van aquí a propósito. Las rejillas de cada sección (.svc-grid, .works) se
+   declaran más arriba con la misma especificidad que estas reglas, así que
+   puestas antes perdían por orden de cascada y la baraja no llegaba a
    aplicarse nunca. Los ajustes responsivos van después de lo que ajustan.
    ================================================================== */
 /* ---------- BARAJAS MÓVILES ----------
-   En escritorio estas tres secciones se componen: los servicios en retícula,
-   cuatro casos en 2×2, dos perfiles lado a lado. Apiladas en una columna esa
-   composición desaparece y hay que recorrer cuatro pantallas para entender que
-   hay cuatro cosas. Medido en un móvil de 402 px: servicios ocupaba 2,2
-   pantallas, los perfiles 2,0 y los casos 1,9.
+   En escritorio estas dos secciones se componen: los servicios en retícula y
+   cuatro casos en 2×2. Apiladas en una columna esa composición desaparece y hay
+   que recorrer cuatro pantallas para entender que hay cuatro cosas. Medido en
+   un móvil de 402 px: servicios ocupaba 2,2 pantallas y los casos 1,9.
+   Eran tres: la tercera era la de los perfiles del equipo, que se fue con la
+   sección «Sobre nosotros».
    Aquí pasan a barajas que se arrastran, ancladas por ficha. Se ve una ficha
    entera y asoma la siguiente, y ese borde asomando es la única señal que dice
    «hay más» sin gastar espacio ni pedir instrucciones. Un mismo gesto para las
-   tres, así que no se introduce un idioma nuevo por sección.
+   dos, así que no se introduce un idioma nuevo por sección.
    Nada de esto aplica por encima de 760 px. */
 .bar-idx{display:none}
 @media(max-width:760px){
