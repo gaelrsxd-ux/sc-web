@@ -1,0 +1,57 @@
+name = "syc-pagos"
+main = "pagos.js"
+compatibility_date = "2026-07-01"
+workers_dev = false
+
+# ⚠ ANTES DE DESPLEGAR: falta un secreto y sin él NO se puede cobrar.
+#
+#   npx wrangler secret put MP_ACCESS_TOKEN
+#
+# Es el «Access token» de PRODUCCIÓN de una aplicación de Mercado Pago, que se
+# crea en su panel de desarrolladores. El comando lo pide por teclado: el valor
+# NO se escribe en ningún archivo de este repositorio, no aparece en el
+# historial de git y no debe pegarse en un chat.
+#
+# El Worker falla en ABIERTO y de forma visible si el secreto no está: responde
+# una página que dice que el cobro no está configurado y ofrece WhatsApp, en vez
+# de un error en blanco. `GET /estado` dice si el secreto existe —sólo si
+# existe, nunca su valor—, que es la forma de comprobar un despliegue sin
+# hacer un cobro de prueba.
+#
+# Si el token se rota en Mercado Pago hay que volver a ponerlo aquí; el Worker
+# no lo detecta solo, se manifiesta como cobros que dejan de abrirse.
+
+# El Worker se sirve en pagos.sycsolutions.company. La ruta se da de alta en el
+# panel de Cloudflare, igual que se hizo con audit.sycsolutions.company:
+# Workers & Pages → syc-pagos → Settings → Domains & Routes → Custom domain.
+#
+# workers_dev = false a propósito: sin esto el Worker queda además publicado en
+# syc-pagos.<subdominio>.workers.dev, una dirección que nadie vigila y por la
+# que se podrían crear cobros saltándose el dominio propio.
+
+# No hay estado propio: ni base de datos, ni Durable Object, ni KV. Lo único
+# que este Worker escribe es el contador por IP sobre la Cache API, que guarda
+# un número y caduca en un minuto. Los datos del pago los trata Mercado Pago en
+# su sitio; aquí no pasa ni un número de tarjeta.
+
+# Topes de recursos. Un cobro gasta UNA subpetición: la llamada a la API de
+# Mercado Pago para crear la preferencia. Se dejan 5 por si algún día hay que
+# encadenar algo, y siguen diez veces por debajo del valor por defecto, que es
+# lo que hace que un bucle propio se corte en vez de facturarse.
+#
+# cpu_ms: aquí no se calcula nada —se arma un JSON, se espera a la red y se
+# redirige—. 50 ms es holgado para eso.
+[limits]
+subrequests = 5
+cpu_ms = 50
+
+[observability]
+enabled = true
+
+# Igual que en el Worker del diagnóstico: los invocation logs guardan la
+# petición y sus metadatos, incluida la IP. Aquí además el cuerpo del POST lleva
+# qué paquete se está comprando. No hace falta conservarlo: lo que sirve para
+# operar son las líneas que el código escribe a propósito con console, que son
+# agregadas y sin datos personales.
+[observability.logs]
+invocation_logs = false

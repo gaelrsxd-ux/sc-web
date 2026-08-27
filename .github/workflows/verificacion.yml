@@ -57,6 +57,14 @@ jobs:
       - name: Precios del HTML generados desde la tabla
         run: node tools/precios.mjs --check
 
+      # El Worker de cobros. Estas pruebas no necesitan red ni wrangler: el
+      # fetch se sustituye por un doble. La que justifica tenerlas en CI es la
+      # que exige que el importe salga de la tabla del servidor y no del
+      # formulario; sin ella, un descuido cobraría un peso por veinte placas.
+      - name: Pruebas del Worker de cobros
+        run: node --test test/pagos.test.mjs
+        working-directory: Kimi_Agent_Web 3D Optimizada/cloudflare/pagos
+
       # Falla. Durante un tiempo sólo avisaba, porque los datos que faltaban
       # sólo los tenía el titular; ya están puestos, así que la barrera muerde.
       - name: Documentos legales sin marcadores de relleno
