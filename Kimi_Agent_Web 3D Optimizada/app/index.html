@@ -1680,8 +1680,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    Cada fila lleva TRES datos y en este orden: cantidad, total y envío. El envío
    es el más callado de los tres a propósito —es una condición, no un precio que
    compita con el total— salvo cuando es gratis, que entonces es argumento de
-   venta y va en bronce. La fila de 10 piezas, la primera con envío gratis, va
-   además con un filete y un fondo tenue: es el salto que interesa enseñar. */
+   venta y va en bronce. La PRIMERA fila con envío gratis va además con un
+   filete y un fondo tenue: es el salto que interesa enseñar. Cuál es esa fila
+   lo decide la tabla de tools/precios.mjs y no esta hoja: hoy son 4 piezas,
+   antes eran 10, y el día que cambie no hay que tocar aquí nada. */
 .prod-mayoreo{margin-top:20px;border:1px solid var(--line-soft)}
 .prod-mayoreo summary{list-style:none;cursor:pointer;position:relative;
   display:flex;align-items:center;gap:10px;min-height:48px;padding:0 42px 0 17px;
@@ -1734,9 +1736,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .pm-e{grid-column:1/-1;grid-row:2;font-size:9.5px;letter-spacing:2px;
   text-transform:uppercase;color:var(--dim);transition:color .3s}
 .pm-e.gratis{color:var(--bronze-hi)}
-/* La primera fila con envío gratis. Un filete de dos píxeles y un fondo al 5%
-   —el mismo de la nota de San Luis—, que es cuanto hace falta para marcar el
-   salto sin convertir la lista en un cuadro de ofertas. */
+/* La primera fila con envío gratis —hoy la de 4 piezas—. Un filete de dos
+   píxeles y un fondo al 5% —el mismo de la nota de San Luis—, que es cuanto
+   hace falta para marcar el salto sin convertir la lista en un cuadro de
+   ofertas. Quién lleva la marca lo pone el generador, no este archivo. */
 .pm-lista li.pm-destaca{background:rgba(200,169,106,.05);
   box-shadow:inset 2px 0 0 var(--bronze)}
 .pm-lista li.pm-destaca a{padding-left:12px}
@@ -2445,7 +2448,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
                cliente tiene que poder distinguirlos. Va aqu&#237; arriba y no s&#243;lo
                dentro del desplegable porque quien ve «$429» y no abre nada
                merece saber que hay un env&#237;o antes de escribir. -->
-          <p class="prod-envio">Env&#237;o $149 MXN &#183; gratis desde 10 piezas</p>
+          <p class="prod-envio">Env&#237;o $79 MXN &#183; gratis desde 4 piezas</p>
           <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(NFC%20%2B%20QR)." class="svc-btn" target="_blank" rel="noopener noreferrer"
              aria-label="Escribir por WhatsApp para pedir la placa de rese&#241;as para Google"><span class="dia"></span>La quiero</a>
         </div>
@@ -2466,21 +2469,21 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
                  rango dicen el tramo y no una cantidad inventada, as&#237; que el
                  mensaje sigue siendo cierto aunque se env&#237;e sin tocarlo. -->
             <ul class="pm-lista">
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%201%20placa%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24429%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 1 pieza por WhatsApp, 429 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">1 pieza</span><span class="pm-p">$429 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%202%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24699%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 2 piezas por WhatsApp, 699 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">2 piezas</span><span class="pm-p">$699 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%203%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24799%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 3 piezas por WhatsApp, 799 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">3 piezas</span><span class="pm-p">$799 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%204%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24949%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 4 piezas por WhatsApp, 949 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">4 piezas</span><span class="pm-p">$949 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%205%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C099%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 5 piezas por WhatsApp, 1099 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">5 piezas</span><span class="pm-p">$1,099 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%206%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C249%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 6 piezas por WhatsApp, 1249 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">6 piezas</span><span class="pm-p">$1,249 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
-              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%208%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C599%20MXN%20%2B%20%24149%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 8 piezas por WhatsApp, 1599 pesos m&#225;s 149 de env&#237;o"><span class="pm-q">8 piezas</span><span class="pm-p">$1,599 MXN</span><span class="pm-e">Env&#237;o $149 MXN</span></a></li>
-              <li class="pm-destaca"><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2010%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C899%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%201%20placa%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24429%20MXN%20%2B%20%2479%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 1 pieza por WhatsApp, 429 pesos m&#225;s 79 de env&#237;o"><span class="pm-q">1 pieza</span><span class="pm-p">$429 MXN</span><span class="pm-e">Env&#237;o $79 MXN</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%202%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24699%20MXN%20%2B%20%2469%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 2 piezas por WhatsApp, 699 pesos m&#225;s 69 de env&#237;o"><span class="pm-q">2 piezas</span><span class="pm-p">$699 MXN</span><span class="pm-e">Env&#237;o $69 MXN</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%203%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24799%20MXN%20%2B%20%2459%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 3 piezas por WhatsApp, 799 pesos m&#225;s 59 de env&#237;o"><span class="pm-q">3 piezas</span><span class="pm-p">$799 MXN</span><span class="pm-e">Env&#237;o $59 MXN</span></a></li>
+              <li class="pm-destaca"><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%204%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24949%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 4 piezas por WhatsApp, 949 pesos con env&#237;o gratis"><span class="pm-q">4 piezas</span><span class="pm-p">$949 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%205%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C099%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 5 piezas por WhatsApp, 1099 pesos con env&#237;o gratis"><span class="pm-q">5 piezas</span><span class="pm-p">$1,099 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%206%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C249%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 6 piezas por WhatsApp, 1249 pesos con env&#237;o gratis"><span class="pm-q">6 piezas</span><span class="pm-p">$1,249 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%208%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C599%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
+                     aria-label="Pedir el paquete de 8 piezas por WhatsApp, 1599 pesos con env&#237;o gratis"><span class="pm-q">8 piezas</span><span class="pm-p">$1,599 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
+              <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2010%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C899%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
                      aria-label="Pedir el paquete de 10 piezas por WhatsApp, 1899 pesos con env&#237;o gratis"><span class="pm-q">10 piezas</span><span class="pm-p">$1,899 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
               <li><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2012%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%242%2C199%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
                      aria-label="Pedir el paquete de 12 piezas por WhatsApp, 2199 pesos con env&#237;o gratis"><span class="pm-q">12 piezas</span><span class="pm-p">$2,199 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a></li>
@@ -2493,8 +2496,8 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
                  fila enlaza sola, y repetir el enlace veinte p&#237;xeles m&#225;s abajo era
                  decir dos veces lo mismo. Lo que hac&#237;a falta en su lugar era decir
                  que las filas se pulsan, porque una lista de precios no lo parece. -->
-            <p class="pm-n">Precios totales por paquete, no por pieza. Env&#237;o $149 MXN,
-              gratis a partir de 10 piezas. Pulsa el paquete que necesitas y se abre
+            <p class="pm-n">Precios totales por paquete, no por pieza. El env&#237;o baja con la cantidad y
+              es gratis desde 4 piezas. Pulsa el paquete que necesitas y se abre
               WhatsApp con tu pedido ya escrito.</p>
           </div>
         </details>

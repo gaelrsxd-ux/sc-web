@@ -36,10 +36,12 @@ const HTML = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'index.html'
    y en el bloque de contacto del HTML —ese no lo genera este archivo—. */
 const WHATSAPP = '524423697248';
 
-/* Envío. `GRATIS_DESDE` es el número de piezas a partir del cual no se cobra:
-   con 10, el paquete de 10 ya entra. */
-const ENVIO = 149;
-const GRATIS_DESDE = 10;
+/* A partir de cuántas placas se habla de «el paquete de N» y no de «N placas»
+   en el mensaje de WhatsApp. Es una decisión de REDACCIÓN y por eso vive
+   aparte: antes coincidía con el umbral del envío gratis, y al bajar ése a
+   cuatro se habría llevado por delante la forma de pedir de medio catálogo sin
+   que nadie lo decidiera. */
+const PAQUETE_DESDE = 10;
 
 /* Los paquetes, en el orden en que se enseñan. `precio` es el TOTAL del
    paquete en pesos, no el precio por unidad.
@@ -54,17 +56,17 @@ const GRATIS_DESDE = 10;
    el enlace por el precio del paquete a secas, el envío de los paquetes de
    menos de diez piezas se queda sin cobrar. */
 const PAQUETES = [
-  { piezas:  1, precio:  429, pago: '' },
-  { piezas:  2, precio:  699, pago: '' },
-  { piezas:  3, precio:  799, pago: '' },
-  { piezas:  4, precio:  949, pago: '' },
-  { piezas:  5, precio: 1099, pago: '' },
-  { piezas:  6, precio: 1249, pago: '' },
-  { piezas:  8, precio: 1599, pago: '' },
-  { piezas: 10, precio: 1899, pago: '', destaca: true },
-  { piezas: 12, precio: 2199, pago: '' },
-  { piezas: 15, precio: 2649, pago: '' },
-  { piezas: 20, precio: 3399, pago: '' },
+  { piezas:  1, precio:  429, envio: 79, pago: '' },
+  { piezas:  2, precio:  699, envio: 69, pago: '' },
+  { piezas:  3, precio:  799, envio: 59, pago: '' },
+  { piezas:  4, precio:  949, envio:  0, pago: '', destaca: true },
+  { piezas:  5, precio: 1099, envio:  0, pago: '' },
+  { piezas:  6, precio: 1249, envio:  0, pago: '' },
+  { piezas:  8, precio: 1599, envio:  0, pago: '' },
+  { piezas: 10, precio: 1899, envio:  0, pago: '' },
+  { piezas: 12, precio: 2199, envio:  0, pago: '' },
+  { piezas: 15, precio: 2649, envio:  0, pago: '' },
+  { piezas: 20, precio: 3399, envio:  0, pago: '' },
 ];
 
 /* ------------------------------------------------------------- HERRAMIENTAS */
@@ -77,25 +79,33 @@ const ent = t => [...t].map(c => c.charCodeAt(0) > 126 ? `&#${c.charCodeAt(0)};`
 /* Miles con coma: $1,899. Es como se enseñan los precios en el sitio. */
 const miles = n => n.toLocaleString('en-US');
 
-const gratis = p => p.piezas >= GRATIS_DESDE;
-const total  = p => p.precio + (gratis(p) ? 0 : ENVIO);
+const gratis = p => p.envio === 0;
+const total  = p => p.precio + p.envio;
 const piezas = p => p.piezas === 1 ? '1 pieza' : `${p.piezas} piezas`;
 const placas = p => p.piezas === 1 ? '1 placa' : `${p.piezas} placas`;
+
+/* Desde cuántas piezas sale gratis. Se DEDUCE de la tabla en vez de escribirse:
+   si mañana el envío gratis empieza en seis, el texto lo dice solo. */
+function desdeGratis() {
+  const primera = PAQUETES.find(gratis);
+  if (!primera) throw new Error('ningún paquete tiene el envío gratis; revisa la tabla');
+  return primera.piezas;
+}
 
 /* El mensaje que llega a WhatsApp ya escrito. Los paquetes con envío gratis se
    piden como «el paquete de N placas» y los de menos, como «N placas»: a
    partir de diez lo que se compra es el paquete, y por debajo son piezas
    sueltas. Es el texto que ya estaba; se conserva. */
 function mensaje(p) {
-  const qué = gratis(p) ? `el paquete de ${placas(p)}` : placas(p);
+  const qué = p.piezas >= PAQUETE_DESDE ? `el paquete de ${placas(p)}` : placas(p);
   const cierre = gratis(p)
     ? `Total: $${miles(p.precio)} MXN con envío gratis.`
-    : `Total: $${miles(p.precio)} MXN + $${ENVIO} de envío.`;
+    : `Total: $${miles(p.precio)} MXN + $${p.envio} de envío.`;
   return `Hola. Vengo de la web y quiero ${qué} de reseñas de Google (NFC + QR). ${cierre}`;
 }
 
 function etiquetaPedir(p) {
-  const cierre = gratis(p) ? 'con envío gratis' : `más ${ENVIO} de envío`;
+  const cierre = gratis(p) ? 'con envío gratis' : `más ${p.envio} de envío`;
   return `Pedir el paquete de ${piezas(p)} por WhatsApp, ${p.precio} pesos ${cierre}`;
 }
 
@@ -118,7 +128,7 @@ function fila(p) {
   const clase = p.destaca ? ' class="pm-destaca"' : '';
   const envío = gratis(p)
     ? '<span class="pm-e gratis">' + ent('Envío gratis') + '</span>'
-    : '<span class="pm-e">' + ent(`Envío $${ENVIO} MXN`) + '</span>';
+    : '<span class="pm-e">' + ent(`Envío $${p.envio} MXN`) + '</span>';
   const datos =
     `<span class="pm-q">${piezas(p)}</span>` +
     `<span class="pm-p">$${miles(p.precio)} MXN</span>` +
@@ -154,8 +164,27 @@ function cifra() {
   return `<span class="cifra">$${miles(una.precio)}</span>`;
 }
 
+/* Va justo debajo de «$429 MXN · una pieza», así que dice el envío DE UNA
+   PIEZA y no el más barato del catálogo: quien lee esa cifra está mirando la
+   compra de una, y anunciarle los $59 del paquete de tres sería cierto y
+   engañoso a la vez. */
 function lineaEnvio() {
-  return '<p class="prod-envio">' + ent(`Envío $${ENVIO} MXN · gratis desde ${GRATIS_DESDE} piezas`) + '</p>';
+  const una = PAQUETES.find(x => x.piezas === 1);
+  if (!una) throw new Error('la tabla no tiene el paquete de 1 pieza');
+  return '<p class="prod-envio">' + ent(`Envío $${una.envio} MXN · gratis desde ${desdeGratis()} piezas`) + '</p>';
+}
+
+/* La nota al pie de la lista. Estaba escrita a mano en el HTML con «Envío $149
+   MXN, gratis a partir de 10 piezas» dentro, es decir, una copia más del envío
+   que este archivo no controlaba: al cambiar la tarifa se habría quedado
+   contradiciendo a la lista que tiene tres centímetros encima. Ahora la genera
+   él, y por eso no repite importes —los lleva cada fila— sino la regla. */
+function notaLista() {
+  const texto =
+    'Precios totales por paquete, no por pieza. El envío baja con la cantidad y\n' +
+    '              es gratis desde ' + desdeGratis() + ' piezas. Pulsa el paquete que necesitas y se abre\n' +
+    '              WhatsApp con tu pedido ya escrito.';
+  return '<p class="pm-n">' + ent(texto) + '</p>';
 }
 
 /* Cada bloque con el patrón que lo localiza en el HTML. El patrón se ancla en
@@ -165,6 +194,7 @@ const BLOQUES = [
   { nombre: 'lista de paquetes', re: /<ul class="pm-lista">[\s\S]*?<\/ul>/,        pinta: lista },
   { nombre: 'precio de cabecera', re: /<span class="cifra">\$[\d,]+<\/span>/,      pinta: cifra },
   { nombre: 'línea de envío',     re: /<p class="prod-envio">[\s\S]*?<\/p>/,       pinta: lineaEnvio },
+  { nombre: 'nota de la lista',   re: /<p class="pm-n">[\s\S]*?<\/p>/,             pinta: notaLista },
 ];
 
 function aplica(html) {
@@ -190,7 +220,7 @@ if (args.includes('--tabla')) {
     console.log(
       '  ' + String(p.piezas).padStart(6) +
       ('  $' + miles(p.precio)).padEnd(13) +
-      (gratis(p) ? '  gratis' : '  $' + ENVIO).padEnd(11) +
+      (gratis(p) ? '  gratis' : '  $' + p.envio).padEnd(11) +
       ('  $' + miles(total(p))).padEnd(19) +
       (p.pago ? 'sí' : 'todavía no')
     );
