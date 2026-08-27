@@ -56,7 +56,7 @@ const PAQUETE_DESDE = 10;
    el enlace por el precio del paquete a secas, el envío de los paquetes de
    menos de diez piezas se queda sin cobrar. */
 const PAQUETES = [
-  { piezas:  1, precio:  429, envio: 79, pago: '' },
+  { piezas:  1, precio:  429, envio: 79, pago: 'https://mpago.la/28wz1Dv' },
   { piezas:  2, precio:  699, envio: 69, pago: '' },
   { piezas:  3, precio:  799, envio: 59, pago: '' },
   { piezas:  4, precio:  949, envio:  0, pago: '', destaca: true },
@@ -110,7 +110,7 @@ function etiquetaPedir(p) {
 }
 
 function etiquetaPagar(p) {
-  const cierre = gratis(p) ? 'con envío gratis' : `envío incluido`;
+  const cierre = gratis(p) ? 'con envío gratis' : 'con el envío incluido';
   return `Pagar en línea el paquete de ${piezas(p)}, ${total(p)} pesos ${cierre}`;
 }
 

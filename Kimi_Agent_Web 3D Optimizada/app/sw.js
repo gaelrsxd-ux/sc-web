@@ -68,12 +68,18 @@
            servirse caducado: una copia vieja cobraría $149 de envío a quien la
            web ya no se los cobra, y anunciaría el envío gratis a partir de diez
            cuando empieza en cuatro.
+     · -x  se puede pagar en línea: el paquete de una pieza estrena botón de pago
+           de Mercado Pago, y con él cambian los términos y el aviso de
+           privacidad. Aquí una copia caducada es lo más grave que este archivo
+           puede servir: enseñaría unos términos que dicen «este sitio no procesa
+           pagos» junto a un botón que sí cobra, y un aviso de privacidad sin
+           Mercado Pago entre los destinatarios.
      · -v  el bloque de datos de contacto, reordenado, y fuera la frase que
            precedía al botón del mejor proyecto. Aquí lo que caducaría son los
            DATOS DE CONTACTO: correo, WhatsApp, horario y base. Es lo último de
            esta página que conviene servir de una copia vieja, porque es por
            donde entra el trabajo. */
-const VERSION = 'syc-2026-08-w';
+const VERSION = 'syc-2026-08-x';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
