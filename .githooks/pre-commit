@@ -2,8 +2,8 @@
 # Barreras que se ejecutan antes de cada commit.
 # Se activa una vez por clon con:  git config core.hooksPath .githooks
 #
-# Son tres y las tres son baratas. Si alguna tarda, el problema es la barrera,
-# no el commit: ninguna debe pasar de un segundo.
+# Son cuatro y las cuatro son baratas. Si alguna tarda, el problema es la
+# barrera, no el commit: ninguna debe pasar de un segundo.
 
 # 1 · Nada con pinta de secreto entra en el repositorio.
 node tools/scan-secretos.mjs || exit 1
@@ -35,3 +35,11 @@ if grep -rl "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null | gre
   grep -rn "POR COMPLETAR" "Kimi_Agent_Web 3D Optimizada/app" 2>/dev/null | sed 's/^/            /'
   exit 1
 fi
+
+# 4 · Los precios del HTML salen de la tabla y no de la memoria de nadie.
+#     Cada precio vivía escrito en tres sitios dentro de cada una de las once
+#     filas, más el precio de cabecera y la línea de envío. Editar a mano y que
+#     una de las treinta y tres copias no coincida es cuestión de tiempo, y el
+#     fallo que produce es de los peores de esta web: la página enseña un precio
+#     y el WhatsApp que se abre pide otro. Lo descubre el cliente, al pedir.
+node tools/precios.mjs --check || exit 1

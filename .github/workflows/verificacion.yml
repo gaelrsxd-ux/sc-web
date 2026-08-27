@@ -51,6 +51,12 @@ jobs:
       - name: Hashes de la CSP sincronizados con el HTML
         run: node tools/csp-hashes.mjs --check
 
+      # Los precios del HTML se generan desde tools/precios.mjs. Sin esta
+      # comprobación, editar un precio a mano deja la web enseñando una cifra y
+      # el WhatsApp que se abre pidiendo otra, y eso lo descubre el cliente.
+      - name: Precios del HTML generados desde la tabla
+        run: node tools/precios.mjs --check
+
       # Falla. Durante un tiempo sólo avisaba, porque los datos que faltaban
       # sólo los tenía el titular; ya están puestos, así que la barrera muerde.
       - name: Documentos legales sin marcadores de relleno
