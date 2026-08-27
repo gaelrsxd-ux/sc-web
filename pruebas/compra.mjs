@@ -64,35 +64,48 @@ const navegador = await chromium.launch({ executablePath: CHROME });
     await ruta.fulfill({ status: 200, contentType: 'text/html', body: 'ok' });
   });
 
-  /* ---- el contador de la ficha ---- */
+  /* ---- la ficha de la portada: UNA cifra y a dónde lleva ----
+     El contador de 25 cantidades vivía aquí y se fue a pedido.html, que ya
+     elegía cantidad con un desplegable de 25. Lo que la portada tiene que
+     seguir diciendo bien es el precio de entrada —el que decide si sigues— y
+     llevar al sitio correcto. Los 25 tramos se comprueban abajo, donde ahora
+     se eligen de verdad. */
   await pg.goto(BASE + '/#productos', { waitUntil: 'domcontentloaded' });
-  const tramos = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas;
-  const mas = pg.locator('.prod-compra [data-pc="1"]');
-  const menos = pg.locator('.prod-compra [data-pc="-1"]');
+  await pg.waitForTimeout(400);
 
-  ok(!(await pg.locator('.pc-alt').isVisible()), 'con JS, la lista larga de tramos se esconde');
-  ok(await menos.isDisabled(), 'en la primera cantidad, «−» está deshabilitado');
-
-  let descuadres = 0;
-  for (let i = 0; i < tramos.length; i++) {
-    const total = (await pg.locator('[data-pc-total]').textContent()).trim();
-    const href = await pg.locator('[data-pc-ir]').getAttribute('href');
-    if (total !== '$' + tramos[i].tot.toLocaleString('en-US')) descuadres++;
-    if (href !== 'pedido.html?n=' + tramos[i].n) descuadres++;
-    if (i < tramos.length - 1) await mas.click();
-  }
-  ok(descuadres === 0, 'los ' + tramos.length + ' tramos enseñan el importe y el enlace de la tabla');
-  ok(await mas.isDisabled(), 'en la última cantidad, «+» está deshabilitado y no da la vuelta');
+  ok(await pg.locator('#soluciones').count() === 1, 'la portada tiene UNA sección de soluciones');
+  ok(await pg.locator('.prod-compra [data-pc="1"]').count() === 0,
+     'el contador ya NO está en la portada: no hay dos sitios donde elegir cantidad');
+  const desdePortada = (await pg.locator('[data-pc-total]').textContent()).trim();
+  ok(await pg.locator('[data-pc-ir]').getAttribute('href') === 'pedido.html?n=1',
+     'su botón lleva al pedido');
 
   /* ---- de la ficha al pedido ---- */
-  for (let i = 0; i < tramos.length; i++) if (!(await menos.isDisabled())) await menos.click();
-  for (let i = 0; i < 3; i++) await mas.click();                 // 1→2→3→4
   await pg.locator('[data-pc-ir]').click();
-  await pg.waitForURL('**/pedido.html?n=4');
+  await pg.waitForURL('**/pedido.html?n=1');
+  const tramos = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas;
+  ok(desdePortada === '$' + tramos[0].tot.toLocaleString('en-US'),
+     'la cifra «desde» de la portada (' + desdePortada + ') es el precio de 1 placa de la tabla');
 
-  ok(await pg.locator('#ped-cant').inputValue() === '4', 'pedido.html hereda la cantidad');
+  await pg.selectOption('#ped-cant', '4');
+  await pg.waitForTimeout(250);
+  ok(await pg.locator('#ped-cant').inputValue() === '4', 'en el pedido se elige la cantidad');
   ok((await pg.locator('[data-ped-tot]').textContent()).trim() === '$949', 'y su importe');
   ok((await pg.locator('.tag').textContent()).includes('Paso 1 de 4'), 'arranca en el paso 1 de 4');
+
+  /* Los 25 tramos, donde ahora se eligen. Antes se recorrían en la portada a
+     base de 24 toques al «+»; aquí se comprueba lo mismo sobre el desplegable
+     que de verdad decide lo que se cobra. */
+  let descuadres = 0;
+  for (const t of tramos) {
+    await pg.selectOption('#ped-cant', String(t.n));
+    await pg.waitForTimeout(25);
+    const visto = (await pg.locator('[data-ped-tot]').first().textContent()).trim();
+    if (visto !== '$' + t.tot.toLocaleString('en-US')) descuadres++;
+  }
+  ok(descuadres === 0, 'los ' + tramos.length + ' tramos enseñan el importe de la tabla en el pedido');
+  await pg.selectOption('#ped-cant', '4');
+  await pg.waitForTimeout(200);
 
   /* ---- validación: ningún paso se salta vacío ---- */
   await pg.locator('[data-paso="1"] [data-sigue]').click();
@@ -160,37 +173,22 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok((await pg.locator('[data-gr-t]').innerText()).toLowerCase().includes('pendiente'),
      'con ?estado=pendiente la página NO da el pago por hecho');
 
-  /* ---- EL EMPUJÓN AL ENVÍO GRATIS Y EL ZOOM DEL DOBLE TOQUE ----
-     Lo segundo lo reportó el titular desde su iPhone: pulsar «+» rápido para
-     subir de cantidad hacía que la página diera un salto de zoom. Dos toques
-     seguidos sobre el mismo sitio son el gesto de «ampliar» del navegador, y
-     este botón está hecho justo para pulsarse rápido. */
-  await pg.goto(BASE + '/#productos', { waitUntil: 'domcontentloaded' });
-  const av = pg.locator('[data-pc-gratis]');
-  const campoN = pg.locator('[data-pc-n]');
+  /* ---- EL ZOOM DEL DOBLE TOQUE, AHORA EN LAS PESTANAS ----
+     El titular lo reportó desde su iPhone sobre el «+» del contador: pulsar
+     rápido hacía que la página diera un salto de zoom. Dos toques seguidos
+     sobre el mismo sitio son el gesto de «ampliar» del navegador.
 
-  /* ⚠ EL EMPUJÓN YA NO SALE, Y ES LO CORRECTO. Cuando el envío se cobraba
-     aparte, con 1, 2 o 3 placas aparecía «Lleva 4 y no pagas envío: te ahorras
-     $79». Desde que el envío va DENTRO del precio no hay umbral que empujar: es
-     gratis desde la primera. El mecanismo sigue escrito y se enciende solo el
-     día que vuelva a haber un envío que cobrar —lo garantiza que el texto lo
-     genera tools/precios.mjs desde la tabla, no una cadena a mano—. */
-  for (const n of ['1', '2', '3', '4', '12', '25']) {
-    await campoN.fill(n); await campoN.blur();
-    ok(!(await av.isVisible()), n + ' placa(s): sin envío que cobrar, no hay nada que empujar');
-  }
-  const conAviso = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas.filter(f => f.g);
-  ok(conAviso.length === 0, 'y la tabla no trae ningún aviso pendiente de enseñar');
+     El contador se fue a pedido.html —que elige cantidad con un desplegable, y
+     un desplegable no se pulsa dos veces seguidas—, pero la trampa no
+     desapareció: se mudó. Ahora el sitio que se toca rápido son las tres
+     pestañas de Soluciones, y son ellas las que tienen que llevar la misma
+     protección. Estas comprobaciones son las de antes apuntando donde ahora
+     está el riesgo. */
+  await pg.goto(BASE + '/#soluciones', { waitUntil: 'domcontentloaded' });
+  await pg.waitForTimeout(400);
 
   const ta = async sel => pg.locator(sel).first().evaluate(e => getComputedStyle(e).touchAction);
-  ok(await ta('[data-pc="1"]') === 'manipulation' && await ta('[data-pc="-1"]') === 'manipulation',
-     'los botones de cantidad llevan touch-action:manipulation');
-  /* En el CAMPO sería un error: mataría el doble toque para seleccionar el
-     número. El zoom que hace iOS ahí es otro —el de enfocar letra pequeña— y lo
-     evitan los 16 px, no touch-action. */
-  ok(await ta('[data-pc-n]') === 'auto', 'el campo del número NO lo lleva');
-  ok(await campoN.evaluate(e => parseFloat(getComputedStyle(e).fontSize)) >= 16,
-     'y conserva sus 16 px, que es lo que evita el zoom al enfocarlo en iOS');
+  ok(await ta('.sol-t') === 'manipulation', 'las pestañas llevan touch-action:manipulation');
 
   /* Lo que NO se puede romper: el pellizco para ampliar. Hay gente que lo
      necesita para leer, y apagarlo incumple la WCAG 1.4.4. */
@@ -213,14 +211,60 @@ const navegador = await chromium.launch({ executablePath: CHROME });
     }
     return out;
   });
-  ok(!reglas.some(r => r.sel && /\.pc-b:hover/.test(r.sel) && !r.enMedia),
-     'el :hover del botón vive sólo dentro de @media (hover:hover)');
-  ok(reglas.some(r => r.sel && /\.pc-b:active/.test(r.sel)),
+  ok(!reglas.some(r => r.sel && /\.sol-t:hover/.test(r.sel) && !r.enMedia),
+     'el :hover de la pestaña vive sólo dentro de @media (hover:hover)');
+  ok(reglas.some(r => r.sel && /\.sol-t:active/.test(r.sel)),
      'y hay un :active que sustituye al resaltado de toque retirado');
 
-  await campoN.fill('1'); await campoN.blur();
-  for (let i = 0; i < 5; i++) await pg.locator('[data-pc="1"]').click({ delay: 20 });
-  ok((await campoN.inputValue()) === '6', 'cinco toques rápidos suben de 1 a 6, uno por toque');
+  /* ---- LAS TRES PESTANAS ---- */
+  const pest = pg.locator('.sol-t');
+  ok(await pest.count() === 3, 'hay tres pestañas');
+  const visible = async id => pg.locator('#' + id).isVisible();
+  ok(await visible('servicios') && !(await visible('productos')) && !(await visible('casos')),
+     'al llegar se abre Servicios y las otras dos están cerradas');
+
+  await pest.nth(2).click();
+  await pg.waitForTimeout(350);
+  ok(await visible('casos') && !(await visible('servicios')),
+     'al pulsar «Casos reales» cambia el contenido en el MISMO hueco');
+  ok(await pg.locator('#casos .insta-g figure').count() === 3, 'y trae las tres instalaciones');
+  /* Los bloques con .rv nacen en opacity 0 y los enciende un observador al
+     entrar en pantalla; dentro de un panel cerrado eso no llega a pasar. Si el
+     script no les pone .in al abrir, la galería se abre EN BLANCO. */
+  ok(await pg.locator('#casos .insta-g img').first()
+       .evaluate(e => getComputedStyle(e.closest('.insta') || e).opacity) !== '0',
+     'y se ve: al abrir la pestaña se descubre lo que llevaba .rv dentro');
+
+  /* Teclado: en un role="tablist" el tabulador salta el grupo y son las flechas
+     las que se mueven dentro. Sin esto el conmutador sólo sirve con ratón. */
+  await pest.nth(0).focus();
+  await pg.keyboard.press('ArrowRight');
+  await pg.waitForTimeout(250);
+  ok(await visible('productos'), 'la flecha derecha abre la siguiente pestaña');
+  ok(await pg.evaluate(() => document.activeElement.id) === 't-productos',
+     'y el foco se va con ella');
+  await pg.keyboard.press('End');
+  await pg.waitForTimeout(250);
+  ok(await visible('casos'), 'Fin salta a la última');
+  await pg.keyboard.press('Home');
+  await pg.waitForTimeout(250);
+  ok(await visible('servicios'), 'e Inicio vuelve a la primera');
+  ok(await pest.nth(0).getAttribute('aria-selected') === 'true'
+     && await pest.nth(1).getAttribute('aria-selected') === 'false',
+     'aria-selected sigue a la pestaña abierta');
+
+  /* Nueve enlaces de esta página apuntan a #servicios y #productos, y los datos
+     estructurados de la cabecera conocen #productos. Llegar por uno de ellos
+     tiene que abrir su pestaña, no dejar al visitante en la que estaba. */
+  await pg.goto(BASE + '/#productos', { waitUntil: 'domcontentloaded' });
+  await pg.waitForTimeout(400);
+  ok(await visible('productos'), 'entrar por #productos abre la pestaña del producto');
+
+  /* El aviso del envío gratis: hoy no hay umbral que empujar porque el envío va
+     dentro del precio. La tabla vive ahora en pedido.html. */
+  await pg.goto(BASE + '/pedido.html');
+  const conAviso = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas.filter(f => f.g);
+  ok(conAviso.length === 0, 'la tabla no trae ningún aviso de envío pendiente de enseñar');
 
   /* ---- LA ENTREGA EN MANO ----
      Es lo único de esta web donde un dato del comprador mueve el importe, así
@@ -318,9 +362,25 @@ const navegador = await chromium.launch({ executablePath: CHROME });
     await ruta.fulfill({ status: 200, contentType: 'text/html', body: 'ok' });
   });
 
+  /* SIN JAVASCRIPT LOS TRES PANELES SE VEN, uno debajo de otro. En el marcado
+     no llevan `hidden`: lo pone el script. Si se invirtiera —esconder en el
+     HTML y descubrir con JS— un script caído dejaría dos tercios del catálogo
+     invisibles, y un buscador vería una portada que no enseña ni el producto ni
+     los casos. Es el mismo suelo que pedido.html. */
   await pg.goto(BASE + '/');
-  ok(await pg.locator('.pc-alt').isVisible(), 'sin JS, la lista de tramos SÍ se ve');
-  ok(await pg.locator('.pc-nl li').count() === 25, 'y están las veinticinco cantidades');
+  const ve = async id => pg.locator('#' + id).isVisible();
+  ok(await ve('servicios') && await ve('productos') && await ve('casos'),
+     'sin JS los tres paneles de Soluciones se ven a la vez');
+  ok(await pg.locator('#servicios .svc').count() === 4, 'y están los cuatro servicios');
+  ok(await pg.locator('#casos .insta-g figure').count() === 3, 'y las tres instalaciones');
+  ok((await pg.locator('[data-pc-total]').textContent()).trim() !== '',
+     'y el precio «desde» se lee: es HTML, no lo escribe ningún script');
+
+  /* Las 25 cantidades siguen enteras donde ahora se eligen, y sin JavaScript:
+     un <select> nativo funciona con el script caído. */
+  await pg.goto(BASE + '/pedido.html');
+  ok(await pg.locator('#ped-cant option').count() === 25,
+     'sin JS, pedido.html conserva las veinticinco cantidades');
 
   await pg.goto(BASE + '/pedido.html?n=10');
   ok(await pg.locator('.ped-f:visible').count() === 4, 'sin JS se ven los cuatro bloques a la vez');

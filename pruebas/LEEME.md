@@ -10,7 +10,7 @@ node pruebas/compra.mjs
 node pruebas/instalaciones.mjs
 ```
 
-Sesenta y dos comprobaciones en la primera, la mayoría con JavaScript y un
+Sesenta y ocho comprobaciones en la primera, la mayoría con JavaScript y un
 bloque final sin él; veinte en la segunda.
 
 ## Por qué en un navegador
@@ -46,15 +46,17 @@ formulario, esa prueba se pone en rojo.
 
 | | |
 |---|---|
-| **El contador** | los once tramos enseñan el importe y el enlace de la tabla; los botones se deshabilitan en los extremos en vez de dar la vuelta |
+| **El precio de la portada** | la cifra «desde» es la de 1 placa de la tabla, el botón lleva al pedido, y el contador **ya no está** en la portada: no hay dos sitios donde elegir cantidad |
+| **Los 25 tramos** | se comprueban en `pedido.html`, que es donde ahora se eligen: cada opción del desplegable enseña el importe de la tabla |
+| **Las pestañas** | tres paneles turnándose en el mismo hueco, con flechas, Inicio y Fin; `aria-selected` sigue a la abierta; entrar por `#productos` abre la suya; al abrir un panel se descubre lo que lleva `.rv` dentro, o la galería de casos saldría en blanco |
 | **Los pasos** | ninguno se salta con campos vacíos; un teléfono de tres cifras no pasa |
 | **El resumen** | dice el mismo importe que va a cobrarse, y el HTML pegado en un campo sale como texto y no se ejecuta |
 | **La vuelta** | `gracias.html` recupera el pedido y arma el WhatsApp; con `?estado=pendiente` **no** da el pago por hecho |
 | **«En blanco»** | salta el paso del negocio **y le quita el `required`** — un campo obligatorio dentro de un bloque escondido bloquea el envío sin decir dónde está el problema |
-| **El zoom del doble toque** | los botones de cantidad llevan `touch-action:manipulation` y el campo del número **no** (ahí mataría el doble toque para seleccionarlo); el pellizco para ampliar sigue permitido en toda la página; hay un `:active` que sustituye al resaltado de toque retirado y el `:hover` vive dentro de `@media (hover:hover)` para que no se quede pegado en iOS |
+| **El zoom del doble toque** | la trampa se mudó del «+» del contador a las tres pestañas, que es lo que ahora se toca rápido: llevan `touch-action:manipulation`, un `:active` que sustituye al resaltado retirado y el `:hover` dentro de `@media (hover:hover)` para que no se quede pegado en iOS. El pellizco para ampliar sigue permitido en toda la página |
 | **El empujón al envío gratis** | hoy NO sale en ninguna cantidad, porque el envío va dentro del precio y no hay umbral que empujar. El mecanismo sigue escrito y se enciende solo el día que vuelva a cobrarse |
 | **La entrega en mano** | con el envío incluido ya no descuenta nada: el importe es el mismo desde la ciudad y desde Ciudad Valles. Lo que cambia es el aviso y la cabecera, que dicen «entrega en mano» — y el aviso **no** promete dinero. Al formulario no se le añade ninguna bandera de «soy local»: eso lo decide el servidor |
-| **Sin JavaScript** | la cifra grande queda **vacía** en vez de mentir, la lista de las 25 cantidades se ve, los cuatro bloques del pedido salen a la vez y el formulario se envía entero |
+| **Sin JavaScript** | los tres paneles de Soluciones se ven a la vez —el `hidden` lo pone el script, no el marcado—, la cifra grande del pedido queda **vacía** en vez de mentir, las 25 cantidades siguen enteras en su `<select>`, los cuatro bloques del pedido salen a la vez y el formulario se envía entero |
 
 Ese último bloque es el suelo del que cuelga todo lo demás: si un script falla
 al cargar, la web tiene que seguir vendiendo.

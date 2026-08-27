@@ -13,7 +13,8 @@ pg.on('console', m => { const t = m.text();
 const fallidas = [];
 pg.on('response', r => { if (r.status() >= 400 && /cliente-/.test(r.url())) fallidas.push(r.status() + ' ' + r.url()); });
 
-await pg.goto(B + '/#productos', { waitUntil: 'networkidle' });
+await pg.goto(B + '/#casos', { waitUntil: 'networkidle' });
+await pg.waitForTimeout(400);   // #casos abre su pestaña; el panel entra con una transición corta
 
 /* ---- la sección existe y las tres fotos cargan de verdad ---- */
 const figs = pg.locator('.insta-g figure');
@@ -52,6 +53,8 @@ await pg.keyboard.press('Escape');
 await pg.waitForTimeout(500);
 
 /* ---- y la galería del producto sigue con SUS tres ---- */
+await pg.locator('#t-productos').click();     // vive en otra pestaña: hay que abrirla
+await pg.waitForTimeout(400);
 await pg.locator('.prod-fig .prod-abre').first().click();
 await pg.waitForTimeout(600);
 const cuenta2 = await pg.locator('#visor-cuenta').textContent();
@@ -60,12 +63,15 @@ const pie2 = await pg.locator('#visor-pie').textContent();
 ok(/frente/i.test(pie2), 'y sigue abriendo por la foto correcta: «' + pie2.trim() + '»');
 await pg.keyboard.press('Escape');
 await pg.waitForTimeout(400);
+await pg.locator('#t-casos').click();
+await pg.waitForTimeout(400);
 if (S) await pg.locator('.insta').screenshot({ path: S + '/insta-escritorio.png' });
 
 /* ---- móvil: tira arrastrable, no tres pantallas apiladas ---- */
 const m = await b.newPage({ viewport: { width: 390, height: 844 } });
 m.on('pageerror', e => err.push('móvil pageerror: ' + e.message));
-await m.goto(B + '/#productos', { waitUntil: 'networkidle' });
+await m.goto(B + '/#casos', { waitUntil: 'networkidle' });
+await m.waitForTimeout(400);
 await m.locator('.insta').scrollIntoViewIfNeeded();
 await m.waitForTimeout(1200);
 const caja = await m.locator('.insta-g').boundingBox();
@@ -80,7 +86,7 @@ if (S) await m.locator('.insta').screenshot({ path: S + '/insta-movil.png' });
 /* ---- sin JavaScript la sección sigue entera ---- */
 const sin = await b.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
 const p2 = await sin.newPage();
-await p2.goto(B + '/#productos', { waitUntil: 'load' });
+await p2.goto(B + '/#casos', { waitUntil: 'load' });   // sin JS no hay pestañas: los tres paneles se ven
 await p2.waitForTimeout(900);
 ok(await p2.locator('.insta-g figure').count() === 3,
    'sin JavaScript las tres fotos están en el HTML: la sección no la fabrica ningún script');
@@ -92,8 +98,8 @@ ok(await p2.locator('.insta-g figure').count() === 3,
    no sea PEOR que sus vecinas: si alguien arregla el descubrimiento, ésta
    viene incluida; si alguien la deja invisible ella sola, esto se pone rojo. */
 const opac = async sel => p2.locator(sel).first().evaluate(e => getComputedStyle(e).opacity);
-const mia = await opac('.insta'), vecina = await opac('.prod.rv');
-ok(mia === vecina, `sin JavaScript se comporta igual que el resto de la página (ella ${mia}, la ficha del producto ${vecina})`);
+const mia = await opac('.insta'), vecina = await opac('#soluciones .svc-grid');
+ok(mia === vecina, `sin JavaScript se comporta igual que el resto de la página (ella ${mia}, la rejilla de servicios ${vecina})`);
 if (mia === '0') console.log('      nota: ambas en opacity 0 — fallo previo de index.html, no de esta sección');
 
 console.log(err.length ? '\nERRORES DE CONSOLA: ' + err.join(' | ') : '\nsin errores de consola');
