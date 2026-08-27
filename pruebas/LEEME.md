@@ -11,7 +11,7 @@ node pruebas/instalaciones.mjs
 ```
 
 Sesenta y ocho comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; veinte en la segunda.
+bloque final sin él; dieciocho en la segunda.
 
 ## Por qué en un navegador
 
