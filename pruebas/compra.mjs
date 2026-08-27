@@ -66,7 +66,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
 
   /* ---- el contador de la ficha ---- */
   await pg.goto(BASE + '/#productos', { waitUntil: 'domcontentloaded' });
-  const tramos = JSON.parse(await pg.locator('#pc-tabla').textContent());
+  const tramos = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas;
   const mas = pg.locator('.prod-compra [data-pc="1"]');
   const menos = pg.locator('.prod-compra [data-pc="-1"]');
 
@@ -111,7 +111,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      validación de este campo desaparecía entera y esto pasaba de largo. */
   await pg.fill('[name=nombre]', 'Gael Ramírez');
   await pg.fill('[name=tel]', '442');
-  await pg.fill('[name=cp]', '78000');
+  await pg.fill('[name=cp]', '79000');   // Ciudad Valles: mismo estado, 250 km
   await pg.fill('[name=correo]', 'gael@ejemplo.com');
   await pg.fill('[name=calle]', 'Calle Falsa 123');
   await pg.fill('[name=colonia]', 'Centro');
@@ -128,7 +128,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   /* ---- el resumen ---- */
   const resumen = await pg.locator('[data-ped-resumen]').innerText();
   ok(resumen.includes('4 placas — $949'), 'el resumen dice producto e importe');
-  ok(resumen.includes('Calle Falsa 123, Centro, 78000'), 'y la dirección completa');
+  ok(resumen.includes('Calle Falsa 123, Centro, 79000'), 'y la dirección completa');
   ok(await pg.locator('[data-ped-resumen] b').count() === 0,
      'el HTML pegado en un campo sale como TEXTO, no se ejecuta');
   ok((await pg.locator('[data-ped-pagar]').textContent()).trim() === 'Pagar $949',
@@ -159,6 +159,67 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pg.goto(BASE + '/gracias.html?estado=pendiente');
   ok((await pg.locator('[data-gr-t]').innerText()).toLowerCase().includes('pendiente'),
      'con ?estado=pendiente la página NO da el pago por hecho');
+
+  /* ---- LA ENTREGA EN MANO ----
+     Es lo único de esta web donde un dato del comprador mueve el importe, así
+     que se comprueba que las dos mitades —lo que la página enseña y lo que se
+     le manda al Worker— no puedan discrepar. */
+  await pg.goto(BASE + '/pedido.html');   // venimos de gracias.html, que no tiene la tabla
+  const RANGOS = JSON.parse(await pg.locator('#pc-tabla').textContent()).local.rangos;
+  ok(RANGOS.length > 0, 'hay zonas de entrega en mano configuradas');
+  const CP_LOCAL = String(RANGOS[0].desde);
+
+  async function pideCon(cp, n = '1') {
+    await pg.goto(BASE + '/pedido.html?n=' + n);
+    await pg.locator('.ped-op:has([value=blanco])').click();
+    await pg.locator('[data-paso="1"] [data-sigue]').click();
+    for (const [k, v] of Object.entries({
+      nombre: 'Ana Ruiz', tel: '4423697248', correo: 'a@b.com',
+      calle: 'Hidalgo 45', colonia: 'Centro', ciudad: 'SLP',
+    })) await pg.fill('[name=' + k + ']', v);
+    await pg.selectOption('[name=estado]', 'San Luis Potosí');
+    await pg.fill('[name=cp]', cp);
+    return {
+      cabecera: (await pg.locator('[data-ped-tot]').textContent()).trim(),
+      aviso: await pg.locator('[data-ped-local]').isVisible(),
+    };
+  }
+
+  let e = await pideCon('79000');
+  ok(e.cabecera === '$508', 'con código de Ciudad Valles la cabecera sigue en $508');
+  ok(!e.aviso, 'y no aparece el aviso de entrega en mano');
+
+  e = await pideCon(CP_LOCAL);
+  ok(e.cabecera === '$429', 'con código de la ciudad la cabecera baja a $429');
+  ok(e.aviso, 'y aparece el aviso de que no se cobra el envío');
+
+  /* Nota: el caso del código con espacio —«78 000»— no se prueba aquí porque el
+     campo lleva maxlength=5 y el navegador lo trunca antes de que llegue a
+     ninguna parte. Esa tolerancia importa en el Worker, que sí puede recibir un
+     POST de fuera del navegador, y allí está probada.
+
+     Y lo que de verdad importa: que lo que se ENSEÑA y lo que se COBRA sean lo
+     mismo. El Worker recalcula por su cuenta, así que basta con comprobar que
+     el formulario le manda el código postal y ningún importe. */
+  await pg.locator('[data-paso="3"] [data-sigue]').click();
+  const resLocal = await pg.locator('[data-ped-resumen]').innerText();
+  ok(resLocal.includes('$429'), 'el resumen del paso 4 dice $429, no $508');
+  ok((await pg.locator('[data-ped-pagar]').textContent()).includes('$429'), 'y el botón también');
+  await pg.locator('[data-ped-pagar]').click();
+  await pg.waitForTimeout(700);
+  const cl = Object.fromEntries(new URLSearchParams(enviado || ''));
+  ok(cl.cp.replace(/\D/g, '') === CP_LOCAL, 'se manda el código postal');
+  ok(!('total' in cl) && !('local' in cl) && !('envio' in cl),
+     'y NINGUNA bandera de «soy local» ni importe: eso lo decide el servidor');
+
+  /* La página de gracias tiene que declarar el importe que se cobró, no el de
+     tarifa: tres cifras distintas del mismo pedido son una reclamación. */
+  await pg.goto(BASE + '/gracias.html');
+  const grLocal = await pg.locator('[data-gr-resumen]').innerText();
+  ok(grLocal.includes('$429') && !grLocal.includes('$508'),
+     'gracias.html dice $429, que es lo que se cobró');
+  const waLocal = decodeURIComponent((await pg.locator('[data-gr-wa]').getAttribute('href')).split('text=')[1]);
+  ok(!/\$\d/.test(waLocal), 'y el WhatsApp no declara ningún importe propio');
 
   /* ---- «en blanco» salta el paso del negocio ---- */
   await pg.goto(BASE + '/pedido.html?n=10');
@@ -194,10 +255,15 @@ const navegador = await chromium.launch({ executablePath: CHROME });
 
   await pg.goto(BASE + '/');
   ok(await pg.locator('.pc-alt').isVisible(), 'sin JS, la lista de tramos SÍ se ve');
-  ok(await pg.locator('.pc-nl li').count() === 11, 'y están los once');
+  ok(await pg.locator('.pc-nl li').count() === 25, 'y están las veinticinco cantidades');
 
   await pg.goto(BASE + '/pedido.html?n=10');
   ok(await pg.locator('.ped-f:visible').count() === 4, 'sin JS se ven los cuatro bloques a la vez');
+  /* La cifra grande sólo la puede escribir el script. Con un valor puesto en el
+     HTML, elegir «20 placas» dejaba la tipografía más grande de la página
+     diciendo $508: dos precios a la vez y ganando el falso. */
+  ok((await pg.locator('[data-ped-tot]').textContent()).trim() === '',
+     'sin JS la cifra grande está vacía en vez de mentir');
 
   await pg.selectOption('#ped-cant', '10');
   for (const [k, v] of Object.entries({

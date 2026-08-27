@@ -230,8 +230,21 @@ const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 function leePedido(form) {
   const d = {};
   for (const [campo, max] of Object.entries(CAMPOS)) d[campo] = limpia(form.get(campo), max);
-  d.tel = d.tel.replace(/\D/g, '').slice(0, 15);
-  d.cp = d.cp.replace(/\D/g, '').slice(0, 5);
+  d.tel = String(form.get('tel') || '').replace(/\D/g, '').slice(0, 15);
+  /* ⚠ DESDE EL VALOR CRUDO, y el orden importa. Antes esto era
+     `d.cp.replace(...)` sobre lo que ya había pasado por `limpia(v, 5)`, que
+     recorta a cinco CARACTERES antes de quitar los no-dígitos: «78 000» se
+     quedaba en «78 00» y de ahí en «7800», cuatro cifras, y el comprador local
+     perdía su descuento sin que nada lo dijera. Lo mismo con «78-000» y con un
+     autorrelleno que meta «C.P. 78000». */
+  const digitos = String(form.get('cp') || '').replace(/\D/g, '');
+  d.cp = digitos.slice(0, 5);
+  /* Un código postal mexicano tiene EXACTAMENTE cinco dígitos. Con más o con
+     menos se guarda lo que haya —para que el titular lo vea y pueda
+     preguntar—, pero no puede dar derecho a entrega en mano: «780000»
+     recortado a «78000» acertaría un rango de la ciudad por pura casualidad.
+     Los campos que empiezan por guion bajo son internos y no viajan. */
+  d._cpExacto = digitos.length === 5;
   if (!CORREO.test(d.correo)) d.correo = '';
   if (d.modo !== 'configuradas' && d.modo !== 'blanco') d.modo = '';
   return d;
@@ -258,13 +271,27 @@ function resumen(p, d) {
        caracteres hacían falta para que la dirección de ENVÍO llegue completa.
        Entre perder la calle del negocio y perder la calle a la que se manda el
        paquete, no hay duda de cuál se sacrifica. */
-    l.push('Config: ' + (d.negocio || '(sin nombre)') + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
+    l.push('Enlazar a: ' + (d.negocio || '(sin nombre)') + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
   } else if (d.modo === 'blanco') {
-    l.push('En blanco');
+    l.push('Sin enlazar');
   }
 
   const envio = [d.calle, d.colonia, d.cp, d.ciudad, d.estado].filter(Boolean).join(', ');
-  if (d.nombre || envio) l.push('Envio: ' + [d.nombre, envio].filter(Boolean).join(', '));
+  /* «EN MANO» en mayúsculas y lo primero de la línea: es lo que cambia lo que
+     hay que HACER con el pedido —llevarlo uno mismo en vez de mandarlo—, y si
+     se lee de refilón acaba en una paquetería que no hacía falta pagar. */
+  if (d.nombre || envio) {
+    /* Todos los códigos 78000-79999 son de San Luis Potosí, así que «código
+       local + otro estado» NUNCA es legítimo: o alguien busca los 79 pesos, o
+       —mucho más común— tecleó mal su código y acabó cayendo aquí por
+       casualidad. No cambia el precio: la decisión de importe sigue dependiendo
+       sólo del código postal. Lo único que hace es que el titular lo vea, en
+       vez de tener que notar la contradicción a ojo entre otros avisos. */
+    const local = esLocal(d);
+    const raro = local && d.estado && d.estado !== 'San Luis Potosí';
+    const prefijo = raro ? 'REVISAR CP: ' : (local ? 'EN MANO: ' : 'Envio: ');
+    l.push(prefijo + [d.nombre, envio].filter(Boolean).join(', '));
+  }
   if (d.tel) l.push('Tel ' + d.tel);
   if (d.refs) l.push('Ref: ' + d.refs);
 
@@ -273,6 +300,85 @@ function resumen(p, d) {
      por pasarse de 600 no cobra nada, mientras que un resumen recortado al
      menos cobra. */
   return l.join(' | ').slice(0, 600);
+}
+
+/* ------------------------------------------------- ENTREGA EN MANO, SIN ENVÍO */
+
+/* El negocio entrega en mano dentro de su ciudad, así que a quien vive ahí no
+   se le cobra paquetería. El corte lo marca el CÓDIGO POSTAL y no la ciudad que
+   alguien escriba: «San Luis Potosí» es también un estado enorme —Ciudad Valles
+   está a 250 km— y regalar el envío a todo el estado sería regalar paquetería
+   de verdad.
+
+   ⚠ ESTA DECISIÓN LA TOMA EL SERVIDOR. El navegador no manda ninguna bandera de
+   «soy local»: manda el código postal, que ya tiene que mandar para que el
+   paquete llegue a algún sitio. Si la bandera viniera del formulario, cualquiera
+   la marcaría y el envío se caería solo.
+
+   El único abuso posible es teclear un código postal de la ciudad y una calle
+   de otra parte. Cuesta como mucho 79 pesos, sólo existe en los paquetes de 1 a
+   3 placas —de 4 en adelante el envío ya es gratis para todos— y la dirección
+   completa va en el aviso de la venta, así que se ve ANTES de mandar nada.
+
+   Con la lista de rangos vacía no se descuenta nada a nadie. Es el lado seguro:
+   cobrar de más se devuelve; regalar envíos, no se recupera. */
+/* La banda de códigos postales del estado. Los rangos ya se validan al
+   generarlos, pero se vuelven a filtrar aquí: entre el generador y este
+   archivo hay un JSON que alguien puede editar a mano y un copiar-pegar en el
+   panel de Cloudflare. Cualquier rango fuera de la banda se ignora, y lo peor
+   que puede pasar entonces es cobrar el envío a quien no tocaba, que se
+   devuelve; lo contrario no se recupera. */
+const CP_BANDA = [78000, 79999];
+const CP_MAX_ANCHO = 2000;
+
+const RANGOS_LOCALES = (((TABLA.entregaLocal || {}).rangos) || []).filter(r => {
+  const d = Number(r.desde), h = Number(r.hasta);
+  return Number.isInteger(d) && Number.isInteger(h) && d <= h &&
+         d >= CP_BANDA[0] && h <= CP_BANDA[1] && h - d + 1 <= CP_MAX_ANCHO;
+});
+
+function esLocal(pedido) {
+  const d = pedido || {};
+  if (d._cpExacto === false) return false;
+  const texto = String(d.cp || '');
+  if (!/^[0-9]{5}$/.test(texto)) return false;
+  const n = Number(texto);
+  return RANGOS_LOCALES.some(r => n >= Number(r.desde) && n <= Number(r.hasta));
+}
+
+/* El importe definitivo. Sale SIEMPRE de la tabla: o el total tal cual, o el
+   total menos su propio envío. No hay ninguna otra rama, y ningún número del
+   formulario entra en esta cuenta. */
+function importe(p, pedido) {
+  if (!esLocal(pedido)) return p.total;
+  /* El descuento se acota POR LOS DOS LADOS, y el lado de arriba es el que de
+     verdad importa. La versión anterior era `rebajado > 0 ? rebajado : p.total`,
+     que sólo miraba hacia abajo: con un `envio` NEGATIVO en la tabla —un guion
+     de más al editar una fila— la resta se volvía suma, salía mayor que el
+     total, seguía siendo mayor que cero y pasaba limpia. Resultado: el
+     comprador local pagando por encima del precio que la web le enseñó, que en
+     México no es un descuadre contable sino un problema con PROFECO.
+
+     Con `Math.max(0, …)` un envío negativo o ausente vale cero —se cobra el
+     total, el lado seguro— y con `Math.min(…, total - 1)` ningún envío puede
+     dejar el cobro en cero. */
+  const descuento = Math.min(Math.max(0, Number(p.envio) || 0), p.total - 1);
+  return p.total - descuento;
+}
+
+/* El concepto que el comprador ve en el checkout. Cuando no se cobra envío
+   porque se entrega en mano, tiene que DECIRLO: un título que diga «envío
+   incluido» junto a un importe 79 pesos menor parece un error de cobro. */
+function concepto(p, pedido) {
+  if (!esLocal(pedido) || p.envio === 0) return p.titulo;
+  const zona = (TABLA.entregaLocal && TABLA.entregaLocal.nombre) || 'tu ciudad';
+  const nuevo = p.titulo.replace(/· envío incluido$/, '· entrega en ' + zona);
+  /* Si el sufijo cambia en tools/precios.mjs, este replace no encuentra nada y
+     devuelve el título original SIN FALLAR: el comprador vería «envío incluido»
+     junto a un importe 79 pesos menor, que es justo el error que esta función
+     existe para evitar. Un fallo silencioso pasa a ser una línea en el registro. */
+  if (nuevo === p.titulo) console.log('titulo-sin-sufijo-de-envio', p.id);
+  return nuevo;
 }
 
 /* --------------------------------------------------------------- EL COBRO */
@@ -299,9 +405,9 @@ async function creaPreferencia(p, env, origen, pedido) {
   const cuerpo = {
     items: [{
       id: 'placa-resenas-' + p.id,
-      title: p.titulo,
+      title: concepto(p, pedido),
       quantity: 1,
-      unit_price: p.total,            /* ← de la tabla, jamás del navegador */
+      unit_price: importe(p, pedido),  /* ← de la tabla, jamás del navegador */
       currency_id: TABLA.moneda,
     }],
     /* EL CAMPO POR EL QUE EXISTE TODO ESTO. `installments` es el número MÁXIMO
@@ -338,6 +444,13 @@ async function creaPreferencia(p, env, origen, pedido) {
        dirección». */
     additional_info: resumen(p, pedido),
     binary_mode: true,
+    /* Las preferencias no caducan solas, y cada envío del formulario crea una
+       nueva: quien se equivoca de código postal, vuelve atrás y corrige, deja
+       viva la anterior —con su importe y su dirección congelados— en el
+       historial y en la pestaña que dejó abierta. Pagarla mandaría el paquete a
+       la dirección vieja por el importe viejo. Una hora sobra para pagar. */
+    expires: true,
+    expiration_date_to: new Date(Date.now() + 3600000).toISOString(),
   };
 
   /* Los datos del comprador, en los campos que Mercado Pago entiende. Van
@@ -361,7 +474,10 @@ async function creaPreferencia(p, env, origen, pedido) {
      pedido que el aviso enseñó a medias. Se omiten los vacíos para no llenarlo
      de cadenas en blanco. */
   const meta = {};
-  for (const [campo, valor] of Object.entries(pedido)) if (valor) meta[campo] = valor;
+  for (const [campo, valor] of Object.entries(pedido)) {
+    if (campo.startsWith('_')) continue;   /* interno: no es dato del pedido */
+    if (valor) meta[campo] = valor;
+  }
   if (Object.keys(meta).length) cuerpo.metadata = meta;
 
   const r = await fetch('https://api.mercadopago.com/checkout/preferences', {

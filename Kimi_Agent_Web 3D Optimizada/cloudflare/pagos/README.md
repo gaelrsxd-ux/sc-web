@@ -138,6 +138,41 @@ tumba la preferencia entera.
 final del resumen —donde están las referencias de la dirección—. Hay una prueba
 que llena cada campo hasta su tope y exige que el texto llegue entero.
 
+## Entrega en mano: el único dato del cliente que mueve el importe
+
+El negocio entrega en persona dentro de su ciudad, así que a quien vive ahí no
+se le cobra paquetería. **El corte lo marca el código postal**, no la ciudad que
+alguien escriba: «San Luis Potosí» es también un estado enorme —Ciudad Valles
+está a 250 km— y regalar el envío a todo el estado sería regalar paquetería de
+verdad.
+
+```js
+importe(p, pedido) → esLocal(pedido) ? p.total − p.envio : p.total
+```
+
+Ese `esLocal` es la única función de todo el Worker por la que un dato del
+comprador toca el precio, y está acotada por los dos lados: sólo puede devolver
+`p.total` o `p.total − p.envio`, ambos de `paquetes.json`. Sólo afecta a 1, 2 y
+3 placas; de cuatro en adelante el envío ya es gratis para todo México.
+
+**El navegador no manda ninguna bandera de «soy local».** Manda el código
+postal, que ya tiene que mandar para que el paquete llegue a algún sitio.
+
+Tres guardas, y las tres existen por un fallo concreto:
+
+| Guarda | Qué evita |
+|---|---|
+| Rangos validados al generar **y** al leer | Un `{desde: 78000, hasta: 79999}` escrito con buena intención regala Ciudad Valles y Río Verde |
+| `Math.min(Math.max(0, envio), total − 1)` | Un `envio` negativo convertía la resta en suma y cobraba **por encima** del precio anunciado |
+| Código postal normalizado desde el valor crudo | `limpia(cp, 5)` recortaba a cinco *caracteres* antes de quitar los no-dígitos: «78 000» acababa en «7800» y el comprador local perdía su descuento en silencio |
+
+El abuso máximo posible —teclear un código de la ciudad con una dirección de
+otra parte— son 79 pesos de una compra real, no escala, y la dirección completa
+va en el aviso con el prefijo `EN MANO:`, así que se ve antes de mandar nada.
+Cuando el código es local pero el estado no es San Luis Potosí —que nunca es
+legítimo, porque los códigos 78000-79999 son todos del estado— el prefijo pasa a
+`REVISAR CP:`. No cambia el precio; sólo lo pone delante de los ojos.
+
 ## La regla que no se puede romper
 
 **El importe lo pone el Worker, nunca el navegador.** El formulario de la web
@@ -161,7 +196,7 @@ compara las dos y falla si no coinciden; corre en el hook y en el CI.
 node --test test/pagos.test.mjs
 ```
 
-Veintisiete pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble
+Treinta y nueve pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble
 que captura lo que se le habría mandado a Mercado Pago. Cubren el importe del
 servidor, las cuotas de cada paquete contra la tabla, el recorte a dos, la
 caída a pago único con la columna rota o ausente, `default_installments` en 1,

@@ -97,8 +97,8 @@
   const pesos=n=>'$'+Number(n||0).toLocaleString('en-US');
   const envio=[d.calle,d.colonia,d.cp,d.ciudad,d.estado].filter(Boolean).join(', ');
   const placas=d.modo==='blanco'
-    ?'En blanco, las configuro yo'
-    :'Configuradas con '+(d.negocio||'mi negocio')+(d.negocio_ciudad?', '+d.negocio_ciudad:'');
+    ?'Sin enlazar, las enlazo yo'
+    :'Listas, apuntando a '+(d.negocio||'mi negocio')+(d.negocio_ciudad?', '+d.negocio_ciudad:'');
 
   /* -------- el resumen en pantalla -------- */
   if(caja){
@@ -132,8 +132,14 @@
      que preguntar nada. Es la copia de seguridad de lo que viaja pegado al
      cobro: si el aviso de Mercado Pago se lee a medias, esto está completo. */
   if(wa){
+    /* El mensaje NO lleva importe. Sirve para que el titular tenga la dirección
+       y la ficha de Google, no para declarar precios: el precio autoritativo es
+       el del aviso de Mercado Pago, y una segunda cifra escrita por el
+       navegador sólo puede contradecirlo. Antes iba el precio de tarifa aunque
+       el comprador fuese de la ciudad y hubiera pagado 79 pesos menos, así que
+       llegaban al titular tres cifras distintas del mismo pedido. */
     const lineas=['Hola. Acabo de hacer un pedido desde la web.'];
-    if(d._t)lineas.push('Pedido: '+d._t+(d._tot?' — '+pesos(d._tot):''));
+    if(d._t)lineas.push('Pedido: '+d._t);
     lineas.push('Placas: '+placas);
     if(d.negocio_dir)lineas.push('Dirección del negocio: '+d.negocio_dir);
     if(d.nombre)lineas.push('Recibe: '+d.nombre);

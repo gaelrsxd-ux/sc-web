@@ -92,10 +92,18 @@ test('cada paquete pide las cuotas que dice la tabla, y ninguna más', async () 
     assert.equal(llamadas[0].cuerpo.payment_methods.installments, p.cuotas,
       'cuotas del paquete ' + p.id);
   }
-  /* Sólo los dos más caros llevan dos; si algún día se cuela un tercero hay que
-     decidirlo a propósito y no descubrirlo en el estado de cuenta. */
-  const conCuotas = TABLA.paquetes.filter(p => p.cuotas > 1).map(p => p.id);
-  assert.deepEqual(conCuotas, ['15', '20']);
+  /* La regla, no la lista: dos cuotas desde cierto importe. Se comprueba así y
+     no con los identificadores a mano porque el catálogo pasó de once tramos a
+     veinticinco, y una lista escrita aquí se queda vieja al primer retoque
+     mientras que la regla no. Lo que no puede pasar nunca es que un paquete
+     barato salga con cuotas o que uno caro se quede sin ellas. */
+  const UMBRAL = 2500;
+  for (const p of TABLA.paquetes) {
+    assert.equal(p.cuotas, p.total >= UMBRAL ? 2 : 1,
+      'cuotas del paquete ' + p.id + ' (' + p.total + ' MXN)');
+  }
+  assert.ok(TABLA.paquetes.some(p => p.cuotas === 2), 'alguno tiene que llevarlas');
+  assert.ok(TABLA.paquetes.some(p => p.cuotas === 1), 'y alguno no');
 });
 
 /* Node cachea los módulos JSON y devuelve SIEMPRE el mismo objeto, así que la
@@ -164,7 +172,7 @@ const PEDIDO = {
   negocio_dir: 'Av. Carranza 1200',
   nombre: 'Gael Ramírez', tel: '4423697248', correo: 'gael@ejemplo.com',
   calle: 'Calle Falsa 123', colonia: 'Centro', cp: '78000',
-  ciudad: 'San Luis Potosí', estado: 'SLP', refs: 'Portón verde',
+  ciudad: 'San Luis Potosí', estado: 'San Luis Potosí', refs: 'Portón verde',
 };
 
 test('el pedido llega a Mercado Pago: resumen legible, campos con nombre y copia entera', async () => {
@@ -177,8 +185,8 @@ test('el pedido llega a Mercado Pago: resumen legible, campos con nombre y copia
      esto: antes la dirección y la ficha de Google se perseguían por WhatsApp
      después de cobrar. */
   assert.equal(c.additional_info,
-    '4 pzas | Config: El Molino Ruso, San Luis Potosí | ' +
-    'Envio: Gael Ramírez, Calle Falsa 123, Centro, 78000, San Luis Potosí, SLP | ' +
+    '4 pzas | Enlazar a: El Molino Ruso, San Luis Potosí | ' +
+    'EN MANO: Gael Ramírez, Calle Falsa 123, Centro, 78000, San Luis Potosí, San Luis Potosí | ' +
     'Tel 4423697248 | Ref: Portón verde',
     'es el texto que el titular lee en el aviso: se comprueba entero, no a trozos');
 
@@ -313,6 +321,201 @@ test('el pago vuelve a gracias.html, que es donde está el WhatsApp del pedido',
   const llamadas = montaFetch(okMP);
   await worker.fetch(post({ paquete: '1' }), ENV);
   assert.equal(llamadas[0].cuerpo.back_urls.success, ORIGEN + '/gracias.html');
+});
+
+/* ═════════════════════ LA ENTREGA EN MANO, SIN ENVÍO ══════════════════════ */
+
+/* Los rangos viven en paquetes.json, que se genera. Estas pruebas trabajan
+   sobre lo que haya realmente configurado en vez de sobre números escritos
+   aquí: si mañana se añade una colonia, siguen valiendo. Cuando la lista está
+   vacía —que es el estado seguro— lo único que se puede comprobar es justo eso:
+   que no se le descuenta el envío a nadie. */
+const RANGOS = (TABLA.entregaLocal && TABLA.entregaLocal.rangos) || [];
+const unCpLocal = () => RANGOS.length ? String(RANGOS[0].desde).padStart(5, '0') : null;
+
+test('un código postal de fuera paga su envío completo', async () => {
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  /* 79000 es Ciudad Valles: mismo ESTADO, a 250 km. El estado no puede decidir
+     esto, sólo el código postal. */
+  await worker.fetch(post({ paquete: '1', cp: '79000', estado: 'San Luis Potosí' }), ENV);
+  assert.equal(llamadas[0].cuerpo.items[0].unit_price, 508, 'los 79 del envío se cobran');
+  assert.match(llamadas[0].cuerpo.items[0].title, /envío incluido$/);
+});
+
+test('sin código postal tampoco se regala el envío', async () => {
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: '1' }), ENV);
+  assert.equal(llamadas[0].cuerpo.items[0].unit_price, 508);
+});
+
+test('un código postal que no tiene cinco dígitos NO da entrega en mano', async () => {
+  /* «780000» es el caso interesante: recortado a cinco daría «78000», que sí es
+     de la ciudad, y acertaría un rango por pura casualidad. Un código postal
+     mexicano tiene exactamente cinco dígitos; con más o con menos, no cuenta. */
+  for (const malo of ['7800', '780000', '78OOO', '', '0', '78000-1234']) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: '1', cp: malo }), ENV);
+    assert.equal(llamadas[0].cuerpo.items[0].unit_price, 508, 'cp=«' + malo + '» no puede descontar');
+  }
+});
+
+test('el FORMATO del código postal no puede costarle el descuento a nadie', { skip: RANGOS.length === 0 }, async () => {
+  /* Un comprador de la ciudad que pega su código desde una libreta, o cuyo
+     autorrelleno mete un prefijo, escribe cosas como «78 000» o «C.P. 78000».
+     Antes se recortaba a cinco CARACTERES antes de quitar los no-dígitos y
+     «78 000» acababa siendo «7800»: cuatro cifras, sin descuento y sin que nada
+     lo dijera. Son los cinco dígitos lo que cuenta, no cómo estén escritos. */
+  const uno = TABLA.paquetes.find(p => p.id === '1');
+  const cp = String(RANGOS[0].desde);
+  for (const forma of [cp, ' ' + cp + ' ', cp.slice(0, 2) + ' ' + cp.slice(2),
+                       cp.slice(0, 2) + '-' + cp.slice(2), 'C.P. ' + cp]) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: '1', cp: forma }), ENV);
+    assert.equal(llamadas[0].cuerpo.items[0].unit_price, uno.total - uno.envio,
+      'cp escrito como «' + forma + '» tiene que descontar igual');
+  }
+});
+
+test('un envío negativo en la tabla NO puede cobrar por encima de lo anunciado', { skip: RANGOS.length === 0 }, async () => {
+  /* La guarda anterior era `rebajado > 0 ? rebajado : total`, que sólo miraba
+     hacia abajo: con `envio: -50` la resta se volvía suma, salía mayor que el
+     total y pasaba limpia. Cobrar por encima del precio exhibido no es un
+     descuadre contable, es un problema con PROFECO. */
+  const fila = TABLA.paquetes.find(p => p.id === '1');
+  const original = fila.envio;
+  const cp = String(RANGOS[0].desde);
+  try {
+    for (const roto of [-50, -1, undefined, null, 'x', NaN, fila.total, fila.total + 100]) {
+      fila.envio = roto;
+      montaCaches();
+      const llamadas = montaFetch(okMP);
+      await worker.fetch(post({ paquete: '1', cp }), ENV);
+      const cobrado = llamadas[0].cuerpo.items[0].unit_price;
+      assert.ok(cobrado > 0 && cobrado <= fila.total,
+        'con envio=' + String(roto) + ' se cobró ' + cobrado + ', fuera de (0, ' + fila.total + ']');
+    }
+  } finally {
+    fila.envio = original;
+  }
+});
+
+test('un rango de códigos absurdo se ignora al leerlo, no sólo al generarlo', async () => {
+  /* Entre el generador y este archivo hay un JSON editable a mano y un
+     copiar-pegar en el panel de Cloudflare. Un rango que se salga de la banda
+     del estado, o que cubra medio país, no puede sobrevivir a ese viaje. */
+  const original = TABLA.entregaLocal.rangos;
+  try {
+    TABLA.entregaLocal.rangos = [{ desde: 0, hasta: 99999, zona: 'todo México' }];
+    const { default: recargado } = await import('../pagos.js?absurdo=1');
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await recargado.fetch(post({ paquete: '1', cp: '01000' }), ENV);
+    assert.equal(llamadas[0].cuerpo.items[0].unit_price, 508,
+      'un rango que cubre todo México tiene que ignorarse');
+  } finally {
+    TABLA.entregaLocal.rangos = original;
+  }
+});
+
+test('el estado que no cuadra con el código postal se MARCA, pero no cambia el precio', { skip: RANGOS.length === 0 }, async () => {
+  /* Todos los códigos 78000-79999 son de San Luis Potosí, así que «código local
+     + otro estado» nunca es legítimo: o alguien busca los 79 pesos, o —mucho
+     más común— tecleó mal su código. El precio sigue dependiendo sólo del
+     código; lo único que cambia es que el titular lo ve. */
+  const uno = TABLA.paquetes.find(p => p.id === '1');
+  const cp = String(RANGOS[0].desde);
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: '1', cp, estado: 'Jalisco', nombre: 'Ana', calle: 'X 1' }), ENV);
+  assert.match(llamadas[0].cuerpo.additional_info, /REVISAR CP:/);
+  assert.equal(llamadas[0].cuerpo.items[0].unit_price, uno.total - uno.envio,
+    'marcarlo no puede cambiar lo que se cobra');
+});
+
+test('el cobro caduca: los enlaces viejos no siguen pagables para siempre', async () => {
+  /* Quien se equivoca de código postal, vuelve atrás y corrige, deja viva la
+     preferencia anterior con su importe y su dirección congelados. Pagarla
+     mandaría el paquete a la dirección vieja. */
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: '1' }), ENV);
+  const c = llamadas[0].cuerpo;
+  assert.equal(c.expires, true);
+  const caduca = Date.parse(c.expiration_date_to);
+  assert.ok(Number.isFinite(caduca), 'la fecha de caducidad tiene que ser una fecha');
+  const horas = (caduca - Date.now()) / 3600000;
+  assert.ok(horas > 0.5 && horas < 3, 'debe caducar en una hora larga, salió en ' + horas.toFixed(2) + ' h');
+});
+
+test('el navegador NO puede reclamar la entrega en mano por su cuenta', async () => {
+  /* El descuento sale de la lista del servidor y del código postal. Mandar
+     campos con pinta de bandera —«local», «entrega», «envio»— no puede moverlo. */
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({
+    paquete: '1', cp: '79000',
+    local: '1', entrega: 'mano', envio: '0', envio_gratis: 'si', descuento: '79',
+  }), ENV);
+  assert.equal(llamadas[0].cuerpo.items[0].unit_price, 508);
+});
+
+test('con la lista de zonas vacía no se le descuenta el envío a NADIE', { skip: RANGOS.length > 0 }, async () => {
+  /* Es el estado seguro y por eso se comprueba: cobrar de más se devuelve;
+     regalar paquetería a medio estado, no. */
+  for (const cp of ['78000', '78100', '78430', '79000', '00000', '99999']) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: '1', cp }), ENV);
+    assert.equal(llamadas[0].cuerpo.items[0].unit_price, 508, 'cp=' + cp);
+  }
+});
+
+test('dentro de la zona, el envío no se cobra y el concepto lo DICE', { skip: RANGOS.length === 0 }, async () => {
+  const cp = unCpLocal();
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: '1', cp }), ENV);
+  const item = llamadas[0].cuerpo.items[0];
+  const uno = TABLA.paquetes.find(p => p.id === '1');
+  assert.equal(item.unit_price, uno.total - uno.envio, 'se descuenta exactamente el envío de la tabla');
+  assert.equal(item.title.includes('envío incluido'), false,
+    'un título que diga «envío incluido» junto a un importe menor parece un error de cobro');
+  assert.match(item.title, /entrega en /);
+  assert.match(llamadas[0].cuerpo.additional_info, /EN MANO/,
+    'el aviso tiene que decir que se lleva en mano, o acabará en una paquetería pagada de más');
+});
+
+test('dentro de la zona, los paquetes que YA tenían envío gratis no cambian', { skip: RANGOS.length === 0 }, async () => {
+  const cp = unCpLocal();
+  for (const p of TABLA.paquetes.filter(x => x.envio === 0)) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: p.id, cp }), ENV);
+    assert.equal(llamadas[0].cuerpo.items[0].unit_price, p.total, 'paquete ' + p.id);
+    assert.equal(llamadas[0].cuerpo.items[0].title, p.titulo, 'y el concepto tampoco cambia');
+  }
+});
+
+test('el importe cobrado NUNCA sale de la tabla, se descuente o no', async () => {
+  /* La comprobación de cordura de todo el bloque: sea cual sea el código
+     postal, lo que se cobra es o el total del paquete o el total menos su
+     propio envío. Ninguna otra cifra puede aparecer. */
+  for (const p of TABLA.paquetes) {
+    for (const cp of ['78000', '78430', '79000', '01000', '', '99999']) {
+      montaCaches();
+      const llamadas = montaFetch(okMP);
+      await worker.fetch(post({ paquete: p.id, cp }), ENV);
+      const cobrado = llamadas[0].cuerpo.items[0].unit_price;
+      assert.ok(cobrado === p.total || cobrado === p.total - p.envio,
+        'paquete ' + p.id + ' con cp=' + cp + ' cobró ' + cobrado +
+        ', que no es ni ' + p.total + ' ni ' + (p.total - p.envio));
+      assert.ok(cobrado > 0, 'ningún cobro puede salir en cero o negativo');
+    }
+  }
 });
 
 /* ══════════════════════════════ RUTAS Y GUARDAS ═══════════════════════════ */
