@@ -1756,7 +1756,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    botón heredaba el display:grid y el relleno del enlace de fila entera. */
 .pm-lista li[data-pago]{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
 .pm-lista li[data-pago] .pm-pide{flex:1 1 210px;min-width:0}
+/* Con el cobro en línea el botón deja de ser un <a> y pasa a ser el <button>
+   de un formulario. Quien se coloca en la fila es entonces el FORMULARIO, no
+   el botón: sin esto, el margin-left:auto vivía en un elemento que ya no era
+   hijo directo de la fila y el botón se quedaba pegado al precio. */
+.pm-lista .pm-form{margin:0;flex:0 0 auto;margin-left:auto;display:flex}
+.pm-lista .pm-form .pm-paga{margin-left:0}
 .pm-lista .pm-paga{flex:0 0 auto;margin-left:auto;
+  background:none;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;
   min-height:44px;padding:10px 18px;
   font-family:var(--sans);font-size:10px;letter-spacing:2.4px;text-transform:uppercase;
@@ -1790,6 +1797,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      siguiente y no se veía de cuál era. Ocupando el ancho de su fila no hay
      duda, y no cuesta ni un píxel de alto respecto a flotar. */
   .pm-lista .pm-paga{width:100%;margin-left:0;margin-top:2px}
+  /* El formulario hereda el ancho completo, que si no el botón se estira
+     dentro de una caja que sigue midiendo lo que medía su texto. */
+  .pm-lista .pm-form{width:100%;margin-left:0;margin-top:2px}
 }
 @media(min-width:900px){
   .prod{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}

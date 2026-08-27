@@ -1,0 +1,72 @@
+{
+  "_aviso": "GENERADO por tools/precios.mjs. No editar a mano: se sobrescribe.",
+  "moneda": "MXN",
+  "paquetes": [
+    {
+      "id": "1",
+      "piezas": 1,
+      "titulo": "Placa reseñas Google · 1 pieza · envío incluido",
+      "total": 508
+    },
+    {
+      "id": "2",
+      "piezas": 2,
+      "titulo": "Placa reseñas Google · 2 piezas · envío incluido",
+      "total": 768
+    },
+    {
+      "id": "3",
+      "piezas": 3,
+      "titulo": "Placa reseñas Google · 3 piezas · envío incluido",
+      "total": 858
+    },
+    {
+      "id": "4",
+      "piezas": 4,
+      "titulo": "Placa reseñas Google · 4 piezas · envío gratis",
+      "total": 949
+    },
+    {
+      "id": "5",
+      "piezas": 5,
+      "titulo": "Placa reseñas Google · 5 piezas · envío gratis",
+      "total": 1099
+    },
+    {
+      "id": "6",
+      "piezas": 6,
+      "titulo": "Placa reseñas Google · 6 piezas · envío gratis",
+      "total": 1249
+    },
+    {
+      "id": "8",
+      "piezas": 8,
+      "titulo": "Placa reseñas Google · 8 piezas · envío gratis",
+      "total": 1599
+    },
+    {
+      "id": "10",
+      "piezas": 10,
+      "titulo": "Placa reseñas Google · 10 piezas · envío gratis",
+      "total": 1899
+    },
+    {
+      "id": "12",
+      "piezas": 12,
+      "titulo": "Placa reseñas Google · 12 piezas · envío gratis",
+      "total": 2199
+    },
+    {
+      "id": "15",
+      "piezas": 15,
+      "titulo": "Placa reseñas Google · 15 piezas · envío gratis",
+      "total": 2649
+    },
+    {
+      "id": "20",
+      "piezas": 20,
+      "titulo": "Placa reseñas Google · 20 piezas · envío gratis",
+      "total": 3399
+    }
+  ]
+}

@@ -36,6 +36,19 @@ const HTML = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'index.html'
    y en el bloque de contacto del HTML —ese no lo genera este archivo—. */
 const WHATSAPP = '524423697248';
 
+/* ---------- COBRO EN LÍNEA ----------
+   Vacío = apagado, y entonces cada paquete usa su propio enlace `pago` de la
+   tabla, que es el modo de los enlaces creados a mano en el panel.
+
+   Con la dirección del Worker puesta, manda ESTE modo y lo hace para los ONCE
+   paquetes a la vez: el cobro se crea al vuelo y ya no hacen falta enlaces
+   sueltos. Es la diferencia entre crear once enlaces en el móvil cada vez que
+   cambie un precio y no crear ninguno nunca más.
+
+   Y es lo único que permite cobrar de contado: los enlaces del panel dejan las
+   mensualidades bloqueadas después de crearlos. Ver cloudflare/pagos/. */
+const COBRO_EN_LINEA = '';
+
 /* A partir de cuántas placas se habla de «el paquete de N» y no de «N placas»
    en el mensaje de WhatsApp. Es una decisión de REDACCIÓN y por eso vive
    aparte: antes coincidía con el umbral del envío gratis, y al bajar ése a
@@ -134,6 +147,20 @@ function fila(p) {
     `<span class="pm-p">$${miles(p.precio)} MXN</span>` +
     envío;
 
+  /* Con el Worker encendido, el botón es un FORMULARIO y no un enlace. Manda
+     sólo el identificador del paquete —nunca el importe, que lo pone el
+     servidor— y el Worker responde con una redirección al checkout. Sin
+     JavaScript: funciona con el JS desactivado, no añade una huella a la CSP y
+     no puede quedarse a medias por un fetch fallido. */
+  if (COBRO_EN_LINEA) {
+    return `              <li${clase} data-pago><a class="pm-pide" href="${wa}" target="_blank" rel="noopener noreferrer"\n` +
+           `                     aria-label="${ent(etiquetaPedir(p))}">${datos}</a>` +
+           `<form class="pm-form" method="post" action="${COBRO_EN_LINEA}">` +
+           `<input type="hidden" name="paquete" value="${p.piezas}">` +
+           `<button class="pm-paga" type="submit"\n` +
+           `                     aria-label="${ent(etiquetaPagar(p))}">Pagar $${miles(total(p))}</button></form></li>`;
+  }
+
   /* Sin enlace de pago la fila es exactamente lo que era: un solo enlace a
      WhatsApp que envuelve los tres datos. */
   if (!p.pago) {
@@ -187,6 +214,32 @@ function notaLista() {
   return '<p class="pm-n">' + ent(texto) + '</p>';
 }
 
+/* ---------------------------------------------------------- PARA EL WORKER
+
+   El Worker de cobros NO puede fiarse del importe que le mande el navegador:
+   si el precio viajara en el formulario, cualquiera editaría el HTML y pagaría
+   un peso por veinte placas. Así que el Worker lleva su propia tabla y sólo
+   recibe QUÉ paquete se quiere.
+
+   Y esa tabla se escribe desde aquí, no a mano, porque dos tablas de precios
+   mantenidas por separado divergen: el día que suba un precio en la web y no en
+   el Worker, la página diría una cosa y el cobro sería otra. `--check` compara
+   también este archivo, así que no pueden separarse en silencio. */
+const JSON_WORKER = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'cloudflare', 'pagos', 'paquetes.json');
+
+function paquetesJson() {
+  return JSON.stringify({
+    _aviso: 'GENERADO por tools/precios.mjs. No editar a mano: se sobrescribe.',
+    moneda: 'MXN',
+    paquetes: PAQUETES.map(p => ({
+      id: String(p.piezas),
+      piezas: p.piezas,
+      titulo: `Placa reseñas Google · ${piezas(p)} · ${gratis(p) ? 'envío gratis' : 'envío incluido'}`,
+      total: total(p),
+    })),
+  }, null, 2) + '\n';
+}
+
 /* Cada bloque con el patrón que lo localiza en el HTML. El patrón se ancla en
    marcas que este archivo también escribe, así que si alguien renombra una
    clase, esto falla en voz alta en vez de generar un HTML a medias. */
@@ -232,7 +285,16 @@ if (args.includes('--tabla')) {
 const original = fs.readFileSync(HTML, 'utf8');
 const generado = aplica(original);
 
+const jsonEsperado = paquetesJson();
+const jsonActual = fs.existsSync(JSON_WORKER) ? fs.readFileSync(JSON_WORKER, 'utf8') : null;
+
 if (args.includes('--check')) {
+  if (jsonActual !== jsonEsperado) {
+    console.error('\n  La tabla del Worker de cobros no coincide con tools/precios.mjs.');
+    console.error('  Publicar así cobraría un importe distinto del que enseña la web.');
+    console.error('  Arréglalo con:  node tools/precios.mjs\n');
+    process.exit(1);
+  }
   if (original === generado) {
     console.log('OK: la lista de precios del HTML coincide con tools/precios.mjs.');
     process.exit(0);
@@ -241,6 +303,12 @@ if (args.includes('--check')) {
   console.error('  Alguien editó los precios a mano, o se cambió la tabla y no se regeneró.');
   console.error('  Arréglalo con:  node tools/precios.mjs\n');
   process.exit(1);
+}
+
+if (jsonActual !== jsonEsperado) {
+  fs.mkdirSync(path.dirname(JSON_WORKER), { recursive: true });
+  fs.writeFileSync(JSON_WORKER, jsonEsperado);
+  console.log('Reescrita la tabla del Worker de cobros (cloudflare/pagos/paquetes.json).');
 }
 
 if (original === generado) {
