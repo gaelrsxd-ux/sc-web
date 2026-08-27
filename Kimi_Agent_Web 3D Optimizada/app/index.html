@@ -1663,6 +1663,51 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13.5px;line-height:1.75}
 .prod-nota b{color:var(--bronze-hi);font-weight:500}
 
+/* ------------------------- LAS QUE YA ESTAN PUESTAS -------------------------
+   La unica prueba de que esto existe fuera de un render. Hasta aqui la ficha
+   ensena tres fotos de estudio del producto, y una foto de estudio la tiene
+   cualquiera con una plantilla: lo que no se puede fingir es la placa sobre el
+   mostrador de un negocio con nombre y direccion. Por eso va DESPUES del
+   bloque de compra y no antes —quien llega aqui ya sabe que cuesta— y por eso
+   cada pie lleva el negocio y la plaza: sin el nombre es otra foto bonita.
+
+   NO LLEVA NUMERO DE SECCION a proposito, igual que la calculadora del coste:
+   entra dentro de Productos. Numerarla obligaria a abrir un hueco en el indice
+   del recorrido y a renumerar lo que viene detras, para ganar un renglon que
+   nadie va a buscar por su nombre. */
+.insta{margin-top:56px;padding-top:34px;border-top:1px solid var(--line-soft)}
+.insta .ck{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
+.insta h3{font-family:var(--serif);font-size:clamp(23px,3.6vw,31px);line-height:1.2;
+  color:var(--ink);margin-top:9px}
+.insta h3 em{font-style:italic;color:var(--bronze-hi)}
+.insta-int{margin-top:12px;color:var(--muted);font-size:14px;line-height:1.75;max-width:56ch}
+
+/* Tres retratos en fila. En movil NO se apilan: tres fotos 3:4 una debajo de
+   otra son tres pantallas y media de desplazamiento en mitad de la ficha de
+   compra, justo donde se abandona. Pasan a ser una tira que se arrastra de
+   lado, con anclaje para que siempre quede una centrada. Sin JavaScript. */
+.insta-g{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.insta-g figure{margin:0;min-width:0}
+.insta-g .prod-abre{position:relative}
+.insta-g img{width:100%;height:auto;display:block;border:1px solid var(--line-soft);
+  box-shadow:0 16px 32px rgba(0,0,0,.45)}
+.insta-g figcaption{margin-top:10px;font-size:12.5px;line-height:1.55;color:var(--muted)}
+.insta-g figcaption b{display:block;color:var(--ink);font-weight:500;font-size:13.5px}
+.insta-pie{margin-top:22px;padding:14px 16px;border:1px solid var(--line-soft);
+  background:rgba(200,169,106,.05);color:var(--muted);font-size:13px;line-height:1.7}
+.insta-pie b{color:var(--bronze-hi);font-weight:500}
+
+@media(max-width:720px){
+  .insta-g{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:72%;
+    overflow-x:auto;scroll-snap-type:x mandatory;
+    /* El desbordamiento corta la sombra de las fotos por arriba y por abajo si
+       la caja va justa: se le devuelve el hueco con relleno y se recupera con
+       margenes negativos, para que la tira siga saliendo de borde a borde. */
+    padding:6px 16px 10px;margin:22px -16px 0;scrollbar-width:none}
+  .insta-g::-webkit-scrollbar{display:none}
+  .insta-g figure{scroll-snap-align:center}
+}
+
 /* -------------------------------- EL CONTADOR -------------------------------
    Sustituye a la lista de once filas dentro de un <details>. Aquella enseñaba
    el catálogo entero —once cantidades, once precios, once envíos y once
@@ -2538,6 +2583,66 @@ html.js .pc-alt{display:none}
           en el precio</b> vivas donde vivas.</p>
       </div>
     </article>
+
+    <!-- ============ LAS QUE YA ESTAN PUESTAS ============
+         Tres instalaciones reales, con el negocio y la plaza en el pie. Es lo
+         mas barato de anadir y lo mas dificil de copiar: cualquiera ensena un
+         render, nadie ensena el mostrador de un cliente que no tiene.
+
+         ⚠ SIN TESTIMONIOS INVENTADOS. Aqui no hay ni una frase entrecomillada
+         atribuida a nadie. Lo unico que se afirma es lo que se ve en la foto:
+         que la placa esta en ese negocio. El dia que haya frases reales, con
+         nombre y permiso, van debajo del pie de cada foto y no antes.
+
+         Abren el mismo visor que las fotos del producto, en su propia lista:
+         data-galeria="instalaciones" las agrupa aparte, asi que las flechas
+         pasan de una instalacion a la siguiente y no al reverso de la placa. -->
+    <div class="insta rv">
+      <p class="ck">Ya instaladas</p>
+      <h3>D&#243;nde ya <em>est&#225;n puestas</em></h3>
+      <p class="insta-int">Tres negocios de San Luis Potos&#237; que ya la tienen en el
+        mostrador. Las fotos son del d&#237;a que se las entregamos.</p>
+      <div class="insta-g">
+        <figure>
+          <button class="prod-abre" type="button" data-galeria="instalaciones"
+                  data-grande="assets/cliente-kabuki-sendero-grande.webp"
+                  data-pie="Kabuki &#183; Plaza Sendero, San Luis Potos&#237;" data-alt="La placa de rese&#241;as sostenida en la mano frente al mostrador de Kabuki en Plaza Sendero: al fondo se ven el r&#243;tulo del local, la carta y las vitrinas de sushi."
+                  aria-label="Ampliar la foto: Kabuki, Plaza Sendero, San Luis Potos&#237;">
+            <img src="assets/cliente-kabuki-sendero-900.webp"
+                 srcset="assets/cliente-kabuki-sendero-480.webp 480w, assets/cliente-kabuki-sendero-900.webp 900w"
+                 sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+                 loading="lazy" decoding="async" alt="La placa de rese&#241;as sostenida en la mano frente al mostrador de Kabuki en Plaza Sendero: al fondo se ven el r&#243;tulo del local, la carta y las vitrinas de sushi."><span class="prod-lupa">Ampliar</span>
+          </button>
+          <figcaption><b>Kabuki</b>Plaza Sendero, San Luis Potos&#237;</figcaption>
+        </figure>
+        <figure>
+          <button class="prod-abre" type="button" data-galeria="instalaciones"
+                  data-grande="assets/cliente-kabuki-villamagna-grande.webp"
+                  data-pie="Kabuki &#183; Villamagna, San Luis Potos&#237;" data-alt="La misma placa frente al local de Kabuki en Villamagna, con el r&#243;tulo rojo de &#171;Delicias japonesas&#187; y el tel&#233;fono de servicio a domicilio detr&#225;s."
+                  aria-label="Ampliar la foto: Kabuki, Villamagna, San Luis Potos&#237;">
+            <img src="assets/cliente-kabuki-villamagna-900.webp"
+                 srcset="assets/cliente-kabuki-villamagna-480.webp 480w, assets/cliente-kabuki-villamagna-900.webp 900w"
+                 sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+                 loading="lazy" decoding="async" alt="La misma placa frente al local de Kabuki en Villamagna, con el r&#243;tulo rojo de &#171;Delicias japonesas&#187; y el tel&#233;fono de servicio a domicilio detr&#225;s."><span class="prod-lupa">Ampliar</span>
+          </button>
+          <figcaption><b>Kabuki</b>Villamagna, San Luis Potos&#237;</figcaption>
+        </figure>
+        <figure>
+          <button class="prod-abre" type="button" data-galeria="instalaciones"
+                  data-grande="assets/cliente-titos-villamagna-grande.webp"
+                  data-pie="Tito&#8217;s Snacks &amp; Drinks &#183; Villamagna, San Luis Potos&#237;" data-alt="La placa frente al mostrador de Tito&#8217;s Snacks &amp; Drinks: un local de dulces con la hilera de botes de cristal y el r&#243;tulo del negocio al fondo."
+                  aria-label="Ampliar la foto: Tito&#8217;s Snacks &amp; Drinks, Villamagna, San Luis Potos&#237;">
+            <img src="assets/cliente-titos-villamagna-900.webp"
+                 srcset="assets/cliente-titos-villamagna-480.webp 480w, assets/cliente-titos-villamagna-900.webp 900w"
+                 sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+                 loading="lazy" decoding="async" alt="La placa frente al mostrador de Tito&#8217;s Snacks &amp; Drinks: un local de dulces con la hilera de botes de cristal y el r&#243;tulo del negocio al fondo."><span class="prod-lupa">Ampliar</span>
+          </button>
+          <figcaption><b>Tito&#8217;s Snacks &amp; Drinks</b>Villamagna, San Luis Potos&#237;</figcaption>
+        </figure>
+      </div>
+      <p class="insta-pie">&#191;Quieres que la tuya salga aqu&#237;? El d&#237;a de la entrega
+        te tomamos la foto &#8212; y <b>s&#243;lo se publica si nos dices que s&#237;</b>.</p>
+    </div>
   </div>
 </section>
 
@@ -4555,10 +4660,18 @@ const SIG=(()=>{
      "ver certificado" y abrir un cuadro vac&#237;o destruye justo la confianza que
      la secci&#243;n construye. Abren con lista de UNO: sin botonera. */
 
-  /* LAS FOTOS DEL PRODUCTO. Una sola lista compartida por los tres botones, asi
-     que entrar por la segunda foto y seguir a la derecha da la tercera. */
-  const fotos=[...document.querySelectorAll('[data-galeria="producto"]')];
-  if(fotos.length){
+  /* LAS FOTOS. Cada valor de data-galeria es una lista propia, y dentro de una
+     lista las flechas pasan de una foto a la siguiente: entrar por la segunda
+     del producto y seguir a la derecha da la tercera. Son DOS listas y no una
+     sola porque mezclarlas dejaria el reverso de la placa a la derecha del
+     mostrador de un cliente, que no es la foto que nadie espera al pasar. */
+  const grupos=new Map();
+  for(const el of document.querySelectorAll('[data-galeria]')){
+    const g=el.dataset.galeria;
+    if(!grupos.has(g))grupos.set(g,[]);
+    grupos.get(g).push(el);
+  }
+  for(const fotos of grupos.values()){
     const items=fotos.map(el=>({src:el.dataset.grande,alt:el.dataset.alt||'',pie:el.dataset.pie||''}));
     fotos.forEach((el,n)=>el.addEventListener('click',()=>abre(items,n)));
   }
