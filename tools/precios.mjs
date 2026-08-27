@@ -407,6 +407,7 @@ function tablaContador() {
        lo que el comprador lee en la web y lo que ve en el checkout coinciden
        palabra por palabra. */
     s: gratis(p) ? 'envío gratis' : 'envío incluido',
+    g: avisoGratis(p),
   }));
   /* `local` viaja para que pedido.html pueda AVISAR de que no se cobrará el
      envío en cuanto se teclee un código postal de casa. Es sólo el aviso: el
@@ -488,6 +489,20 @@ function bloquePedido() {
     '      <!-- /pedido:cantidad -->';
 }
 
+/* El aviso que empuja al tramo del envío gratis. Sólo tiene sentido mientras
+   NO se llega: a partir de ahí la línea del precio ya dice «Envío gratis» y
+   repetirlo sería ruido.
+
+   Dice lo que se ahorra HOY, no una regla abstracta: «te ahorras $79» mueve
+   más que «desde 4 piezas el envío es gratis», y las dos cosas son la misma
+   frase. El umbral y el importe salen de la tabla, así que si mañana el envío
+   gratis empieza en seis, el texto lo dice solo. */
+function avisoGratis(p) {
+  if (gratis(p)) return '';
+  const desde = desdeGratis();
+  return `Lleva ${desde} y no pagas env\u00edo: te ahorras $${p.envio}.`;
+}
+
 function bloqueCompra() {
   const una = PAQUETES[0];
   if (!una || una.piezas !== 1) throw new Error('la escalera no empieza en 1 placa');
@@ -516,6 +531,7 @@ function bloqueCompra() {
     miles(total(una)) + '</span><span class="u">MXN</span></p>\n' +
     '            </div>\n' +
     '            <p class="pc-detalle" data-pc-detalle>' + ent(detalle(una)) + '</p>\n' +
+    '            <p class="pc-gratis" data-pc-gratis>' + ent(avisoGratis(una)) + '</p>\n' +
     '            <a class="svc-btn pc-ir" href="pedido.html?n=1" data-pc-ir>' +
     '<span class="dia"></span>' + ent('Comprar ahora') + '</a>\n' +
     '            <p class="pc-mas"><a href="' + waMas + '" target="_blank" rel="noopener noreferrer">' +
