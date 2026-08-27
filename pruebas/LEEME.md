@@ -1,15 +1,17 @@
 # Pruebas de navegador
 
-Una sola suite, `compra.mjs`, sobre el único camino de esta web por el que
-entra dinero: **contador de la ficha → pedido.html → lo que se le manda al
-Worker → gracias.html.**
+Dos suites. `compra.mjs` cubre el único camino de esta web por el que entra
+dinero: **contador de la ficha → pedido.html → lo que se le manda al Worker →
+gracias.html.** `instalaciones.mjs` cubre las fotos de clientes de la ficha.
 
 ```sh
 node servidor.js 8099 &
 node pruebas/compra.mjs
+node pruebas/instalaciones.mjs
 ```
 
-Sesenta y dos comprobaciones, la mayoría con JavaScript y un bloque final sin él.
+Sesenta y dos comprobaciones en la primera, la mayoría con JavaScript y un
+bloque final sin él; veinte en la segunda.
 
 ## Por qué en un navegador
 
@@ -57,6 +59,46 @@ formulario, esa prueba se pone en rojo.
 Ese último bloque es el suelo del que cuelga todo lo demás: si un script falla
 al cargar, la web tiene que seguir vendiendo.
 
+## `instalaciones.mjs`
+
+Las tres fotos de placas ya entregadas —Kabuki en Plaza Sendero, Kabuki en
+Villamagna y Tito's en Villamagna—. Son la única prueba de la página de que
+esto existe fuera de un render, así que se comprueba que estén y que no
+mientan.
+
+### La comprobación que justifica el archivo
+
+> **no hay ninguna frase entrecomillada atribuida a nadie**
+
+Un testimonio inventado es más fácil de escribir que de conseguir, y esta
+sección es exactamente donde aparecería. Lo único que la página afirma ahí es
+lo que se ve en la foto: que la placa está en ese negocio. Mientras no haya
+frases reales, con nombre y con permiso, esa prueba impide que se cuele una.
+
+Comprobado por sabotaje: metiendo «Subimos de 12 a 90 reseñas en un mes» —
+Juan, Kabuki en la entradilla, se pone en rojo.
+
+### Lo que cubren las otras
+
+| | |
+|---|---|
+| **Que las fotos existan** | las tres cargan de verdad; una ruta mal escrita da un 404 que aquí sale, y un hueco en esta sección es peor que no tenerla |
+| **El encuadre** | las tres en 3:4. La de Villamagna venía en 2:3 y se recorta al convertir; si alguien repone el archivo sin recortar, la rejilla se descuadra y esto avisa |
+| **Los pies** | cada uno dice el negocio y la plaza. Sin el nombre es otra foto bonita |
+| **Dos galerías, no una** | el visor las agrupa por `data-galeria`. Mezclarlas dejaría el reverso de la placa a la derecha del mostrador de un cliente. Comprobado por sabotaje: renombrando el grupo, el visor pasa a contar 6 y las dos pruebas se ponen en rojo |
+| **El móvil** | las tres van en una tira que se arrastra, en un solo renglón. Apiladas serían tres pantallas y media en mitad de la ficha de compra |
+| **Sin JavaScript** | las tres están en el HTML: no las fabrica ningún script |
+
+⚠ Esa última **no** comprueba que se vean. `index.html` entero nace con
+`.rv{opacity:0}` y lo descubre un `IntersectionObserver`: sin JavaScript la
+portada está en blanco de arriba abajo, y eso es de antes de esta sección.
+Lo que sí se comprueba es que la sección nueva no sea *peor* que sus vecinas
+—se compara su opacidad con la de la ficha del producto—, así que el día que
+se arregle el descubrimiento, ésta viene incluida. `pedido.html`, que es la
+que cobra, no tiene ese problema y su bloque sin JavaScript sigue en
+`compra.mjs`.
+
+
 ## Lo que NO cubre
 
 - **Mercado Pago.** La petición al Worker se intercepta para poder mirar qué se
@@ -70,9 +112,9 @@ al cargar, la web tiene que seguir vendiendo.
 
 El CI de este repositorio corre sólo lo que no necesita red ni levantar nada:
 escáner de secretos, huellas de la CSP, tabla de precios y las pruebas del
-Worker. Esta suite necesita Playwright, un Chromium y el servidor local
+Worker. Estas suites necesitan Playwright, un Chromium y el servidor local
 levantado, y un CI que tarda o falla por motivos que no son suyos se acaba
-ignorando. Se corre a mano antes de tocar el flujo de compra.
+ignorando. Se corren a mano antes de tocar el flujo de compra o la ficha.
 
 Playwright se instala aparte —no hay `package.json` en este repositorio a
 propósito: la web es HTML, CSS y JS a mano, sin compilar—:
