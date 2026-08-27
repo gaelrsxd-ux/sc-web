@@ -9,6 +9,11 @@
 
        payment_methods.installments = 1     ← el máximo de cuotas es una
 
+   Nueve de los once paquetes van así. Los dos más caros ofrecen además dos
+   mensualidades, que las financia el banco del comprador y no cuestan nada al
+   vendedor; a partir de tres empezarían los meses sin intereses, que sí los
+   paga el vendedor, y por eso hay un tope duro. Ver TOPE_CUOTAS más abajo.
+
    De regalo, y es la mitad del motivo para tenerlo: se acabó crear enlaces a
    mano. Un enlace por paquete eran once creaciones en el móvil, y otras once
    cada vez que cambiara un precio. Aquí el cobro se genera al vuelo desde la
@@ -147,6 +152,24 @@ async function dentroDelTope(ip) {
 
 /* --------------------------------------------------------------- EL COBRO */
 
+/* Techo duro de mensualidades, y es una guarda de DINERO, no de estilo.
+
+   En México el reparto es éste: dos cuotas las financia el banco del comprador
+   —él paga el interés, tú cobras el total íntegro—, mientras que de tres en
+   adelante ya se entra en los meses sin intereses, donde el interés lo absorbe
+   el VENDEDOR: 4.69 % a tres meses y hasta 27.29 % a veinticuatro, según el
+   propio panel de Mercado Pago.
+
+   O sea que la diferencia entre `cuotas: 2` y `cuotas: 3` en la tabla es la
+   diferencia entre no pagar nada y regalar el 4.69 % de cada venta de ese
+   paquete, para siempre y sin que nada avise. Un dedo torpe en un dígito no
+   puede tener esa consecuencia, así que aquí se recorta y punto: la tabla
+   propone, este tope dispone. Subirlo es una decisión comercial y hay que
+   tomarla aquí, a la vista, no de refilón editando una fila de precios. */
+const TOPE_CUOTAS = 2;
+
+const cuotas = p => Math.min(TOPE_CUOTAS, Math.max(1, Number(p.cuotas) || 1));
+
 async function creaPreferencia(p, env, origen) {
   const cuerpo = {
     items: [{
@@ -158,9 +181,17 @@ async function creaPreferencia(p, env, origen) {
     }],
     /* EL CAMPO POR EL QUE EXISTE TODO ESTO. `installments` es el número MÁXIMO
        de cuotas que se ofrecen; con 1, el checkout sólo puede cobrar en una
-       sola exhibición. Es lo que el panel de enlaces no deja tocar. */
+       sola exhibición. Es lo que el panel de enlaces no deja tocar.
+
+       Casi todo el catálogo va con 1. Los dos paquetes más caros llevan 2 en la
+       tabla, y ahí `cuotas()` recorta a TOPE_CUOTAS para que ningún número
+       mayor pueda colarse. Ver por qué justo encima de la constante.
+
+       `default_installments` se queda SIEMPRE en 1: la casilla llega marcada en
+       pago único y partirlo es una decisión que toma el comprador, no algo que
+       le venga puesto de fábrica. */
     payment_methods: {
-      installments: 1,
+      installments: cuotas(p),
       default_installments: 1,
     },
     back_urls: {

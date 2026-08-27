@@ -68,6 +68,23 @@ const PAQUETE_DESDE = 10;
    la columna `total` que imprime `node tools/precios.mjs --tabla`. Si se crea
    el enlace por el precio del paquete a secas, el envío de los paquetes de
    menos de diez piezas se queda sin cobrar. */
+/* `cuotas` es el número MÁXIMO de mensualidades que se ofrecen en el checkout.
+   Sin poner nada son 1: pago de contado, que es como está el catálogo entero
+   salvo los dos paquetes de arriba.
+
+   ⚠ EL DINERO ESTÁ EN QUIÉN PAGA EL INTERÉS, y el número decide cuál de los
+   dos casos toca:
+
+     · 2 cuotas → las financia el BANCO del comprador. Él paga de más, tú
+       cobras el total íntegro. No te cuesta nada.
+     · 3 o más  → en México eso ya es el catálogo de MESES SIN INTERESES, y el
+       interés lo absorbe el VENDEDOR: 4.69 % a tres meses, 27.29 % a
+       veinticuatro (los porcentajes del panel de Mercado Pago). Poner un 3
+       aquí es regalar el 4.69 % de cada venta de ese paquete.
+
+   Por eso el Worker recorta cualquier valor a 2 aunque esta tabla diga más:
+   una errata de un dígito no puede convertirse en una comisión permanente.
+   Ver TOPE_CUOTAS en cloudflare/pagos/pagos.js. */
 const PAQUETES = [
   { piezas:  1, precio:  429, envio: 79, pago: '' },
   { piezas:  2, precio:  699, envio: 69, pago: '' },
@@ -78,8 +95,8 @@ const PAQUETES = [
   { piezas:  8, precio: 1599, envio:  0, pago: '' },
   { piezas: 10, precio: 1899, envio:  0, pago: '' },
   { piezas: 12, precio: 2199, envio:  0, pago: '' },
-  { piezas: 15, precio: 2649, envio:  0, pago: '' },
-  { piezas: 20, precio: 3399, envio:  0, pago: '' },
+  { piezas: 15, precio: 2649, envio:  0, pago: '', cuotas: 2 },
+  { piezas: 20, precio: 3399, envio:  0, pago: '', cuotas: 2 },
 ];
 
 /* ------------------------------------------------------------- HERRAMIENTAS */
@@ -262,6 +279,7 @@ function paquetesJson() {
       piezas: p.piezas,
       titulo: `Placa reseñas Google · ${piezas(p)} · ${gratis(p) ? 'envío gratis' : 'envío incluido'}`,
       total: total(p),
+      cuotas: p.cuotas || 1,
     })),
   }, null, 2) + '\n';
 }
