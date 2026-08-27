@@ -61,8 +61,13 @@
      · -u  fuera la sección «Sobre nosotros» entera y el diagnóstico compactado.
            Aquí la copia caducada no enseñaría un dato viejo sino una PÁGINA que
            ya no existe: una sección retirada, un riel con seis tramos donde hay
-           cinco y enlaces a un ancla muerta. */
-const VERSION = 'syc-2026-08-u';
+           cinco y enlaces a un ancla muerta.
+     · -v  el bloque de datos de contacto, reordenado, y fuera la frase que
+           precedía al botón del mejor proyecto. Aquí lo que caducaría son los
+           DATOS DE CONTACTO: correo, WhatsApp, horario y base. Es lo último de
+           esta página que conviene servir de una copia vieja, porque es por
+           donde entra el trabajo. */
+const VERSION = 'syc-2026-08-v';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
