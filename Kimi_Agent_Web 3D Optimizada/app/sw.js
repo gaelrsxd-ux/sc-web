@@ -84,7 +84,7 @@
            DATOS DE CONTACTO: correo, WhatsApp, horario y base. Es lo último de
            esta página que conviene servir de una copia vieja, porque es por
            donde entra el trabajo. */
-const VERSION = 'syc-2026-08-x';
+const VERSION = 'syc-2026-08-y';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
