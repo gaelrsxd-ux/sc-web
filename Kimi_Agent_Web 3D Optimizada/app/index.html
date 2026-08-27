@@ -579,13 +579,13 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 /* El padding-top era 0 mientras el manifiesto iba justo encima y cerraba con
    el suyo. Retirados aquél y la sección que le seguía, sin esta línea el
    señuelo quedaría pegado al final de Proyectos, que ahora es lo que tiene
-   justo encima. Vuelve al valor de cualquier otra sección. */
+   justo encima. Vuelve al valor de cualquier otra sección, y con más motivo
+   desde que la sección es sólo el botón: sin texto que lo anuncie, el aire de
+   alrededor es lo único que lo separa de lo anterior. */
 .bait{position:relative;overflow:hidden;text-align:center;padding-bottom:clamp(30px,3.6vw,54px)}
 .bait .wrap{position:relative;z-index:1}
-.bait .q{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--muted);margin-bottom:34px}
-/* El hueco entre los dos renglones es de línea, no de bloque: son una sola
-   frase partida en dos y separarlos 34 px los volvería dos ideas sueltas. */
-.bait .q:not(:last-of-type){margin-bottom:clamp(4px,.5vw,8px)}
+/* Aquí vivían .bait .q y su ajuste de interlínea, para los dos renglones que
+   precedían al botón. Retirados con ellos: la sección es ya sólo la llamada. */
 .bait-btn{position:relative;display:inline-flex}
 .bait-btn .btn{padding:20px 46px;font-size:12px;gap:14px}
 .bait-btn .arr{display:inline-block;animation:bob 1.6s ease-in-out infinite}
@@ -845,26 +845,20 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    display:contents disuelve la caja del bloque de información para que sus dos
    hijos puedan ordenarse por separado; por eso la animación de entrada vive en
    ellos y no en el contenedor. */
-@media(max-width:760px){
-  /* Sin el combinador «>»: display:contents disuelve la caja para la maquetación,
-     pero no altera el árbol del DOM, así que .lead y .c-datos siguen siendo hijos
-     de .c-info a efectos de selector. Con «>» esta regla no encontraba nada. */
-  .c-info{display:contents}
-  .contact-grid .lead{order:1}
-  .contact-grid>.frame{order:2;margin-top:4px}
-  .contact-grid .c-datos{order:3;margin-top:clamp(30px,7vw,40px)}
-  /* Cuatro filas a lo alto para cuatro datos cortos era medio viewport. En dos
-     columnas ocupan la mitad y se leen de un vistazo. */
-  .c-datos{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(14px,4vw,22px)}
-  .c-item{padding:15px 0}
-  .c-item .v{font-size:16px}
-  /* El correo y la base no caben en media línea: fila entera. */
-  .c-item.ancho{grid-column:1/-1}
-}
 .c-item{padding:24px 0;border-bottom:1px solid var(--line-soft)}
+/* El último no lleva raya: debajo empieza otra sección con la suya, y dos
+   líneas seguidas se leen como un error de maquetación. */
+.c-item:last-child{border-bottom:0;padding-bottom:0}
 .c-item .k{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 .c-item .v{font-family:var(--serif);font-size:clamp(19px,2vw,24px);font-weight:500}
 .c-item .v em{font-style:italic;color:var(--bronze-hi)}
+/* Cada tramo del horario, entero y en su renglón. */
+.c-lin{display:block;white-space:nowrap}
+/* El valor y su botón de copiar comparten renglón, alineados por la línea base.
+   Antes el botón caía debajo y cada uno de esos dos datos ocupaba dos alturas
+   para decir una sola cosa. Si no cupieran, el row-gap los separa al envolver. */
+.c-fila{display:flex;align-items:baseline;justify-content:flex-start;
+  gap:9px clamp(14px,2vw,22px);flex-wrap:wrap}
 
 /* ---------- CONTACTO ACCIONABLE ----------
    El teléfono y el correo eran texto muerto: se veían y no se podían usar. Van
@@ -921,7 +915,7 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 }
 /* Objetivo táctil holgado: la mayoría del tráfico entra por el móvil y este
    botón es de los pocos que hay que acertar a la primera. */
-.c-copia{margin-top:11px;display:inline-flex;align-items:center;gap:8px;min-height:38px;
+.c-copia{display:inline-flex;align-items:center;gap:8px;min-height:38px;flex-shrink:0;
   padding:9px 15px;font-family:var(--sans);font-size:9px;letter-spacing:2.6px;
   text-transform:uppercase;font-weight:500;color:var(--dim);border:1px solid var(--line-soft);
   background:none;cursor:pointer;transition:color .3s,border-color .3s}
@@ -935,6 +929,39 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    serif del valor: es una aclaración, no otro dato que leer. */
 .c-nota{margin-top:9px;font-size:12px;line-height:1.6;color:var(--dim);font-style:italic;
   font-family:var(--serif)}
+
+/* ---------- CONTACTO EN MÓVIL ----------
+   ⚠ ESTE BLOQUE VA AQUÍ, DESPUÉS DE LO QUE AJUSTA, Y NO ANTES. Vivía por
+   encima de las reglas base de .c-item con la misma especificidad, así que la
+   cascada lo descartaba entero: en el móvil no se aplicaba ni el relleno ni el
+   tamaño que pedía, y el bloque se veía con el aire pensado para el escritorio.
+   Comprobado midiendo en un móvil de 393 px: pedía 15 px de relleno y el
+   navegador servía 24, pedía 16 px de letra y servía 19.
+
+   Y se abandona la rejilla de dos columnas. Ahorraba alto, pero emparejaba
+   datos de tamaños muy distintos —un número de siete cifras al lado de un
+   horario de dos renglones con su nota— y el resultado era un bloque
+   desalineado con el matiz del horario desbordando su media columna. En una
+   sola columna, con el botón de copiar metido en el renglón del valor, ocupa
+   menos que la rejilla y además se lee. */
+@media(max-width:760px){
+  /* Sin el combinador «>»: display:contents disuelve la caja para la maquetación,
+     pero no altera el árbol del DOM, así que .lead y .c-datos siguen siendo hijos
+     de .c-info a efectos de selector. Con «>» esta regla no encontraba nada. */
+  .c-info{display:contents}
+  .contact-grid .lead{order:1}
+  .contact-grid>.frame{order:2;margin-top:4px}
+  .contact-grid .c-datos{order:3;margin-top:clamp(30px,7vw,40px)}
+  /* Aquí la columna es estrecha y los botones caen casi en el borde de todos
+     modos: alineándolos del todo forman columna en vez de quedar escalonados.
+     En el escritorio no, que allí el borde está a trescientos píxeles del dato
+     y el botón se leería como si no fuera con él. */
+  .c-fila{justify-content:space-between}
+  .c-item{padding:17px 0}
+  .c-item .k{letter-spacing:3.4px;margin-bottom:6px}
+  .c-item .v{font-size:17px}
+  .c-nota{margin-top:7px;font-size:11.5px}
+}
 /* Sólo para lectores de pantalla. El marcado ya usaba este nombre de clase con
    los estilos escritos a mano en el atributo; aquí queda la regla y dice lo
    mismo, para no repetirla en cada sitio que la necesite. */
@@ -2603,11 +2630,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 <!-- ============ BAIT: MEJOR PROYECTO ============ -->
 <section class="bait">
   <div class="wrap">
-    <!-- Dos renglones: el primero afirma el estándar y el segundo lo remata.
-         Los puntos suspensivos que abrían la frase colgaban de nada; ahora
-         continúan la línea de arriba, que es lo que siempre pedían. -->
-    <p class="q rv">Todos nuestros trabajos salen con el mismo nivel…</p>
-    <p class="q rv">…pero si tuviéramos que elegir uno, sería este.</p>
+    <!-- Aquí iban dos renglones ("Todos nuestros trabajos salen con el mismo
+         nivel… …pero si tuviéramos que elegir uno, sería este."). Se retiran:
+         el botón dice ya lo mismo con tres palabras, y la frase presumía del
+         estándar justo debajo de los cuatro casos que acaban de demostrarlo. -->
     <span class="bait-btn rv">
       <a href="#contacto" class="btn solid"><span class="dia"></span>Nuestro mejor proyecto<span class="dia"></span></a>
     </span>
@@ -2673,26 +2699,45 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
            animación de entrada va por eso en los hijos y no aquí. -->
       <div class="c-info">
         <p class="lead rv">Cuéntanos tu idea. Respondemos en menos de 24 horas — la ambición no espera.</p>
+        <!-- Cuatro datos, cuatro renglones iguales: rótulo pequeño, valor, y
+             debajo su matiz si lo tiene. Cada uno ocupa el ancho entero y todos
+             empiezan en el mismo margen, que es lo único que hace que una lista
+             de datos se lea como una lista y no como un montón. -->
         <div class="c-datos rv" style="margin-top:26px">
-          <div class="c-item ancho">
+          <div class="c-item">
             <div class="k">Email</div>
-            <div class="v"><a class="c-enl" href="mailto:hola@sycsolutions.company"><em>hola@sycsolutions.company</em></a></div>
-            <button class="c-copia" type="button" data-copiar="hola@sycsolutions.company" data-que="El correo"
-                    aria-label="Copiar el correo hola@sycsolutions.company"><span class="dia" aria-hidden="true"></span>Copiar</button>
+            <div class="c-fila">
+              <div class="v"><a class="c-enl" href="mailto:hola@sycsolutions.company"><em>hola@sycsolutions.company</em></a></div>
+              <button class="c-copia" type="button" data-copiar="hola@sycsolutions.company" data-que="El correo"
+                      aria-label="Copiar el correo hola@sycsolutions.company"><span class="dia" aria-hidden="true"></span>Copiar</button>
+            </div>
           </div>
           <div class="c-item">
             <div class="k">WhatsApp</div>
-            <div class="v"><a class="c-enl" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer">+52 442 369 7248</a></div>
-            <button class="c-copia" type="button" data-copiar="+524423697248" data-que="El número de WhatsApp"
-                    aria-label="Copiar el número de WhatsApp +52 442 369 7248"><span class="dia" aria-hidden="true"></span>Copiar</button>
+            <div class="c-fila">
+              <div class="v"><a class="c-enl" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer">+52 442 369 7248</a></div>
+              <button class="c-copia" type="button" data-copiar="+524423697248" data-que="El número de WhatsApp"
+                      aria-label="Copiar el número de WhatsApp +52 442 369 7248"><span class="dia" aria-hidden="true"></span>Copiar</button>
+            </div>
           </div>
-          <div class="c-item"><div class="k">Horario</div>
-            <div class="v">Lun — Vie · 9:00 a 23:00<br>Sáb y Dom · 10:00 a 22:00</div>
+          <div class="c-item">
+            <div class="k">Horario</div>
+            <!-- Cada tramo en su propio renglón y sin partir: "9:00 a" arriba y
+                 "23:00" abajo convertía una hora en un acertijo. -->
+            <div class="v"><span class="c-lin">Lun &#8212; Vie &#183; 9:00 a 23:00</span><span class="c-lin">S&#225;b y Dom &#183; 10:00 a 22:00</span></div>
             <!-- Aclaración, no promesa: dice lo que suele pasar, sin poner un
                  plazo que después haya que cumplir a las tres de la mañana. -->
             <p class="c-nota">Fuera de horario también solemos responder.</p>
           </div>
-          <div class="c-item ancho"><div class="k">Base</div><div class="v">San Luis Potosí, México · Atendemos todo México y LATAM</div></div>
+          <div class="c-item">
+            <div class="k">Base</div>
+            <!-- Dónde estamos y a dónde llegamos son dos cosas, y colgadas de un
+                 mismo punto medio se leían como una sola frase larga que además
+                 partía por cualquier sitio. El alcance baja a matiz, que es su
+                 categoría: el dato es la ciudad. -->
+            <div class="v">San Luis Potos&#237;, M&#233;xico</div>
+            <p class="c-nota">Atendemos todo M&#233;xico y LATAM.</p>
+          </div>
         </div>
         <!-- El "Copiado" del botón es visual. Esto es lo mismo dicho para quien
              no lo ve: una región viva, vacía hasta que hay algo que anunciar. -->
