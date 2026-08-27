@@ -14,7 +14,15 @@ import worker from '../pagos.js';
 import TABLA from '../paquetes.json' with { type: 'json' };
 
 const ORIGEN = 'https://sycsolutions.company';
-const ENV = { MP_ACCESS_TOKEN: 'TEST-token-de-mentira' };
+/* Token inventado: no abre nada y nunca sale de este archivo, porque el fetch
+   esta sustituido por un doble y jamas se habla con Mercado Pago.
+   El escaner de secretos caza la linea de abajo por su FORMA —nombre de
+   credencial seguido de un valor entre comillas— y hace bien; el marcador es
+   su escape declarado y deja la excepcion a la vista en el diff.
+   Y una nota para quien edite esto: el escaner mira TAMBIEN los comentarios,
+   asi que escribir aqui el patron de ejemplo vuelve a bloquear el commit.
+   Pasó de verdad al redactar este comentario. */
+const ENV = { MP_ACCESS_TOKEN: 'no-es-un-token-es-una-prueba' };  // secreto-permitido: valor inventado
 
 /* El Worker usa caches.default para el contador por IP. En Node no existe, y
    sin esto cada prueba entraría por el catch. Se implementa con un Map para
