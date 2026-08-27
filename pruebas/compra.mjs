@@ -169,16 +169,18 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   const av = pg.locator('[data-pc-gratis]');
   const campoN = pg.locator('[data-pc-n]');
 
-  for (const [n, ahorro] of [['1', '$79'], ['2', '$69'], ['3', '$59']]) {
+  /* ⚠ EL EMPUJÓN YA NO SALE, Y ES LO CORRECTO. Cuando el envío se cobraba
+     aparte, con 1, 2 o 3 placas aparecía «Lleva 4 y no pagas envío: te ahorras
+     $79». Desde que el envío va DENTRO del precio no hay umbral que empujar: es
+     gratis desde la primera. El mecanismo sigue escrito y se enciende solo el
+     día que vuelva a haber un envío que cobrar —lo garantiza que el texto lo
+     genera tools/precios.mjs desde la tabla, no una cadena a mano—. */
+  for (const n of ['1', '2', '3', '4', '12', '25']) {
     await campoN.fill(n); await campoN.blur();
-    const t = (await av.textContent()).trim();
-    ok(await av.isVisible() && t.includes('Lleva 4') && t.includes(ahorro),
-       n + ' placa(s): avisa del envío gratis y dice que se ahorra ' + ahorro);
+    ok(!(await av.isVisible()), n + ' placa(s): sin envío que cobrar, no hay nada que empujar');
   }
-  for (const n of ['4', '12', '25']) {
-    await campoN.fill(n); await campoN.blur();
-    ok(!(await av.isVisible()), n + ' placas: el aviso desaparece, que ahí ya es gratis');
-  }
+  const conAviso = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas.filter(f => f.g);
+  ok(conAviso.length === 0, 'y la tabla no trae ningún aviso pendiente de enseñar');
 
   const ta = async sel => pg.locator(sel).first().evaluate(e => getComputedStyle(e).touchAction);
   ok(await ta('[data-pc="1"]') === 'manipulation' && await ta('[data-pc="-1"]') === 'manipulation',
@@ -245,26 +247,32 @@ const navegador = await chromium.launch({ executablePath: CHROME });
     };
   }
 
+  /* ⚠ CON EL ENVÍO DENTRO DEL PRECIO, LA ENTREGA EN MANO YA NO DESCUENTA NADA.
+     Lo que cambia para quien vive en la ciudad no es el importe sino CÓMO le
+     llega: en persona y con la instalación hecha, en vez de por paquetería. El
+     mecanismo del descuento sigue probado, pero en las pruebas del Worker,
+     donde se le puede encender un envío de mentira; aquí se comprueba lo que la
+     página promete hoy. */
+  const suelta = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas[0];
+  const precioSuelta = '$' + suelta.tot.toLocaleString('en-US');
+
   let e = await pideCon('79000');
-  ok(e.cabecera === '$508', 'con código de Ciudad Valles la cabecera sigue en $508');
+  ok(e.cabecera === precioSuelta, 'con código de Ciudad Valles la cabecera dice ' + precioSuelta);
   ok(!e.aviso, 'y no aparece el aviso de entrega en mano');
 
   e = await pideCon(CP_LOCAL);
-  ok(e.cabecera === '$429', 'con código de la ciudad la cabecera baja a $429');
-  ok(e.aviso, 'y aparece el aviso de que no se cobra el envío');
+  ok(e.cabecera === precioSuelta, 'con código de la ciudad cuesta lo MISMO: el envío ya iba incluido');
+  ok(e.aviso, 'pero sí aparece el aviso de que se entrega en persona');
+  const textoAviso = (await pg.locator('[data-ped-local]').textContent()).trim();
+  ok(!/\$\d/.test(textoAviso) && /instalamos|persona|mano/i.test(textoAviso),
+     'y ese aviso NO promete dinero, promete la entrega: «' + textoAviso + '»');
+  ok((await pg.locator('[data-ped-que]').textContent()).includes('entrega en mano'),
+     'la cabecera dice «entrega en mano» en vez del texto de envío');
 
-  /* Nota: el caso del código con espacio —«78 000»— no se prueba aquí porque el
-     campo lleva maxlength=5 y el navegador lo trunca antes de que llegue a
-     ninguna parte. Esa tolerancia importa en el Worker, que sí puede recibir un
-     POST de fuera del navegador, y allí está probada.
-
-     Y lo que de verdad importa: que lo que se ENSEÑA y lo que se COBRA sean lo
-     mismo. El Worker recalcula por su cuenta, así que basta con comprobar que
-     el formulario le manda el código postal y ningún importe. */
   await pg.locator('[data-paso="3"] [data-sigue]').click();
   const resLocal = await pg.locator('[data-ped-resumen]').innerText();
-  ok(resLocal.includes('$429'), 'el resumen del paso 4 dice $429, no $508');
-  ok((await pg.locator('[data-ped-pagar]').textContent()).includes('$429'), 'y el botón también');
+  ok(resLocal.includes(precioSuelta), 'el resumen del paso 4 dice el mismo importe');
+  ok((await pg.locator('[data-ped-pagar]').textContent()).includes(precioSuelta), 'y el botón también');
   await pg.locator('[data-ped-pagar]').click();
   await pg.waitForTimeout(700);
   const cl = Object.fromEntries(new URLSearchParams(enviado || ''));
@@ -272,12 +280,9 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(!('total' in cl) && !('local' in cl) && !('envio' in cl),
      'y NINGUNA bandera de «soy local» ni importe: eso lo decide el servidor');
 
-  /* La página de gracias tiene que declarar el importe que se cobró, no el de
-     tarifa: tres cifras distintas del mismo pedido son una reclamación. */
   await pg.goto(BASE + '/gracias.html');
   const grLocal = await pg.locator('[data-gr-resumen]').innerText();
-  ok(grLocal.includes('$429') && !grLocal.includes('$508'),
-     'gracias.html dice $429, que es lo que se cobró');
+  ok(grLocal.includes(precioSuelta), 'gracias.html declara el importe que se cobró');
   const waLocal = decodeURIComponent((await pg.locator('[data-gr-wa]').getAttribute('href')).split('text=')[1]);
   ok(!/\$\d/.test(waLocal), 'y el WhatsApp no declara ningún importe propio');
 

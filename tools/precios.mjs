@@ -56,18 +56,6 @@ const COBRO_EN_LINEA = 'https://pagos.sycsolutions.company/ir';
    que nadie lo decidiera. */
 const PAQUETE_DESDE = 10;
 
-/* Los paquetes, en el orden en que se enseñan. `precio` es el TOTAL del
-   paquete en pesos, no el precio por unidad.
-
-   `pago` es el enlace de pago de Mercado Pago de ese paquete, creado en el
-   panel. Vacío = ese paquete todavía no se puede pagar en línea y la fila se
-   comporta como siempre: sólo pedir por WhatsApp. Así la lista nunca enseña un
-   botón de pagar que no lleve a ninguna parte.
-
-   ⚠ El importe del enlace de Mercado Pago debe ser el TOTAL CON ENVÍO, que es
-   la columna `total` que imprime `node tools/precios.mjs --tabla`. Si se crea
-   el enlace por el precio del paquete a secas, el envío de los paquetes de
-   menos de diez piezas se queda sin cobrar. */
 /* `cuotas` es el número MÁXIMO de mensualidades que se ofrecen en el checkout.
    Sin poner nada es 1: pago de contado.
 
@@ -92,7 +80,19 @@ const PAQUETE_DESDE = 10;
    el interés el banco del comprador. */
 const CUOTAS_DESDE = 2500;
 
-/* Los paquetes, en el orden en que se enseñan. `precio` es el TOTAL del
+/* ⚠ EL ENVÍO ESTÁ EN CERO EN TODAS LAS FILAS, Y ES UNA DECISIÓN, NO UN OLVIDO.
+   Se cobraba aparte —79, 69 y 59 pesos en los tres primeros paquetes— y el
+   resultado era que una placa suelta salía en $508 mientras la competencia
+   anunciaba $399 con el envío dentro. La comparación se perdía justo en el
+   número más mirado del catálogo. Ahora el envío va dentro del precio: la cifra
+   que se ve es la que se paga, en México entero.
+
+   La columna `envio` se queda —no se borra— porque es el mecanismo. El día que
+   haya que volver a cobrarlo basta con poner números aquí: el Worker, el
+   contador, el aviso de «lleva 4 y no pagas envío» y el descuento por entrega
+   en mano siguen escritos para ello y se encienden solos.
+
+   Los paquetes, en el orden en que se enseñan. `precio` es el TOTAL del
    paquete en pesos, no el precio por unidad.
 
    ⚠ ONCE DE ESTOS PRECIOS SON DECISIONES Y CATORCE SON CONSECUENCIAS.
@@ -112,9 +112,9 @@ const CUOTAS_DESDE = 2500;
    Si en algún escalón sube, comprar más sale peor por unidad y la lista
    pierde el sentido. `node tools/precios.mjs --tabla` la imprime entera. */
 const PAQUETES = [
-  { piezas:  1, precio:  429, envio: 79 },
-  { piezas:  2, precio:  699, envio: 69 },
-  { piezas:  3, precio:  799, envio: 59 },
+  { piezas:  1, precio:  399, envio:  0 },
+  { piezas:  2, precio:  649, envio:  0 },
+  { piezas:  3, precio:  799, envio:  0 },
   { piezas:  4, precio:  949, envio:  0, destaca: true },
   { piezas:  5, precio: 1099, envio:  0 },
   { piezas:  6, precio: 1249, envio:  0 },
@@ -291,10 +291,14 @@ const placas = p => p.piezas === 1 ? '1 placa' : `${p.piezas} placas`;
 
 /* Desde cuántas piezas sale gratis. Se DEDUCE de la tabla en vez de escribirse:
    si mañana el envío gratis empieza en seis, el texto lo dice solo. */
+/* Desde cuántas piezas sale gratis el envío, o `null` si sale gratis DESDE LA
+   PRIMERA —que es el caso desde que el envío va dentro del precio—. Devolver
+   null y no 1 es lo que evita que algún texto acabe diciendo «gratis desde 1
+   piezas», que es la clase de frase que sólo se escribe sola. */
 function desdeGratis() {
   const primera = PAQUETES.find(gratis);
   if (!primera) throw new Error('ningún paquete tiene el envío gratis; revisa la tabla');
-  return primera.piezas;
+  return primera.piezas === PAQUETES[0].piezas ? null : primera.piezas;
 }
 
 /* El mensaje que llega a WhatsApp ya escrito. Los paquetes con envío gratis se
@@ -318,15 +322,7 @@ function mensajeMas(tope) {
          `¿Qué precio me pueden hacer?`;
 }
 
-function etiquetaPedir(p) {
-  const cierre = gratis(p) ? 'con envío gratis' : `más ${p.envio} de envío`;
-  return `Pedir el paquete de ${piezas(p)} por WhatsApp, ${p.precio} pesos ${cierre}`;
-}
 
-function etiquetaPagar(p) {
-  const cierre = gratis(p) ? 'con envío gratis' : 'con el envío incluido';
-  return `Pagar en línea el paquete de ${piezas(p)}, ${total(p)} pesos ${cierre}`;
-}
 
 /* ------------------------------------------------------------- EL GENERADOR */
 
@@ -337,47 +333,6 @@ function etiquetaPagar(p) {
    un precio, y ese ruido esconde el cambio real en el diff. */
 const url = t => encodeURIComponent(t).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
 
-function fila(p) {
-  const wa = `https://wa.me/${WHATSAPP}?text=${url(mensaje(p))}`;
-  const clase = p.destaca ? ' class="pm-destaca"' : '';
-  const envío = gratis(p)
-    ? '<span class="pm-e gratis">' + ent('Envío gratis') + '</span>'
-    : '<span class="pm-e">' + ent(`Envío $${p.envio} MXN`) + '</span>';
-  const datos =
-    `<span class="pm-q">${piezas(p)}</span>` +
-    `<span class="pm-p">$${miles(p.precio)} MXN</span>` +
-    envío;
-
-  /* Con el Worker encendido, el botón es un FORMULARIO y no un enlace. Manda
-     sólo el identificador del paquete —nunca el importe, que lo pone el
-     servidor— y el Worker responde con una redirección al checkout. Sin
-     JavaScript: funciona con el JS desactivado, no añade una huella a la CSP y
-     no puede quedarse a medias por un fetch fallido. */
-  if (COBRO_EN_LINEA) {
-    return `              <li${clase} data-pago><a class="pm-pide" href="${wa}" target="_blank" rel="noopener noreferrer"\n` +
-           `                     aria-label="${ent(etiquetaPedir(p))}">${datos}</a>` +
-           `<form class="pm-form" method="post" action="${COBRO_EN_LINEA}">` +
-           `<input type="hidden" name="paquete" value="${p.piezas}">` +
-           `<button class="pm-paga" type="submit"\n` +
-           `                     aria-label="${ent(etiquetaPagar(p))}">Pagar $${miles(total(p))}</button></form></li>`;
-  }
-
-  /* Sin enlace de pago la fila es exactamente lo que era: un solo enlace a
-     WhatsApp que envuelve los tres datos. */
-  if (!p.pago) {
-    return `              <li${clase}><a href="${wa}" target="_blank" rel="noopener noreferrer"\n` +
-           `                     aria-label="${ent(etiquetaPedir(p))}">${datos}</a></li>`;
-  }
-
-  /* Con enlace de pago la fila pasa a tener DOS acciones, y por eso los datos
-     dejan de ir dentro del enlace de WhatsApp: un <a> no puede contener otro
-     <a>, así que envolver la fila entera y meter dentro el botón de pagar
-     produce un marcado inválido que cada navegador repara a su manera. */
-  return `              <li${clase} data-pago><a class="pm-pide" href="${wa}" target="_blank" rel="noopener noreferrer"\n` +
-         `                     aria-label="${ent(etiquetaPedir(p))}">${datos}</a>` +
-         `<a class="pm-paga" href="${p.pago}" target="_blank" rel="noopener noreferrer"\n` +
-         `                     aria-label="${ent(etiquetaPagar(p))}">Pagar $${miles(total(p))}</a></li>`;
-}
 
 /* --------------------------------------------- EL CONTADOR DE LA FICHA ----
    Sustituye a la lista de once filas plegada en un <details>. La lista decía
@@ -498,9 +453,22 @@ function bloquePedido() {
    frase. El umbral y el importe salen de la tabla, así que si mañana el envío
    gratis empieza en seis, el texto lo dice solo. */
 function avisoGratis(p) {
-  if (gratis(p)) return '';
   const desde = desdeGratis();
+  /* Sin umbral no hay nada que empujar: el envío ya es gratis desde una placa.
+     La línea se queda vacía y el contador la esconde sola. */
+  if (desde === null || gratis(p)) return '';
   return `Lleva ${desde} y no pagas env\u00edo: te ahorras $${p.envio}.`;
+}
+
+/* El precio del producto en los datos estructurados de la cabecera. Es la cifra
+   que Google puede enseñar en su resultado de búsqueda, así que si se queda
+   vieja el buscador anuncia un precio que la web ya no cobra — y ese es un
+   desfase que no ve nadie desde dentro, porque en la página se lee bien.
+
+   Estaba escrito a mano y se quedó en 429 al bajar la entrada a 399. Se genera
+   para que no pueda volver a pasar. */
+function precioEsquema() {
+  return '"price":"' + total(PAQUETES[0]) + '"';
 }
 
 function bloqueCompra() {
@@ -543,9 +511,6 @@ function bloqueCompra() {
     '          </div>';
 }
 
-function lista() {
-  return '<ul class="pm-lista">\n' + PAQUETES.map(fila).join('\n') + '\n            </ul>';
-}
 
 /* La cifra grande del producto es el precio de una pieza. Se deriva de la tabla
    en vez de escribirse aparte: enseñar $429 arriba y $449 en la lista es
@@ -556,28 +521,7 @@ function cifra() {
   return `<span class="cifra">$${miles(una.precio)}</span>`;
 }
 
-/* Va justo debajo de «$429 MXN · una pieza», así que dice el envío DE UNA
-   PIEZA y no el más barato del catálogo: quien lee esa cifra está mirando la
-   compra de una, y anunciarle los $59 del paquete de tres sería cierto y
-   engañoso a la vez. */
-function lineaEnvio() {
-  const una = PAQUETES.find(x => x.piezas === 1);
-  if (!una) throw new Error('la tabla no tiene el paquete de 1 pieza');
-  return '<p class="prod-envio">' + ent(`Envío $${una.envio} MXN · gratis desde ${desdeGratis()} piezas`) + '</p>';
-}
 
-/* La nota al pie de la lista. Estaba escrita a mano en el HTML con «Envío $149
-   MXN, gratis a partir de 10 piezas» dentro, es decir, una copia más del envío
-   que este archivo no controlaba: al cambiar la tarifa se habría quedado
-   contradiciendo a la lista que tiene tres centímetros encima. Ahora la genera
-   él, y por eso no repite importes —los lleva cada fila— sino la regla. */
-function notaLista() {
-  const texto =
-    'Precios totales por paquete, no por pieza. El envío baja con la cantidad y\n' +
-    '              es gratis desde ' + desdeGratis() + ' piezas. Pulsa el paquete que necesitas y se abre\n' +
-    '              WhatsApp con tu pedido ya escrito.';
-  return '<p class="pm-n">' + ent(texto) + '</p>';
-}
 
 /* ---------------------------------------------------------- PARA EL WORKER
 
@@ -655,6 +599,7 @@ function paquetesJson() {
    marcas que este archivo también escribe, así que si alguien renombra una
    clase, esto falla en voz alta en vez de generar un HTML a medias. */
 const BLOQUES = [
+  { nombre: 'precio del esquema', re: /"price":"\d+"/, pinta: precioEsquema },
   { nombre: 'bloque de compra',
     re: /<div class="prod-compra">[\s\S]*?<\/script>\n {10}<\/div>/,
     pinta: bloqueCompra },
