@@ -62,12 +62,18 @@
            Aquí la copia caducada no enseñaría un dato viejo sino una PÁGINA que
            ya no existe: una sección retirada, un riel con seis tramos donde hay
            cinco y enlaces a un ancla muerta.
+     · -w  el envío deja de ser una tarifa plana de $149 y pasa a bajar con la
+           cantidad: $79 una pieza, $69 dos, $59 tres y gratis desde cuatro.
+           De todo lo que este archivo guarda, esto es de lo peor que puede
+           servirse caducado: una copia vieja cobraría $149 de envío a quien la
+           web ya no se los cobra, y anunciaría el envío gratis a partir de diez
+           cuando empieza en cuatro.
      · -v  el bloque de datos de contacto, reordenado, y fuera la frase que
            precedía al botón del mejor proyecto. Aquí lo que caducaría son los
            DATOS DE CONTACTO: correo, WhatsApp, horario y base. Es lo último de
            esta página que conviene servir de una copia vieja, porque es por
            donde entra el trabajo. */
-const VERSION = 'syc-2026-08-v';
+const VERSION = 'syc-2026-08-w';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
