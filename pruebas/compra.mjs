@@ -160,6 +160,66 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok((await pg.locator('[data-gr-t]').innerText()).toLowerCase().includes('pendiente'),
      'con ?estado=pendiente la página NO da el pago por hecho');
 
+  /* ---- EL EMPUJÓN AL ENVÍO GRATIS Y EL ZOOM DEL DOBLE TOQUE ----
+     Lo segundo lo reportó el titular desde su iPhone: pulsar «+» rápido para
+     subir de cantidad hacía que la página diera un salto de zoom. Dos toques
+     seguidos sobre el mismo sitio son el gesto de «ampliar» del navegador, y
+     este botón está hecho justo para pulsarse rápido. */
+  await pg.goto(BASE + '/#productos', { waitUntil: 'domcontentloaded' });
+  const av = pg.locator('[data-pc-gratis]');
+  const campoN = pg.locator('[data-pc-n]');
+
+  for (const [n, ahorro] of [['1', '$79'], ['2', '$69'], ['3', '$59']]) {
+    await campoN.fill(n); await campoN.blur();
+    const t = (await av.textContent()).trim();
+    ok(await av.isVisible() && t.includes('Lleva 4') && t.includes(ahorro),
+       n + ' placa(s): avisa del envío gratis y dice que se ahorra ' + ahorro);
+  }
+  for (const n of ['4', '12', '25']) {
+    await campoN.fill(n); await campoN.blur();
+    ok(!(await av.isVisible()), n + ' placas: el aviso desaparece, que ahí ya es gratis');
+  }
+
+  const ta = async sel => pg.locator(sel).first().evaluate(e => getComputedStyle(e).touchAction);
+  ok(await ta('[data-pc="1"]') === 'manipulation' && await ta('[data-pc="-1"]') === 'manipulation',
+     'los botones de cantidad llevan touch-action:manipulation');
+  /* En el CAMPO sería un error: mataría el doble toque para seleccionar el
+     número. El zoom que hace iOS ahí es otro —el de enfocar letra pequeña— y lo
+     evitan los 16 px, no touch-action. */
+  ok(await ta('[data-pc-n]') === 'auto', 'el campo del número NO lo lleva');
+  ok(await campoN.evaluate(e => parseFloat(getComputedStyle(e).fontSize)) >= 16,
+     'y conserva sus 16 px, que es lo que evita el zoom al enfocarlo en iOS');
+
+  /* Lo que NO se puede romper: el pellizco para ampliar. Hay gente que lo
+     necesita para leer, y apagarlo incumple la WCAG 1.4.4. */
+  const vp = await pg.locator('meta[name=viewport]').getAttribute('content');
+  ok(!/user-scalable\s*=\s*no|maximum-scale/.test(vp), 'el zoom de la página sigue permitido');
+  ok(await pg.evaluate(() => getComputedStyle(document.body).touchAction) === 'auto',
+     'y el body no está bloqueado: el pellizco y el arrastre siguen intactos');
+
+  /* Al quitar el resaltado gris de iOS hay que poner algo en su lugar, o el
+     botón queda mudo al dedo; y el :hover no puede quedarse pegado tras tocar. */
+  const reglas = await pg.evaluate(() => {
+    const out = [];
+    for (const h of document.styleSheets) {
+      let rs; try { rs = h.cssRules; } catch (_) { continue; }
+      for (const r of rs) {
+        if (r.conditionText && /hover:\s*hover/.test(r.conditionText)) {
+          for (const i of r.cssRules) out.push({ sel: i.selectorText, enMedia: true });
+        } else if (r.selectorText) out.push({ sel: r.selectorText, enMedia: false });
+      }
+    }
+    return out;
+  });
+  ok(!reglas.some(r => r.sel && /\.pc-b:hover/.test(r.sel) && !r.enMedia),
+     'el :hover del botón vive sólo dentro de @media (hover:hover)');
+  ok(reglas.some(r => r.sel && /\.pc-b:active/.test(r.sel)),
+     'y hay un :active que sustituye al resaltado de toque retirado');
+
+  await campoN.fill('1'); await campoN.blur();
+  for (let i = 0; i < 5; i++) await pg.locator('[data-pc="1"]').click({ delay: 20 });
+  ok((await campoN.inputValue()) === '6', 'cinco toques rápidos suben de 1 a 6, uno por toque');
+
   /* ---- LA ENTREGA EN MANO ----
      Es lo único de esta web donde un dato del comprador mueve el importe, así
      que se comprueba que las dos mitades —lo que la página enseña y lo que se
