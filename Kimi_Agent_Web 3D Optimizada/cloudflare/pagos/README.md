@@ -105,6 +105,39 @@ puede convertirse en una comisión permanente que nadie note.
 Subir ese tope es una decisión comercial. Se toma en `pagos.js`, a la vista, no
 de refilón editando `tools/precios.mjs`.
 
+## También lleva el pedido, no sólo el importe
+
+Mercado Pago cobra, pero **no pregunta a dónde mandar el paquete**. Stripe sí lo
+hace —por eso los checkouts de la competencia se ven tan cortos—, y aquí no lo
+tenemos. Así que los datos se recogen antes, en `app/pedido.html`, y viajan
+pegados al cobro:
+
+| Dónde | Qué lleva |
+|---|---|
+| `additional_info` | el resumen legible: cantidad, negocio, dirección, teléfono |
+| `payer` | nombre, correo, teléfono y código postal, en campos con nombre |
+| `metadata` | el pedido entero campo a campo, sin recortar |
+| `external_reference` | `paquete-4 · El Molino Ruso` |
+
+Con eso, el aviso de una venta deja de ser «te pagaron $949» y pasa a decir para
+qué negocio son las placas y a dónde van. **Aquí no se guarda nada**: el Worker
+no tiene base de datos; estos campos los pasa y se olvida.
+
+Todo el pedido es **opcional**: un POST con sólo `paquete` —un navegador con el
+JavaScript apagado, o `curl`— cobra igual. Un fallo recogiendo datos no puede
+convertirse en una venta perdida.
+
+Y todo es **texto del visitante**, así que entra por `leePedido()` y sale
+limpio: sin caracteres de control —con un salto de línea se podría fabricar un
+«Total: $1» con pinta de haberlo escrito el sistema—, recortado a los topes de
+`CAMPOS` y con el correo descartado si no lo parece, porque uno mal formado
+tumba la preferencia entera.
+
+⚠ Los topes de `CAMPOS` tienen **presupuesto**: casi todos se concatenan en
+`additional_info`, que Mercado Pago corta en 600 caracteres, y pasarse pierde el
+final del resumen —donde están las referencias de la dirección—. Hay una prueba
+que llena cada campo hasta su tope y exige que el texto llegue entero.
+
 ## La regla que no se puede romper
 
 **El importe lo pone el Worker, nunca el navegador.** El formulario de la web
@@ -128,7 +161,7 @@ compara las dos y falla si no coinciden; corre en el hook y en el CI.
 node --test test/pagos.test.mjs
 ```
 
-Dieciocho pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble
+Veintisiete pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble
 que captura lo que se le habría mandado a Mercado Pago. Cubren el importe del
 servidor, las cuotas de cada paquete contra la tabla, el recorte a dos, la
 caída a pago único con la columna rota o ausente, `default_installments` en 1,

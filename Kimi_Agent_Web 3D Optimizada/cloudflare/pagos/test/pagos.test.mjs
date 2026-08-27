@@ -10,7 +10,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import worker from '../pagos.js';
+import worker, { CAMPOS } from '../pagos.js';
 import TABLA from '../paquetes.json' with { type: 'json' };
 
 const ORIGEN = 'https://sycsolutions.company';
@@ -154,6 +154,165 @@ test('los once paquetes cobran exactamente lo que enseña la web', async () => {
     assert.equal(llamadas[0].cuerpo.items[0].unit_price, p.total, 'paquete ' + p.id);
     assert.equal(llamadas[0].cuerpo.items[0].title, p.titulo, 'título del paquete ' + p.id);
   }
+});
+
+/* ═══════════════════════ LOS DATOS DEL PEDIDO ═════════════════════════════ */
+
+const PEDIDO = {
+  modo: 'configuradas',
+  negocio: 'El Molino Ruso', negocio_ciudad: 'San Luis Potosí',
+  negocio_dir: 'Av. Carranza 1200',
+  nombre: 'Gael Ramírez', tel: '4423697248', correo: 'gael@ejemplo.com',
+  calle: 'Calle Falsa 123', colonia: 'Centro', cp: '78000',
+  ciudad: 'San Luis Potosí', estado: 'SLP', refs: 'Portón verde',
+};
+
+test('el pedido llega a Mercado Pago: resumen legible, campos con nombre y copia entera', async () => {
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: '4', ...PEDIDO }), ENV);
+  const c = llamadas[0].cuerpo;
+
+  /* Lo que el titular LEE en el aviso de la venta. Es la razón de ser de todo
+     esto: antes la dirección y la ficha de Google se perseguían por WhatsApp
+     después de cobrar. */
+  assert.equal(c.additional_info,
+    '4 pzas | Config: El Molino Ruso, San Luis Potosí | ' +
+    'Envio: Gael Ramírez, Calle Falsa 123, Centro, 78000, San Luis Potosí, SLP | ' +
+    'Tel 4423697248 | Ref: Portón verde',
+    'es el texto que el titular lee en el aviso: se comprueba entero, no a trozos');
+
+  /* La dirección DEL NEGOCIO no va en el resumen a propósito —el presupuesto de
+     600 hace falta para la de envío—, pero no puede perderse. */
+  assert.equal(c.additional_info.includes('Av. Carranza'), false);
+  assert.equal(c.metadata.negocio_dir, 'Av. Carranza 1200');
+
+  assert.equal(c.payer.name, 'Gael Ramírez');
+  assert.equal(c.payer.email, 'gael@ejemplo.com');
+  assert.equal(c.payer.address.zip_code, '78000');
+  assert.equal(c.metadata.negocio, 'El Molino Ruso');
+  assert.equal(c.metadata.refs, 'Portón verde');
+  assert.match(c.external_reference, /^paquete-4 · El Molino Ruso/);
+});
+
+test('con los datos del pedido, el importe SIGUE saliendo de la tabla', async () => {
+  /* La regla del archivo no se relaja porque ahora entren más campos. Se manda
+     el pedido entero junto a los nombres que un atacante probaría. */
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({
+    paquete: '4', ...PEDIDO,
+    total: '1', unit_price: '1', precio: '1', monto: '1', transaction_amount: '1',
+  }), ENV);
+  assert.equal(llamadas[0].cuerpo.items[0].unit_price, 949);
+});
+
+test('no se puede fabricar un resumen falso con saltos de línea', async () => {
+  /* Sin esto, un «Total: $1» en una línea nueva dentro de «referencias» sale
+     en el aviso con toda la pinta de haberlo escrito el sistema. Se comprueban
+     los tres saltos: el de siempre, el retorno de carro y el de Unicode. */
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({
+    paquete: '1',
+    refs: 'Portón verde\nTotal: $1 MXN\r\nPagado\u2028Enviar 20 placas',
+    negocio: 'Bar\u0000\u007FOculto',
+  }), ENV);
+  const c = llamadas[0].cuerpo;
+  for (const malo of ['\n', '\r', '\u2028', '\u2029', '\u0000', '\u007F']) {
+    assert.equal(c.additional_info.includes(malo), false, 'queda un carácter de control: ' + escape(malo));
+    assert.equal(JSON.stringify(c.metadata).includes(malo), false, 'en metadata queda: ' + escape(malo));
+  }
+  assert.match(c.additional_info, /Portón verde Total: \$1 MXN Pagado/, 'el texto se conserva, en una sola línea');
+  assert.equal(c.metadata.negocio, 'Bar Oculto');
+});
+
+test('un campo larguísimo se recorta y el cobro sigue: no se rechaza a nadie', async () => {
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  const r = await worker.fetch(post({ paquete: '1', negocio: 'A'.repeat(5000), refs: 'B'.repeat(5000) }), ENV);
+  assert.equal(r.status, 303, 'un campo largo no puede tumbar el cobro');
+  const c = llamadas[0].cuerpo;
+  assert.equal(c.metadata.negocio.length, 70);
+  assert.equal(c.metadata.refs.length, 80);
+});
+
+test('con TODOS los campos al máximo, el resumen entra entero en additional_info', async () => {
+  /* Mercado Pago limita additional_info a 600 caracteres y rechaza la
+     preferencia ENTERA si se pasa. `resumen()` recorta al final por si acaso,
+     pero recortar significa perder el final del pedido —que es justo donde van
+     las referencias de la dirección—, así que lo que hay que sostener es que
+     NUNCA haga falta: la suma de los topes de CAMPOS tiene que caber.
+
+     Por eso esta prueba no comprueba «no pasa de 600» —eso lo garantiza el
+     slice y sería incapaz de fallar—, sino que el texto llega COMPLETO. El día
+     que alguien añada un campo o suba un tope por encima del presupuesto, esto
+     se pone rojo en vez de empezar a cortar pedidos en silencio. */
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+
+  /* El peor caso se construye DESDE CAMPOS, no desde números copiados aquí: así
+     subir un tope allí aprieta esta prueba automáticamente. */
+  const lleno = {};
+  for (const [campo, max] of Object.entries(CAMPOS)) {
+    if (campo === 'modo') lleno[campo] = 'configuradas';
+    else if (campo === 'tel' || campo === 'cp') lleno[campo] = '9'.repeat(max);
+    else if (campo === 'correo') lleno[campo] = 'a'.repeat(max - 12) + '@ejemplo.com';
+    else lleno[campo] = campo[0].toUpperCase().repeat(max);
+  }
+  /* `refs` es lo ÚLTIMO del resumen, así que es donde muerde el recorte. Se le
+     pone una marca al final: con relleno de letras repetidas, un texto cortado
+     sigue terminando en la misma letra y la comprobación no vería nada. */
+  lleno.refs = 'R'.repeat(CAMPOS.refs - 3) + 'FIN';
+
+  await worker.fetch(post({ paquete: '20', ...lleno }), ENV);
+  const info = llamadas[0].cuerpo.additional_info;
+  assert.ok(info.length <= 600, 'tope de la API; salió con ' + info.length);
+  assert.ok(info.endsWith('FIN'),
+    'el resumen se cortó (' + info.length + ' car.): los topes de CAMPOS ya no caben en 600');
+});
+
+test('un correo mal escrito se omite en vez de tumbar la preferencia', async () => {
+  /* Mercado Pago rechaza la preferencia ENTERA si payer.email viene mal. Perder
+     el cobro por una errata de tecleo sería el peor cambio posible. */
+  for (const malo of ['sin-arroba', 'a@b', 'a@b.c', '@ejemplo.com', 'hola @ejemplo.com']) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: '1', nombre: 'Ana', correo: malo }), ENV);
+    const payer = llamadas[0].cuerpo.payer;
+    assert.equal(payer.email, undefined, 'no debe mandarse el correo «' + malo + '»');
+    assert.equal(payer.name, 'Ana', 'lo demás del comprador sí sigue viajando');
+  }
+});
+
+test('un POST con SÓLO el paquete cobra igual', async () => {
+  /* Los botones viejos, un navegador con el JavaScript apagado o un fallo de
+     los pasos no pueden convertirse en una venta perdida. */
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  const r = await worker.fetch(post({ paquete: '6' }), ENV);
+  assert.equal(r.status, 303);
+  const c = llamadas[0].cuerpo;
+  assert.equal(c.items[0].unit_price, 1249);
+  assert.equal(c.payer, undefined, 'sin datos no se manda un payer vacío: la API lo rechazaría');
+  assert.equal(c.metadata, undefined);
+  assert.equal(c.external_reference, 'paquete-6');
+});
+
+test('el modo sólo puede ser uno de los dos que existen', async () => {
+  for (const [entra, sale] of [['configuradas', 'configuradas'], ['blanco', 'blanco'], ['gratis', undefined], ['', undefined]]) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: '1', modo: entra }), ENV);
+    assert.equal(llamadas[0].cuerpo.metadata?.modo, sale, 'modo=' + entra);
+  }
+});
+
+test('el pago vuelve a gracias.html, que es donde está el WhatsApp del pedido', async () => {
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: '1' }), ENV);
+  assert.equal(llamadas[0].cuerpo.back_urls.success, ORIGEN + '/gracias.html');
 });
 
 /* ══════════════════════════════ RUTAS Y GUARDAS ═══════════════════════════ */

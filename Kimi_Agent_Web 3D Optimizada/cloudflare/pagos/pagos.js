@@ -150,6 +150,131 @@ async function dentroDelTope(ip) {
   }
 }
 
+/* ------------------------------------------------------ LOS DATOS DEL PEDIDO */
+
+/* Los pasos de pedido.html mandan, además del paquete, a nombre de qué negocio
+   van las placas y a dónde se envían. Todo esto es TEXTO DEL VISITANTE, así que
+   entra por un solo sitio y sale limpio o no sale.
+
+   Tres reglas, y ninguna es cosmética:
+
+   1 · NADA DE ESTO TOCA EL PRECIO. Sigue saliendo de la tabla. Estos campos
+       viajan a Mercado Pago como descripción del pedido y nada más; si mañana
+       alguien quisiera calcular un importe con uno de ellos, tendría que
+       romper a propósito la regla que sostiene el archivo entero.
+
+   2 · TODO ES OPCIONAL. Un POST con sólo `paquete` —los botones viejos, un
+       navegador con el JavaScript apagado, curl— tiene que cobrar igual. Un
+       fallo recogiendo datos no puede convertirse en una venta perdida.
+
+   3 · SE RECORTA, NO SE RECHAZA. Un nombre de 300 letras se queda en 90 y el
+       cobro sigue. Devolver un error por un campo largo deja al comprador
+       tirado por algo que no le importa a nadie. */
+
+/* Longitud máxima de cada campo. Los topes no son estéticos: `metadata` y
+   `additional_info` tienen límite en la API de Mercado Pago, y un cuerpo que
+   se pasa se rechaza ENTERO —es decir, un pegote de texto en «referencias»
+   tumbaría el cobro—. Se recorta aquí para que eso no pueda pasar. */
+/* Exportado —el Worker sólo usa el export por defecto— para que la prueba del
+   presupuesto construya el peor caso DESDE ESTA TABLA y no desde números
+   copiados a mano, que se quedarían viejos al primer retoque. */
+export const CAMPOS = {
+  modo:           12,   /* «configuradas» | «blanco» */
+  negocio:        70,
+  negocio_ciudad: 40,
+  negocio_dir:    70,
+  nombre:         70,
+  tel:            15,
+  correo:        100,
+  calle:          90,
+  colonia:        50,
+  cp:              5,
+  ciudad:         40,
+  estado:         30,
+  refs:           80,
+};
+
+/* ⚠ LOS TOPES DE ARRIBA TIENEN UN PRESUPUESTO Y NO SON LIBRES. Casi todos ellos
+   se concatenan en `resumen()`, que va a `additional_info`, y esa cadena la
+   corta Mercado Pago en 600 caracteres. Pasarse no da un aviso: se pierde el
+   FINAL del resumen, que es justo donde están las referencias de la dirección.
+   La primera versión de esta tabla sumaba más de mil y lo descubrió una prueba,
+   no un pedido; hay una dedicada («con TODOS los campos al máximo…») que llena
+   cada campo hasta su tope y exige que el texto llegue entero. Subir un número
+   de aquí sin mirar esa prueba rompe pedidos en silencio. */
+
+/* Deja el texto en una sola línea imprimible.
+
+   Los caracteres de control se van por dos motivos, y el segundo es el serio:
+   ensucian el aviso de la venta, y un salto de línea metido a mano permitiría
+   fabricar un resumen falso dentro de `additional_info` —«Total: $1» en una
+   línea nueva, con toda la pinta de haberlo escrito el sistema—. Aquí no queda
+   ningún carácter con el que dibujar eso.
+
+   \u2028 y \u2029 entran en la lista aunque no sean ASCII: son saltos de línea
+   para Unicode y para JavaScript, y se cuelan por debajo de un filtro que sólo
+   mire por debajo de 0x20. */
+function limpia(v, max) {
+  return String(v == null ? '' : v)
+    .replace(/[\u0000-\u001F\u007F\u2028\u2029]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
+/* Un correo que no lo parece no se manda: Mercado Pago rechaza la preferencia
+   entera si `payer.email` viene mal formado, y perder el cobro por una errata
+   de tecleo sería el peor cambio posible. Si no cuadra, se omite y ya. */
+const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+function leePedido(form) {
+  const d = {};
+  for (const [campo, max] of Object.entries(CAMPOS)) d[campo] = limpia(form.get(campo), max);
+  d.tel = d.tel.replace(/\D/g, '').slice(0, 15);
+  d.cp = d.cp.replace(/\D/g, '').slice(0, 5);
+  if (!CORREO.test(d.correo)) d.correo = '';
+  if (d.modo !== 'configuradas' && d.modo !== 'blanco') d.modo = '';
+  return d;
+}
+
+/* El resumen que el titular lee en el aviso de la venta. Es la razón de ser de
+   todo esto: hasta ahora la dirección y la ficha de Google se perseguían por
+   WhatsApp DESPUÉS de cobrar, y a veces no llegaban.
+
+   Va en `additional_info`, que la API limita a 600 caracteres. La suma de los
+   topes de CAMPOS cabe de sobra, y aun así se recorta al final por si algún día
+   alguien añade un campo sin mirar. */
+function resumen(p, d) {
+  const l = [];
+  /* El título del producto NO se repite aquí: Mercado Pago ya lo enseña como
+     concepto del cobro, y son casi sesenta caracteres del presupuesto gastados
+     en decir dos veces lo mismo. Queda la cantidad, que es lo que se comprueba
+     de un vistazo al preparar el paquete. */
+  l.push(p.piezas + (p.piezas === 1 ? ' pza' : ' pzas'));
+
+  if (d.modo === 'configuradas') {
+    /* La DIRECCIÓN del negocio no entra en el resumen —sí en metadata—: para
+       encontrar una ficha de Google se busca por nombre y ciudad, y esos setenta
+       caracteres hacían falta para que la dirección de ENVÍO llegue completa.
+       Entre perder la calle del negocio y perder la calle a la que se manda el
+       paquete, no hay duda de cuál se sacrifica. */
+    l.push('Config: ' + (d.negocio || '(sin nombre)') + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
+  } else if (d.modo === 'blanco') {
+    l.push('En blanco');
+  }
+
+  const envio = [d.calle, d.colonia, d.cp, d.ciudad, d.estado].filter(Boolean).join(', ');
+  if (d.nombre || envio) l.push('Envio: ' + [d.nombre, envio].filter(Boolean).join(', '));
+  if (d.tel) l.push('Tel ' + d.tel);
+  if (d.refs) l.push('Ref: ' + d.refs);
+
+  /* Último recorte de seguridad. Con los topes de CAMPOS no llega a dispararse
+     —hay una prueba que lo sostiene—, y está porque una preferencia rechazada
+     por pasarse de 600 no cobra nada, mientras que un resumen recortado al
+     menos cobra. */
+  return l.join(' | ').slice(0, 600);
+}
+
 /* --------------------------------------------------------------- EL COBRO */
 
 /* Techo duro de mensualidades, y es una guarda de DINERO, no de estilo.
@@ -170,7 +295,7 @@ const TOPE_CUOTAS = 2;
 
 const cuotas = p => Math.min(TOPE_CUOTAS, Math.max(1, Number(p.cuotas) || 1));
 
-async function creaPreferencia(p, env, origen) {
+async function creaPreferencia(p, env, origen, pedido) {
   const cuerpo = {
     items: [{
       id: 'placa-resenas-' + p.id,
@@ -195,18 +320,49 @@ async function creaPreferencia(p, env, origen) {
       default_installments: 1,
     },
     back_urls: {
-      success: origen + '/?pago=listo',
-      pending: origen + '/?pago=pendiente',
+      /* A gracias.html y no a la portada: ahí es donde el comprador ve su
+         pedido y donde tiene el botón de WhatsApp con todo escrito. */
+      success: origen + '/gracias.html',
+      pending: origen + '/gracias.html?estado=pendiente',
       failure: origen + '/?pago=cancelado',
     },
     auto_return: 'approved',
     /* Lo que el comprador ve en el estado de cuenta de su tarjeta. Sin esto
        aparece un nombre que no reconoce y acaba en una contracargo. */
     statement_descriptor: 'SYC SOLUTIONS',
-    /* Para reconocer el cobro en el aviso sin tener que deducirlo del importe. */
-    external_reference: 'paquete-' + p.id,
+    /* Para reconocer el cobro en el aviso sin tener que deducirlo del importe.
+       Lleva el negocio pegado porque es el campo que sí se ve de un vistazo. */
+    external_reference: ('paquete-' + p.id + (pedido.negocio ? ' · ' + pedido.negocio : '')).slice(0, 120),
+    /* El resumen legible del pedido. Es lo que convierte un aviso de «te
+       pagaron $949» en «te pagaron $949, son para este negocio y van a esta
+       dirección». */
+    additional_info: resumen(p, pedido),
     binary_mode: true,
   };
+
+  /* Los datos del comprador, en los campos que Mercado Pago entiende. Van
+     APARTE del resumen a propósito: en additional_info son texto para leer, y
+     aquí son campos con nombre, que es lo que se puede exportar o buscar
+     después. Cada uno sólo se manda si vino: un campo vacío en `payer` hace
+     que la API rechace la preferencia entera. */
+  const payer = {};
+  if (pedido.nombre) payer.name = pedido.nombre;
+  if (pedido.correo) payer.email = pedido.correo;
+  if (pedido.tel) payer.phone = { number: pedido.tel };
+  if (pedido.calle || pedido.cp) {
+    payer.address = {};
+    if (pedido.cp) payer.address.zip_code = pedido.cp;
+    if (pedido.calle) payer.address.street_name = pedido.calle;
+  }
+  if (Object.keys(payer).length) cuerpo.payer = payer;
+
+  /* metadata guarda el pedido campo a campo, sin recortar a 600. Es la copia
+     que queda consultable por API si algún día hace falta reconstruir un
+     pedido que el aviso enseñó a medias. Se omiten los vacíos para no llenarlo
+     de cadenas en blanco. */
+  const meta = {};
+  for (const [campo, valor] of Object.entries(pedido)) if (valor) meta[campo] = valor;
+  if (Object.keys(meta).length) cuerpo.metadata = meta;
 
   const r = await fetch('https://api.mercadopago.com/checkout/preferences', {
     method: 'POST',
@@ -271,9 +427,11 @@ export default {
     }
 
     let id = null;
+    let pedido = null;
     try {
       const form = await peticion.formData();
       id = String(form.get('paquete') || '').slice(0, 8);
+      pedido = leePedido(form);
     } catch (_) {
       return pagina('No se entendió la petición.', null, 400);
     }
@@ -284,7 +442,7 @@ export default {
       return pagina('Ese paquete no existe.', null, 404);
     }
 
-    const destino = await creaPreferencia(p, env, ORIGEN);
+    const destino = await creaPreferencia(p, env, ORIGEN, pedido);
     if (!destino) {
       return pagina('Mercado Pago no respondió. No se te ha cobrado nada.', p);
     }

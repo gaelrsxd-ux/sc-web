@@ -32,3 +32,11 @@
 *.key
 *.p12
 *.pfx
+
+# Dependencias de las pruebas de navegador (pruebas/). No hay package.json en
+# este repositorio a propósito: la web es HTML, CSS y JS a mano, sin compilar y
+# sin dependencias. Playwright se instala aparte sólo para correr pruebas/, y su
+# carpeta —o el enlace a ella— no tiene por qué versionarse.
+# Sin barra final: en esta caja de pruebas es un ENLACE a otra carpeta, y
+# «node_modules/» sólo casa con un directorio de verdad.
+node_modules

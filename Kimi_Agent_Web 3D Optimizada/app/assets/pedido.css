@@ -1,0 +1,139 @@
+/* Hoja de las dos páginas del pedido: pedido.html y gracias.html.
+   Se carga DESPUÉS de legal.css y se apoya en ella: de allí salen los tokens de
+   color, la tipografía, el halo, la barra superior y el ancho de `main`. Aquí
+   sólo está lo que aquellas páginas no tienen, que es un formulario.
+
+   El ancho baja de 820 a 560 px. Un documento legal se lee en línea larga; un
+   formulario, no: los campos anchos hacen que el ojo pierda a qué etiqueta
+   pertenece cada caja, y en un móvil es el único ancho que existe de todos
+   modos. */
+
+main{max-width:560px}
+
+/* ------------------------------------------------------------ LA CABECERA */
+
+/* Qué se está comprando, siempre a la vista. No es decoración: en un flujo por
+   pasos es fácil olvidar la cantidad tres pantallas después, y descubrirla en
+   Mercado Pago es donde se abandona la compra. */
+.ped-prod{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:16px 18px;border:1px solid var(--line-soft);background:rgba(200,169,106,.05)}
+.ped-prod .ped-que{flex:1 1 auto;min-width:0;font-size:13.5px;color:var(--muted);line-height:1.6}
+.ped-prod .ped-que b{display:block;color:var(--ink);font-weight:500}
+.ped-prod .ped-tot{font-family:var(--serif);font-size:29px;line-height:1;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+
+/* El paso en el que estás. Un formulario que esconde tres cuartas partes de sí
+   mismo tiene que decir cuánto queda, o parece que no se acaba nunca. */
+.ped-paso{display:flex;align-items:center;gap:12px;margin:34px 0 6px;
+  font-size:9.5px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
+.ped-paso::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+
+/* --------------------------------------------------------- LOS FORMULARIOS */
+
+/* Sin JavaScript se ven los cuatro a la vez, separados por su título, y el
+   formulario se envía de una sola vez. Con JavaScript se enseña uno cada vez.
+   Lo primero es el suelo: que falle un script no puede impedir comprar. */
+.ped-f{border:0;margin-top:26px}
+.ped-f legend{font-family:var(--serif);font-size:clamp(21px,3.4vw,27px);
+  color:var(--bronze-hi);line-height:1.25;padding:0;margin-bottom:6px}
+/* El script mueve el foco al título al cambiar de paso —y no al primer campo,
+   que abriría el teclado del móvil tapando la pregunta—. Eso hace que el
+   navegador dibuje su anillo de foco sobre un encabezado, que con el ratón se
+   lee como un fallo de pintado. Se quita del `:focus` a secas y se conserva en
+   `:focus-visible`, que es el que aparece cuando se navega con teclado y es
+   justo cuando saber dónde está el foco importa. */
+.ped-f legend:focus{outline:none}
+.ped-f legend:focus-visible{outline:1px solid var(--bronze);outline-offset:5px}
+.ped-ayuda{color:var(--dim);font-size:13px;line-height:1.7;margin-bottom:18px}
+
+.ped-campo{display:block;margin-top:15px}
+.ped-campo>span{display:block;font-size:9.5px;letter-spacing:2.6px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:7px}
+.ped-campo>span .opc{letter-spacing:0;text-transform:none;color:var(--dim);font-size:11px}
+.ped-campo input,.ped-campo select,.ped-campo textarea{
+  width:100%;min-height:48px;padding:12px 14px;
+  background:var(--bg2);color:var(--ink);border:1px solid var(--line-soft);
+  font-family:var(--sans);font-size:16px;line-height:1.4;
+  transition:border-color .25s,background-color .25s}
+/* 16 px y no menos: por debajo de ese tamaño, iOS hace zoom sobre el campo al
+   enfocarlo y deja la página descuadrada y al visitante desorientado. */
+.ped-campo input:focus,.ped-campo select:focus,.ped-campo textarea:focus{
+  outline:0;border-color:var(--bronze);background:var(--panel)}
+/* El navegador marca en rojo sólo DESPUÉS de intentar enviar, no mientras se
+   escribe: `:user-invalid` en vez de `:invalid`. Con `:invalid` todos los
+   campos obligatorios salen en rojo desde el primer segundo, antes de que nadie
+   haya hecho nada mal, y eso lee como una web que te riñe al llegar. */
+.ped-campo input:user-invalid,.ped-campo select:user-invalid{border-color:#C4574B}
+.ped-campo textarea{min-height:74px;resize:vertical}
+
+/* Dos campos por renglón cuando son cortos —código postal y ciudad, por
+   ejemplo—. Por debajo de 430 px se apilan: partir un campo estrecho en dos
+   estrechísimos no ayuda a nadie. */
+.ped-par{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:430px){.ped-par{grid-template-columns:1fr}}
+
+/* Las dos opciones grandes del primer paso. Son botones de radio de verdad
+   —funcionan con teclado y sin JavaScript—, vestidos de tarjeta: el objetivo
+   pulsable es la tarjeta entera y no un círculo de 14 px. */
+.ped-op{display:block;margin-top:12px;padding:16px 18px;cursor:pointer;
+  border:1px solid var(--line-soft);background:var(--bg2);
+  transition:border-color .25s,background-color .25s}
+.ped-op:hover{border-color:var(--line)}
+.ped-op input{position:absolute;opacity:0;width:0;height:0}
+.ped-op b{display:block;color:var(--ink);font-weight:500;font-size:15px}
+.ped-op small{display:block;margin-top:5px;color:var(--dim);font-size:13px;line-height:1.6}
+.ped-op:has(input:checked){border-color:var(--bronze);background:rgba(200,169,106,.07)}
+.ped-op:has(input:checked) b{color:var(--bronze-hi)}
+/* El foco del teclado tiene que verse en la TARJETA, porque el círculo real
+   está escondido: sin esto, quien navega con tabulador no sabe dónde está. */
+.ped-op:has(input:focus-visible){outline:1px solid var(--bronze-hi);outline-offset:3px}
+
+/* --------------------------------------------------------------- BOTONES */
+
+.ped-botones{display:flex;align-items:center;gap:14px;margin-top:26px}
+.ped-btn{flex:1;min-height:52px;display:inline-flex;align-items:center;justify-content:center;
+  gap:10px;padding:14px 22px;cursor:pointer;font-family:var(--sans);
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:500;
+  color:var(--bronze-hi);background:none;border:1px solid var(--line);
+  transition:background-color .3s,color .3s,border-color .3s}
+.ped-btn:hover{background:var(--bronze);color:#0A0B0E;border-color:var(--bronze)}
+.ped-btn:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:4px}
+.ped-btn.fuerte{background:var(--bronze);color:#0A0B0E;border-color:var(--bronze)}
+.ped-btn.fuerte:hover{background:var(--bronze-hi);border-color:var(--bronze-hi)}
+.ped-btn.atras{flex:0 0 auto;color:var(--muted);border-color:var(--line-soft);letter-spacing:2px}
+.ped-btn.atras:hover{background:none;color:var(--bronze-hi);border-color:var(--line)}
+
+/* ------------------------------------------------------------- EL RESUMEN */
+
+.ped-resumen{border:1px solid var(--line-soft);background:var(--bg2)}
+.ped-resumen div{display:flex;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line-soft);
+  font-size:13.5px;line-height:1.6}
+.ped-resumen div:last-child{border-bottom:0}
+.ped-resumen dt{flex:0 0 96px;color:var(--dim);font-size:9.5px;letter-spacing:2px;
+  text-transform:uppercase;padding-top:3px}
+.ped-resumen dd{flex:1;min-width:0;color:var(--ink);overflow-wrap:anywhere}
+
+.ped-pie{margin-top:18px;color:var(--dim);font-size:12.5px;line-height:1.7;text-align:center}
+.ped-pie a{color:var(--muted)}
+.ped-pie a:hover{color:var(--bronze-hi)}
+
+/* ------------------------------------------------------------- GRACIAS */
+
+.gr-marca{width:54px;height:54px;margin:0 auto 22px;border:1px solid var(--bronze);
+  display:flex;align-items:center;justify-content:center;color:var(--bronze-hi);font-size:22px}
+.gr-t{font-family:var(--serif);font-size:clamp(28px,5vw,40px);line-height:1.15;
+  color:var(--ink);text-align:center}
+.gr-t em{font-style:italic;color:var(--bronze-hi)}
+.gr-p{margin-top:14px;color:var(--muted);text-align:center;font-size:14.5px;line-height:1.8}
+.gr-wa{display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:28px;min-height:54px;padding:15px 26px;
+  background:var(--bronze);color:#0A0B0E;font-size:10.5px;letter-spacing:3px;
+  text-transform:uppercase;font-weight:500;text-decoration:none;
+  transition:background-color .3s}
+.gr-wa:hover{background:var(--bronze-hi)}
+.gr-wa:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:4px}
+
+/* Sólo aparece cuando el JavaScript encuentra el pedido guardado. Sin él, la
+   página sigue diciendo lo importante —que el pago salió bien— y ofrece el
+   WhatsApp de siempre, sin datos dentro. */
+[hidden]{display:none!important}

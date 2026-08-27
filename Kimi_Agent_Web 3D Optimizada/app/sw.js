@@ -84,7 +84,11 @@
            DATOS DE CONTACTO: correo, WhatsApp, horario y base. Es lo último de
            esta página que conviene servir de una copia vieja, porque es por
            donde entra el trabajo. */
-const VERSION = 'syc-2026-08-y';
+/* -z: entran el contador de la ficha, pedido.html y gracias.html. Sin subir la
+   versión, quien ya tuviera la portada guardada seguiría viendo la lista de
+   once paquetes —con su <details> y sus botones de pagar por paquete— servida
+   desde su propio disco, y el enlace «Comprar» no existiría para él. */
+const VERSION = 'syc-2026-08-z';
 const DOC     = VERSION + '-doc';
 const ESTATICO= VERSION + '-est';
 
@@ -150,6 +154,23 @@ self.addEventListener('fetch', e => {
      La clave se normaliza a origen + ruta, sin fragmento ni parámetros: si no,
      entrar por "/#contacto" y por "/?aud=x" guardaba tres copias del mismo
      documento y ninguna respondía a las otras al quedarse sin red. */
+  /* ---- El pedido NO se guarda NUNCA, ni se sirve de una copia ----
+     Son dos motivos y los dos muerden:
+
+     · PRECIOS VIEJOS. pedido.html lleva dentro los once importes. Una copia
+       guardada de hace un mes enseñaría los precios de hace un mes, y el cobro
+       —que los saca del Worker— saldría por otra cifra. Es exactamente el fallo
+       que tools/precios.mjs existe para hacer imposible, y servir esta página
+       desde la caché lo reintroduciría por la puerta de atrás.
+
+     · UN FORMULARIO QUE NO PUEDE ENVIARSE. Sin red, la copia guardada dejaría
+       rellenar los cuatro pasos enteros para fallar al pulsar «Pagar». Mejor
+       decir «sin conexión» antes de que nadie escriba su dirección.
+
+     Se deja pasar a la red tal cual: si hay, funciona; si no, el navegador da
+     su propio error de red, que es la verdad. */
+  if (/\/(pedido|gracias)\.html?$/i.test(url.pathname)) return;
+
   if (req.mode === 'navigate') {
     const clave = url.origin + url.pathname;
     e.respondWith((async () => {
