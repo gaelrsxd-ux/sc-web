@@ -195,6 +195,121 @@ function fila(p) {
          `                     aria-label="${ent(etiquetaPagar(p))}">Pagar $${miles(total(p))}</a></li>`;
 }
 
+/* --------------------------------------------- EL CONTADOR DE LA FICHA ----
+   Sustituye a la lista de once filas plegada en un <details>. La lista decía
+   todo de golpe y por eso ocupaba media pantalla; el contador dice sólo la
+   cantidad que el visitante está mirando ahora mismo, que es la única que le
+   importa. Los once precios siguen siendo los mismos y salen de la misma tabla.
+
+   ⚠ EL CONTADOR SALTA ENTRE LOS TRAMOS DE LA TABLA, no de uno en uno. Después
+   del 6 viene el 8, y después del 12 el 15. No es un descuido: cada tramo tiene
+   un precio DECIDIDO, y un contador continuo obligaría a inventarse el precio
+   de 7, 9, 11, 13, 14, 16… Antes que inventar precios, se salta. */
+
+/* La tabla que lee el JavaScript del contador. Va en un <script type=
+   "application/json">, que el navegador NO ejecuta: así los precios cambian sin
+   tocar ni una línea de código y sin invalidar la huella de la CSP del script
+   de al lado, que es estático y no se entera de los cambios de precio. */
+function tablaContador() {
+  const filas = PAQUETES.map(p => ({
+    n: p.piezas,
+    t: placas(p),
+    tot: total(p),
+    e: p.envio,
+    u: Math.round(p.precio / p.piezas),
+    d: detalle(p),
+    /* Versión corta para la cabecera de pedido.html, donde el desglose no cabe.
+       Es el mismo texto que lleva el título del cobro en Mercado Pago, así que
+       lo que el comprador lee en la web y lo que ve en el checkout coinciden
+       palabra por palabra. */
+    s: gratis(p) ? 'envío gratis' : 'envío incluido',
+  }));
+  return '<script type="application/json" id="pc-tabla">' + JSON.stringify(filas) + '<\/script>';
+}
+
+/* La línea chica bajo la cifra.
+
+   ⚠ LA CIFRA GRANDE ES EL TOTAL CON ENVÍO, porque es EXACTAMENTE lo que va a
+   cobrar el botón de al lado. Mientras el botón abría WhatsApp tenía sentido
+   enseñar $429 y el envío aparte —eran dos conceptos y una conversación por
+   delante para aclararlos—; con un cobro real detrás, enseñar una cifra y
+   cobrar otra es la sorpresa clásica del carrito, y la que hace abandonar.
+
+   Por eso esta línea DESGLOSA en vez de sumar: dice de dónde sale el total, y
+   a cómo queda la pieza cuando se llevan varias, que es lo que hace subir el
+   contador. Con una sola placa el precio por pieza es el propio precio, así que
+   repetirlo sobraría. */
+function detalle(p) {
+  const unitario = p.piezas === 1 ? '' : ` · $${miles(Math.round(p.precio / p.piezas))} por pieza`;
+  return gratis(p)
+    ? `Envío gratis${unitario}`
+    : `$${miles(p.precio)} + $${p.envio} de envío${unitario}`;
+}
+
+/* La lista entera de tramos, SIEMPRE en el HTML. No es un <noscript>, y la
+   diferencia importa: el contenido de un <noscript> desaparece del documento en
+   cuanto hay JavaScript, también AL IMPRIMIR. La versión anterior de esta ficha
+   se imprimía con toda la tabla de mayoreo a propósito —en papel, un precio por
+   volumen no puede quedarse detrás de un control que no responde—, y meterla en
+   un <noscript> habría tirado eso por la borda sin que nadie lo notara hasta
+   ver una hoja impresa.
+
+   Así que la lista está siempre: el script la oculta EN PANTALLA marcando el
+   documento con la clase `js`, y la hoja de impresión la devuelve. Sin
+   JavaScript nunca se oculta, que es el otro caso que había que cubrir. */
+function listaTramos() {
+  const filas = PAQUETES.map(p =>
+    `                <li><a href="pedido.html?n=${p.piezas}">` +
+    `<span class="pc-nq">${piezas(p)}</span>` +
+    `<span class="pc-np">$${miles(total(p))} MXN</span></a></li>`).join('\n');
+  return '<div class="pc-alt">\n' +
+         '              <p class="pc-nt">' + ent('Todas las cantidades') + '</p>\n' +
+         '              <ul class="pc-nl">\n' + filas + '\n              </ul>\n' +
+         '            </div>';
+}
+
+/* --------------------------------------------------- LA PÁGINA DE PEDIDO ----
+   pedido.html elige la cantidad con un <select> y necesita los mismos once
+   importes. Se generan desde aquí por el mismo motivo que todo lo demás: dos
+   listas de precios mantenidas por separado divergen, y el día que diverjan la
+   ficha diría un precio, el pedido otro y el cobro un tercero. */
+const PEDIDO = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'pedido.html');
+
+function bloquePedido() {
+  const ops = PAQUETES.map(p =>
+    `<option value="${p.piezas}">${placas(p)} &#8212; $${miles(total(p))}</option>`).join('');
+  return '<!-- pedido:cantidad -->\n' +
+    '      <label class="ped-campo" for="ped-cant"><span>Cantidad</span>' +
+    '<select id="ped-cant" name="paquete">' + ops + '</select></label>\n' +
+    '      ' + tablaContador() + '\n' +
+    '      <!-- /pedido:cantidad -->';
+}
+
+function bloqueCompra() {
+  const una = PAQUETES.find(p => p.piezas === 1);
+  if (!una) throw new Error('la tabla no tiene el paquete de 1 pieza, que es con lo que arranca el contador');
+  const wa = `https://wa.me/${WHATSAPP}?text=${url(mensaje(una))}`;
+
+  return '<div class="prod-compra">\n' +
+    '            <div class="pc-cab">\n' +
+    '              <div class="pc-cant" role="group" aria-label="' + ent('Cantidad de placas') + '">\n' +
+    '                <button class="pc-b" type="button" data-pc="-1" aria-label="' + ent('Quitar una placa') + '">&#8722;</button>\n' +
+    '                <span class="pc-n" data-pc-n aria-live="polite">' + placas(una) + '</span>\n' +
+    '                <button class="pc-b" type="button" data-pc="1" aria-label="' + ent('Añadir una placa') + '">+</button>\n' +
+    '              </div>\n' +
+    '              <p class="pc-precio"><span class="cifra" data-pc-total>$' + miles(total(una)) + '</span>' +
+    '<span class="u">MXN</span></p>\n' +
+    '            </div>\n' +
+    '            <p class="pc-detalle" data-pc-detalle>' + ent(detalle(una)) + '</p>\n' +
+    '            <a class="svc-btn pc-ir" href="pedido.html?n=1" data-pc-ir>' +
+    '<span class="dia"></span>' + ent('Comprar ahora') + '</a>\n' +
+    '            <p class="pc-wa"><a href="' + wa + '" target="_blank" rel="noopener noreferrer">' +
+    ent('o pedirlo por WhatsApp') + '</a></p>\n' +
+    '            ' + listaTramos() + '\n' +
+    '            ' + tablaContador() + '\n' +
+    '          </div>';
+}
+
 function lista() {
   return '<ul class="pm-lista">\n' + PAQUETES.map(fila).join('\n') + '\n            </ul>';
 }
@@ -288,15 +403,21 @@ function paquetesJson() {
    marcas que este archivo también escribe, así que si alguien renombra una
    clase, esto falla en voz alta en vez de generar un HTML a medias. */
 const BLOQUES = [
-  { nombre: 'lista de paquetes', re: /<ul class="pm-lista">[\s\S]*?<\/ul>/,        pinta: lista },
-  { nombre: 'precio de cabecera', re: /<span class="cifra">\$[\d,]+<\/span>/,      pinta: cifra },
-  { nombre: 'línea de envío',     re: /<p class="prod-envio">[\s\S]*?<\/p>/,       pinta: lineaEnvio },
-  { nombre: 'nota de la lista',   re: /<p class="pm-n">[\s\S]*?<\/p>/,             pinta: notaLista },
+  { nombre: 'bloque de compra',
+    re: /<div class="prod-compra">[\s\S]*?<\/script>\n {10}<\/div>/,
+    pinta: bloqueCompra },
 ];
 
-function aplica(html) {
+/* Los de pedido.html, en su propio archivo. */
+const BLOQUES_PEDIDO = [
+  { nombre: 'cantidad del pedido',
+    re: /<!-- pedido:cantidad -->[\s\S]*?<!-- \/pedido:cantidad -->/,
+    pinta: bloquePedido },
+];
+
+function aplica(html, bloques = BLOQUES) {
   let salida = html;
-  for (const b of BLOQUES) {
+  for (const b of bloques) {
     const encontrados = salida.match(new RegExp(b.re.source, 'g')) || [];
     if (encontrados.length !== 1) {
       throw new Error(`«${b.nombre}»: esperaba 1 coincidencia en el HTML y hay ${encontrados.length}`);
@@ -335,6 +456,18 @@ const generado = aplica(original);
 
 const jsonEsperado = paquetesJson();
 const jsonActual = fs.existsSync(JSON_WORKER) ? fs.readFileSync(JSON_WORKER, 'utf8') : null;
+/* pedido.html manda el formulario al Worker. Si esa dirección y COBRO_EN_LINEA
+   se separan, el botón de la ficha y el del pedido acabarían en sitios
+   distintos —o en ninguno— sin que nada avisara. Se comprueba aquí porque este
+   archivo es el que ya sabe cuál es la buena. */
+const pedidoOriginal = fs.readFileSync(PEDIDO, 'utf8');
+const pedidoGenerado = aplica(pedidoOriginal, BLOQUES_PEDIDO);
+if (COBRO_EN_LINEA && !pedidoOriginal.includes(`action="${COBRO_EN_LINEA}"`)) {
+  console.error(`\n  pedido.html no manda el formulario a ${COBRO_EN_LINEA}.`);
+  console.error('  Con la dirección mal, el botón de pagar no lleva a ninguna parte.\n');
+  process.exit(1);
+}
+
 const pegarEsperado = paraPegar();
 const pegarActual = fs.existsSync(JS_PEGAR) ? fs.readFileSync(JS_PEGAR, 'utf8') : null;
 
@@ -351,8 +484,14 @@ if (args.includes('--check')) {
     console.error('  Arréglalo con:  node tools/precios.mjs\n');
     process.exit(1);
   }
+  if (pedidoOriginal !== pedidoGenerado) {
+    console.error('\n  Las cantidades de app/pedido.html no coinciden con la tabla.');
+    console.error('  El pedido enseñaría un precio y el cobro sería otro.');
+    console.error('  Arréglalo con:  node tools/precios.mjs\n');
+    process.exit(1);
+  }
   if (original === generado) {
-    console.log('OK: la lista de precios del HTML coincide con tools/precios.mjs.');
+    console.log('OK: la lista de precios del HTML y de pedido.html coincide con tools/precios.mjs.');
     process.exit(0);
   }
   console.error('\n  El HTML NO coincide con la tabla de tools/precios.mjs.');
@@ -370,6 +509,11 @@ if (jsonActual !== jsonEsperado) {
 if (pegarActual !== pegarEsperado) {
   fs.writeFileSync(JS_PEGAR, pegarEsperado);
   console.log('Reescrito el Worker de un solo archivo (cloudflare/pagos/pagos-para-pegar.js).');
+}
+
+if (pedidoOriginal !== pedidoGenerado) {
+  fs.writeFileSync(PEDIDO, pedidoGenerado);
+  console.log('Reescritas las cantidades de app/pedido.html.');
 }
 
 if (original === generado) {

@@ -8,6 +8,12 @@
    primer pintado, el visitante vería un parpadeo del oscuro al claro (o
    viceversa) cada vez que entra con el tema claro ya guardado. */
 try{if(localStorage.getItem('sc_tema')==='claro')document.documentElement.setAttribute('data-tema','claro');}catch(_){}
+/* Marca que hay JavaScript, y aquí arriba para que no parpadee. La usa el
+   contador de la ficha: la lista de tramos está SIEMPRE en el HTML —para quien
+   no tiene JS y para el papel— y esta clase es lo único que la oculta en
+   pantalla. Si este script no corre, la lista se queda a la vista, que es
+   exactamente lo que debe pasar. */
+document.documentElement.classList.add('js');
 </script>
 <title>S&C Solutions — Webs, Automatización e IA para Negocios</title>
 <meta name="description" content="Construimos negocios que se ven tan bien como funcionan: sitios web premium, agentes de IA y automatización de procesos. S&C Solutions.">
@@ -1561,18 +1567,17 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   /* Las respuestas plegadas se imprimen abiertas: en papel nadie puede pulsar */
   .faq details>*{display:block!important}
   .faq summary{list-style:none;color:#14161A!important}
-  /* Y con ellas la tabla de mayoreo, por lo mismo: en una hoja impresa el
-     precio por volumen no puede quedarse detrás de un control que no responde. */
-  .prod-mayoreo>*{display:block!important}
-  .prod-mayoreo{border:1px solid #C9C4B8!important;break-inside:avoid}
-  .prod-mayoreo summary{list-style:none;color:#14161A!important}
-  /* En papel, cada fila imprimir&#237;a su wa.me entero —cien caracteres de texto
-     codificado por fila— y la tabla dejar&#237;a de leerse. El tel&#233;fono ya sale
-     completo en la secci&#243;n de contacto, as&#237; que aqu&#237; no se pierde nada. */
-  .pm-lista a::after{content:""!important}
-  .pm-p{color:#14161A!important}
-  .pm-q,.pm-n,.pm-e{color:#3A3D44!important}
-  .pm-lista li.pm-destaca{background:none!important;box-shadow:none!important}
+  /* EN PAPEL MANDA LA LISTA, NO EL CONTADOR. Un contador impreso es un número
+     congelado y dos botones que no hacen nada; la tabla de tramos es lo que
+     alguien quiere tener delante al decidir una cantidad. Así que se invierte:
+     desaparecen los controles y vuelve la lista que la pantalla escondía. */
+  .pc-cant,.pc-precio,.pc-detalle,.pc-ir,.pc-wa{display:none!important}
+  html.js .pc-alt{display:block!important}
+  .pc-alt{break-inside:avoid}
+  .pc-nt{color:#14161A!important;border-color:#C9C4B8!important}
+  .pc-np{color:#14161A!important}
+  .pc-nq{color:#3A3D44!important}
+  .pc-nl li{border-color:#C9C4B8!important}
   /* Un enlace impreso sin su dirección no es un enlace, es una palabra suelta */
   a[href^="http"]::after,a[href^="mailto"]::after{content:" (" attr(href) ")";
     font-size:8pt;color:#6B6355;word-break:break-all}
@@ -1643,163 +1648,81 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .prod-ul{list-style:none;margin-top:22px;display:flex;flex-wrap:wrap;gap:9px}
 .prod-ul li{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
   border:1px solid var(--line);padding:7px 13px}
-/* El precio, la única cifra grande de la página, y por eso lleva su unidad
-   pegada: "499" a secas invita a suponer, y aquí no hay nada que suponer. */
-/* El precio y el boton van JUNTOS Y CENTRADOS: son la misma decision —cuanto
-   cuesta y donde se pide— y separados a la izquierda se leian como dos
-   parrafos mas. Centrado, el bloque para el ojo. */
-.prod-cta{margin-top:26px;padding-top:26px;border-top:1px solid var(--line-soft);
-  display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
-.prod-precio{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;justify-content:center}
-.prod-precio .cifra{font-family:var(--serif);font-size:clamp(38px,5vw,52px);line-height:1;color:var(--ink)}
-.prod-precio .u{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim)}
-/* El margen negativo la acerca al precio: .prod-cta reparte 18 px entre sus
-   hijos y con ese hueco la condición de envío se leía como un párrafo suelto en
-   vez de como la letra pequeña de la cifra que tiene encima. */
-.prod-envio{margin-top:-10px;font-size:9.5px;letter-spacing:2.2px;text-transform:uppercase;
-  color:var(--dim)}
+/* La nota bajo el bloque de compra. Sigue en uso; el resto de reglas de esta
+   zona —.prod-cta, .prod-precio, .prod-envio y las treinta de .pm-*— se fueron
+   con la lista de once filas que sustituyó el contador. */
 .prod-nota{margin-top:20px;padding:16px 18px;border:1px solid var(--line-soft);
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13.5px;line-height:1.75}
 .prod-nota b{color:var(--bronze-hi);font-weight:500}
-.prod-cuerpo .prod-cta .svc-btn{margin-top:0}
 
-/* ---------------------------- PRECIOS POR MAYOREO ----------------------------
-   El mismo <details> nativo que las preguntas frecuentes, y por los mismos
-   motivos: abre sin una línea de JS, se navega con teclado y el buscador lee la
-   tabla aunque esté plegada. No hace falta un componente nuevo para esto.
+/* -------------------------------- EL CONTADOR -------------------------------
+   Sustituye a la lista de once filas dentro de un <details>. Aquella enseñaba
+   el catálogo entero —once cantidades, once precios, once envíos y once
+   botones— para responder una sola pregunta: cuánto cuestan LAS QUE YO QUIERO.
 
-   VA PLEGADO Y VA DEBAJO DEL BOTÓN, y las dos cosas son deliberadas. La cifra
-   que se ve al llegar es la de una pieza —$429—, que es lo que compra la
-   inmensa mayoría; abrir con el paquete de veinte abarataría el producto
-   delante de quien sólo quiere uno.
+   ⚠ LA CIFRA GRANDE ES EL TOTAL CON ENVÍO. Antes eran dos cifras separadas
+   —$429 arriba y «+$79 de envío» debajo— porque el botón abría WhatsApp y había
+   una conversación por delante para aclararlo. Detrás de un cobro real, enseñar
+   una cifra y cobrar otra es la sorpresa que hace abandonar el carrito. El
+   desglose vive en .pc-detalle, que es donde se explica de dónde sale.
 
-   ⚠ SON PRECIOS TOTALES DE PAQUETE, NO PRECIOS UNITARIOS. Esta lista decía
-   "$469 MXN c/u" y el cliente multiplicaba; ahora dice "$699 MXN" y es lo que
-   paga. No se vuelva a escribir "c/u" aquí sin cambiar también las cifras.
+   Los dos botones miden 46 px: por debajo de 44 el pulgar falla, y fallar aquí
+   significa cambiar la cantidad sin querer justo antes de pagar.
 
-   Cada fila lleva TRES datos y en este orden: cantidad, total y envío. El envío
-   es el más callado de los tres a propósito —es una condición, no un precio que
-   compita con el total— salvo cuando es gratis, que entonces es argumento de
-   venta y va en bronce. La PRIMERA fila con envío gratis va además con un
-   filete y un fondo tenue: es el salto que interesa enseñar. Cuál es esa fila
-   lo decide la tabla de tools/precios.mjs y no esta hoja: hoy son 4 piezas,
-   antes eran 10, y el día que cambie no hay que tocar aquí nada. */
-.prod-mayoreo{margin-top:20px;border:1px solid var(--line-soft)}
-.prod-mayoreo summary{list-style:none;cursor:pointer;position:relative;
-  display:flex;align-items:center;gap:10px;min-height:48px;padding:0 42px 0 17px;
-  font-size:10px;letter-spacing:2.6px;text-transform:uppercase;font-weight:500;
-  color:var(--bronze-hi);transition:color .3s}
-.prod-mayoreo summary::-webkit-details-marker{display:none}
-/* El rombo de la casa: el mismo que llevan los botones, la calculadora y el
-   pie. Es lo que hace que esta línea no parezca un control importado. */
-.prod-mayoreo summary::before{content:"";flex:none;width:6px;height:6px;
-  background:var(--bronze);transform:rotate(45deg)}
-/* Cheurón: gira al abrir. Sólo transform, sin reflujo. */
-.prod-mayoreo summary::after{content:"";position:absolute;right:17px;top:50%;
-  width:7px;height:7px;margin-top:-5px;
-  border-right:1px solid var(--bronze);border-bottom:1px solid var(--bronze);
-  transform:rotate(45deg);transition:transform .35s ease}
-.prod-mayoreo[open] summary::after{transform:rotate(-135deg);margin-top:-2px}
-.prod-mayoreo summary:hover,.prod-mayoreo[open] summary{color:var(--ink)}
-.prod-mayoreo summary:focus-visible{outline:1px solid var(--bronze);outline-offset:3px}
-.pm-c{padding:0 17px 18px;border-top:1px solid var(--line-soft)}
-.pm-k{padding:17px 0 8px;font-size:9px;letter-spacing:4px;
-  text-transform:uppercase;color:var(--dim)}
-.pm-lista{list-style:none}
-.pm-lista li{border-bottom:1px solid var(--line-soft)}
-.pm-lista li:last-child{border-bottom:0}
-/* La fila ENTERA es el enlace: 46 px de alto por todo el ancho. El m&#237;nimo
-   t&#225;ctil son 44 y aqu&#237; no se recorta, porque estas seis filas son ahora la
-   acci&#243;n principal del bloque y no una tabla que se mira. */
-.pm-lista a{display:grid;grid-template-columns:1fr auto;align-items:baseline;
-  column-gap:14px;row-gap:4px;min-height:56px;padding:12px 22px 12px 0;
-  position:relative;transition:color .3s}
-/* La flecha va SIEMPRE visible, no s&#243;lo bajo el puntero: en un m&#243;vil no hay
-   puntero, y una lista de precios sin ninguna se&#241;al no se lee como pulsable.
-   En reposo va del tono de las l&#237;neas para no competir con el precio. */
-.pm-lista a::after{content:"\2197";position:absolute;right:0;top:50%;margin-top:-8px;
-  font-size:12px;line-height:1;color:var(--line);
-  transition:color .3s,transform .3s}
-.pm-lista a:hover::after,.pm-lista a:focus-visible::after{color:var(--bronze);
-  transform:translate(2px,-2px)}
-.pm-lista a:hover .pm-p{color:var(--bronze-hi)}
-.pm-lista a:hover .pm-q{color:var(--ink)}
-.pm-lista a:focus-visible{outline:1px solid var(--bronze);outline-offset:2px}
-/* Sin nowrap la cantidad puede partirse al estrecharse la columna, y se lee
-   como dos datos en vez de como una cantidad. */
-.pm-q{grid-area:1/1;font-size:14px;color:var(--muted);white-space:nowrap;transition:color .3s}
-.pm-p{grid-area:1/2;font-family:var(--serif);font-size:20px;line-height:1.1;color:var(--ink);
-  white-space:nowrap;transition:color .3s}
-/* El tercer dato, en su propio renglón y en el tipo pequeño de la interfaz: el
-   envío es una condición de la compra, no una segunda cifra que compita con el
-   total. Cuando es gratis sube a bronce, porque entonces sí es argumento. */
-.pm-e{grid-column:1/-1;grid-row:2;font-size:9.5px;letter-spacing:2px;
-  text-transform:uppercase;color:var(--dim);transition:color .3s}
-.pm-e.gratis{color:var(--bronze-hi)}
-/* La primera fila con envío gratis —hoy la de 4 piezas—. Un filete de dos
-   píxeles y un fondo al 5% —el mismo de la nota de San Luis—, que es cuanto
-   hace falta para marcar el salto sin convertir la lista en un cuadro de
-   ofertas. Quién lleva la marca lo pone el generador, no este archivo. */
-.pm-lista li.pm-destaca{background:rgba(200,169,106,.05);
-  box-shadow:inset 2px 0 0 var(--bronze)}
-.pm-lista li.pm-destaca a{padding-left:12px}
-/* ---------- FILA CON PAGO EN LÍNEA ----------
-   Cuando un paquete tiene enlace de Mercado Pago, su fila lleva DOS acciones:
-   preguntar por WhatsApp —lo de siempre— y pagar. Se separan porque son
-   decisiones distintas: una abre una conversación y la otra cobra dinero, y
-   fundirlas en un solo destino obligaría a elegir cuál pierde.
-   Sin enlace de pago no hay atributo data-pago, no se aplica nada de esto y la
-   fila es la de siempre: nunca se enseña un botón de pagar que no cobre.
+   .pc-n lleva `aria-live` y ancho fijo con cifras tabulares. Lo primero es para
+   que un lector de pantalla anuncie el cambio —si no, los botones no dicen nada
+   al pulsarse—; lo segundo, para que la caja no se ensanche al pasar de «6
+   placas» a «12 placas» y arrastre el precio medio píxel a la izquierda. */
+.prod-compra{margin-top:26px;padding-top:24px;border-top:1px solid var(--line-soft)}
+.pc-cab{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap}
+.pc-cant{display:flex;align-items:center;flex:none;border:1px solid var(--line)}
+.pc-b{width:46px;height:46px;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;color:var(--bronze-hi);background:none;border:0;
+  cursor:pointer;transition:background-color .25s,color .25s}
+.pc-b:hover:not(:disabled){background:var(--bronze);color:var(--on-bronze)}
+/* Deshabilitado en los extremos, y VISIBLEMENTE: un botón que no responde y no
+   lo aparenta se lee como una web rota. */
+.pc-b:disabled{color:var(--dim);opacity:.4;cursor:default}
+.pc-b:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:-3px}
+.pc-n{min-width:98px;padding:0 6px;text-align:center;font-size:13.5px;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.pc-precio{display:flex;align-items:baseline;gap:8px;margin-left:auto}
+.pc-precio .cifra{font-family:var(--serif);font-size:clamp(31px,4.3vw,44px);line-height:1;
+  color:var(--ink);font-variant-numeric:tabular-nums}
+.pc-precio .u{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim)}
+/* min-height reservado: el desglose pasa de una línea a dos según la cantidad, y
+   sin reserva el botón de comprar da un salto al mover el contador. */
+.pc-detalle{margin-top:11px;font-size:9.5px;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--dim);min-height:13px}
+.prod-cuerpo .prod-compra .pc-ir{margin-top:19px;width:100%;justify-content:center}
+.pc-wa{margin-top:13px;text-align:center;font-size:12.5px}
+.pc-wa a{color:var(--muted);border-bottom:1px solid var(--line-soft);transition:color .3s}
+.pc-wa a:hover,.pc-wa a:focus-visible{color:var(--bronze-hi)}
+/* La lista de tramos vive siempre en el HTML y es esta regla —y sólo esta— la
+   que la esconde. Sin JavaScript la clase `js` no llega, la lista se queda a la
+   vista y el catálogo de precios sigue siendo legible. En papel vuelve: ver la
+   hoja de impresión. */
+html.js .pc-alt{display:none}
+.pc-nt{margin-top:20px;padding-top:16px;border-top:1px solid var(--line-soft);
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
+.pc-nl{list-style:none;margin-top:8px}
+.pc-nl li{border-bottom:1px solid var(--line-soft)}
+.pc-nl li:last-child{border-bottom:0}
+.pc-nl a{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  min-height:44px;padding:6px 0}
+.pc-nq{font-size:14px;color:var(--muted)}
+.pc-np{font-family:var(--serif);font-size:18px;color:var(--ink)}
 
-   ⚠ Todo lo que sigue va prefijado con .pm-lista. Las reglas de la fila normal
-   son «.pm-lista a», que pesa más que un «.pm-paga» suelto: sin el prefijo, el
-   botón heredaba el display:grid y el relleno del enlace de fila entera. */
-.pm-lista li[data-pago]{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
-.pm-lista li[data-pago] .pm-pide{flex:1 1 210px;min-width:0}
-/* Con el cobro en línea el botón deja de ser un <a> y pasa a ser el <button>
-   de un formulario. Quien se coloca en la fila es entonces el FORMULARIO, no
-   el botón: sin esto, el margin-left:auto vivía en un elemento que ya no era
-   hijo directo de la fila y el botón se quedaba pegado al precio. */
-.pm-lista .pm-form{margin:0;flex:0 0 auto;margin-left:auto;display:flex}
-.pm-lista .pm-form .pm-paga{margin-left:0}
-.pm-lista .pm-paga{flex:0 0 auto;margin-left:auto;
-  background:none;cursor:pointer;
-  display:inline-flex;align-items:center;justify-content:center;
-  min-height:44px;padding:10px 18px;
-  font-family:var(--sans);font-size:10px;letter-spacing:2.4px;text-transform:uppercase;
-  font-weight:500;color:var(--bronze-hi);border:1px solid var(--bronze);
-  white-space:nowrap;transition:background .3s,color .3s}
-.pm-lista .pm-paga:hover,.pm-lista .pm-paga:focus-visible{background:var(--bronze);color:var(--on-bronze)}
-.pm-lista .pm-paga:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
-/* La flecha de «esto se abre fuera» la llevan los enlaces de fila entera para
-   avisar de que son pulsables. El botón de pagar ya se ve botón; con flecha
-   además se le montaría encima del texto. */
-.pm-lista .pm-paga::after{content:none}
-.pm-n{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-soft);
-  font-size:13px;line-height:1.7;color:var(--dim)}
-/* Con 250 px de ancho útil, «Cotización personalizada» y su cantidad no caben
-   en el mismo renglón: sólo esa fila se apila. Las otras cinco siguen a dos
-   columnas, que es donde la lista se lee de un vistazo. */
 @media(max-width:560px){
-  .prod-mayoreo summary{padding-inline:14px 38px;letter-spacing:2.2px}
-  .prod-mayoreo summary::after{right:14px}
-  .pm-c{padding-inline:14px}
+  /* En un móvil estrecho, cantidad y precio no caben en el mismo renglón sin
+     apretar la cifra hasta hacerla pequeña. Se apilan: el precio pasa a ocupar
+     su propia línea, alineado a la izquierda como todo lo demás de la ficha.
+     `margin-left:auto` tiene que irse explícitamente, que si no empuja la cifra
+     contra el borde derecho de una línea que ya es suya entera. */
+  .pc-precio{margin-left:0;width:100%}
   /* Con 260 px de ancho &#250;til, la cifra en serif y la flecha no dejaban sitio a
      la cantidad. Se recorta lo que no cuesta legibilidad —el hueco, el reservado
      de la flecha y dos puntos de la cifra— en vez de partir el rengl&#243;n. */
-  .pm-lista a{column-gap:10px;padding-right:18px}
-  .pm-lista a::after{font-size:11px}
-  .pm-p{font-size:18px}
-  .pm-e{letter-spacing:1.6px}
-  /* El botón de pagar no cabe en el renglón de la cantidad y el precio —con la
-     cifra más larga se quedaría en 40 px—, así que baja. Y bajando, va de ancho
-     completo: alineado a la derecha flotaba a media altura entre su fila y la
-     siguiente y no se veía de cuál era. Ocupando el ancho de su fila no hay
-     duda, y no cuesta ni un píxel de alto respecto a flotar. */
-  .pm-lista .pm-paga{width:100%;margin-left:0;margin-top:2px}
-  /* El formulario hereda el ancho completo, que si no el botón se estira
-     dentro de una caja que sigue midiendo lo que medía su texto. */
-  .pm-lista .pm-form{width:100%;margin-left:0;margin-top:2px}
 }
 @media(min-width:900px){
   .prod{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
@@ -2449,79 +2372,46 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
           <li>NFC y QR</li>
           <li>Dura de 5 a 10 a&#241;os</li>
         </ul>
-        <div class="prod-cta">
-          <div class="prod-precio">
-            <span class="cifra">$429</span>
-            <span class="u">MXN &#183; una pieza</span>
+          <!-- EL CONTADOR. Sustituye a la lista de once filas que vivia en un
+               <details> plegado. La lista enseñaba el catalogo entero de golpe
+               —once precios, once envios, once botones— y ocupaba media
+               pantalla para responder una sola pregunta: cuanto cuestan las que
+               yo quiero. El contador responde esa y calla el resto.
+
+               ⚠ TODO ESTE BLOQUE LO ESCRIBE tools/precios.mjs. Editarlo a mano
+               dura hasta el siguiente `node tools/precios.mjs`, que lo
+               sobrescribe entero. Los precios se tocan en la tabla de ese
+               archivo y en ningun otro sitio. -->
+          <div class="prod-compra">
+            <div class="pc-cab">
+              <div class="pc-cant" role="group" aria-label="Cantidad de placas">
+                <button class="pc-b" type="button" data-pc="-1" aria-label="Quitar una placa">&#8722;</button>
+                <span class="pc-n" data-pc-n aria-live="polite">1 placa</span>
+                <button class="pc-b" type="button" data-pc="1" aria-label="A&#241;adir una placa">+</button>
+              </div>
+              <p class="pc-precio"><span class="cifra" data-pc-total>$508</span><span class="u">MXN</span></p>
+            </div>
+            <p class="pc-detalle" data-pc-detalle>$429 + $79 de env&#237;o</p>
+            <a class="svc-btn pc-ir" href="pedido.html?n=1" data-pc-ir><span class="dia"></span>Comprar ahora</a>
+            <p class="pc-wa"><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%201%20placa%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24429%20MXN%20%2B%20%2479%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer">o pedirlo por WhatsApp</a></p>
+            <div class="pc-alt">
+              <p class="pc-nt">Todas las cantidades</p>
+              <ul class="pc-nl">
+                <li><a href="pedido.html?n=1"><span class="pc-nq">1 pieza</span><span class="pc-np">$508 MXN</span></a></li>
+                <li><a href="pedido.html?n=2"><span class="pc-nq">2 piezas</span><span class="pc-np">$768 MXN</span></a></li>
+                <li><a href="pedido.html?n=3"><span class="pc-nq">3 piezas</span><span class="pc-np">$858 MXN</span></a></li>
+                <li><a href="pedido.html?n=4"><span class="pc-nq">4 piezas</span><span class="pc-np">$949 MXN</span></a></li>
+                <li><a href="pedido.html?n=5"><span class="pc-nq">5 piezas</span><span class="pc-np">$1,099 MXN</span></a></li>
+                <li><a href="pedido.html?n=6"><span class="pc-nq">6 piezas</span><span class="pc-np">$1,249 MXN</span></a></li>
+                <li><a href="pedido.html?n=8"><span class="pc-nq">8 piezas</span><span class="pc-np">$1,599 MXN</span></a></li>
+                <li><a href="pedido.html?n=10"><span class="pc-nq">10 piezas</span><span class="pc-np">$1,899 MXN</span></a></li>
+                <li><a href="pedido.html?n=12"><span class="pc-nq">12 piezas</span><span class="pc-np">$2,199 MXN</span></a></li>
+                <li><a href="pedido.html?n=15"><span class="pc-nq">15 piezas</span><span class="pc-np">$2,649 MXN</span></a></li>
+                <li><a href="pedido.html?n=20"><span class="pc-nq">20 piezas</span><span class="pc-np">$3,399 MXN</span></a></li>
+              </ul>
+            </div>
+            <script type="application/json" id="pc-tabla">[{"n":1,"t":"1 placa","tot":508,"e":79,"u":429,"d":"$429 + $79 de envío","s":"envío incluido"},{"n":2,"t":"2 placas","tot":768,"e":69,"u":350,"d":"$699 + $69 de envío · $350 por pieza","s":"envío incluido"},{"n":3,"t":"3 placas","tot":858,"e":59,"u":266,"d":"$799 + $59 de envío · $266 por pieza","s":"envío incluido"},{"n":4,"t":"4 placas","tot":949,"e":0,"u":237,"d":"Envío gratis · $237 por pieza","s":"envío gratis"},{"n":5,"t":"5 placas","tot":1099,"e":0,"u":220,"d":"Envío gratis · $220 por pieza","s":"envío gratis"},{"n":6,"t":"6 placas","tot":1249,"e":0,"u":208,"d":"Envío gratis · $208 por pieza","s":"envío gratis"},{"n":8,"t":"8 placas","tot":1599,"e":0,"u":200,"d":"Envío gratis · $200 por pieza","s":"envío gratis"},{"n":10,"t":"10 placas","tot":1899,"e":0,"u":190,"d":"Envío gratis · $190 por pieza","s":"envío gratis"},{"n":12,"t":"12 placas","tot":2199,"e":0,"u":183,"d":"Envío gratis · $183 por pieza","s":"envío gratis"},{"n":15,"t":"15 placas","tot":2649,"e":0,"u":177,"d":"Envío gratis · $177 por pieza","s":"envío gratis"},{"n":20,"t":"20 placas","tot":3399,"e":0,"u":170,"d":"Envío gratis · $170 por pieza","s":"envío gratis"}]</script>
           </div>
-          <!-- El env&#237;o va aparte y NO sumado a la cifra: son dos conceptos y el
-               cliente tiene que poder distinguirlos. Va aqu&#237; arriba y no s&#243;lo
-               dentro del desplegable porque quien ve «$429» y no abre nada
-               merece saber que hay un env&#237;o antes de escribir. -->
-          <p class="prod-envio">Env&#237;o $79 MXN &#183; gratis desde 4 piezas</p>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20la%20placa%20de%20rese%C3%B1as%20de%20Google%20(NFC%20%2B%20QR)." class="svc-btn" target="_blank" rel="noopener noreferrer"
-             aria-label="Escribir por WhatsApp para pedir la placa de rese&#241;as para Google"><span class="dia"></span>La quiero</a>
-        </div>
-        <!-- Los precios por volumen, plegados. El precio de referencia sigue
-             siendo el de arriba; esto es la respuesta a quien pide varias, y
-             sólo aparece si la pide. Sin JS: <details> nativo, como las
-             preguntas frecuentes. -->
-        <details class="prod-mayoreo">
-          <summary>Ver precios por mayoreo</summary>
-          <div class="pm-c">
-            <p class="pm-k">Precios por cantidad</p>
-            <!-- CADA TRAMO ES UN ENLACE, y la zona pulsable es la FILA ENTERA, no un
-                 bot&#243;n a un lado. En un m&#243;vil una fila completa es un objetivo de
-                 46 px que no se falla con el pulgar, y seis botones nuevos habr&#237;an
-                 convertido en formulario un bloque que se quer&#237;a limpio.
-                 Cada mensaje lleva ya escrito SU tramo y SU precio unitario: quien
-                 recibe el WhatsApp sabe qu&#233; le piden sin preguntar nada. Los de
-                 rango dicen el tramo y no una cantidad inventada, as&#237; que el
-                 mensaje sigue siendo cierto aunque se env&#237;e sin tocarlo. -->
-            <ul class="pm-lista">
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%201%20placa%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24429%20MXN%20%2B%20%2479%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 1 pieza por WhatsApp, 429 pesos m&#225;s 79 de env&#237;o"><span class="pm-q">1 pieza</span><span class="pm-p">$429 MXN</span><span class="pm-e">Env&#237;o $79 MXN</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="1"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 1 pieza, 508 pesos con el env&#237;o incluido">Pagar $508</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%202%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24699%20MXN%20%2B%20%2469%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 2 piezas por WhatsApp, 699 pesos m&#225;s 69 de env&#237;o"><span class="pm-q">2 piezas</span><span class="pm-p">$699 MXN</span><span class="pm-e">Env&#237;o $69 MXN</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="2"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 2 piezas, 768 pesos con el env&#237;o incluido">Pagar $768</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%203%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24799%20MXN%20%2B%20%2459%20de%20env%C3%ADo." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 3 piezas por WhatsApp, 799 pesos m&#225;s 59 de env&#237;o"><span class="pm-q">3 piezas</span><span class="pm-p">$799 MXN</span><span class="pm-e">Env&#237;o $59 MXN</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="3"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 3 piezas, 858 pesos con el env&#237;o incluido">Pagar $858</button></form></li>
-              <li class="pm-destaca" data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%204%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24949%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 4 piezas por WhatsApp, 949 pesos con env&#237;o gratis"><span class="pm-q">4 piezas</span><span class="pm-p">$949 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="4"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 4 piezas, 949 pesos con env&#237;o gratis">Pagar $949</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%205%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C099%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 5 piezas por WhatsApp, 1099 pesos con env&#237;o gratis"><span class="pm-q">5 piezas</span><span class="pm-p">$1,099 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="5"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 5 piezas, 1099 pesos con env&#237;o gratis">Pagar $1,099</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%206%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C249%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 6 piezas por WhatsApp, 1249 pesos con env&#237;o gratis"><span class="pm-q">6 piezas</span><span class="pm-p">$1,249 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="6"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 6 piezas, 1249 pesos con env&#237;o gratis">Pagar $1,249</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%208%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C599%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 8 piezas por WhatsApp, 1599 pesos con env&#237;o gratis"><span class="pm-q">8 piezas</span><span class="pm-p">$1,599 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="8"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 8 piezas, 1599 pesos con env&#237;o gratis">Pagar $1,599</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2010%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%241%2C899%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 10 piezas por WhatsApp, 1899 pesos con env&#237;o gratis"><span class="pm-q">10 piezas</span><span class="pm-p">$1,899 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="10"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 10 piezas, 1899 pesos con env&#237;o gratis">Pagar $1,899</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2012%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%242%2C199%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 12 piezas por WhatsApp, 2199 pesos con env&#237;o gratis"><span class="pm-q">12 piezas</span><span class="pm-p">$2,199 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="12"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 12 piezas, 2199 pesos con env&#237;o gratis">Pagar $2,199</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2015%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%242%2C649%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 15 piezas por WhatsApp, 2649 pesos con env&#237;o gratis"><span class="pm-q">15 piezas</span><span class="pm-p">$2,649 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="15"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 15 piezas, 2649 pesos con env&#237;o gratis">Pagar $2,649</button></form></li>
-              <li data-pago><a class="pm-pide" href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%20el%20paquete%20de%2020%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%243%2C399%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer"
-                     aria-label="Pedir el paquete de 20 piezas por WhatsApp, 3399 pesos con env&#237;o gratis"><span class="pm-q">20 piezas</span><span class="pm-p">$3,399 MXN</span><span class="pm-e gratis">Env&#237;o gratis</span></a><form class="pm-form" method="post" action="https://pagos.sycsolutions.company/ir"><input type="hidden" name="paquete" value="20"><button class="pm-paga" type="submit"
-                     aria-label="Pagar en l&#237;nea el paquete de 20 piezas, 3399 pesos con env&#237;o gratis">Pagar $3,399</button></form></li>
-            </ul>
-            <!-- Sustituye a la nota que enlazaba a WhatsApp s&#243;lo para 21+: ahora esa
-                 fila enlaza sola, y repetir el enlace veinte p&#237;xeles m&#225;s abajo era
-                 decir dos veces lo mismo. Lo que hac&#237;a falta en su lugar era decir
-                 que las filas se pulsan, porque una lista de precios no lo parece. -->
-            <p class="pm-n">Precios totales por paquete, no por pieza. El env&#237;o baja con la cantidad y
-              es gratis desde 4 piezas. Pulsa el paquete que necesitas y se abre
-              WhatsApp con tu pedido ya escrito.</p>
-          </div>
-        </details>
         <!-- Dos frases y dos casos: si estás en San Luis, y si no. Antes lo mismo
              ocupaba cuatro renglones con detalles que no cambian la decisión
              ("en cinco minutos", "la enlazamos con tu ficha"). -->
@@ -5597,6 +5487,62 @@ if(DIAG.lee())EXP.marca('diag');
    instalada de las pruebas anteriores y vaciar sus cachés. Sin esto, el
    navegador que ya lo instaló seguiría sirviéndose a sí mismo la versión
    antigua para siempre, aunque el registro desapareciera del código. */
+/* ---------- EL CONTADOR DE LA FICHA DE PRODUCTO ----------
+   Mueve la cantidad entre los TRAMOS de la tabla de precios, no de uno en uno:
+   después del 6 viene el 8 y después del 12 el 15, porque cada tramo tiene un
+   precio decidido y un contador continuo obligaría a inventarse el de 7, 9, 11…
+
+   Los precios NO están aquí. Salen del <script type="application/json"> que
+   escribe tools/precios.mjs, y ese tipo no lo ejecuta el navegador: así cambiar
+   un precio no toca ni una línea de código y no invalida la huella CSP de este
+   bloque, que es estático.
+
+   Si algo de esto falla, la página se queda con la lista de tramos visible y
+   todos sus enlaces funcionando. Por eso la clase `js` se pone arriba del todo
+   y no aquí: marcarla al final dejaría la lista parpadeando en cada carga. */
+(()=>{
+  const caja=document.querySelector('.prod-compra');
+  const datos=document.getElementById('pc-tabla');
+  if(!caja||!datos)return;
+
+  let tramos;
+  try{tramos=JSON.parse(datos.textContent);}catch(_){return;}
+  if(!Array.isArray(tramos)||!tramos.length)return;
+
+  const nombre=caja.querySelector('[data-pc-n]');
+  const total=caja.querySelector('[data-pc-total]');
+  const detalle=caja.querySelector('[data-pc-detalle]');
+  const ir=caja.querySelector('[data-pc-ir]');
+  const botones=[...caja.querySelectorAll('[data-pc]')];
+  if(!nombre||!total||!detalle||!ir||botones.length!==2)return;
+
+  const pesos=n=>'$'+n.toLocaleString('en-US');
+  let i=0;
+
+  function pinta(){
+    const t=tramos[i];
+    nombre.textContent=t.t;
+    total.textContent=pesos(t.tot);
+    detalle.textContent=t.d;
+    ir.href='pedido.html?n='+t.n;
+    /* Deshabilitar en los extremos y no dar la vuelta: un contador que salta de
+       20 a 1 al pulsar «más» parece roto, y en un móvil se pulsa sin mirar. */
+    botones.forEach(b=>{
+      const paso=Number(b.dataset.pc);
+      b.disabled=(paso<0&&i===0)||(paso>0&&i===tramos.length-1);
+    });
+  }
+
+  botones.forEach(b=>b.addEventListener('click',()=>{
+    const j=i+Number(b.dataset.pc);
+    if(j<0||j>=tramos.length)return;
+    i=j;
+    pinta();
+  }));
+
+  pinta();
+})();
+
 if('serviceWorker' in navigator){
   addEventListener('load',async()=>{
     try{

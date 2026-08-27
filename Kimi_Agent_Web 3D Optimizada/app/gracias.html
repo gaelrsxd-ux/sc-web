@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedido recibido — S&amp;C Solutions</title>
+<meta name="description" content="Tu pedido de placas de reseñas para Google quedó registrado.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/legal.css">
+<link rel="stylesheet" href="assets/pedido.css">
+</head>
+<body>
+<div class="halo" aria-hidden="true"></div>
+
+<header class="barra">
+  <a class="marca" href="/">
+    <img src="assets/logo.svg" alt="">
+    <b>S&amp;C <em>Solutions</em></b>
+  </a>
+  <a class="volver" href="/">← Volver al inicio</a>
+</header>
+
+<main>
+  <!-- Aquí se llega DESPUÉS de pagar: Mercado Pago manda de vuelta a esta
+       dirección (back_urls.success del Worker). Se llega también con
+       ?estado=pendiente cuando el pago quedó en efectivo o por transferencia y
+       todavía no está confirmado, que no es lo mismo y no puede decir lo mismo.
+
+       ⚠ ESTA PÁGINA NO CONFIRMA NINGÚN COBRO POR SÍ SOLA. Es una dirección
+       pública: cualquiera puede escribirla sin haber pagado. Lo que confirma un
+       pago es el aviso de Mercado Pago, y por eso el texto habla de lo que hace
+       el comprador ahora, sin afirmar que el dinero llegó. -->
+  <div class="gr-marca" aria-hidden="true">✓</div>
+  <h1 class="gr-t" data-gr-t>Gracias por tu <em>pedido</em></h1>
+  <p class="gr-p" data-gr-p>Ya lo tenemos. En cuanto Mercado Pago confirme el pago
+    preparamos tus placas y te avisamos por WhatsApp.</p>
+
+  <!-- El resumen sólo aparece si esta pestaña es la misma en la que se hizo el
+       pedido: los datos viven en sessionStorage, no en la dirección, para que
+       un pedido con nombre y teléfono no acabe en el historial del navegador ni
+       en los registros de nadie. Si se abrió en otra pestaña, no hay resumen y
+       el botón de WhatsApp sigue estando, sin datos dentro. -->
+  <dl class="ped-resumen" data-gr-resumen hidden style="margin-top:30px"></dl>
+
+  <a class="gr-wa" data-gr-wa
+     href="https://wa.me/524423697248?text=Hola.%20Acabo%20de%20hacer%20un%20pedido%20desde%20la%20web."
+     target="_blank" rel="noopener noreferrer">Mándanos tu pedido por WhatsApp</a>
+
+  <p class="ped-pie" data-gr-pie>Así lo tenemos por escrito y puedes preguntarnos
+    cualquier cosa por el mismo sitio.</p>
+
+  <p class="ped-pie" style="margin-top:26px">
+    <a href="/#productos">Volver a la tienda</a> ·
+    <a href="terminos.html">Términos</a> ·
+    <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
+</main>
+
+<script>
+/* ------------------------------------------------------------------------
+   EL PEDIDO, DE VUELTA
+
+   pedido.html guardó lo que el visitante escribió justo antes de salir hacia
+   Mercado Pago. Aquí se recupera para dos cosas: enseñárselo —para que vea que
+   no se perdió nada— y dejar el WhatsApp escrito de una vez.
+
+   Todo esto es opcional por diseño. Sin JavaScript, sin sessionStorage o
+   abierto en otra pestaña, la página sigue diciendo lo importante y el botón de
+   WhatsApp sigue funcionando, sólo que con un mensaje genérico.
+   --------------------------------------------------------------------- */
+(()=>{
+  const wa=document.querySelector('[data-gr-wa]');
+  const caja=document.querySelector('[data-gr-resumen]');
+  const titulo=document.querySelector('[data-gr-t]');
+  const parrafo=document.querySelector('[data-gr-p]');
+
+  /* Un pago en efectivo o por transferencia vuelve aquí SIN estar cobrado
+     todavía. Decirle «gracias por tu compra» a quien tiene un recibo sin pagar
+     en la mano es la forma de que nadie lo pague nunca. */
+  if(new URLSearchParams(location.search).get('estado')==='pendiente'){
+    if(titulo)titulo.innerHTML='Tu pago está <em>pendiente</em>';
+    if(parrafo)parrafo.textContent='Mercado Pago nos avisará en cuanto se complete. '+
+      'Si elegiste pagar en efectivo o por transferencia, tienes que terminar el pago '+
+      'con las instrucciones que te dieron; hasta entonces no preparamos el envío.';
+  }
+
+  let d=null;
+  try{
+    const bruto=sessionStorage.getItem('syc_pedido');
+    if(bruto)d=JSON.parse(bruto);
+  }catch(_){}
+  if(!d||typeof d!=='object')return;
+
+  const pesos=n=>'$'+Number(n||0).toLocaleString('en-US');
+  const envio=[d.calle,d.colonia,d.cp,d.ciudad,d.estado].filter(Boolean).join(', ');
+  const placas=d.modo==='blanco'
+    ?'En blanco, las configuro yo'
+    :'Configuradas con '+(d.negocio||'mi negocio')+(d.negocio_ciudad?', '+d.negocio_ciudad:'');
+
+  /* -------- el resumen en pantalla -------- */
+  if(caja){
+    const partes=[
+      ['Pedido',(d._t||'')+(d._tot?' — '+pesos(d._tot):'')],
+      ['Placas',placas],
+      ['Enviar a',[d.nombre,envio].filter(Boolean).join(' — ')],
+      ['Teléfono',d.tel],
+      ['Correo',d.correo],
+      ['Referencias',d.refs],
+    ];
+    let hay=false;
+    for(const [k,v] of partes){
+      if(!v)continue;
+      hay=true;
+      const fila=document.createElement('div');
+      const dt=document.createElement('dt');
+      const dd=document.createElement('dd');
+      dt.textContent=k;
+      /* textContent y nunca innerHTML: esto es texto que escribió el visitante,
+         y con innerHTML una etiqueta pegada en «referencias» se ejecutaría. */
+      dd.textContent=v;
+      fila.append(dt,dd);
+      caja.append(fila);
+    }
+    if(hay)caja.hidden=false;
+  }
+
+  /* -------- el WhatsApp, ya escrito --------
+     Con el pedido dentro, el mensaje que llega al negocio ya trae todo y no hay
+     que preguntar nada. Es la copia de seguridad de lo que viaja pegado al
+     cobro: si el aviso de Mercado Pago se lee a medias, esto está completo. */
+  if(wa){
+    const lineas=['Hola. Acabo de hacer un pedido desde la web.'];
+    if(d._t)lineas.push('Pedido: '+d._t+(d._tot?' — '+pesos(d._tot):''));
+    lineas.push('Placas: '+placas);
+    if(d.negocio_dir)lineas.push('Dirección del negocio: '+d.negocio_dir);
+    if(d.nombre)lineas.push('Recibe: '+d.nombre);
+    if(envio)lineas.push('Dirección: '+envio);
+    if(d.tel)lineas.push('Teléfono: '+d.tel);
+    if(d.correo)lineas.push('Correo: '+d.correo);
+    if(d.refs)lineas.push('Referencias: '+d.refs);
+    wa.href='https://wa.me/524423697248?text='+encodeURIComponent(lineas.join('\n'));
+  }
+})();
+</script>
+</body>
+</html>

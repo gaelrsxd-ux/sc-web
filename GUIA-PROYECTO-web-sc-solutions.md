@@ -31,19 +31,42 @@ fila entera (`.svc:last-child`), que es lo que evita la media fila vacía.
 ## 2. Contenido del paquete
 
 ```
-web-sc-solutions.zip
-├── index.html          (TODO el sitio: HTML + CSS + JS en un solo archivo)
+app/
+├── index.html          (la portada entera: HTML + CSS + JS en un solo archivo)
+├── pedido.html         (los pasos de la compra: cantidad, negocio, envío)
+├── gracias.html        (la vuelta desde Mercado Pago, con el WhatsApp escrito)
+├── terminos.html  ·  aviso-de-privacidad.html  ·  cookies.html  ·  404.html
+├── _headers            (CSP con huellas SHA-256 — se GENERA, ver §Herramientas)
+├── sw.js               (service worker; hoy desactivado a propósito)
 └── assets/
     ├── logo.svg            (logo oficial S&C, art-deco)
+    ├── legal.css           (hoja de las páginas legales y del pedido)
+    ├── pedido.css          (lo que el pedido añade sobre legal.css)
     ├── hero-bg.webp        (hero: skyline nocturno 4K)
-    ├── bg-servicios.webp   (fondo servicios: circuito macro 4K)
-    ├── bg-proyectos.webp   (fondo proyectos: planos/drafting 4K)
-    ├── bg-contacto.webp    (fondo contacto: escritorio cálido 4K)
+    ├── bg-servicios.webp · bg-proyectos.webp · bg-contacto.webp
+    ├── producto-resenas-*.webp   (la placa: frontal, perfil y trasera)
     └── hero-og.jpg         (solo para Open Graph / redes sociales)
 ```
 
-**Para verla:** descomprime y abre `index.html` en el navegador. No requiere
-servidor, build, ni dependencias. El JS es 100% vanilla (sin librerías).
+Fuera de `app/` viven las cosas que no se publican:
+
+```
+tools/precios.mjs       ← LA TABLA DE PRECIOS. Única fuente: reescribe la ficha
+                          de producto, pedido.html y la tabla del Worker.
+tools/csp-hashes.mjs    ← recalcula las huellas de la CSP tras tocar un script
+cloudflare/pagos/       ← el Worker que cobra (Checkout Pro de Mercado Pago)
+pruebas/compra.mjs      ← la compra de punta a punta en un navegador
+servidor.js             ← servidor local para verla con sus cabeceras
+```
+
+**Para verla:** `node servidor.js` y abrir la dirección que imprime. No hay
+build ni `package.json`: el JS es vanilla y no hay dependencias. Hace falta un
+servidor y no abrir el archivo a pelo porque la CSP viaja en cabeceras.
+
+⚠ **Los precios no se editan a mano en ningún HTML.** Se cambian en la tabla de
+`tools/precios.mjs` y se ejecuta `node tools/precios.mjs`. Un `--check` en el
+hook de commit y en el CI falla si alguien lo hace al revés: sin él, la web
+puede enseñar un precio y el cobro salir por otro.
 
 ## 3. Sistema de diseño
 

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finalizar compra — S&amp;C Solutions</title>
+<meta name="description" content="Elige la cantidad, dinos a nombre de qué negocio van las placas y a dónde te las enviamos.">
+<!-- noindex a propósito: es un paso de un proceso, no una página que nadie deba
+     encontrar en Google. Indexarla llenaría los resultados de una pantalla que
+     fuera de contexto no dice nada. -->
+<meta name="robots" content="noindex, follow">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/legal.css">
+<link rel="stylesheet" href="assets/pedido.css">
+</head>
+<body>
+<div class="halo" aria-hidden="true"></div>
+
+<header class="barra">
+  <a class="marca" href="/">
+    <img src="assets/logo.svg" alt="">
+    <b>S&amp;C <em>Solutions</em></b>
+  </a>
+  <a class="volver" href="/#productos">← Seguir viendo</a>
+</header>
+
+<main>
+  <p class="tag">Finalizar compra</p>
+
+  <!-- Qué se está comprando, fijo arriba y en las cuatro pantallas. En un flujo
+       por pasos la cantidad se olvida, y descubrirla ya en Mercado Pago es
+       justo donde se abandona una compra. -->
+  <div class="ped-prod">
+    <p class="ped-que">Placa de reseñas para Google<b data-ped-que>1 placa · envío incluido</b></p>
+    <p class="ped-tot" data-ped-tot>$508</p>
+  </div>
+
+  <!-- ⚠ EL IMPORTE NO VIAJA EN ESTE FORMULARIO, Y NO ES UN OLVIDO.
+       Lo único que se manda es `paquete`; el precio lo pone el Worker desde su
+       propia tabla. Si el importe viajara aquí, cualquiera abriría las
+       herramientas del navegador, cambiaría 3399 por 1 y pagaría un peso por
+       veinte placas. Añadir aquí un campo con el precio rompería lo único que
+       impide eso: ver cloudflare/pagos/pagos.js.
+
+       Es un <form> normal con method="post". Sin JavaScript se ven los cuatro
+       bloques a la vez y se envía de una sola vez; el script sólo los va
+       enseñando de uno en uno. Que falle un script no puede impedir comprar. -->
+  <form id="ped-form" method="post" action="https://pagos.sycsolutions.company/ir">
+
+    <!-- ══════════════ PASO 1 ══════════════ -->
+    <fieldset class="ped-f" data-paso="1">
+      <legend>¿Cuántas y cómo las quieres?</legend>
+
+      <!-- pedido:cantidad -->
+      <label class="ped-campo" for="ped-cant"><span>Cantidad</span><select id="ped-cant" name="paquete"><option value="1">1 placa &#8212; $508</option><option value="2">2 placas &#8212; $768</option><option value="3">3 placas &#8212; $858</option><option value="4">4 placas &#8212; $949</option><option value="5">5 placas &#8212; $1,099</option><option value="6">6 placas &#8212; $1,249</option><option value="8">8 placas &#8212; $1,599</option><option value="10">10 placas &#8212; $1,899</option><option value="12">12 placas &#8212; $2,199</option><option value="15">15 placas &#8212; $2,649</option><option value="20">20 placas &#8212; $3,399</option></select></label>
+      <script type="application/json" id="pc-tabla">[{"n":1,"t":"1 placa","tot":508,"e":79,"u":429,"d":"$429 + $79 de envío","s":"envío incluido"},{"n":2,"t":"2 placas","tot":768,"e":69,"u":350,"d":"$699 + $69 de envío · $350 por pieza","s":"envío incluido"},{"n":3,"t":"3 placas","tot":858,"e":59,"u":266,"d":"$799 + $59 de envío · $266 por pieza","s":"envío incluido"},{"n":4,"t":"4 placas","tot":949,"e":0,"u":237,"d":"Envío gratis · $237 por pieza","s":"envío gratis"},{"n":5,"t":"5 placas","tot":1099,"e":0,"u":220,"d":"Envío gratis · $220 por pieza","s":"envío gratis"},{"n":6,"t":"6 placas","tot":1249,"e":0,"u":208,"d":"Envío gratis · $208 por pieza","s":"envío gratis"},{"n":8,"t":"8 placas","tot":1599,"e":0,"u":200,"d":"Envío gratis · $200 por pieza","s":"envío gratis"},{"n":10,"t":"10 placas","tot":1899,"e":0,"u":190,"d":"Envío gratis · $190 por pieza","s":"envío gratis"},{"n":12,"t":"12 placas","tot":2199,"e":0,"u":183,"d":"Envío gratis · $183 por pieza","s":"envío gratis"},{"n":15,"t":"15 placas","tot":2649,"e":0,"u":177,"d":"Envío gratis · $177 por pieza","s":"envío gratis"},{"n":20,"t":"20 placas","tot":3399,"e":0,"u":170,"d":"Envío gratis · $170 por pieza","s":"envío gratis"}]</script>
+      <!-- /pedido:cantidad -->
+
+      <p class="ped-ayuda" style="margin-top:22px">Las placas pueden llegar ya enlazadas
+        con tu ficha de Google, o en blanco para que las configures tú.</p>
+
+      <label class="ped-op">
+        <input type="radio" name="modo" value="configuradas" checked>
+        <b>Configuradas con mi negocio</b>
+        <small>Las enlazamos con tu ficha de Google antes de enviarlas. Llegan listas:
+          la pones en el mostrador y funciona el mismo día.</small>
+      </label>
+      <label class="ped-op">
+        <input type="radio" name="modo" value="blanco">
+        <b>En blanco, las configuro yo</b>
+        <small>Te llegan sin enlazar y las configuras cuando quieras. Se hace desde el
+          móvil y te mandamos las instrucciones.</small>
+      </label>
+
+      <div class="ped-botones">
+        <button type="button" class="ped-btn fuerte" data-sigue>Continuar</button>
+      </div>
+    </fieldset>
+
+    <!-- ══════════════ PASO 2 ══════════════
+         Sólo tiene sentido si se eligió «configuradas». El script lo salta
+         cuando no, y de paso quita el `required` del nombre: un campo
+         obligatorio dentro de un bloque escondido bloquea el envío del
+         formulario sin enseñar dónde está el problema, y el navegador ni
+         siquiera puede enfocarlo para señalarlo.
+
+         El buscador de Google que hacen otros no está aquí a propósito: cobra
+         por búsqueda, obliga a dar de alta una llave y una tarjeta, y con el
+         nombre y la ciudad se encuentra igual una ficha. -->
+    <fieldset class="ped-f" data-paso="2" data-solo="configuradas">
+      <legend>¿Cuál es tu negocio?</legend>
+      <p class="ped-ayuda">Con el nombre y la ciudad localizamos tu ficha de Google.
+        Si hay varias parecidas, la dirección nos dice cuál es la tuya.</p>
+
+      <label class="ped-campo"><span>Nombre del negocio</span>
+        <input type="text" name="negocio" maxlength="70" autocomplete="organization"
+               placeholder="Ej. Café Central"></label>
+      <label class="ped-campo"><span>Ciudad</span>
+        <input type="text" name="negocio_ciudad" maxlength="40" autocomplete="address-level2"
+               placeholder="Ej. San Luis Potosí"></label>
+      <label class="ped-campo"><span>Dirección <i class="opc">— opcional</i></span>
+        <input type="text" name="negocio_dir" maxlength="70" placeholder="Calle y número del negocio"></label>
+
+      <div class="ped-botones">
+        <button type="button" class="ped-btn atras" data-atras>Atrás</button>
+        <button type="button" class="ped-btn fuerte" data-sigue>Continuar</button>
+      </div>
+    </fieldset>
+
+    <!-- ══════════════ PASO 3 ══════════════
+         Mercado Pago cobra, pero NO pregunta a dónde mandar el paquete. Por eso
+         la dirección se recoge aquí y viaja pegada al cobro: sin esto, cada
+         venta empieza con una persecución por WhatsApp para averiguar dónde
+         vive quien ya pagó. -->
+    <fieldset class="ped-f" data-paso="3">
+      <legend>¿A dónde te la enviamos?</legend>
+      <p class="ped-ayuda">Envío a todo México. Si estás en San Luis Potosí te la
+        llevamos e instalamos nosotros, sin coste.</p>
+
+      <label class="ped-campo"><span>Nombre de quien recibe</span>
+        <input type="text" name="nombre" maxlength="70" required autocomplete="name"></label>
+      <div class="ped-par">
+        <label class="ped-campo"><span>Teléfono</span>
+          <!-- ⚠ LOS ESCAPES DEL `pattern` NO SOBRAN. Los navegadores compilan este
+               atributo con la bandera `v`, que prohíbe ( ) + - sin escapar dentro
+               de una clase. Escrito como «[0-9\s()+-]» el navegador lanza un
+               SyntaxError, se salta la validación entera de ESTE campo y deja
+               pasar cualquier cosa —«hola» incluido— sin decir nada. Estuvo así
+               y sólo salió al mirar la consola del navegador. -->
+          <input type="tel" name="tel" maxlength="20" required autocomplete="tel"
+                 inputmode="tel" pattern="[0-9\s\(\)\+\-]{10,20}"
+                 placeholder="10 dígitos"></label>
+        <label class="ped-campo"><span>Código postal</span>
+          <input type="text" name="cp" required autocomplete="postal-code"
+                 inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="00000"></label>
+      </div>
+      <label class="ped-campo"><span>Correo electrónico</span>
+        <input type="email" name="correo" maxlength="100" required autocomplete="email"
+               placeholder="tu@ejemplo.com"></label>
+      <label class="ped-campo"><span>Calle y número</span>
+        <input type="text" name="calle" maxlength="90" required autocomplete="address-line1"></label>
+      <div class="ped-par">
+        <label class="ped-campo"><span>Colonia</span>
+          <input type="text" name="colonia" maxlength="50" required autocomplete="address-line2"></label>
+        <label class="ped-campo"><span>Ciudad</span>
+          <input type="text" name="ciudad" maxlength="40" required autocomplete="address-level2"></label>
+      </div>
+      <label class="ped-campo"><span>Estado</span>
+        <select name="estado" required autocomplete="address-level1">
+          <option value="">Elige tu estado</option>
+          <option>Aguascalientes</option><option>Baja California</option>
+          <option>Baja California Sur</option><option>Campeche</option>
+          <option>Chiapas</option><option>Chihuahua</option>
+          <option>Ciudad de México</option><option>Coahuila</option>
+          <option>Colima</option><option>Durango</option>
+          <option>Estado de México</option><option>Guanajuato</option>
+          <option>Guerrero</option><option>Hidalgo</option>
+          <option>Jalisco</option><option>Michoacán</option>
+          <option>Morelos</option><option>Nayarit</option>
+          <option>Nuevo León</option><option>Oaxaca</option>
+          <option>Puebla</option><option>Querétaro</option>
+          <option>Quintana Roo</option><option>San Luis Potosí</option>
+          <option>Sinaloa</option><option>Sonora</option>
+          <option>Tabasco</option><option>Tamaulipas</option>
+          <option>Tlaxcala</option><option>Veracruz</option>
+          <option>Yucatán</option><option>Zacatecas</option>
+        </select></label>
+      <label class="ped-campo"><span>Referencias <i class="opc">— opcional</i></span>
+        <textarea name="refs" maxlength="80" placeholder="Entre qué calles, color de la fachada, portón…"></textarea></label>
+
+      <div class="ped-botones">
+        <button type="button" class="ped-btn atras" data-atras>Atrás</button>
+        <button type="button" class="ped-btn fuerte" data-sigue>Continuar</button>
+      </div>
+    </fieldset>
+
+    <!-- ══════════════ PASO 4 ══════════════ -->
+    <fieldset class="ped-f" data-paso="4">
+      <legend>Revisa tu pedido</legend>
+      <p class="ped-ayuda">Comprueba que todo esté bien. Si algo falla, vuelve atrás
+        y corrígelo antes de pagar.</p>
+
+      <dl class="ped-resumen" data-ped-resumen></dl>
+
+      <div class="ped-botones">
+        <button type="button" class="ped-btn atras" data-atras>Atrás</button>
+        <button type="submit" class="ped-btn fuerte" data-ped-pagar>Pagar</button>
+      </div>
+
+      <p class="ped-pie">Te llevamos a <b>Mercado Pago</b> para pagar. Puedes pagar con
+        tarjeta, en efectivo o por transferencia, y <b>en un solo pago</b>.<br>
+        Nosotros no vemos ni guardamos los datos de tu tarjeta.<br>
+        <a href="terminos.html">Términos</a> · <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
+    </fieldset>
+  </form>
+</main>
+
+<script>
+/* ------------------------------------------------------------------------
+   LOS PASOS
+
+   El formulario funciona ENTERO sin este script: los cuatro bloques se ven a la
+   vez y se envía de una sola vez con validación del navegador. Lo que esto hace
+   es enseñarlos de uno en uno, que en un móvil es la diferencia entre un
+   formulario y una pared de campos.
+
+   Por eso todo lo de aquí es aditivo y nada es imprescindible: si algo revienta,
+   lo peor que pasa es que se vean los cuatro bloques seguidos.
+   --------------------------------------------------------------------- */
+(()=>{
+  const form=document.getElementById('ped-form');
+  const cant=document.getElementById('ped-cant');
+  const datos=document.getElementById('pc-tabla');
+  if(!form||!cant||!datos)return;
+
+  let tramos;
+  try{tramos=JSON.parse(datos.textContent);}catch(_){return;}
+  if(!Array.isArray(tramos)||!tramos.length)return;
+
+  const pasos=[...form.querySelectorAll('[data-paso]')];
+  const tag=document.querySelector('.tag');
+  const que=document.querySelector('[data-ped-que]');
+  const tot=document.querySelector('[data-ped-tot]');
+  const resumen=document.querySelector('[data-ped-resumen]');
+  const pagar=document.querySelector('[data-ped-pagar]');
+  if(!pasos.length||!que||!tot||!resumen||!pagar)return;
+
+  const pesos=n=>'$'+n.toLocaleString('en-US');
+  const tramo=()=>tramos.find(t=>String(t.n)===cant.value)||tramos[0];
+  const modo=()=>(form.querySelector('[name=modo]:checked')||{}).value||'configuradas';
+
+  /* -------- la cabecera -------- */
+  function cabecera(){
+    const t=tramo();
+    que.textContent=t.t+' · '+t.s;
+    tot.textContent=pesos(t.tot);
+    pagar.textContent='Pagar '+pesos(t.tot);
+  }
+
+  /* -------- qué pasos aplican --------
+     El paso 2 sólo existe si se eligió «configuradas». Al saltarlo hay que
+     quitar el `required` de sus campos: un campo obligatorio dentro de un
+     bloque escondido bloquea el envío y el navegador ni puede enfocarlo para
+     decir cuál es. Es el fallo clásico de los formularios por pasos. */
+  const aplica=p=>!p.dataset.solo||p.dataset.solo===modo();
+
+  function sincronizaRequeridos(){
+    for(const p of pasos){
+      const vale=aplica(p);
+      for(const c of p.querySelectorAll('input,select,textarea')){
+        if(c.dataset.req===undefined&&c.required)c.dataset.req='1';
+        if(c.dataset.req==='1')c.required=vale;
+      }
+    }
+    /* El nombre del negocio pasa a ser obligatorio SÓLO cuando hace falta: sin
+       él no se puede buscar la ficha, y descubrirlo después de cobrar es
+       exactamente lo que este formulario existe para evitar. */
+    const neg=form.querySelector('[name=negocio]');
+    if(neg)neg.required=(modo()==='configuradas');
+  }
+
+  /* -------- navegación -------- */
+  let i=0;
+  const visibles=()=>pasos.filter(aplica);
+
+  function muestra(){
+    const v=visibles();
+    if(i>=v.length)i=v.length-1;
+    if(i<0)i=0;
+    pasos.forEach(p=>{p.hidden=(p!==v[i]);});
+    if(tag)tag.textContent='Paso '+(i+1)+' de '+v.length;
+    if(i===v.length-1)pintaResumen();
+    /* Al cambiar de paso el foco se va al título del nuevo, no al primer campo:
+       enfocar un campo abre el teclado del móvil de golpe y tapa media pantalla
+       antes de que se haya leído la pregunta. */
+    const leyenda=v[i].querySelector('legend');
+    if(leyenda){leyenda.setAttribute('tabindex','-1');leyenda.focus({preventScroll:true});}
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  /* Sólo valida el paso que se está dejando. `reportValidity` sobre el
+     formulario entero señalaría campos de bloques que aún no se han visto. */
+  function valida(paso){
+    for(const c of paso.querySelectorAll('input,select,textarea')){
+      if(!c.checkValidity()){c.reportValidity();return false;}
+    }
+    return true;
+  }
+
+  form.addEventListener('click',e=>{
+    const sigue=e.target.closest('[data-sigue]');
+    const atras=e.target.closest('[data-atras]');
+    if(!sigue&&!atras)return;
+    const v=visibles();
+    if(sigue){
+      if(!valida(v[i]))return;
+      if(i<v.length-1){i++;muestra();}
+      return;
+    }
+    if(i>0){i--;muestra();}
+  });
+
+  /* -------- el resumen -------- */
+  function fila(clave,valor){
+    if(!valor)return '';
+    const d=document.createElement('div');
+    const dt=document.createElement('dt');
+    const dd=document.createElement('dd');
+    dt.textContent=clave;
+    /* textContent y no innerHTML: aquí se pinta texto que acaba de escribir el
+       visitante, y con innerHTML una etiqueta pegada en «referencias» se
+       ejecutaría en su propia pantalla. */
+    dd.textContent=valor;
+    d.append(dt,dd);
+    return d;
+  }
+
+  function leeCampos(){
+    const d={};
+    for(const c of form.querySelectorAll('input,select,textarea')){
+      if(c.type==='radio'&&!c.checked)continue;
+      if(c.name)d[c.name]=(c.value||'').trim();
+    }
+    return d;
+  }
+
+  function pintaResumen(){
+    const d=leeCampos(),t=tramo();
+    resumen.textContent='';
+    const envio=[d.calle,d.colonia,d.cp,d.ciudad,d.estado].filter(Boolean).join(', ');
+    const partes=[
+      ['Producto',t.t+' — '+pesos(t.tot)],
+      ['Placas',modo()==='configuradas'
+        ?'Configuradas con '+(d.negocio||'tu negocio')+(d.negocio_ciudad?', '+d.negocio_ciudad:'')
+        :'En blanco, las configuras tú'],
+      ['Enviar a',[d.nombre,envio].filter(Boolean).join(' — ')],
+      ['Teléfono',d.tel],
+      ['Correo',d.correo],
+      ['Referencias',d.refs],
+    ];
+    for(const [k,v] of partes){const f=fila(k,v);if(f)resumen.append(f);}
+  }
+
+  /* -------- guardar para gracias.html --------
+     El pedido se guarda ANTES de salir hacia Mercado Pago. Al volver, la página
+     de gracias lo lee y arma el WhatsApp con todo escrito. Vive en
+     sessionStorage y no en la dirección: así no queda un pedido con nombre y
+     teléfono dentro del historial del navegador ni en ningún registro. */
+  form.addEventListener('submit',()=>{
+    try{
+      const t=tramo();
+      sessionStorage.setItem('syc_pedido',JSON.stringify({...leeCampos(),_t:t.t,_tot:t.tot}));
+    }catch(_){}
+  });
+
+  /* -------- arranque -------- */
+  const pedida=new URLSearchParams(location.search).get('n');
+  if(pedida&&[...cant.options].some(o=>o.value===pedida))cant.value=pedida;
+
+  cant.addEventListener('change',cabecera);
+  form.addEventListener('change',e=>{
+    if(e.target.name==='modo'){sincronizaRequeridos();muestra();}
+  });
+
+  cabecera();
+  sincronizaRequeridos();
+  muestra();
+})();
+</script>
+</body>
+</html>
