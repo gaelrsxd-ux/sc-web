@@ -34,7 +34,6 @@ const HTML = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'index.html'
 
 /* El número de WhatsApp al que van todos los pedidos. Si cambia, cambia aquí
    y en el bloque de contacto del HTML —ese no lo genera este archivo—. */
-const WHATSAPP = '524423697248';
 
 /* ---------- COBRO EN LÍNEA ----------
    Vacío = apagado, y entonces cada paquete usa su propio enlace `pago` de la
@@ -54,7 +53,6 @@ const COBRO_EN_LINEA = 'https://pagos.sycsolutions.company/ir';
    aparte: antes coincidía con el umbral del envío gratis, y al bajar ése a
    cuatro se habría llevado por delante la forma de pedir de medio catálogo sin
    que nadie lo decidiera. */
-const PAQUETE_DESDE = 10;
 
 /* `cuotas` es el número MÁXIMO de mensualidades que se ofrecen en el checkout.
    Sin poner nada es 1: pago de contado.
@@ -305,50 +303,6 @@ function desdeGratis() {
    piden como «el paquete de N placas» y los de menos, como «N placas»: a
    partir de diez lo que se compra es el paquete, y por debajo son piezas
    sueltas. Es el texto que ya estaba; se conserva. */
-function mensaje(p) {
-  const qué = p.piezas >= PAQUETE_DESDE ? `el paquete de ${placas(p)}` : placas(p);
-  const cierre = gratis(p)
-    ? `Total: $${miles(p.precio)} MXN con envío gratis.`
-    : `Total: $${miles(p.precio)} MXN + $${p.envio} de envío.`;
-  return `Hola. Vengo de la web y quiero ${qué} de reseñas de Google (NFC + QR). ${cierre}`;
-}
-
-/* Quien necesita más de lo que hay en la lista no puede toparse con un botón
-   deshabilitado y nada más: ahí es donde está el pedido grande. El mensaje sale
-   ya escrito diciendo cuántas hacen falta como mínimo, para que la conversación
-   empiece con el dato en vez de con «¿cuántas quieres?». */
-function mensajeMas(tope) {
-  return `Hola. Vengo de la web y necesito más de ${tope} placas de reseñas de Google (NFC + QR). ` +
-         `¿Qué precio me pueden hacer?`;
-}
-
-
-
-/* ------------------------------------------------------------- EL GENERADOR */
-
-/* encodeURIComponent deja SIN escapar !'()*~, que son «marcas» permitidas en
-   una URL. Los mensajes llevan paréntesis —«(NFC + QR)»— y el HTML del sitio
-   los tenía escritos como %28 y %29. Ambas formas funcionan, pero si no se
-   escapan aquí, regenerar la lista cambia once URLs sin que nadie haya tocado
-   un precio, y ese ruido esconde el cambio real en el diff. */
-const url = t => encodeURIComponent(t).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
-
-
-/* --------------------------------------------- EL CONTADOR DE LA FICHA ----
-   Sustituye a la lista de once filas plegada en un <details>. La lista decía
-   todo de golpe y por eso ocupaba media pantalla; el contador dice sólo la
-   cantidad que el visitante está mirando ahora mismo, que es la única que le
-   importa. Los once precios siguen siendo los mismos y salen de la misma tabla.
-
-   ⚠ EL CONTADOR SALTA ENTRE LOS TRAMOS DE LA TABLA, no de uno en uno. Después
-   del 6 viene el 8, y después del 12 el 15. No es un descuido: cada tramo tiene
-   un precio DECIDIDO, y un contador continuo obligaría a inventarse el precio
-   de 7, 9, 11, 13, 14, 16… Antes que inventar precios, se salta. */
-
-/* La tabla que lee el JavaScript del contador. Va en un <script type=
-   "application/json">, que el navegador NO ejecuta: así los precios cambian sin
-   tocar ni una línea de código y sin invalidar la huella de la CSP del script
-   de al lado, que es estático y no se entera de los cambios de precio. */
 function tablaContador() {
   const filas = PAQUETES.map(p => ({
     n: p.piezas,
@@ -416,17 +370,6 @@ function detalle(p) {
    Así que la lista está siempre: el script la oculta EN PANTALLA marcando el
    documento con la clase `js`, y la hoja de impresión la devuelve. Sin
    JavaScript nunca se oculta, que es el otro caso que había que cubrir. */
-function listaTramos() {
-  const filas = PAQUETES.map(p =>
-    `                <li><a href="pedido.html?n=${p.piezas}">` +
-    `<span class="pc-nq">${piezas(p)}</span>` +
-    `<span class="pc-np">$${miles(total(p))} MXN</span></a></li>`).join('\n');
-  return '<div class="pc-alt">\n' +
-         '              <p class="pc-nt">' + ent('Todas las cantidades') + '</p>\n' +
-         '              <ul class="pc-nl">\n' + filas + '\n              </ul>\n' +
-         '            </div>';
-}
-
 /* --------------------------------------------------- LA PÁGINA DE PEDIDO ----
    pedido.html elige la cantidad con un <select> y necesita los mismos once
    importes. Se generan desde aquí por el mismo motivo que todo lo demás: dos
@@ -471,56 +414,37 @@ function precioEsquema() {
   return '"price":"' + total(PAQUETES[0]) + '"';
 }
 
+/* LA FICHA CORTA DE LA PORTADA.
+   Antes esto generaba el contador entero: campo de cantidad, precio en vivo,
+   la lista de las 25 cantidades y su tabla JSON. Todo eso vive ahora en
+   pedido.html, que ya elegía cantidad con un <select> de 25 opciones y ya
+   llevaba el WhatsApp de «más de 25». Duplicarlo en la portada costaba tres
+   pantallas de móvil para responder una pregunta —cuánto cuestan las que yo
+   quiero— que se responde igual de bien un toque después, y con el flujo de
+   compra entero delante.
+
+   Lo que queda en la portada es lo que decide si sigues: desde cuánto y a
+   dónde se va. Sigue generándose desde la tabla y no a mano, porque el fallo
+   que este archivo existe para impedir —la web diciendo un precio y el cobro
+   siendo otro— no depende de cuántas cifras se enseñen, sino de que la que se
+   enseñe salga de aquí. */
 function bloqueCompra() {
   const una = PAQUETES[0];
   if (!una || una.piezas !== 1) throw new Error('la escalera no empieza en 1 placa');
-  const tope = PAQUETES[PAQUETES.length - 1].piezas;
-  const wa = `https://wa.me/${WHATSAPP}?text=${url(mensaje(una))}`;
-  const waMas = `https://wa.me/${WHATSAPP}?text=${url(mensajeMas(tope))}`;
+
+  /* «Envío incluido» y no «envío gratis»: en la portada no hay ninguna otra
+     cifra al lado con la que contrastar, y «gratis» junto a un precio invita a
+     buscar el coste escondido que no existe. */
+  const envio = gratis(una) ? ent(' · envío incluido') : '';
 
   return '<div class="prod-compra">\n' +
-    '            <div class="pc-cab">\n' +
-    '              <div class="pc-cant">\n' +
-    '                <button class="pc-b" type="button" data-pc="-1" aria-label="' + ent('Quitar una placa') + '">&#8722;</button>\n' +
-    /* Un campo de número y no un texto fijo: con veinticinco cantidades, llegar
-       a la última a base de toques son veinticuatro toques. Escribiéndolo es
-       uno. Los botones siguen porque ajustar de uno en uno con el pulgar es más
-       cómodo que abrir el teclado. */
-    '                <input class="pc-n" type="number" inputmode="numeric" step="1"\n' +
-    '                       min="1" max="' + tope + '" value="1" data-pc-n\n' +
-    '                       aria-label="' + ent('Cantidad de placas') + '">\n' +
-    '                <span class="pc-w" data-pc-w>' + ent('placa') + '</span>\n' +
-    '                <button class="pc-b" type="button" data-pc="1" aria-label="' + ent('Añadir una placa') + '">+</button>\n' +
-    '              </div>\n' +
-    /* aria-live va en el PRECIO y no en la cantidad: la cantidad ya la anuncia
-       el propio campo al cambiarla, y lo que un lector de pantalla no se
-       enteraría de otro modo es de que el importe se movió. */
-    '              <p class="pc-precio" aria-live="polite"><span class="cifra" data-pc-total>$' +
-    miles(total(una)) + '</span><span class="u">MXN</span></p>\n' +
-    '            </div>\n' +
-    '            <p class="pc-detalle" data-pc-detalle>' + ent(detalle(una)) + '</p>\n' +
-    '            <p class="pc-gratis" data-pc-gratis>' + ent(avisoGratis(una)) + '</p>\n' +
+    '            <p class="pc-desde"><span class="pc-et">' + ent('Desde') + '</span>' +
+    '<span class="cifra" data-pc-total>$' + miles(total(una)) + '</span>' +
+    '<span class="u">MXN' + envio + '</span></p>\n' +
     '            <a class="svc-btn pc-ir" href="pedido.html?n=1" data-pc-ir>' +
-    '<span class="dia"></span>' + ent('Comprar ahora') + '</a>\n' +
-    '            <p class="pc-mas"><a href="' + waMas + '" target="_blank" rel="noopener noreferrer">' +
-    ent(`¿Necesitas más de ${tope}? Hablemos el precio`) + '</a></p>\n' +
-    '            <p class="pc-wa"><a href="' + wa + '" target="_blank" rel="noopener noreferrer">' +
-    ent('o pedirlo por WhatsApp') + '</a></p>\n' +
-    '            ' + listaTramos() + '\n' +
-    '            ' + tablaContador() + '\n' +
-    '          </div>';
+    '<span class="dia"></span>' + ent('Ver precios y comprar') + '</a>\n' +
+    '          </div>'
 }
-
-
-/* La cifra grande del producto es el precio de una pieza. Se deriva de la tabla
-   en vez de escribirse aparte: enseñar $429 arriba y $449 en la lista es
-   exactamente el fallo que este archivo existe para impedir. */
-function cifra() {
-  const una = PAQUETES.find(p => p.piezas === 1);
-  if (!una) throw new Error('la tabla no tiene el paquete de 1 pieza, que es de donde sale el precio de cabecera');
-  return `<span class="cifra">$${miles(una.precio)}</span>`;
-}
-
 
 
 /* ---------------------------------------------------------- PARA EL WORKER
@@ -601,7 +525,7 @@ function paquetesJson() {
 const BLOQUES = [
   { nombre: 'precio del esquema', re: /"price":"\d+"/, pinta: precioEsquema },
   { nombre: 'bloque de compra',
-    re: /<div class="prod-compra">[\s\S]*?<\/script>\n {10}<\/div>/,
+    re: /<div class="prod-compra">[\s\S]*?<\/a>\n {10}<\/div>/,
     pinta: bloqueCompra },
 ];
 

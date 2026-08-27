@@ -1399,7 +1399,7 @@ footer .legal a:hover{color:var(--bronze)}
 /* ---------- MODO PRESENTACIÓN ----------
    Para enseñar la web en una reunión sin hacer scroll delante del cliente. No
    cambia el contenido: apaga el cromo y mueve de sección en sección. */
-html.pres nav.principal,html.pres .rail,html.pres .cat-barra,html.pres #avance,html.pres .snd,html.pres .tema{display:none!important}
+html.pres nav.principal,html.pres .rail,html.pres #avance,html.pres .snd,html.pres .tema{display:none!important}
 html.pres{scroll-behavior:smooth}
 /* Sin barra fija arriba, el margen de anclaje que la compensaba deja un hueco */
 html.pres section[id],html.pres .hero{scroll-margin-top:0}
@@ -1542,7 +1542,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 @media print{
   @page{margin:16mm 14mm}
   /* El lienzo de fondo, los rieles y todo lo que sólo sirve en pantalla */
-  #descenso,#avance,.rail,nav,.cat-barra,.snd,.oro-aviso,.pres-idx,
+  #descenso,#avance,.rail,nav,.snd,.oro-aviso,.pres-idx,
   .bait-btn,.costo input[type=range],#visor,
   .aud-form,.aud-rival,.aud-cta,.svc-btn,
   .frame button,.ts-caja,.can-alt,
@@ -1596,51 +1596,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   footer small,footer .motto,footer .fl a{color:#6B6355!important}
 }
 
-/* ================== CATEGORÍAS: SERVICIOS Y PRODUCTOS ==================
-   Hasta ahora la página era una lista de servicios y nada más. Con un producto
-   físico dentro, "lo que hacemos por ti" y "lo que te llevas" dejan de ser lo
-   mismo y el visitante tiene que saber SIEMPRE en cuál de las dos está.
-
-   ⚠ Y EL PROBLEMA ERA DE MÓVIL, QUE ES DONDE MÁS SE USA. En escritorio ya había
-   dos señales —el riel izquierdo y el menú—, pero el riel se oculta por debajo
-   de 920 px y el menú por debajo de 1080: justo en el móvil no quedaba ninguna.
-   Por eso la señal nueva es una barra propia y no un retoque del riel.
-
-   La barra se pega bajo el menú y sólo existe mientras se recorre una de las
-   dos secciones: fuera de ahí no dice nada útil y estorbaría. Marca la actual
-   en bronce sólido, que es el único relleno de ese color en toda la página y
-   por eso no se confunde con un botón más. */
-.cat-barra{position:fixed;top:82px;left:0;right:0;z-index:45;display:flex;justify-content:center;
-  padding:9px var(--wrap-pad) 13px;pointer-events:none;
-  background:linear-gradient(180deg,rgba(var(--bg-rgb),.97),rgba(var(--bg-rgb),.78) 62%,transparent);
-  opacity:0;visibility:hidden;transform:translateY(-12px);
-  transition:opacity .38s ease,transform .38s cubic-bezier(.2,.7,.2,1),visibility .38s}
-.cat-barra.ver{opacity:1;visibility:visible;transform:none}
-.cat-seg{display:flex;border:1px solid var(--line);background:rgba(var(--bg2-rgb),.94);pointer-events:auto}
-/* 44 px de alto mínimo: es el objetivo táctil que no se falla con el pulgar. */
-.cat-seg a{display:flex;align-items:center;justify-content:center;min-height:44px;
-  padding:0 clamp(18px,5vw,34px);font-size:10px;letter-spacing:2.6px;text-transform:uppercase;
-  font-weight:500;color:var(--dim);white-space:nowrap;
-  transition:color .3s ease,background-color .3s ease}
-.cat-seg a+a{border-left:1px solid var(--line-soft)}
-.cat-seg a.aqui{color:var(--on-bronze);background:var(--bronze)}
-.cat-seg a:not(.aqui):hover{color:var(--bronze-hi)}
-.cat-seg a:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
-/* El rótulo de la categoría dentro de la propia sección. Repite lo que dice la
-   barra, y esa repetición es el punto: quien llega por un ancla directo —o con
-   el JS caído— tiene la respuesta en el sitio donde está mirando. */
-.cat-sello{display:inline-flex;align-items:center;gap:9px;margin-top:18px;padding:7px 14px;
-  border:1px solid var(--line);font-size:9px;letter-spacing:3px;text-transform:uppercase;
-  font-weight:500;color:var(--bronze-hi)}
-.cat-sello::before{content:"";width:6px;height:6px;background:var(--bronze);transform:rotate(45deg)}
-
-/* ---------------------------- LA FICHA DEL PRODUCTO ----------------------------
-   Un producto no es un servicio y no se presenta igual: aquí hay una cosa
-   concreta, con precio cerrado y con una vida útil. La ficha lo dice en ese
-   orden —qué es, qué hace, cuánto dura, cuánto cuesta— porque es el orden en
-   que se pregunta.
-   Una sola columna en móvil y dos en escritorio, con la imagen primero en las
-   dos: es el único elemento de la página que se puede reconocer de un vistazo. */
 .prod{display:grid;grid-template-columns:1fr;gap:0;margin-top:clamp(30px,3.4vw,48px);
   border:1px solid var(--line-soft);background:var(--bg2);position:relative}
 .prod::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);
@@ -1663,6 +1618,117 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13.5px;line-height:1.75}
 .prod-nota b{color:var(--bronze-hi);font-weight:500}
 
+/* ------------------------------ EL MODULO SOLUCIONES ------------------------
+   Tres respuestas turnandose en el mismo hueco, en vez de tres bloques
+   consecutivos. El conmutador es una lista de pestanas de verdad —role=tablist
+   con sus flechas— y no tres enlaces disfrazados: lo que hace no es navegar a
+   otro sitio, es cambiar lo que se ve aqui.
+
+   ⚠ NADA DE ALTURA FIJA. Los tres paneles miden cosas distintas y clavarlos a
+   la altura del mas alto dejaria medio panel vacio bajo los otros dos. Lo que
+   se iguala no es la altura, es el SITIO: el conmutador no se mueve al cambiar
+   de pestana porque va encima. */
+.sol-int{margin-top:14px;color:var(--muted);font-size:15px;line-height:1.75;max-width:52ch}
+.sol-sub{margin:0 0 16px;color:var(--dim);font-size:12.5px;letter-spacing:.4px}
+/* El sello del panel del producto. Vivia con la barra flotante que este modulo
+   sustituye; sigue haciendo falta porque es lo unico que dice, dentro del
+   panel, que esto se entrega en una caja y no se factura por horas. */
+.cat-sello{display:inline-flex;align-items:center;gap:9px;padding:7px 14px;
+  border:1px solid var(--line);font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  font-weight:500;color:var(--bronze-hi)}
+.cat-sello::before{content:"";width:6px;height:6px;background:var(--bronze);transform:rotate(45deg)}
+
+.sol-tabs{display:flex;gap:0;margin:26px 0 20px;border:1px solid var(--line-soft);
+  background:var(--bg2);width:fit-content;max-width:100%}
+.sol-t{flex:0 1 auto;min-height:44px;padding:12px 22px;cursor:pointer;
+  /* Igual que en el contador y en los pasos del pedido: dos toques seguidos
+     sobre la misma pestana son el gesto de «acercar» del navegador, y aqui se
+     toca rapido. El pellizco para ampliar sigue intacto en toda la pagina. */
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  background:none;border:0;border-right:1px solid var(--line-soft);
+  font-family:var(--sans);font-size:9.5px;letter-spacing:3px;text-transform:uppercase;
+  font-weight:500;color:var(--muted);white-space:nowrap;
+  transition:color .3s,background-color .3s}
+.sol-t:last-child{border-right:0}
+/* El :active sustituye al recuadro de toque que quita el tap-highlight; el
+   :hover va dentro de (hover:hover) porque en iOS se queda pegado tras tocar y
+   la pestana se ve encendida cuando ya nadie la toca. */
+.sol-t:active{color:var(--bronze-hi);transition-duration:0s}
+@media (hover:hover){.sol-t:hover{color:var(--ink);background:rgba(200,169,106,.05)}}
+.sol-t:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:-3px}
+.sol-t[aria-selected="true"]{color:var(--on-bronze);background:var(--bronze)}
+
+/* El panel entra con un desplazamiento minimo. No es decoracion: sin ningun
+   movimiento, cambiar de pestana en un movil se lee como que la pagina dio un
+   salto, porque el contenido nuevo aparece de golpe donde estaba el viejo. */
+.sol-panel{animation:solEntra .32s cubic-bezier(.2,.7,.2,1) both}
+@keyframes solEntra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.sol-panel{animation:none}}
+.sol-panel[hidden]{display:none}
+/* El panel es enfocable para poder llevarle el foco al cambiar de pestana, y
+   por eso necesita anillo propio: sin el, quien navega con teclado pulsa una
+   flecha y no ve donde ha ido a parar. */
+.sol-panel:focus{outline:none}
+.sol-panel:focus-visible{outline:1px solid var(--bronze);outline-offset:6px}
+
+/* Las fichas de servicio, en corto. Antes cada una gastaba un parrafo de dos
+   frases; ahora una linea. Lo que NO cambia es el boton: sigue siendo el mismo
+   enlace de WhatsApp con el mensaje escrito en el href, uno por servicio. */
+.sol-panel .svc{padding:20px 22px}
+.sol-panel .svc p{margin-top:8px;font-size:13.5px;line-height:1.65}
+.sol-panel .svc ul{margin-top:14px}
+.sol-panel .svc .svc-btn{margin-top:18px}
+
+/* La ficha del producto dentro del panel: la foto al lado del texto en cuanto
+   hay sitio, para que quepa de una vez en una pantalla. */
+.sol-panel .prod{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+@media(min-width:760px){.sol-panel .prod{grid-template-columns:minmax(0,320px) 1fr;gap:40px}}
+
+/* El precio: una sola cifra, la de entrada. El resto de la escalera —las 25
+   cantidades y lo que baja el precio por pieza— vive en pedido.html. */
+.pc-desde{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin-top:22px}
+.pc-desde .pc-et{font-size:9.5px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+.pc-desde .cifra{font-family:var(--serif);font-size:clamp(34px,5.6vw,46px);line-height:1;
+  color:var(--ink);font-variant-numeric:tabular-nums}
+.pc-desde .u{font-size:11.5px;letter-spacing:1.4px;color:var(--muted)}
+.sol-panel .prod-nota{margin-top:18px;font-size:13px}
+/* El boton NO se estira. `.svc-btn` es inline-flex, pero dentro de una rejilla
+   el alineado por defecto lo lleva a `stretch` y sale de borde a borde: con el
+   anillo pulsante de `::before` encima, los dos extremos se ven como recortes.
+   Se le da su ancho y ya. En movil sigue ocupando todo, que ahi si conviene. */
+.pc-ir{justify-self:start;width:fit-content}
+@media(max-width:759px){.pc-ir{width:100%;justify-content:center}}
+
+/* El recorte de la foto llega hasta donde empiezan las dos columnas y no un
+   pixel menos: entre 641 y 759 px la ficha seguia en UNA columna con la foto
+   entera, y salia MAS alta que en un movil de 390. */
+@media(max-width:759px){
+  .sol-panel .prod-mini{display:none}
+  .sol-panel .prod-envoltura,
+  .sol-panel .prod-fig>.prod-abre{width:min(58vw,260px)}
+  .sol-panel .prod-nota{padding:11px 13px;font-size:12.5px;line-height:1.6}
+}
+
+/* En movil el conmutador ocupa el ancho entero y se reparte en tres: un
+   objetivo de un tercio de pantalla no hay que buscarlo con el pulgar. */
+@media(max-width:640px){
+  .sol-tabs{width:100%}
+  .sol-t{flex:1 1 0;padding:12px 6px;font-size:9px;letter-spacing:1.6px}
+
+  /* EL PANEL DEL PRODUCTO ES EL MAS ALTO DE LOS TRES, y en un movil casi todo
+     lo que sobra es foto. Se recorta por donde no cuesta informacion:
+
+     · Las dos miniaturas —perfil y reverso— se van. 183 px para ensenar dos
+       vistas que el visor ya sirve: se abre la foto grande y las flechas pasan
+       a las otras dos. No se pierde ninguna, se pierde el atajo.
+     · La principal se topa a 260 px de ancho. Sigue siendo la foto mas grande
+       del panel y deja sitio para que el precio y el boton entren en la misma
+       pantalla, que es lo que decide la compra.
+
+     En escritorio no se toca nada: alli hay ancho de sobra y las tres vistas
+     caben al lado del texto. */
+}
+
 /* ------------------------- LAS QUE YA ESTAN PUESTAS -------------------------
    La unica prueba de que esto existe fuera de un render. Hasta aqui la ficha
    ensena tres fotos de estudio del producto, y una foto de estudio la tiene
@@ -1676,6 +1742,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    del recorrido y a renumerar lo que viene detras, para ganar un renglon que
    nadie va a buscar por su nombre. */
 .insta{margin-top:56px;padding-top:34px;border-top:1px solid var(--line-soft)}
+/* Dentro del panel de casos no hace falta ninguna de las tres cosas: la
+   pestana ya separa, y la linea suelta se lee como una seccion vacia. */
+.sol-panel .insta{margin-top:0;padding-top:0;border-top:0}
 .insta .ck{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
 .insta h3{font-family:var(--serif);font-size:clamp(23px,3.6vw,31px);line-height:1.2;
   color:var(--ink);margin-top:9px}
@@ -1855,8 +1924,6 @@ html.js .pc-alt{display:none}
    pantalla. Se recorta el interletrado y el relleno, nunca el tamaño de letra:
    lo que hay que poder leer es justo la palabra que dice dónde estás. */
 @media(max-width:400px){
-  .cat-seg a{padding:0 15px;letter-spacing:1.8px}
-  .cat-barra{padding-inline:12px}
 }
 #servicios,#productos{scroll-margin-top:158px}
 #coste{scroll-margin-top:96px}
@@ -2267,11 +2334,10 @@ html.js .pc-alt{display:none}
      ocupa ni un píxel más que el rótulo al que sustituye. -->
 <nav class="rail l" id="riel" aria-label="Índice del recorrido">
   <div class="idxr">
-    <a href="#servicios"  data-sec="servicios">01<b>Servicios</b></a>
-    <a href="#productos"  data-sec="productos">02<b>Productos</b></a>
-    <a href="#proyectos"  data-sec="proyectos">03<b>Proyectos</b></a>
-    <a href="#diagnostico" data-sec="diagnostico">04<b>Diagnóstico</b></a>
-    <a href="#contacto"   data-sec="contacto">05<b>Contacto</b></a>
+    <a href="#soluciones"  data-sec="soluciones">01<b>Soluciones</b></a>
+    <a href="#proyectos"   data-sec="proyectos">02<b>Proyectos</b></a>
+    <a href="#diagnostico" data-sec="diagnostico">03<b>Diagnóstico</b></a>
+    <a href="#contacto"    data-sec="contacto">04<b>Contacto</b></a>
     <span class="sello" aria-hidden="true"></span>
   </div>
 </nav>
@@ -2338,328 +2404,220 @@ html.js .pc-alt{display:none}
   </div>
 </header>
 
-<!-- ============ SERVICIOS ============ -->
-<!-- El conmutador de categoría. Va aquí y no dentro de una de las dos
-     secciones porque pertenece a las dos: es lo que dice en cuál estás.
-     `aria-hidden` no se usa —el lector de pantalla debe poder alcanzarlo—; lo
-     que se oculta fuera de las dos secciones es visual, con visibility. -->
-<div class="cat-barra" id="cat-barra">
-  <nav class="cat-seg" aria-label="Categoría: servicios o productos">
-    <a href="#servicios" data-cat="servicios">Servicios</a>
-    <a href="#productos" data-cat="productos">Productos</a>
-  </nav>
-</div>
+<!-- ============ SOLUCIONES (01) ============
+     UNA sección donde había DOS y una barra flotante. Antes: «01 Servicios»
+     (738 px de móvil), «02 Productos» (2.528 px) y, encima de las dos, una
+     `.cat-barra` fija que aparecía y desaparecía para decir en cuál estabas.
+     Tres cosas para contar tres cosas, y casi cuatro pantallas de móvil para
+     llegar de la primera a la última.
 
-<section id="servicios">
+     Ahora el conmutador vive DENTRO de la sección, que es donde se entiende sin
+     explicarlo, y las tres respuestas se turnan en el mismo hueco. El recorrido
+     de la página pasa de cinco tramos a cuatro.
+
+     ⚠ LOS IDS `servicios` Y `productos` SE CONSERVAN, en los paneles. No son
+     decorativos: nueve enlaces de esta misma página apuntan a ellos —el riel,
+     el pie, la barra superior, «lo que dominamos»— y `#productos` está además
+     dentro de los datos estructurados de la cabecera. Moverlos rompería todo
+     eso en silencio. El script abre la pestaña que toque cuando se llega por
+     uno de ellos.
+
+     SIN JAVASCRIPT LOS TRES PANELES SE VEN, uno debajo de otro. No llevan
+     `hidden` en el marcado: lo pone el script al arrancar. Es el mismo suelo
+     que pedido.html —si un script no carga, la web sigue vendiendo— y además
+     deja el contenido entero donde un buscador lo encuentra. -->
+<section id="soluciones">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">01 —</span> Servicios</span>
-    <h2 class="title" data-split>Lo que <em>dominamos</em></h2>
-    <!-- Los tres "Solicitar" abren WhatsApp con el servicio ya escrito en el
-         mensaje. Se quedan así aunque el formulario haya vuelto: el desplegable
-         de contacto ofrece los mismos tres servicios, y un enlace que abre una
-         conversación de un toque convierte mejor que uno que baja media página
-         hasta un campo pre-seleccionado.
-         El texto va codificado en el propio href y no lo compone el JavaScript:
-         así el botón funciona igual con el JS caído, y no hay una plantilla de
-         mensaje repartida entre el marcado y el script.
-         Está redactado en primera persona y con el nombre del servicio en corto
-         —"un agente de IA para mi negocio", no "Agentes de IA para tu Negocio"—
-         porque quien lo envía es el visitante, no la web. -->
-    <div class="svc-grid baraja" data-baraja="servicio">
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 01</span>
-        <h3>Diseño Web Profesional</h3>
-        <p><b>Cada visitante que abandona una página web poco profesional es una oportunidad que probablemente no volverá.</b> Diseñamos sitios web que generan confianza desde el primer segundo y convierten visitas en clientes reales.</p>
-        <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Diseño Web Profesional"><span class="dia"></span>Solicitar</a>
-      </article>
-      <!-- El orden de las cuatro es una decisión comercial, no técnica: la web
-           primero porque es la puerta de entrada, y el perfil de Google segundo
-           porque es lo que más rápido se nota en un negocio local. Si vuelve a
-           cambiar hay que renumerar los `idx` de aquí Y reordenar las ofertas
-           del esquema de datos estructurados de la cabecera, que van en
-           paralelo a esta lista. -->
-      <article class="svc rv">
-        <span class="go">&#8599;</span>
-        <span class="idx">/ 02</span>
-        <h3>Perfil de tu Negocio en Google</h3>
-        <p><b>Quien te busca en Google y encuentra una ficha vacía, con horarios viejos
-          o sin una sola foto, termina yendo al de al lado.</b> Dejamos tu negocio bien
-          puesto en Google y en Maps: horarios, fotos, servicios, categorías y el enlace
-          directo para que tus clientes te dejen reseñas.</p>
-        <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20que%20configuren%20el%20perfil%20de%20mi%20negocio%20en%20Google." class="svc-btn" target="_blank" rel="noopener noreferrer"
-           aria-label="Escribir por WhatsApp sobre el Perfil de tu Negocio en Google"><span class="dia"></span>Solicitar</a>
-      </article>
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 03</span>
-        <h3>Atención al Cliente con IA</h3>
-        <p><b>Cada llamada o mensaje sin responder puede convertirse en dinero perdido para tu negocio.</b> Un agente de IA atiende llamadas, WhatsApp y mensajes las 24 horas, responde preguntas, agenda citas y ayuda a vender incluso cuando tu negocio está cerrado.</p>
-        <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
-      </article>
-      <!-- Aquí iba "Aplicación Privada para tu Negocio", retirada del catálogo en
-           su día. El resto de este comentario contaba que eran TRES servicios y
-           que por eso la última ficha se estiraba a la fila entera; las dos
-           cosas dejaron de ser ciertas al añadir el perfil de Google. La regla
-           de la hoja ya no depende del número —es
-           `.svc:last-child:nth-child(odd)`, que sólo estira cuando la cuenta es
-           impar—, así que el catálogo puede crecer sin tocar el CSS. -->
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 04</span>
-        <h3>Automatización de Procesos</h3>
-        <p><b>Cada proceso manual puede hacer que tu equipo desperdicie decenas de horas de trabajo cada mes.</b> Automatizamos tareas para reducir errores, acelerar la operación y permitir que tu empresa se enfoque en crecer, no en repetir el mismo trabajo todos los días.</p>
-        <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
-      </article>
+    <span class="sec-tag"><span class="n">01 &#8212;</span> Soluciones</span>
+    <h2 class="title" data-split>Lo que <em>hacemos</em></h2>
+    <p class="sol-int">Lo construimos, lo dejamos funcionando y te ense&#241;amos d&#243;nde ya funciona.</p>
+
+    <div class="sol-tabs" role="tablist" aria-label="Tipo de soluci&#243;n">
+      <button class="sol-t" type="button" role="tab" id="t-servicios"
+              aria-controls="servicios" aria-selected="true">Servicios</button>
+      <button class="sol-t" type="button" role="tab" id="t-productos"
+              aria-controls="productos" aria-selected="false" tabindex="-1">Producto</button>
+      <button class="sol-t" type="button" role="tab" id="t-casos"
+              aria-controls="casos" aria-selected="false" tabindex="-1">Casos reales</button>
     </div>
 
-  </div>
-</section>
+    <div class="sol-panel" id="servicios" role="tabpanel" aria-labelledby="t-servicios" tabindex="0">
+      <p class="sol-sub">Lo que construimos para un negocio.</p>
+      <div class="svc-grid baraja" data-baraja="servicio">
+        <article class="svc">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 01</span>
+          <h3>Diseño Web Profesional</h3>
+          <p>Sitios que generan confianza desde el primer segundo y convierten visitas en clientes.</p>
+          <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Diseño Web Profesional"><span class="dia"></span>Solicitar</a>
+        </article>
+        <article class="svc">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 02</span>
+          <h3>Perfil de tu Negocio en Google</h3>
+          <p>Tu ficha bien puesta en Google y en Maps: horarios, fotos, servicios y reseñas.</p>
+          <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20que%20configuren%20el%20perfil%20de%20mi%20negocio%20en%20Google." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre el Perfil de tu Negocio en Google"><span class="dia"></span>Solicitar</a>
+        </article>
+        <article class="svc">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 03</span>
+          <h3>Atención al Cliente con IA</h3>
+          <p>Atiende llamadas y WhatsApp las 24 horas, responde dudas y agenda citas.</p>
+          <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
+        </article>
+        <article class="svc">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 04</span>
+          <h3>Automatización de Procesos</h3>
+          <p>Menos trabajo repetido y menos errores: horas que tu equipo recupera cada mes.</p>
+          <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
+        </article>
+      </div>
+    </div>
 
-
-<!-- ============ PRODUCTOS ============
-     La primera sección de la página que NO vende trabajo, sino una cosa que se
-     entrega. Va pegada a Servicios a propósito: son las dos mitades de la misma
-     pregunta —qué hacemos por ti y qué te llevas— y separarlas por media página
-     habría dejado el producto como una nota al pie.
-     El conmutador de arriba y el sello de esta cabecera dicen los dos en cuál
-     de las dos está el visitante. Es deliberado que lo digan dos veces: quien
-     entra por #productos directamente no ha visto pasar la barra. -->
-<section id="productos">
-  <div class="wrap">
-    <span class="sec-tag"><span class="n">02 —</span> Productos</span>
-    <h2 class="title" data-split>Lo que te <em>llevas</em></h2>
-    <span class="cat-sello">Producto físico · no es un servicio</span>
-
-    <article class="prod rv">
-<div class="prod-fig">
+    <div class="sol-panel" id="productos" role="tabpanel" aria-labelledby="t-productos" tabindex="0">
+      <p class="sol-sub"><span class="cat-sello">Producto f&#237;sico &#183; no es un servicio</span></p>
+      <article class="prod">
+        <div class="prod-fig">
         <div class="prod-vista" role="group" aria-label="C&#243;mo ver el producto">
-          <button type="button" class="pv aqui" data-vista="foto">Fotos</button>
-          <button type="button" class="pv" data-vista="3d">Girar en 3D</button>
+        <button type="button" class="pv aqui" data-vista="foto">Fotos</button>
+        <button type="button" class="pv" data-vista="3d">Girar en 3D</button>
         </div>
         <div class="p3d" id="p3d" hidden tabindex="0" role="img"
-             aria-label="La placa en tres dimensiones, con la foto real en la cara impresa. Arrastra en horizontal para girarla, o usa las flechas del teclado.">
-          <div class="p3d-esc" id="p3d-esc"><div class="p3d-pieza">
-            <div class="p3d-piso"></div>
-            <div class="ba"><div class="c bt"></div><div class="c bb"></div></div>
-            <div class="pl">
-              <div class="c cf"></div>
-              <div class="c cb"></div>
-              <div class="c ci"></div><div class="c cd"></div>
-              <div class="c ct"></div><div class="c cu"></div>
-            </div>
-          </div></div>
+        aria-label="La placa en tres dimensiones, con la foto real en la cara impresa. Arrastra en horizontal para girarla, o usa las flechas del teclado.">
+        <div class="p3d-esc" id="p3d-esc"><div class="p3d-pieza">
+        <div class="p3d-piso"></div>
+        <div class="ba"><div class="c bt"></div><div class="c bb"></div></div>
+        <div class="pl">
+        <div class="c cf"></div>
+        <div class="c cb"></div>
+        <div class="c ci"></div><div class="c cd"></div>
+        <div class="c ct"></div><div class="c cu"></div>
+        </div>
+        </div></div>
         </div>
         <!-- La barra de girar. Existe porque sobre la pieza el arrastre convive
-             con el desplazamiento de la pagina y hay que salir recto; aqui no:
-             52 px de alto, todo el ancho y touch-action:none. Va aria-hidden
-             porque no anade nada nuevo —el propio visor es enfocable y se gira
-             con las flechas— y anunciarla dos veces solo estorba. -->
+        con el desplazamiento de la pagina y hay que salir recto; aqui no:
+        52 px de alto, todo el ancho y touch-action:none. Va aria-hidden
+        porque no anade nada nuevo —el propio visor es enfocable y se gira
+        con las flechas— y anunciarla dos veces solo estorba. -->
         <div class="p3d-mando" id="p3d-mando" hidden aria-hidden="true">
-          <span>&#9666;&#160;&#160;arrastra aqu&#237; para girar&#160;&#160;&#9656;</span>
+        <span>&#9666;&#160;&#160;arrastra aqu&#237; para girar&#160;&#160;&#9656;</span>
         </div>
-                <!-- Fotos reales del producto. Las tres a 3:4 EXACTO para que casen de
-             altura, y con algo mas de fondo que el recorte anterior: cerradas
-             sobre el objeto se perdia la mesa, que es lo que dice donde vive.
-             Pesaban 6,5 MB en PNG; salen a 464 KB en WebP con calidad 82.
-             Las tres son pulsables y abren el mismo visor con flechas. La de
-             1400 px solo se descarga al ampliar. -->
+        <!-- Fotos reales del producto. Las tres a 3:4 EXACTO para que casen de
+        altura, y con algo mas de fondo que el recorte anterior: cerradas
+        sobre el objeto se perdia la mesa, que es lo que dice donde vive.
+        Pesaban 6,5 MB en PNG; salen a 464 KB en WebP con calidad 82.
+        Las tres son pulsables y abren el mismo visor con flechas. La de
+        1400 px solo se descarga al ampliar. -->
         <button class="prod-abre" type="button" data-galeria="producto"
-                data-grande="assets/producto-resenas-frontal-1400.webp"
-                data-pie="De frente" data-alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;."
-                aria-label="Ampliar la foto: de frente">
-          <img class="prod-foto" src="assets/producto-resenas-frontal-900.webp"
-               srcset="assets/producto-resenas-frontal-480.webp 480w, assets/producto-resenas-frontal-900.webp 900w"
-               sizes="(max-width:899px) 82vw, 30vw" width="900" height="1200" loading="lazy" decoding="async"
-               alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;."><span class="prod-lupa">Ampliar</span>
+        data-grande="assets/producto-resenas-frontal-1400.webp"
+        data-pie="De frente" data-alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;."
+        aria-label="Ampliar la foto: de frente">
+        <img class="prod-foto" src="assets/producto-resenas-frontal-900.webp"
+        srcset="assets/producto-resenas-frontal-480.webp 480w, assets/producto-resenas-frontal-900.webp 900w"
+        sizes="(max-width:899px) 82vw, 30vw" width="900" height="1200" loading="lazy" decoding="async"
+        alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;."><span class="prod-lupa">Ampliar</span>
         </button>
         <div class="prod-mini">
-          <button class="prod-abre" type="button" data-galeria="producto"
-                data-grande="assets/producto-resenas-perfil-1400.webp"
-                data-pie="De perfil" data-alt="La misma placa vista de lado: se aprecia la inclinaci&#243;n y la base triangular sobre la que se apoya."
-                aria-label="Ampliar la foto: de perfil">
-          <img class="" src="assets/producto-resenas-perfil-900.webp"
-               srcset="assets/producto-resenas-perfil-480.webp 480w, assets/producto-resenas-perfil-900.webp 900w"
-               sizes="(max-width:899px) 40vw, 15vw" width="900" height="1200" loading="lazy" decoding="async"
-               alt="La misma placa vista de lado: se aprecia la inclinaci&#243;n y la base triangular sobre la que se apoya.">
+        <button class="prod-abre" type="button" data-galeria="producto"
+        data-grande="assets/producto-resenas-perfil-1400.webp"
+        data-pie="De perfil" data-alt="La misma placa vista de lado: se aprecia la inclinaci&#243;n y la base triangular sobre la que se apoya."
+        aria-label="Ampliar la foto: de perfil">
+        <img class="" src="assets/producto-resenas-perfil-900.webp"
+        srcset="assets/producto-resenas-perfil-480.webp 480w, assets/producto-resenas-perfil-900.webp 900w"
+        sizes="(max-width:899px) 40vw, 15vw" width="900" height="1200" loading="lazy" decoding="async"
+        alt="La misma placa vista de lado: se aprecia la inclinaci&#243;n y la base triangular sobre la que se apoya.">
         </button>
-          <button class="prod-abre" type="button" data-galeria="producto"
-                data-grande="assets/producto-resenas-trasera-1400.webp"
-                data-pie="Por detr&#225;s" data-alt="El reverso de la placa, negro liso y sin impresi&#243;n, apoyado en su base."
-                aria-label="Ampliar la foto: por detr&#225;s">
-          <img class="" src="assets/producto-resenas-trasera-900.webp"
-               srcset="assets/producto-resenas-trasera-480.webp 480w, assets/producto-resenas-trasera-900.webp 900w"
-               sizes="(max-width:899px) 40vw, 15vw" width="900" height="1200" loading="lazy" decoding="async"
-               alt="El reverso de la placa, negro liso y sin impresi&#243;n, apoyado en su base.">
+        <button class="prod-abre" type="button" data-galeria="producto"
+        data-grande="assets/producto-resenas-trasera-1400.webp"
+        data-pie="Por detr&#225;s" data-alt="El reverso de la placa, negro liso y sin impresi&#243;n, apoyado en su base."
+        aria-label="Ampliar la foto: por detr&#225;s">
+        <img class="" src="assets/producto-resenas-trasera-900.webp"
+        srcset="assets/producto-resenas-trasera-480.webp 480w, assets/producto-resenas-trasera-900.webp 900w"
+        sizes="(max-width:899px) 40vw, 15vw" width="900" height="1200" loading="lazy" decoding="async"
+        alt="El reverso de la placa, negro liso y sin impresi&#243;n, apoyado en su base.">
         </button>
         </div>
-      </div>
-
-      <div class="prod-cuerpo">
-        <h3>Placa de rese&#241;as para Google</h3>
-        <!-- Antes abría con una idea ("las reseñas no llegan solas") y dejaba para
-             la tercera línea QUÉ ES la cosa que se vende. Ahora lo dice en las
-             primeras cuatro palabras: es una placa, va en el mostrador. Lo demás
-             es el gesto del cliente, que es lo único que hay que entender. -->
-        <p><b>Una placa para el mostrador de tu negocio.</b>
-          El cliente acerca el m&#243;vil o escanea el c&#243;digo y va directo a
-          dejarte una rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
-        <!-- Dos: como funciona y cuanto dura. Las otras tres o repetian el
-             parrafo de arriba («sin aplicacion», «apunta a tu ficha») o eran
-             detalle que nadie duda de una placa impresa. -->
-        <ul class="prod-ul">
-          <li>NFC y QR</li>
-          <li>Dura de 5 a 10 a&#241;os</li>
-        </ul>
-          <!-- EL CONTADOR. Sustituye a la lista de once filas que vivia en un
-               <details> plegado. La lista enseñaba el catalogo entero de golpe
-               —once precios, once envios, once botones— y ocupaba media
-               pantalla para responder una sola pregunta: cuanto cuestan las que
-               yo quiero. El contador responde esa y calla el resto.
-
-               ⚠ TODO ESTE BLOQUE LO ESCRIBE tools/precios.mjs. Editarlo a mano
-               dura hasta el siguiente `node tools/precios.mjs`, que lo
-               sobrescribe entero. Los precios se tocan en la tabla de ese
-               archivo y en ningun otro sitio. -->
+        </div>
+        <div class="prod-cuerpo">
+          <h3>Placa de rese&#241;as para Google</h3>
+          <p><b>Una placa para el mostrador de tu negocio.</b>
+            El cliente acerca el m&#243;vil o escanea el c&#243;digo y va directo a
+            dejarte una rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
+          <ul class="prod-ul">
+            <li>NFC y QR</li>
+            <li>Dura de 5 a 10 a&#241;os</li>
+          </ul>
+          <!-- ⚠ ESTE BLOQUE LO ESCRIBE tools/precios.mjs. Editarlo a mano dura
+               hasta el siguiente `node tools/precios.mjs`, que lo sobrescribe.
+               Antes aqu&#237; viv&#237;a el contador entero —cantidad, precio en vivo, las
+               25 cantidades y su tabla JSON&#8212;. Se fue a pedido.html, que ya
+               eleg&#237;a cantidad con un desplegable de 25 y ya llevaba el WhatsApp
+               de &#171;m&#225;s de 25&#187;: no se perdi&#243; ni una ruta y la portada baj&#243; tres
+               pantallas de m&#243;vil. -->
           <div class="prod-compra">
-            <div class="pc-cab">
-              <div class="pc-cant">
-                <button class="pc-b" type="button" data-pc="-1" aria-label="Quitar una placa">&#8722;</button>
-                <input class="pc-n" type="number" inputmode="numeric" step="1"
-                       min="1" max="25" value="1" data-pc-n
-                       aria-label="Cantidad de placas">
-                <span class="pc-w" data-pc-w>placa</span>
-                <button class="pc-b" type="button" data-pc="1" aria-label="A&#241;adir una placa">+</button>
-              </div>
-              <p class="pc-precio" aria-live="polite"><span class="cifra" data-pc-total>$399</span><span class="u">MXN</span></p>
-            </div>
-            <p class="pc-detalle" data-pc-detalle>Env&#237;o gratis</p>
-            <p class="pc-gratis" data-pc-gratis></p>
-            <a class="svc-btn pc-ir" href="pedido.html?n=1" data-pc-ir><span class="dia"></span>Comprar ahora</a>
-            <p class="pc-mas"><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20necesito%20m%C3%A1s%20de%2025%20placas%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20%C2%BFQu%C3%A9%20precio%20me%20pueden%20hacer%3F" target="_blank" rel="noopener noreferrer">&#191;Necesitas m&#225;s de 25? Hablemos el precio</a></p>
-            <p class="pc-wa"><a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20quiero%201%20placa%20de%20rese%C3%B1as%20de%20Google%20%28NFC%20%2B%20QR%29.%20Total%3A%20%24399%20MXN%20con%20env%C3%ADo%20gratis." target="_blank" rel="noopener noreferrer">o pedirlo por WhatsApp</a></p>
-            <div class="pc-alt">
-              <p class="pc-nt">Todas las cantidades</p>
-              <ul class="pc-nl">
-                <li><a href="pedido.html?n=1"><span class="pc-nq">1 pieza</span><span class="pc-np">$399 MXN</span></a></li>
-                <li><a href="pedido.html?n=2"><span class="pc-nq">2 piezas</span><span class="pc-np">$649 MXN</span></a></li>
-                <li><a href="pedido.html?n=3"><span class="pc-nq">3 piezas</span><span class="pc-np">$799 MXN</span></a></li>
-                <li><a href="pedido.html?n=4"><span class="pc-nq">4 piezas</span><span class="pc-np">$949 MXN</span></a></li>
-                <li><a href="pedido.html?n=5"><span class="pc-nq">5 piezas</span><span class="pc-np">$1,099 MXN</span></a></li>
-                <li><a href="pedido.html?n=6"><span class="pc-nq">6 piezas</span><span class="pc-np">$1,249 MXN</span></a></li>
-                <li><a href="pedido.html?n=7"><span class="pc-nq">7 piezas</span><span class="pc-np">$1,429 MXN</span></a></li>
-                <li><a href="pedido.html?n=8"><span class="pc-nq">8 piezas</span><span class="pc-np">$1,599 MXN</span></a></li>
-                <li><a href="pedido.html?n=9"><span class="pc-nq">9 piezas</span><span class="pc-np">$1,749 MXN</span></a></li>
-                <li><a href="pedido.html?n=10"><span class="pc-nq">10 piezas</span><span class="pc-np">$1,899 MXN</span></a></li>
-                <li><a href="pedido.html?n=11"><span class="pc-nq">11 piezas</span><span class="pc-np">$2,049 MXN</span></a></li>
-                <li><a href="pedido.html?n=12"><span class="pc-nq">12 piezas</span><span class="pc-np">$2,199 MXN</span></a></li>
-                <li><a href="pedido.html?n=13"><span class="pc-nq">13 piezas</span><span class="pc-np">$2,349 MXN</span></a></li>
-                <li><a href="pedido.html?n=14"><span class="pc-nq">14 piezas</span><span class="pc-np">$2,499 MXN</span></a></li>
-                <li><a href="pedido.html?n=15"><span class="pc-nq">15 piezas</span><span class="pc-np">$2,649 MXN</span></a></li>
-                <li><a href="pedido.html?n=16"><span class="pc-nq">16 piezas</span><span class="pc-np">$2,799 MXN</span></a></li>
-                <li><a href="pedido.html?n=17"><span class="pc-nq">17 piezas</span><span class="pc-np">$2,949 MXN</span></a></li>
-                <li><a href="pedido.html?n=18"><span class="pc-nq">18 piezas</span><span class="pc-np">$3,099 MXN</span></a></li>
-                <li><a href="pedido.html?n=19"><span class="pc-nq">19 piezas</span><span class="pc-np">$3,249 MXN</span></a></li>
-                <li><a href="pedido.html?n=20"><span class="pc-nq">20 piezas</span><span class="pc-np">$3,399 MXN</span></a></li>
-                <li><a href="pedido.html?n=21"><span class="pc-nq">21 piezas</span><span class="pc-np">$3,549 MXN</span></a></li>
-                <li><a href="pedido.html?n=22"><span class="pc-nq">22 piezas</span><span class="pc-np">$3,699 MXN</span></a></li>
-                <li><a href="pedido.html?n=23"><span class="pc-nq">23 piezas</span><span class="pc-np">$3,849 MXN</span></a></li>
-                <li><a href="pedido.html?n=24"><span class="pc-nq">24 piezas</span><span class="pc-np">$3,999 MXN</span></a></li>
-                <li><a href="pedido.html?n=25"><span class="pc-nq">25 piezas</span><span class="pc-np">$4,149 MXN</span></a></li>
-              </ul>
-            </div>
-            <script type="application/json" id="pc-tabla">{"local":{"nombre":"San Luis Potosí y Soledad","rangos":[{"desde":78000,"hasta":78393,"zona":"San Luis Potosí capital"},{"desde":78395,"hasta":78399,"zona":"San Luis Potosí capital"},{"desde":78430,"hasta":78439,"zona":"Soledad de Graciano Sánchez"},{"desde":78394,"hasta":78394,"zona":"Villa de Pozos (urbano)"},{"desde":78421,"hasta":78421,"zona":"Villa de Pozos (urbano)"}]},"filas":[{"n":1,"t":"1 placa","tot":399,"e":0,"u":399,"d":"Envío gratis","s":"envío gratis","g":""},{"n":2,"t":"2 placas","tot":649,"e":0,"u":324.5,"d":"Envío gratis · $324.50 por pieza","s":"envío gratis","g":""},{"n":3,"t":"3 placas","tot":799,"e":0,"u":266.33,"d":"Envío gratis · $266.33 por pieza","s":"envío gratis","g":""},{"n":4,"t":"4 placas","tot":949,"e":0,"u":237.25,"d":"Envío gratis · $237.25 por pieza","s":"envío gratis","g":""},{"n":5,"t":"5 placas","tot":1099,"e":0,"u":219.8,"d":"Envío gratis · $219.80 por pieza","s":"envío gratis","g":""},{"n":6,"t":"6 placas","tot":1249,"e":0,"u":208.17,"d":"Envío gratis · $208.17 por pieza","s":"envío gratis","g":""},{"n":7,"t":"7 placas","tot":1429,"e":0,"u":204.14,"d":"Envío gratis · $204.14 por pieza","s":"envío gratis","g":""},{"n":8,"t":"8 placas","tot":1599,"e":0,"u":199.88,"d":"Envío gratis · $199.88 por pieza","s":"envío gratis","g":""},{"n":9,"t":"9 placas","tot":1749,"e":0,"u":194.33,"d":"Envío gratis · $194.33 por pieza","s":"envío gratis","g":""},{"n":10,"t":"10 placas","tot":1899,"e":0,"u":189.9,"d":"Envío gratis · $189.90 por pieza","s":"envío gratis","g":""},{"n":11,"t":"11 placas","tot":2049,"e":0,"u":186.27,"d":"Envío gratis · $186.27 por pieza","s":"envío gratis","g":""},{"n":12,"t":"12 placas","tot":2199,"e":0,"u":183.25,"d":"Envío gratis · $183.25 por pieza","s":"envío gratis","g":""},{"n":13,"t":"13 placas","tot":2349,"e":0,"u":180.69,"d":"Envío gratis · $180.69 por pieza","s":"envío gratis","g":""},{"n":14,"t":"14 placas","tot":2499,"e":0,"u":178.5,"d":"Envío gratis · $178.50 por pieza","s":"envío gratis","g":""},{"n":15,"t":"15 placas","tot":2649,"e":0,"u":176.6,"d":"Envío gratis · $176.60 por pieza","s":"envío gratis","g":""},{"n":16,"t":"16 placas","tot":2799,"e":0,"u":174.94,"d":"Envío gratis · $174.94 por pieza","s":"envío gratis","g":""},{"n":17,"t":"17 placas","tot":2949,"e":0,"u":173.47,"d":"Envío gratis · $173.47 por pieza","s":"envío gratis","g":""},{"n":18,"t":"18 placas","tot":3099,"e":0,"u":172.17,"d":"Envío gratis · $172.17 por pieza","s":"envío gratis","g":""},{"n":19,"t":"19 placas","tot":3249,"e":0,"u":171,"d":"Envío gratis · $171 por pieza","s":"envío gratis","g":""},{"n":20,"t":"20 placas","tot":3399,"e":0,"u":169.95,"d":"Envío gratis · $169.95 por pieza","s":"envío gratis","g":""},{"n":21,"t":"21 placas","tot":3549,"e":0,"u":169,"d":"Envío gratis · $169 por pieza","s":"envío gratis","g":""},{"n":22,"t":"22 placas","tot":3699,"e":0,"u":168.14,"d":"Envío gratis · $168.14 por pieza","s":"envío gratis","g":""},{"n":23,"t":"23 placas","tot":3849,"e":0,"u":167.35,"d":"Envío gratis · $167.35 por pieza","s":"envío gratis","g":""},{"n":24,"t":"24 placas","tot":3999,"e":0,"u":166.63,"d":"Envío gratis · $166.63 por pieza","s":"envío gratis","g":""},{"n":25,"t":"25 placas","tot":4149,"e":0,"u":165.96,"d":"Envío gratis · $165.96 por pieza","s":"envío gratis","g":""}]}</script>
+            <p class="pc-desde"><span class="pc-et">Desde</span><span class="cifra" data-pc-total>$399</span><span class="u">MXN &#183; env&#237;o incluido</span></p>
+            <a class="svc-btn pc-ir" href="pedido.html?n=1" data-pc-ir><span class="dia"></span>Ver precios y comprar</a>
           </div>
-        <!-- Dos frases y dos casos: si estás en San Luis, y si no. Antes lo mismo
-             ocupaba cuatro renglones con detalles que no cambian la decisión
-             ("en cinco minutos", "la enlazamos con tu ficha"). -->
-        <p class="prod-nota"><b>&#191;Est&#225;s en San Luis o en Soledad?</b> Te la
-          llevamos e <b>instalamos nosotros</b>, en persona. Fuera de la ciudad te
-          llega por paqueter&#237;a, lista para usar &#8212; y el <b>env&#237;o va incluido
-          en el precio</b> vivas donde vivas.</p>
-      </div>
-    </article>
+          <p class="prod-nota"><b>Env&#237;o incluido</b> a todo M&#233;xico &#183; en San Luis y
+            Soledad te la <b>instalamos</b> en persona.</p>
+        </div>
+      </article>
+    </div>
 
-    <!-- ============ LAS QUE YA ESTAN PUESTAS ============
-         Tres instalaciones reales, con el negocio y la plaza en el pie. Es lo
-         mas barato de anadir y lo mas dificil de copiar: cualquiera ensena un
-         render, nadie ensena el mostrador de un cliente que no tiene.
-
-         ⚠ SIN TESTIMONIOS INVENTADOS. Aqui no hay ni una frase entrecomillada
-         atribuida a nadie. Lo unico que se afirma es lo que se ve en la foto:
-         que la placa esta en ese negocio. El dia que haya frases reales, con
-         nombre y permiso, van debajo del pie de cada foto y no antes.
-
-         Abren el mismo visor que las fotos del producto, en su propia lista:
-         data-galeria="instalaciones" las agrupa aparte, asi que las flechas
-         pasan de una instalacion a la siguiente y no al reverso de la placa. -->
-    <div class="insta rv">
-      <p class="ck">Ya instaladas</p>
-      <h3>D&#243;nde ya <em>est&#225;n puestas</em></h3>
-      <p class="insta-int">Tres negocios de San Luis Potos&#237; que ya la tienen en el
-        mostrador. Las fotos son del d&#237;a que se las entregamos.</p>
-      <div class="insta-g">
+    <div class="sol-panel" id="casos" role="tabpanel" aria-labelledby="t-casos" tabindex="0">
+      <p class="sol-sub">Negocios reales que ya las tienen puestas.</p>
+        <div class="insta">
+        <div class="insta-g">
         <figure>
-          <button class="prod-abre" type="button" data-galeria="instalaciones"
-                  data-grande="assets/cliente-kabuki-sendero-grande.webp"
-                  data-pie="Kabuki &#183; Plaza Sendero, San Luis Potos&#237;" data-alt="La placa de rese&#241;as sostenida en la mano frente al mostrador de Kabuki en Plaza Sendero: al fondo se ven el r&#243;tulo del local, la carta y las vitrinas de sushi."
-                  aria-label="Ampliar la foto: Kabuki, Plaza Sendero, San Luis Potos&#237;">
-            <img src="assets/cliente-kabuki-sendero-900.webp"
-                 srcset="assets/cliente-kabuki-sendero-480.webp 480w, assets/cliente-kabuki-sendero-900.webp 900w"
-                 sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
-                 loading="lazy" decoding="async" alt="La placa de rese&#241;as sostenida en la mano frente al mostrador de Kabuki en Plaza Sendero: al fondo se ven el r&#243;tulo del local, la carta y las vitrinas de sushi."><span class="prod-lupa">Ampliar</span>
-          </button>
-          <figcaption><b>Kabuki</b>Plaza Sendero, San Luis Potos&#237;</figcaption>
+        <button class="prod-abre" type="button" data-galeria="instalaciones"
+        data-grande="assets/cliente-kabuki-sendero-grande.webp"
+        data-pie="Kabuki &#183; Plaza Sendero, San Luis Potos&#237;" data-alt="La placa de rese&#241;as sostenida en la mano frente al mostrador de Kabuki en Plaza Sendero: al fondo se ven el r&#243;tulo del local, la carta y las vitrinas de sushi."
+        aria-label="Ampliar la foto: Kabuki, Plaza Sendero, San Luis Potos&#237;">
+        <img src="assets/cliente-kabuki-sendero-900.webp"
+        srcset="assets/cliente-kabuki-sendero-480.webp 480w, assets/cliente-kabuki-sendero-900.webp 900w"
+        sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+        loading="lazy" decoding="async" alt="La placa de rese&#241;as sostenida en la mano frente al mostrador de Kabuki en Plaza Sendero: al fondo se ven el r&#243;tulo del local, la carta y las vitrinas de sushi."><span class="prod-lupa">Ampliar</span>
+        </button>
+        <figcaption><b>Kabuki</b>Plaza Sendero, San Luis Potos&#237;</figcaption>
         </figure>
         <figure>
-          <button class="prod-abre" type="button" data-galeria="instalaciones"
-                  data-grande="assets/cliente-kabuki-villamagna-grande.webp"
-                  data-pie="Kabuki &#183; Villamagna, San Luis Potos&#237;" data-alt="La misma placa frente al local de Kabuki en Villamagna, con el r&#243;tulo rojo de &#171;Delicias japonesas&#187; y el tel&#233;fono de servicio a domicilio detr&#225;s."
-                  aria-label="Ampliar la foto: Kabuki, Villamagna, San Luis Potos&#237;">
-            <img src="assets/cliente-kabuki-villamagna-900.webp"
-                 srcset="assets/cliente-kabuki-villamagna-480.webp 480w, assets/cliente-kabuki-villamagna-900.webp 900w"
-                 sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
-                 loading="lazy" decoding="async" alt="La misma placa frente al local de Kabuki en Villamagna, con el r&#243;tulo rojo de &#171;Delicias japonesas&#187; y el tel&#233;fono de servicio a domicilio detr&#225;s."><span class="prod-lupa">Ampliar</span>
-          </button>
-          <figcaption><b>Kabuki</b>Villamagna, San Luis Potos&#237;</figcaption>
+        <button class="prod-abre" type="button" data-galeria="instalaciones"
+        data-grande="assets/cliente-kabuki-villamagna-grande.webp"
+        data-pie="Kabuki &#183; Villamagna, San Luis Potos&#237;" data-alt="La misma placa frente al local de Kabuki en Villamagna, con el r&#243;tulo rojo de &#171;Delicias japonesas&#187; y el tel&#233;fono de servicio a domicilio detr&#225;s."
+        aria-label="Ampliar la foto: Kabuki, Villamagna, San Luis Potos&#237;">
+        <img src="assets/cliente-kabuki-villamagna-900.webp"
+        srcset="assets/cliente-kabuki-villamagna-480.webp 480w, assets/cliente-kabuki-villamagna-900.webp 900w"
+        sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+        loading="lazy" decoding="async" alt="La misma placa frente al local de Kabuki en Villamagna, con el r&#243;tulo rojo de &#171;Delicias japonesas&#187; y el tel&#233;fono de servicio a domicilio detr&#225;s."><span class="prod-lupa">Ampliar</span>
+        </button>
+        <figcaption><b>Kabuki</b>Villamagna, San Luis Potos&#237;</figcaption>
         </figure>
         <figure>
-          <button class="prod-abre" type="button" data-galeria="instalaciones"
-                  data-grande="assets/cliente-titos-villamagna-grande.webp"
-                  data-pie="Tito&#8217;s Snacks &amp; Drinks &#183; Villamagna, San Luis Potos&#237;" data-alt="La placa frente al mostrador de Tito&#8217;s Snacks &amp; Drinks: un local de dulces con la hilera de botes de cristal y el r&#243;tulo del negocio al fondo."
-                  aria-label="Ampliar la foto: Tito&#8217;s Snacks &amp; Drinks, Villamagna, San Luis Potos&#237;">
-            <img src="assets/cliente-titos-villamagna-900.webp"
-                 srcset="assets/cliente-titos-villamagna-480.webp 480w, assets/cliente-titos-villamagna-900.webp 900w"
-                 sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
-                 loading="lazy" decoding="async" alt="La placa frente al mostrador de Tito&#8217;s Snacks &amp; Drinks: un local de dulces con la hilera de botes de cristal y el r&#243;tulo del negocio al fondo."><span class="prod-lupa">Ampliar</span>
-          </button>
-          <figcaption><b>Tito&#8217;s Snacks &amp; Drinks</b>Villamagna, San Luis Potos&#237;</figcaption>
+        <button class="prod-abre" type="button" data-galeria="instalaciones"
+        data-grande="assets/cliente-titos-villamagna-grande.webp"
+        data-pie="Tito&#8217;s Snacks &amp; Drinks &#183; Villamagna, San Luis Potos&#237;" data-alt="La placa frente al mostrador de Tito&#8217;s Snacks &amp; Drinks: un local de dulces con la hilera de botes de cristal y el r&#243;tulo del negocio al fondo."
+        aria-label="Ampliar la foto: Tito&#8217;s Snacks &amp; Drinks, Villamagna, San Luis Potos&#237;">
+        <img src="assets/cliente-titos-villamagna-900.webp"
+        srcset="assets/cliente-titos-villamagna-480.webp 480w, assets/cliente-titos-villamagna-900.webp 900w"
+        sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+        loading="lazy" decoding="async" alt="La placa frente al mostrador de Tito&#8217;s Snacks &amp; Drinks: un local de dulces con la hilera de botes de cristal y el r&#243;tulo del negocio al fondo."><span class="prod-lupa">Ampliar</span>
+        </button>
+        <figcaption><b>Tito&#8217;s Snacks &amp; Drinks</b>Villamagna, San Luis Potos&#237;</figcaption>
         </figure>
-      </div>
-      <p class="insta-pie">&#191;Quieres que la tuya salga aqu&#237;? El d&#237;a de la entrega
+        </div>
+        <p class="insta-pie">&#191;Quieres que la tuya salga aqu&#237;? El d&#237;a de la entrega
         te tomamos la foto &#8212; y <b>s&#243;lo se publica si nos dices que s&#237;</b>.</p>
+        </div>
     </div>
   </div>
 </section>
 
-<!-- ============ EL COSTE DE HACERLO A MANO ============
-     ESTABA DENTRO DE SERVICIOS y por eso el recorrido salia torcido: servicios,
-     el coste, y despues los productos. Lo que se vende primero y lo que cuesta
-     no hacerlo despues, con el catalogo partido en dos por una calculadora.
-     Ahora cierra el bloque comercial entero: primero lo que hacemos por ti
-     (Servicios), luego lo que te llevas (Productos) y por ultimo la cifra de
-     no hacer ninguna de las dos cosas. La objecion se responde una vez, al
-     final, y no a mitad de catalogo.
-
-     VA SIN NUMERO Y ES DELIBERADO. No es un tramo del recorrido sino una
-     herramienta que lo remata, igual que el manifiesto, la frase de cierre y
-     la banda viva. Numerarla obligaria a meter un septimo hueco en un menu que
-     ya se oculta por debajo de 1080 px, y a renumerar cuatro secciones para
-     ganar un renglon que nadie busca por su nombre. -->
 <section class="coste-mano" id="coste">
   <div class="wrap">
 <!-- ============ CALCULADORA DEL TRABAJO MANUAL ============
@@ -2721,7 +2679,7 @@ html.js .pc-alt{display:none}
 <section id="proyectos">
   <div class="wrap">
     <div class="sec-cab">
-      <span class="sec-tag"><span class="n">03 —</span> Proyectos</span>
+      <span class="sec-tag"><span class="n">02 —</span> Proyectos</span>
       <h2 class="title" data-split>Lo que <em>construimos</em></h2>
     </div>
     <div class="works baraja" data-baraja="caso">
@@ -2828,7 +2786,7 @@ html.js .pc-alt{display:none}
      leer otro dominio (CORS); el endpoint se configura en AUDITOR abajo. -->
 <section id="diagnostico">
   <div class="wrap">
-    <span class="sec-tag rv"><span class="n">04 —</span> Diagnóstico</span>
+    <span class="sec-tag rv"><span class="n">03 —</span> Diagnóstico</span>
     <h2 class="title" data-split>Tu web, <em>auditada</em> en 10 segundos</h2>
     <div class="aud-grid">
       <div class="rv">
@@ -2860,7 +2818,7 @@ html.js .pc-alt{display:none}
 <!-- ============ CONTACTO ============ -->
 <section id="contacto">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">05 —</span> Contacto</span>
+    <span class="sec-tag"><span class="n">04 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
       <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
@@ -3171,47 +3129,6 @@ const EXP=(()=>{
    sea un temporizador: un temporizador no mide la carga, la finge. */
 
 
-/* ---------- CONMUTADOR DE CATEGORÍA (Servicios / Productos) ----------
-   Lo que resuelve: con un producto físico dentro de una página que hasta ahora
-   sólo vendía servicios, el visitante tiene que saber en todo momento en cuál
-   de las dos está. En escritorio ya lo decían el riel y el menú; en MÓVIL no lo
-   decía nada, porque el riel se oculta bajo 920 px y el menú bajo 1080.
-
-   La barra sólo aparece mientras una de las dos secciones cruza la banda
-   central de la pantalla. Fuera de ahí no tiene nada que decir y se retira: una
-   barra permanente en una página de seis secciones sería cromo, no información.
-
-   El margen -40%/-40% deja activa la que cruza el centro exacto, que es el
-   mismo criterio que usa el riel. Con dos secciones adyacentes eso garantiza
-   que nunca hay dos encendidas ni un hueco entre medias.
-
-   Si el JS no corre, la barra se queda invisible y no pasa nada: el rótulo de
-   cada sección y el sello «Producto físico» siguen diciendo dónde estás. */
-(()=>{
-  const barra=document.getElementById('cat-barra');
-  if(!barra)return;
-  const pastillas=[...barra.querySelectorAll('[data-cat]')];
-  const secciones=pastillas.map(a=>document.getElementById(a.dataset.cat));
-  if(secciones.some(x=>!x))return;
-
-  const dentro=new Set();
-  function pinta(){
-    barra.classList.toggle('ver',dentro.size>0);
-    /* En orden de página, no en orden de llegada del observador: el orden de
-       las entradas no dice nada de cuál se está mirando. */
-    const act=(secciones.find(x=>dentro.has(x))||{}).id;
-    pastillas.forEach(a=>{
-      const on=a.dataset.cat===act;
-      a.classList.toggle('aqui',on);
-      if(on)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');
-    });
-  }
-  const obs=new IntersectionObserver(es=>{
-    es.forEach(e=>e.isIntersecting?dentro.add(e.target):dentro.delete(e.target));
-    pinta();
-  },{rootMargin:'-40% 0px -40% 0px'});
-  secciones.forEach(x=>obs.observe(x));
-})();
 
 /* ---------- SPLIT DE TITULARES (palabra por palabra) ---------- */
 function splitWords(el){
@@ -4659,6 +4576,76 @@ const SIG=(()=>{
      s&#243;lo si el archivo existe de verdad la tarjeta se vuelve pulsable. Prometer
      "ver certificado" y abrir un cuadro vac&#237;o destruye justo la confianza que
      la secci&#243;n construye. Abren con lista de UNO: sin botonera. */
+
+  /* ---------- LAS PESTANAS DE SOLUCIONES ----------
+     Tres paneles turnandose en el mismo hueco. Lo que hace este bloque, por
+     orden de importancia:
+
+     1. ESCONDE. En el marcado los tres paneles estan VISIBLES: sin JavaScript
+        se leen los tres, uno debajo de otro, y un buscador los encuentra
+        enteros. El `hidden` lo pone este script, no el HTML.
+     2. DESCUBRE lo que hay dentro. Los bloques con `.rv` nacen en opacity 0 y
+        los enciende un IntersectionObserver al entrar en pantalla; dentro de un
+        panel escondido eso no llega a pasar nunca, asi que al abrir una pestana
+        se les pone `.in` a mano. Sin esto, la galeria de casos se abre en
+        blanco.
+     3. ATIENDE AL TECLADO. Flechas para moverse entre pestanas, Inicio y Fin
+        para los extremos: es lo que se espera de un role="tablist", y sin ello
+        el conmutador solo funciona con raton.
+     4. RESPETA LOS ENLACES VIEJOS. Nueve enlaces de esta pagina siguen
+        apuntando a #servicios y #productos, y el buscador conoce #productos.
+        Llegar por uno de ellos abre su pestana.
+
+     El foco se mueve al PANEL y no al primer elemento de dentro: en un movil,
+     enfocar un enlace abriria el teclado o dispararia el resaltado sobre algo
+     que el visitante no ha elegido. */
+  (()=>{
+    const tabs=[...document.querySelectorAll('.sol-tabs [role="tab"]')];
+    if(!tabs.length)return;
+    const panel=t=>document.getElementById(t.getAttribute('aria-controls'));
+    const paneles=tabs.map(panel);
+    if(paneles.some(p=>!p))return;
+
+    function abre(t,mueveFoco){
+      tabs.forEach((x,i)=>{
+        const activa=x===t;
+        x.setAttribute('aria-selected',activa?'true':'false');
+        /* Solo la pestana activa entra en el orden de tabulacion: en un
+           tablist el tabulador salta el grupo entero y son las flechas las
+           que se mueven dentro. */
+        x.tabIndex=activa?0:-1;
+        paneles[i].hidden=!activa;
+        if(activa)paneles[i].querySelectorAll('.rv').forEach(e=>e.classList.add('in'));
+      });
+      if(mueveFoco)t.focus();
+    }
+
+    tabs.forEach((t,i)=>{
+      t.addEventListener('click',()=>abre(t,false));
+      t.addEventListener('keydown',e=>{
+        const salto={ArrowRight:1,ArrowLeft:-1,ArrowDown:1,ArrowUp:-1}[e.key];
+        let destino=null;
+        if(salto)destino=tabs[(i+salto+tabs.length)%tabs.length];
+        else if(e.key==='Home')destino=tabs[0];
+        else if(e.key==='End')destino=tabs[tabs.length-1];
+        if(!destino)return;
+        e.preventDefault();
+        abre(destino,true);
+      });
+    });
+
+    /* Al llegar por #servicios o #productos se abre esa pestana. Se mira
+       tambien al cambiar el hash, que es lo que pasa al pulsar el riel o un
+       enlace del pie sin recargar. */
+    const porHash=()=>{
+      const id=location.hash.slice(1);
+      const t=tabs.find(x=>x.getAttribute('aria-controls')===id);
+      if(t)abre(t,false);
+    };
+    abre(tabs[0],false);
+    porHash();
+    addEventListener('hashchange',porHash);
+  })();
 
   /* LAS FOTOS. Cada valor de data-galeria es una lista propia, y dentro de una
      lista las flechas pasan de una foto a la siguiente: entrar por la segunda

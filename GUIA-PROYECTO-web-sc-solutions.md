@@ -208,6 +208,49 @@ Los nombres de los dos cofundadores siguen publicados, pero en otro sitio y por
 otro motivo: son los responsables del tratamiento de datos en el aviso de
 privacidad y en los términos. Eso no depende de esta sección.
 
+### Servicios + Productos + casos: FUSIONADOS en Soluciones (agosto de 2026)
+
+Las secciones **01 Servicios** y **02 Productos** —y la `.cat-barra` fija que
+flotaba sobre las dos para decir en cuál estabas— son ahora una sola:
+**01 Soluciones**, con un conmutador de tres pestañas dentro.
+
+El motivo es medido, no de gusto. En un móvil de 390 px las dos secciones
+sumaban **3.266 px, casi cuatro pantallas**, para contar tres cosas. La página
+entera eran 8.683 px. Hoy Soluciones mide **762 px** y la página **6.183 px**:
+un 29 % menos de portada.
+
+| | Antes | Ahora |
+|---|---|---|
+| Servicios (móvil 390) | 738 px | panel de 762 px |
+| Productos (móvil 390) | 2.528 px | panel de 1.397 px |
+| Casos | dentro de Productos | panel de 880 px |
+| Página entera (móvil) | 8.683 px · 10,3 pantallas | 6.183 px · 7,3 pantallas |
+
+Qué cambió y qué NO:
+
+- **Los ids `servicios` y `productos` siguen existiendo**, ahora en los paneles.
+  No son decorativos: nueve enlaces de la propia página apuntan a ellos y
+  `#productos` está dentro del JSON-LD de la cabecera. El script abre la pestaña
+  que toque al llegar por uno de ellos.
+- **El recorrido pasó de cinco tramos a cuatro**: 01 Soluciones, 02 Proyectos,
+  03 Diagnóstico, 04 Contacto.
+- **El contador de cantidad se fue de la portada.** Vivía en la ficha con las 25
+  cantidades y su tabla JSON, y duplicaba lo que `pedido.html` ya hacía: un
+  `<select>` de 25 opciones y el WhatsApp de «más de 25». No se perdió ninguna
+  ruta. En la portada queda el precio de entrada y el botón.
+- **`tools/precios.mjs` sigue mandando sobre el precio de la portada.** Genera
+  ahora una ficha corta en vez del contador, y `--check` sigue fallando si
+  alguien escribe una cifra a mano. Con el contador se fueron `listaTramos()`,
+  `mensaje()`, `mensajeMas()`, `url()`, `WHATSAPP`, `PAQUETE_DESDE` y `cifra()`
+  —esta última ya estaba muerta antes—.
+- **Sin JavaScript los tres paneles se ven**, uno debajo de otro. El `hidden` lo
+  pone el script, no el marcado: así un script caído no esconde dos tercios del
+  catálogo y un buscador encuentra el contenido entero.
+- **Los cuatro «Solicitar» no se tocaron**: siguen siendo enlaces de WhatsApp
+  con el mensaje escrito en el `href`, uno por servicio.
+- Lo que sí se acortó es el **copy** de cada servicio: de dos frases a una. Es
+  la única pérdida de contenido del cambio y está anotada como riesgo de SEO.
+
 ## 9. Prompt maestro original (por si quieres regenerar o crear variaciones)
 
 > Se conserva **tal cual se escribió**, como registro histórico. Ojo al leerlo:
