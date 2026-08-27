@@ -1740,6 +1740,31 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .pm-lista li.pm-destaca{background:rgba(200,169,106,.05);
   box-shadow:inset 2px 0 0 var(--bronze)}
 .pm-lista li.pm-destaca a{padding-left:12px}
+/* ---------- FILA CON PAGO EN LÍNEA ----------
+   Cuando un paquete tiene enlace de Mercado Pago, su fila lleva DOS acciones:
+   preguntar por WhatsApp —lo de siempre— y pagar. Se separan porque son
+   decisiones distintas: una abre una conversación y la otra cobra dinero, y
+   fundirlas en un solo destino obligaría a elegir cuál pierde.
+   Sin enlace de pago no hay atributo data-pago, no se aplica nada de esto y la
+   fila es la de siempre: nunca se enseña un botón de pagar que no cobre.
+
+   ⚠ Todo lo que sigue va prefijado con .pm-lista. Las reglas de la fila normal
+   son «.pm-lista a», que pesa más que un «.pm-paga» suelto: sin el prefijo, el
+   botón heredaba el display:grid y el relleno del enlace de fila entera. */
+.pm-lista li[data-pago]{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
+.pm-lista li[data-pago] .pm-pide{flex:1 1 210px;min-width:0}
+.pm-lista .pm-paga{flex:0 0 auto;margin-left:auto;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;padding:10px 18px;
+  font-family:var(--sans);font-size:10px;letter-spacing:2.4px;text-transform:uppercase;
+  font-weight:500;color:var(--bronze-hi);border:1px solid var(--bronze);
+  white-space:nowrap;transition:background .3s,color .3s}
+.pm-lista .pm-paga:hover,.pm-lista .pm-paga:focus-visible{background:var(--bronze);color:var(--on-bronze)}
+.pm-lista .pm-paga:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+/* La flecha de «esto se abre fuera» la llevan los enlaces de fila entera para
+   avisar de que son pulsables. El botón de pagar ya se ve botón; con flecha
+   además se le montaría encima del texto. */
+.pm-lista .pm-paga::after{content:none}
 .pm-n{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-soft);
   font-size:13px;line-height:1.7;color:var(--dim)}
 /* Con 250 px de ancho útil, «Cotización personalizada» y su cantidad no caben
@@ -1756,6 +1781,12 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .pm-lista a::after{font-size:11px}
   .pm-p{font-size:18px}
   .pm-e{letter-spacing:1.6px}
+  /* El botón de pagar no cabe en el renglón de la cantidad y el precio —con la
+     cifra más larga se quedaría en 40 px—, así que baja. Y bajando, va de ancho
+     completo: alineado a la derecha flotaba a media altura entre su fila y la
+     siguiente y no se veía de cuál era. Ocupando el ancho de su fila no hay
+     duda, y no cuesta ni un píxel de alto respecto a flotar. */
+  .pm-lista .pm-paga{width:100%;margin-left:0;margin-top:2px}
 }
 @media(min-width:900px){
   .prod{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
