@@ -630,7 +630,16 @@ function paquetesJson() {
     paquetes: PAQUETES.map(p => ({
       id: String(p.piezas),
       piezas: p.piezas,
-      titulo: `Placa reseñas Google · ${piezas(p)} · ${gratis(p) ? 'envío gratis' : 'envío incluido'}`,
+      /* El concepto SIN la parte del envío. Antes aquí venía el título entero y
+         el Worker le hacía un `replace` buscando «· envío incluido» para
+         cambiarlo cuando la entrega era en mano. Eso se rompía en silencio si
+         alguien retocaba esta línea: el replace no encontraba nada, devolvía el
+         título original, y el comprador de la ciudad veía «envío incluido»
+         junto a un importe 79 pesos menor.
+
+         Ahora viaja sólo la base y el Worker compone el final según lo que de
+         verdad pase con el envío. No hay ninguna cadena que buscar. */
+      base: `Placa reseñas Google · ${piezas(p)}`,
       /* `total` es CON envío; `envio` es lo que de ese total es paquetería. El
          Worker resta lo segundo cuando el código postal es de los de casa. Van
          los dos y no uno calculado: el importe que se cobra no puede depender

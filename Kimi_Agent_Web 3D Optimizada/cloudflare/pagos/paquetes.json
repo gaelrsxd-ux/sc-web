@@ -35,7 +35,7 @@
     {
       "id": "1",
       "piezas": 1,
-      "titulo": "Placa reseñas Google · 1 pieza · envío incluido",
+      "base": "Placa reseñas Google · 1 pieza",
       "total": 508,
       "envio": 79,
       "cuotas": 1
@@ -43,7 +43,7 @@
     {
       "id": "2",
       "piezas": 2,
-      "titulo": "Placa reseñas Google · 2 piezas · envío incluido",
+      "base": "Placa reseñas Google · 2 piezas",
       "total": 768,
       "envio": 69,
       "cuotas": 1
@@ -51,7 +51,7 @@
     {
       "id": "3",
       "piezas": 3,
-      "titulo": "Placa reseñas Google · 3 piezas · envío incluido",
+      "base": "Placa reseñas Google · 3 piezas",
       "total": 858,
       "envio": 59,
       "cuotas": 1
@@ -59,7 +59,7 @@
     {
       "id": "4",
       "piezas": 4,
-      "titulo": "Placa reseñas Google · 4 piezas · envío gratis",
+      "base": "Placa reseñas Google · 4 piezas",
       "total": 949,
       "envio": 0,
       "cuotas": 1
@@ -67,7 +67,7 @@
     {
       "id": "5",
       "piezas": 5,
-      "titulo": "Placa reseñas Google · 5 piezas · envío gratis",
+      "base": "Placa reseñas Google · 5 piezas",
       "total": 1099,
       "envio": 0,
       "cuotas": 1
@@ -75,7 +75,7 @@
     {
       "id": "6",
       "piezas": 6,
-      "titulo": "Placa reseñas Google · 6 piezas · envío gratis",
+      "base": "Placa reseñas Google · 6 piezas",
       "total": 1249,
       "envio": 0,
       "cuotas": 1
@@ -83,7 +83,7 @@
     {
       "id": "7",
       "piezas": 7,
-      "titulo": "Placa reseñas Google · 7 piezas · envío gratis",
+      "base": "Placa reseñas Google · 7 piezas",
       "total": 1429,
       "envio": 0,
       "cuotas": 1
@@ -91,7 +91,7 @@
     {
       "id": "8",
       "piezas": 8,
-      "titulo": "Placa reseñas Google · 8 piezas · envío gratis",
+      "base": "Placa reseñas Google · 8 piezas",
       "total": 1599,
       "envio": 0,
       "cuotas": 1
@@ -99,7 +99,7 @@
     {
       "id": "9",
       "piezas": 9,
-      "titulo": "Placa reseñas Google · 9 piezas · envío gratis",
+      "base": "Placa reseñas Google · 9 piezas",
       "total": 1749,
       "envio": 0,
       "cuotas": 1
@@ -107,7 +107,7 @@
     {
       "id": "10",
       "piezas": 10,
-      "titulo": "Placa reseñas Google · 10 piezas · envío gratis",
+      "base": "Placa reseñas Google · 10 piezas",
       "total": 1899,
       "envio": 0,
       "cuotas": 1
@@ -115,7 +115,7 @@
     {
       "id": "11",
       "piezas": 11,
-      "titulo": "Placa reseñas Google · 11 piezas · envío gratis",
+      "base": "Placa reseñas Google · 11 piezas",
       "total": 2049,
       "envio": 0,
       "cuotas": 1
@@ -123,7 +123,7 @@
     {
       "id": "12",
       "piezas": 12,
-      "titulo": "Placa reseñas Google · 12 piezas · envío gratis",
+      "base": "Placa reseñas Google · 12 piezas",
       "total": 2199,
       "envio": 0,
       "cuotas": 1
@@ -131,7 +131,7 @@
     {
       "id": "13",
       "piezas": 13,
-      "titulo": "Placa reseñas Google · 13 piezas · envío gratis",
+      "base": "Placa reseñas Google · 13 piezas",
       "total": 2349,
       "envio": 0,
       "cuotas": 1
@@ -139,7 +139,7 @@
     {
       "id": "14",
       "piezas": 14,
-      "titulo": "Placa reseñas Google · 14 piezas · envío gratis",
+      "base": "Placa reseñas Google · 14 piezas",
       "total": 2499,
       "envio": 0,
       "cuotas": 1
@@ -147,7 +147,7 @@
     {
       "id": "15",
       "piezas": 15,
-      "titulo": "Placa reseñas Google · 15 piezas · envío gratis",
+      "base": "Placa reseñas Google · 15 piezas",
       "total": 2649,
       "envio": 0,
       "cuotas": 2
@@ -155,7 +155,7 @@
     {
       "id": "16",
       "piezas": 16,
-      "titulo": "Placa reseñas Google · 16 piezas · envío gratis",
+      "base": "Placa reseñas Google · 16 piezas",
       "total": 2799,
       "envio": 0,
       "cuotas": 2
@@ -163,7 +163,7 @@
     {
       "id": "17",
       "piezas": 17,
-      "titulo": "Placa reseñas Google · 17 piezas · envío gratis",
+      "base": "Placa reseñas Google · 17 piezas",
       "total": 2949,
       "envio": 0,
       "cuotas": 2
@@ -171,7 +171,7 @@
     {
       "id": "18",
       "piezas": 18,
-      "titulo": "Placa reseñas Google · 18 piezas · envío gratis",
+      "base": "Placa reseñas Google · 18 piezas",
       "total": 3099,
       "envio": 0,
       "cuotas": 2
@@ -179,7 +179,7 @@
     {
       "id": "19",
       "piezas": 19,
-      "titulo": "Placa reseñas Google · 19 piezas · envío gratis",
+      "base": "Placa reseñas Google · 19 piezas",
       "total": 3249,
       "envio": 0,
       "cuotas": 2
@@ -187,7 +187,7 @@
     {
       "id": "20",
       "piezas": 20,
-      "titulo": "Placa reseñas Google · 20 piezas · envío gratis",
+      "base": "Placa reseñas Google · 20 piezas",
       "total": 3399,
       "envio": 0,
       "cuotas": 2
@@ -195,7 +195,7 @@
     {
       "id": "21",
       "piezas": 21,
-      "titulo": "Placa reseñas Google · 21 piezas · envío gratis",
+      "base": "Placa reseñas Google · 21 piezas",
       "total": 3549,
       "envio": 0,
       "cuotas": 2
@@ -203,7 +203,7 @@
     {
       "id": "22",
       "piezas": 22,
-      "titulo": "Placa reseñas Google · 22 piezas · envío gratis",
+      "base": "Placa reseñas Google · 22 piezas",
       "total": 3699,
       "envio": 0,
       "cuotas": 2
@@ -211,7 +211,7 @@
     {
       "id": "23",
       "piezas": 23,
-      "titulo": "Placa reseñas Google · 23 piezas · envío gratis",
+      "base": "Placa reseñas Google · 23 piezas",
       "total": 3849,
       "envio": 0,
       "cuotas": 2
@@ -219,7 +219,7 @@
     {
       "id": "24",
       "piezas": 24,
-      "titulo": "Placa reseñas Google · 24 piezas · envío gratis",
+      "base": "Placa reseñas Google · 24 piezas",
       "total": 3999,
       "envio": 0,
       "cuotas": 2
@@ -227,7 +227,7 @@
     {
       "id": "25",
       "piezas": 25,
-      "titulo": "Placa reseñas Google · 25 piezas · envío gratis",
+      "base": "Placa reseñas Google · 25 piezas",
       "total": 4149,
       "envio": 0,
       "cuotas": 2

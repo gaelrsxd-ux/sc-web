@@ -84,7 +84,7 @@ const TABLA = {
     {
       "id": "1",
       "piezas": 1,
-      "titulo": "Placa reseñas Google · 1 pieza · envío incluido",
+      "base": "Placa reseñas Google · 1 pieza",
       "total": 508,
       "envio": 79,
       "cuotas": 1
@@ -92,7 +92,7 @@ const TABLA = {
     {
       "id": "2",
       "piezas": 2,
-      "titulo": "Placa reseñas Google · 2 piezas · envío incluido",
+      "base": "Placa reseñas Google · 2 piezas",
       "total": 768,
       "envio": 69,
       "cuotas": 1
@@ -100,7 +100,7 @@ const TABLA = {
     {
       "id": "3",
       "piezas": 3,
-      "titulo": "Placa reseñas Google · 3 piezas · envío incluido",
+      "base": "Placa reseñas Google · 3 piezas",
       "total": 858,
       "envio": 59,
       "cuotas": 1
@@ -108,7 +108,7 @@ const TABLA = {
     {
       "id": "4",
       "piezas": 4,
-      "titulo": "Placa reseñas Google · 4 piezas · envío gratis",
+      "base": "Placa reseñas Google · 4 piezas",
       "total": 949,
       "envio": 0,
       "cuotas": 1
@@ -116,7 +116,7 @@ const TABLA = {
     {
       "id": "5",
       "piezas": 5,
-      "titulo": "Placa reseñas Google · 5 piezas · envío gratis",
+      "base": "Placa reseñas Google · 5 piezas",
       "total": 1099,
       "envio": 0,
       "cuotas": 1
@@ -124,7 +124,7 @@ const TABLA = {
     {
       "id": "6",
       "piezas": 6,
-      "titulo": "Placa reseñas Google · 6 piezas · envío gratis",
+      "base": "Placa reseñas Google · 6 piezas",
       "total": 1249,
       "envio": 0,
       "cuotas": 1
@@ -132,7 +132,7 @@ const TABLA = {
     {
       "id": "7",
       "piezas": 7,
-      "titulo": "Placa reseñas Google · 7 piezas · envío gratis",
+      "base": "Placa reseñas Google · 7 piezas",
       "total": 1429,
       "envio": 0,
       "cuotas": 1
@@ -140,7 +140,7 @@ const TABLA = {
     {
       "id": "8",
       "piezas": 8,
-      "titulo": "Placa reseñas Google · 8 piezas · envío gratis",
+      "base": "Placa reseñas Google · 8 piezas",
       "total": 1599,
       "envio": 0,
       "cuotas": 1
@@ -148,7 +148,7 @@ const TABLA = {
     {
       "id": "9",
       "piezas": 9,
-      "titulo": "Placa reseñas Google · 9 piezas · envío gratis",
+      "base": "Placa reseñas Google · 9 piezas",
       "total": 1749,
       "envio": 0,
       "cuotas": 1
@@ -156,7 +156,7 @@ const TABLA = {
     {
       "id": "10",
       "piezas": 10,
-      "titulo": "Placa reseñas Google · 10 piezas · envío gratis",
+      "base": "Placa reseñas Google · 10 piezas",
       "total": 1899,
       "envio": 0,
       "cuotas": 1
@@ -164,7 +164,7 @@ const TABLA = {
     {
       "id": "11",
       "piezas": 11,
-      "titulo": "Placa reseñas Google · 11 piezas · envío gratis",
+      "base": "Placa reseñas Google · 11 piezas",
       "total": 2049,
       "envio": 0,
       "cuotas": 1
@@ -172,7 +172,7 @@ const TABLA = {
     {
       "id": "12",
       "piezas": 12,
-      "titulo": "Placa reseñas Google · 12 piezas · envío gratis",
+      "base": "Placa reseñas Google · 12 piezas",
       "total": 2199,
       "envio": 0,
       "cuotas": 1
@@ -180,7 +180,7 @@ const TABLA = {
     {
       "id": "13",
       "piezas": 13,
-      "titulo": "Placa reseñas Google · 13 piezas · envío gratis",
+      "base": "Placa reseñas Google · 13 piezas",
       "total": 2349,
       "envio": 0,
       "cuotas": 1
@@ -188,7 +188,7 @@ const TABLA = {
     {
       "id": "14",
       "piezas": 14,
-      "titulo": "Placa reseñas Google · 14 piezas · envío gratis",
+      "base": "Placa reseñas Google · 14 piezas",
       "total": 2499,
       "envio": 0,
       "cuotas": 1
@@ -196,7 +196,7 @@ const TABLA = {
     {
       "id": "15",
       "piezas": 15,
-      "titulo": "Placa reseñas Google · 15 piezas · envío gratis",
+      "base": "Placa reseñas Google · 15 piezas",
       "total": 2649,
       "envio": 0,
       "cuotas": 2
@@ -204,7 +204,7 @@ const TABLA = {
     {
       "id": "16",
       "piezas": 16,
-      "titulo": "Placa reseñas Google · 16 piezas · envío gratis",
+      "base": "Placa reseñas Google · 16 piezas",
       "total": 2799,
       "envio": 0,
       "cuotas": 2
@@ -212,7 +212,7 @@ const TABLA = {
     {
       "id": "17",
       "piezas": 17,
-      "titulo": "Placa reseñas Google · 17 piezas · envío gratis",
+      "base": "Placa reseñas Google · 17 piezas",
       "total": 2949,
       "envio": 0,
       "cuotas": 2
@@ -220,7 +220,7 @@ const TABLA = {
     {
       "id": "18",
       "piezas": 18,
-      "titulo": "Placa reseñas Google · 18 piezas · envío gratis",
+      "base": "Placa reseñas Google · 18 piezas",
       "total": 3099,
       "envio": 0,
       "cuotas": 2
@@ -228,7 +228,7 @@ const TABLA = {
     {
       "id": "19",
       "piezas": 19,
-      "titulo": "Placa reseñas Google · 19 piezas · envío gratis",
+      "base": "Placa reseñas Google · 19 piezas",
       "total": 3249,
       "envio": 0,
       "cuotas": 2
@@ -236,7 +236,7 @@ const TABLA = {
     {
       "id": "20",
       "piezas": 20,
-      "titulo": "Placa reseñas Google · 20 piezas · envío gratis",
+      "base": "Placa reseñas Google · 20 piezas",
       "total": 3399,
       "envio": 0,
       "cuotas": 2
@@ -244,7 +244,7 @@ const TABLA = {
     {
       "id": "21",
       "piezas": 21,
-      "titulo": "Placa reseñas Google · 21 piezas · envío gratis",
+      "base": "Placa reseñas Google · 21 piezas",
       "total": 3549,
       "envio": 0,
       "cuotas": 2
@@ -252,7 +252,7 @@ const TABLA = {
     {
       "id": "22",
       "piezas": 22,
-      "titulo": "Placa reseñas Google · 22 piezas · envío gratis",
+      "base": "Placa reseñas Google · 22 piezas",
       "total": 3699,
       "envio": 0,
       "cuotas": 2
@@ -260,7 +260,7 @@ const TABLA = {
     {
       "id": "23",
       "piezas": 23,
-      "titulo": "Placa reseñas Google · 23 piezas · envío gratis",
+      "base": "Placa reseñas Google · 23 piezas",
       "total": 3849,
       "envio": 0,
       "cuotas": 2
@@ -268,7 +268,7 @@ const TABLA = {
     {
       "id": "24",
       "piezas": 24,
-      "titulo": "Placa reseñas Google · 24 piezas · envío gratis",
+      "base": "Placa reseñas Google · 24 piezas",
       "total": 3999,
       "envio": 0,
       "cuotas": 2
@@ -276,7 +276,7 @@ const TABLA = {
     {
       "id": "25",
       "piezas": 25,
-      "titulo": "Placa reseñas Google · 25 piezas · envío gratis",
+      "base": "Placa reseñas Google · 25 piezas",
       "total": 4149,
       "envio": 0,
       "cuotas": 2
@@ -320,9 +320,13 @@ function pesos(n) {
 /* Página de salida cuando algo va mal. Dice qué pasó en una línea y ofrece el
    camino que sigue funcionando siempre: escribir por WhatsApp. Sin estilos
    externos ni scripts, para que se sirva igual con la CSP más estricta. */
-function pagina(mensaje, p, estado = 502) {
+function pagina(mensaje, p, estado = 502, pedido = null) {
+  /* El importe que se nombra aquí es el que se iba a cobrar de verdad —con el
+     envío descontado si tocaba—, no el de tarifa: quien escribe por WhatsApp
+     después de un cobro fallido tiene que citar la cifra que vio en pantalla. */
   const texto = p
-    ? `Hola. Intenté pagar en línea ${p.titulo} (${pesos(p.total)} MXN) y el cobro no se abrió.`
+    ? `Hola. Intenté pagar en línea ${concepto(p, pedido || {})} ` +
+      `(${pesos(importe(p, pedido || {}))} MXN) y el cobro no se abrió.`
     : 'Hola. Intenté pagar en línea desde la web y el cobro no se abrió.';
   const wa = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
   return new Response(
@@ -526,7 +530,10 @@ function resumen(p, d) {
        vez de tener que notar la contradicción a ojo entre otros avisos. */
     const local = esLocal(d);
     const raro = local && d.estado && d.estado !== 'San Luis Potosí';
-    const prefijo = raro ? 'REVISAR CP: ' : (local ? 'EN MANO: ' : 'Envio: ');
+    /* El prefijo responde de un vistazo las dos preguntas que se hace quien
+       prepara el paquete: ¿lo mando o lo llevo? y ¿me pagaron el envío? */
+    const envioDicho = p.envio > 0 ? 'Envio $' + p.envio + ': ' : 'Envio gratis: ';
+    const prefijo = raro ? 'REVISAR CP: ' : (local ? 'EN MANO: ' : envioDicho);
     l.push(prefijo + [d.nombre, envio].filter(Boolean).join(', '));
   }
   if (d.tel) l.push('Tel ' + d.tel);
@@ -603,19 +610,29 @@ function importe(p, pedido) {
   return p.total - descuento;
 }
 
-/* El concepto que el comprador ve en el checkout. Cuando no se cobra envío
-   porque se entrega en mano, tiene que DECIRLO: un título que diga «envío
-   incluido» junto a un importe 79 pesos menor parece un error de cobro. */
+/* El concepto que el comprador ve en el checkout de Mercado Pago, y que el
+   titular vuelve a leer en el aviso de la venta. Tiene que decir SIEMPRE qué
+   pasó con el envío, porque es la pregunta que se hace todo el mundo al mirar
+   un importe: ¿esto ya lleva el envío o me lo van a cobrar aparte?
+
+   Cuatro casos y ninguno ambiguo:
+
+     · Paga envío           → «· incluye $79 de envío»
+     · No lo paga por local → «· sin cobro de envío, entrega en mano»
+     · Gratis para todos    → «· envío gratis»
+     · Gratis y además local→ «· envío gratis, entrega en mano»
+
+   Se COMPONE desde los datos. La versión anterior partía del título entero y le
+   hacía un `replace` buscando el texto «· envío incluido»; si alguien cambiaba
+   esa redacción en tools/precios.mjs, el replace no encontraba nada, devolvía
+   el título tal cual y el comprador de la ciudad veía «envío incluido» junto a
+   un importe 79 pesos menor. Un fallo silencioso y en la pantalla del cobro.
+   Aquí no hay ninguna cadena que buscar. */
 function concepto(p, pedido) {
-  if (!esLocal(pedido) || p.envio === 0) return p.titulo;
-  const zona = (TABLA.entregaLocal && TABLA.entregaLocal.nombre) || 'tu ciudad';
-  const nuevo = p.titulo.replace(/· envío incluido$/, '· entrega en ' + zona);
-  /* Si el sufijo cambia en tools/precios.mjs, este replace no encuentra nada y
-     devuelve el título original SIN FALLAR: el comprador vería «envío incluido»
-     junto a un importe 79 pesos menor, que es justo el error que esta función
-     existe para evitar. Un fallo silencioso pasa a ser una línea en el registro. */
-  if (nuevo === p.titulo) console.log('titulo-sin-sufijo-de-envio', p.id);
-  return nuevo;
+  const enMano = esLocal(pedido) ? ', entrega en mano' : '';
+  if (p.envio > 0 && esLocal(pedido)) return p.base + ' · sin cobro de envío, entrega en mano';
+  if (p.envio > 0) return p.base + ' · incluye $' + p.envio + ' de envío';
+  return p.base + ' · envío gratis' + enMano;
 }
 
 /* --------------------------------------------------------------- EL COBRO */
@@ -797,7 +814,7 @@ export default {
 
     const destino = await creaPreferencia(p, env, ORIGEN, pedido);
     if (!destino) {
-      return pagina('Mercado Pago no respondió. No se te ha cobrado nada.', p);
+      return pagina('Mercado Pago no respondió. No se te ha cobrado nada.', p, 502, pedido);
     }
 
     return new Response(null, {

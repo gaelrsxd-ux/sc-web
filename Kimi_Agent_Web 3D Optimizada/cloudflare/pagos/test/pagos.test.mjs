@@ -160,7 +160,8 @@ test('los once paquetes cobran exactamente lo que enseña la web', async () => {
     const llamadas = montaFetch(okMP);
     await worker.fetch(post({ paquete: p.id }), ENV);
     assert.equal(llamadas[0].cuerpo.items[0].unit_price, p.total, 'paquete ' + p.id);
-    assert.equal(llamadas[0].cuerpo.items[0].title, p.titulo, 'título del paquete ' + p.id);
+    assert.equal(llamadas[0].cuerpo.items[0].title, p.base + ' · ' + (p.envio > 0 ? 'incluye $' + p.envio + ' de envío' : 'envío gratis'),
+      'concepto del paquete ' + p.id);
   }
 });
 
@@ -340,7 +341,9 @@ test('un código postal de fuera paga su envío completo', async () => {
      esto, sólo el código postal. */
   await worker.fetch(post({ paquete: '1', cp: '79000', estado: 'San Luis Potosí' }), ENV);
   assert.equal(llamadas[0].cuerpo.items[0].unit_price, 508, 'los 79 del envío se cobran');
-  assert.match(llamadas[0].cuerpo.items[0].title, /envío incluido$/);
+  const uno1 = TABLA.paquetes.find(p => p.id === '1');
+  assert.equal(llamadas[0].cuerpo.items[0].title, uno1.base + ' · incluye $' + uno1.envio + ' de envío',
+    'y el concepto lo DICE, con el importe: quien paga envío tiene que verlo escrito');
 });
 
 test('sin código postal tampoco se regala el envío', async () => {
@@ -482,9 +485,8 @@ test('dentro de la zona, el envío no se cobra y el concepto lo DICE', { skip: R
   const item = llamadas[0].cuerpo.items[0];
   const uno = TABLA.paquetes.find(p => p.id === '1');
   assert.equal(item.unit_price, uno.total - uno.envio, 'se descuenta exactamente el envío de la tabla');
-  assert.equal(item.title.includes('envío incluido'), false,
-    'un título que diga «envío incluido» junto a un importe menor parece un error de cobro');
-  assert.match(item.title, /entrega en /);
+  assert.equal(item.title, uno.base + ' · sin cobro de envío, entrega en mano',
+    'el concepto tiene que DECIR que no se cobró envío: un importe menor sin explicación parece un error');
   assert.match(llamadas[0].cuerpo.additional_info, /EN MANO/,
     'el aviso tiene que decir que se lleva en mano, o acabará en una paquetería pagada de más');
 });
@@ -496,7 +498,8 @@ test('dentro de la zona, los paquetes que YA tenían envío gratis no cambian', 
     const llamadas = montaFetch(okMP);
     await worker.fetch(post({ paquete: p.id, cp }), ENV);
     assert.equal(llamadas[0].cuerpo.items[0].unit_price, p.total, 'paquete ' + p.id);
-    assert.equal(llamadas[0].cuerpo.items[0].title, p.titulo, 'y el concepto tampoco cambia');
+    assert.equal(llamadas[0].cuerpo.items[0].title, p.base + ' · envío gratis, entrega en mano',
+      'pero el concepto sí lo dice: se entrega en mano aunque el envío ya fuera gratis');
   }
 });
 
@@ -516,6 +519,43 @@ test('el importe cobrado NUNCA sale de la tabla, se descuente o no', async () =>
       assert.ok(cobrado > 0, 'ningún cobro puede salir en cero o negativo');
     }
   }
+});
+
+test('el concepto SIEMPRE dice qué pasó con el envío', { skip: RANGOS.length === 0 }, async () => {
+  /* Es la pregunta que se hace todo el mundo al mirar un importe: ¿esto ya
+     lleva el envío o me lo van a cobrar aparte? Cuatro casos, y ninguno puede
+     quedar ambiguo. Se comprueba con el texto EXACTO, no con un `match`: media
+     frase correcta y media vieja pasaría un match y sería justo el fallo. */
+  const cpLocal = String(RANGOS[0].desde);
+  const conEnvio = TABLA.paquetes.find(p => p.envio > 0);
+  const sinEnvio = TABLA.paquetes.find(p => p.envio === 0);
+
+  const casos = [
+    [conEnvio, '79000', conEnvio.base + ' · incluye $' + conEnvio.envio + ' de envío'],
+    [conEnvio, cpLocal, conEnvio.base + ' · sin cobro de envío, entrega en mano'],
+    [sinEnvio, '79000', sinEnvio.base + ' · envío gratis'],
+    [sinEnvio, cpLocal, sinEnvio.base + ' · envío gratis, entrega en mano'],
+  ];
+  for (const [p, cp, esperado] of casos) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: p.id, cp }), ENV);
+    assert.equal(llamadas[0].cuerpo.items[0].title, esperado, 'paquete ' + p.id + ' con cp ' + cp);
+  }
+});
+
+test('el concepto NO se construye buscando un trozo de texto', async () => {
+  /* La versión anterior hacía `titulo.replace(/· envío incluido$/, …)`. Si
+     alguien retocaba esa redacción, el replace no encontraba nada, devolvía el
+     título original y el comprador local veía «envío incluido» junto a un
+     importe 79 pesos menor. Ahora la tabla trae sólo la base y el final lo pone
+     el Worker, así que se comprueba que en `base` NO haya nada de envío. */
+  for (const p of TABLA.paquetes) {
+    assert.equal(/env[íi]o|entrega|gratis/i.test(p.base), false,
+      'la base del paquete ' + p.id + ' no puede hablar del envío: «' + p.base + '»');
+  }
+  assert.equal(TABLA.paquetes.some(p => 'titulo' in p), false,
+    'el campo `titulo` desapareció: si vuelve, alguien reintrodujo el acoplamiento');
 });
 
 /* ══════════════════════════════ RUTAS Y GUARDAS ═══════════════════════════ */
@@ -637,7 +677,7 @@ test('la tabla del Worker no está vacía ni trae importes absurdos', () => {
   for (const p of TABLA.paquetes) {
     assert.ok(Number.isInteger(p.total) && p.total > 0, 'importe entero y positivo en ' + p.id);
     assert.ok(p.total < 100000, 'importe con un tope de cordura en ' + p.id);
-    assert.ok(p.titulo.length > 0);
+    assert.ok(p.base.length > 0);
     assert.ok(p.cuotas === 1 || p.cuotas === 2, 'cuotas sólo puede ser 1 o 2 en ' + p.id);
   }
 });
