@@ -68,7 +68,16 @@
   #     un byte, y lo único que se ve es un error de CSP en la consola: el
   #     formulario parece roto sin motivo aparente. Si el gateway cambia de
   #     dominio hay que tocarlo aquí Y en GATEWAY, en el script de index.html.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'sha256-oASLDhF/wrdjgKb1jWSEHw+P3icd6tVkULphaCwYYfo=' 'sha256-GgRFCfrGnrlkUeGeTEDE1tXdwN/PZHDDL0V2Zm2+t1A=' 'sha256-O7v6TeFW4IweRFtEMLAjH/Q66QDJr6jsEjw/TLTcNFU='; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://audit.sycsolutions.company https://app.sycsolutions.company; form-action 'self' https://pagos.sycsolutions.company; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+  #
+  # ⚠ form-action LLEVA LOS DOMINIOS DE MERCADO PAGO, Y NO SOBRAN. Safari
+  #   aplica form-action también al DESTINO DE LA REDIRECCIÓN, no sólo a
+  #   dónde apunta el formulario; Chrome no. El botón de pagar envía a
+  #   pagos.sycsolutions.company, que responde un 303 hacia Mercado Pago:
+  #   sin esos dos dominios aquí, Safari deja salir el envío y BLOQUEA EL
+  #   SALTO, en silencio y sin error visible. El comprador ve girar la
+  #   ruedita y quedarse igual. Se descubrió así, en producción, con los
+  #   once botones publicados y ninguno funcionando en iPhone.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'sha256-oASLDhF/wrdjgKb1jWSEHw+P3icd6tVkULphaCwYYfo=' 'sha256-GgRFCfrGnrlkUeGeTEDE1tXdwN/PZHDDL0V2Zm2+t1A=' 'sha256-O7v6TeFW4IweRFtEMLAjH/Q66QDJr6jsEjw/TLTcNFU='; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://audit.sycsolutions.company https://app.sycsolutions.company; form-action 'self' https://pagos.sycsolutions.company https://www.mercadopago.com.mx https://www.mercadopago.com; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
 
 # Aquí NO se toca la caché de /assets/*. Los fondos se llaman siempre igual
 # —hero-bg.webp, bg-servicios.webp…— y se han sustituido ya un par de veces:

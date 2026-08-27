@@ -169,13 +169,40 @@ test('un cobro correcto redirige con 303 al checkout', async () => {
   assert.equal(r.headers.get('Cache-Control'), 'no-store');
 });
 
-test('el tope por IP corta el martilleo', async () => {
+test('el tope por IP corta el martilleo, pero DEJA recorrer la lista entera', async () => {
   montaCaches();
   const llamadas = montaFetch(okMP);
+
+  /* La página enseña ONCE paquetes. Mirar los precios de todos no puede agotar
+     el cupo: con el tope en 12 pasaba, y lo tropezó el titular a los cinco
+     minutos de publicar. Esta comprobación existe para que no vuelva. */
+  for (let i = 0; i < 11; i++) {
+    const r = await worker.fetch(post({ paquete: '1' }), ENV);
+    assert.equal(r.status, 303, 'la pulsación ' + (i + 1) + ' de once debe pasar');
+  }
+
   let ultima;
-  for (let i = 0; i < 15; i++) ultima = await worker.fetch(post({ paquete: '1' }), ENV);
-  assert.equal(ultima.status, 429);
-  assert.ok(llamadas.length <= 12, 'no se crean más de 12 preferencias por minuto y IP, se hicieron ' + llamadas.length);
+  for (let i = 0; i < 40; i++) ultima = await worker.fetch(post({ paquete: '1' }), ENV);
+  assert.equal(ultima.status, 429, 'el martilleo sí se corta');
+  assert.ok(llamadas.length <= 30, 'no más de 30 preferencias por ventana e IP, se hicieron ' + llamadas.length);
+});
+
+test('la ventana del tope vence sola y no se renueva a cada pulsación', async () => {
+  const almacen = montaCaches();
+  montaFetch(okMP);
+  for (let i = 0; i < 40; i++) await worker.fetch(post({ paquete: '1' }), ENV);
+  assert.equal((await worker.fetch(post({ paquete: '1' }), ENV)).status, 429);
+
+  /* Se envejece la marca de inicio más allá de la ventana. Con el diseño
+     anterior —el reloj era el max-age de la caché, que cada escritura
+     renovaba— la cuenta NO se reiniciaba nunca mientras se siguiera pulsando:
+     no era un tope por minuto sino por sesión de clics. */
+  for (const [k, v] of almacen) {
+    const d = JSON.parse(v);
+    almacen.set(k, JSON.stringify({ n: d.n, inicio: d.inicio - 61000 }));
+  }
+  assert.equal((await worker.fetch(post({ paquete: '1' }), ENV)).status, 303,
+    'pasada la ventana se vuelve a poder pagar');
 });
 
 /* ════════════════════════ LA TABLA, CONTRA LA WEB ═════════════════════════ */
