@@ -58,12 +58,13 @@ document.documentElement.classList.add('js');
    "telephone":"+524423697248",
    "areaServed":[{"@type":"Country","name":"México"},{"@type":"Place","name":"Latinoamérica"}],
    "address":{"@type":"PostalAddress","addressLocality":"San Luis Potosí","addressRegion":"San Luis Potosí","addressCountry":"MX"},
-   "knowsAbout":["Diseño web","Inteligencia artificial","Automatización de procesos","Análisis de datos"],
+   "knowsAbout":["Diseño web","Inteligencia artificial","Automatización de procesos","Análisis de datos","Perfil de Empresa en Google"],
    "sameAs":[],
    "makesOffer":[
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Sitios Web Premium para tu Negocio","serviceType":"Diseño y desarrollo web"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Agentes de IA para tu Negocio","serviceType":"Agentes conversacionales con inteligencia artificial"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización de Procesos en tu Negocio","serviceType":"Automatización de procesos"}}
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Diseño Web Profesional","serviceType":"Diseño y desarrollo web"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Atención al Cliente con IA","serviceType":"Agentes conversacionales con inteligencia artificial"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización de Procesos","serviceType":"Automatización de procesos"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Perfil de tu Negocio en Google","serviceType":"Gestión de Perfil de Empresa en Google"}}
    ]
   },
   {
@@ -646,7 +647,14 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    entera al final es la última que se quiere recordar.
    Va con min-width porque por debajo de 760 px esto no es una retícula sino una
    baraja horizontal (display:flex), donde grid-column no pinta nada. */
-@media(min-width:761px){.svc-grid>.svc:last-child{grid-column:1/-1}}
+/* La última ficha ocupa la fila entera SÓLO si queda sola en ella, que con dos
+   columnas pasa cuando el catálogo tiene un número IMPAR de servicios. El
+   `:nth-child(odd)` es lo que lo hace automático: con tres se estira, con
+   cuatro no. Antes era un `:last-child` a secas, y por eso el número de fichas
+   era un dato escondido en la hoja de estilos: ya rompió el día que hubo cinco
+   y habría vuelto a romper ahora al pasar a cuatro —la cuarta se habría ido a
+   una fila entera para ella y la tercera se habría quedado a media fila—. */
+@media(min-width:761px){.svc-grid>.svc:last-child:nth-child(odd){grid-column:1/-1}}
 .svc{background:var(--bg2);padding:clamp(30px,3.4vw,48px);position:relative;transition:background .4s}
 .svc:hover{background:var(--panel)}
 .svc::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--bronze);transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.7,0,.2,1)}
@@ -2316,18 +2324,18 @@ html.js .pc-alt{display:none}
       <article class="svc rv">
         <span class="go">↗</span>
         <span class="idx">/ 01</span>
-        <h3>Sitios Web Premium para tu Negocio</h3>
+        <h3>Diseño Web Profesional</h3>
         <p><b>Cada visitante que abandona una página web poco profesional es una oportunidad que probablemente no volverá.</b> Diseñamos sitios web que generan confianza desde el primer segundo y convierten visitas en clientes reales.</p>
         <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Sitios Web Premium para tu Negocio"><span class="dia"></span>Solicitar</a>
+        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Diseño Web Profesional"><span class="dia"></span>Solicitar</a>
       </article>
       <article class="svc rv">
         <span class="go">↗</span>
         <span class="idx">/ 02</span>
-        <h3>Agentes de IA para tu Negocio</h3>
+        <h3>Atención al Cliente con IA</h3>
         <p><b>Cada llamada o mensaje sin responder puede convertirse en dinero perdido para tu negocio.</b> Un agente de IA atiende llamadas, WhatsApp y mensajes las 24 horas, responde preguntas, agenda citas y ayuda a vender incluso cuando tu negocio está cerrado.</p>
         <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Agentes de IA para tu Negocio"><span class="dia"></span>Solicitar</a>
+        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
       </article>
       <!-- Aquí iba "Aplicación Privada para tu Negocio", la 03. Retirada del
            catálogo: son TRES servicios. Con tres en dos columnas la última ficha
@@ -2337,10 +2345,26 @@ html.js .pc-alt{display:none}
       <article class="svc rv">
         <span class="go">↗</span>
         <span class="idx">/ 03</span>
-        <h3>Automatización de Procesos en tu Negocio</h3>
+        <h3>Automatización de Procesos</h3>
         <p><b>Cada proceso manual puede hacer que tu equipo desperdicie decenas de horas de trabajo cada mes.</b> Automatizamos tareas para reducir errores, acelerar la operación y permitir que tu empresa se enfoque en crecer, no en repetir el mismo trabajo todos los días.</p>
         <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos en tu Negocio"><span class="dia"></span>Solicitar</a>
+        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
+      </article>
+      <!-- 04, y va la última a propósito: enlaza con la sección de Productos,
+           que es justo la placa que hace que ese perfil reciba reseñas. Las dos
+           mitades del mismo problema —salir bien en Google y que te califiquen—
+           quedan seguidas. -->
+      <article class="svc rv">
+        <span class="go">&#8599;</span>
+        <span class="idx">/ 04</span>
+        <h3>Perfil de tu Negocio en Google</h3>
+        <p><b>Quien te busca en Google y encuentra una ficha vacía, con horarios viejos
+          o sin una sola foto, termina yendo al de al lado.</b> Dejamos tu negocio bien
+          puesto en Google y en Maps: horarios, fotos, servicios, categorías y el enlace
+          directo para que tus clientes te dejen reseñas.</p>
+        <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
+        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20que%20configuren%20el%20perfil%20de%20mi%20negocio%20en%20Google." class="svc-btn" target="_blank" rel="noopener noreferrer"
+           aria-label="Escribir por WhatsApp sobre el Perfil de tu Negocio en Google"><span class="dia"></span>Solicitar</a>
       </article>
     </div>
 
@@ -2840,17 +2864,24 @@ html.js .pc-alt{display:none}
                placeholder="Con clave de país si no es de México"
                aria-describedby="telefono-av">
         <p class="aviso" id="telefono-av"></p>
-        <!-- Las tres primeras opciones son, palabra por palabra, los tres
-             servicios que anuncia la sección 01 de esta misma página. La cuarta
-             es la que las preguntas frecuentes prometen unas líneas más abajo.
-             ⚠ El valor viaja tal cual al sistema, que lo compara contra su
-             catálogo: cualquier retoque —una tilde, un guion, el orden— hace que
-             el envío deje de casar allí. No se «mejoran» estos textos. -->
+        <!-- ⚠ EL `value` VIAJA AL SISTEMA; EL TEXTO ES SÓLO LO QUE SE LEE.
+             El gateway compara el valor recibido contra su propio catálogo, y
+             cualquier retoque —una tilde, un guion, el orden— hace que el envío
+             deje de casar allí. Por eso, al cambiar los nombres visibles de los
+             servicios, se cambió la etiqueta y el `value` NO: el visitante lee
+             «Diseño Web Profesional» y el sistema sigue recibiendo, palabra por
+             palabra, la cadena que ya conoce. Esos value no se «mejoran».
+
+             ⚠ FALTA AQUÍ EL CUARTO SERVICIO, «Perfil de tu Negocio en Google»,
+             y no es un olvido: el catálogo del sistema no lo conoce todavía, y
+             un valor que no casa deja el envío en el aire. Se añade el día que
+             ese catálogo lo incluya; mientras tanto, quien lo quiera tiene el
+             botón de WhatsApp de su propia ficha, que no pasa por el gateway. -->
         <label for="servicio">¿Qué necesitas?</label>
         <select id="servicio" name="servicio" required aria-describedby="servicio-av">
-          <option>Sitios Web Premium para tu Negocio</option>
-          <option>Agentes de IA para tu Negocio</option>
-          <option>Automatización de Procesos en tu Negocio</option>
+          <option value="Sitios Web Premium para tu Negocio">Diseño Web Profesional</option>
+          <option value="Agentes de IA para tu Negocio">Atención al Cliente con IA</option>
+          <option value="Automatización de Procesos en tu Negocio">Automatización de Procesos</option>
           <option>No lo sé aún — asesórenme</option>
         </select>
         <p class="aviso" id="servicio-av"></p>
