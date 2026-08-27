@@ -75,13 +75,75 @@ test('el importe lo pone el servidor, NUNCA el navegador', async () => {
   assert.equal(item.quantity, 1, 'quantity fija a 1: si viniera del cliente, multiplicaría el cobro');
 });
 
-test('fuerza el pago de contado: installments = 1', async () => {
+test('el catálogo normal se cobra de contado: installments = 1', async () => {
   montaCaches();
   const llamadas = montaFetch(okMP);
   await worker.fetch(post({ paquete: '1' }), ENV);
   const pm = llamadas[0].cuerpo.payment_methods;
   assert.equal(pm.installments, 1, 'installments es el MÁXIMO de cuotas; 1 = una sola exhibición');
   assert.equal(pm.default_installments, 1);
+});
+
+test('cada paquete pide las cuotas que dice la tabla, y ninguna más', async () => {
+  for (const p of TABLA.paquetes) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: p.id }), ENV);
+    assert.equal(llamadas[0].cuerpo.payment_methods.installments, p.cuotas,
+      'cuotas del paquete ' + p.id);
+  }
+  /* Sólo los dos más caros llevan dos; si algún día se cuela un tercero hay que
+     decidirlo a propósito y no descubrirlo en el estado de cuenta. */
+  const conCuotas = TABLA.paquetes.filter(p => p.cuotas > 1).map(p => p.id);
+  assert.deepEqual(conCuotas, ['15', '20']);
+});
+
+/* Node cachea los módulos JSON y devuelve SIEMPRE el mismo objeto, así que la
+   tabla que se toca aquí es exactamente la que lee el Worker. Es lo que permite
+   probar el recorte de cuotas de punta a punta —entra un POST, sale la llamada
+   a Mercado Pago— en vez de llamar a una función suelta. Se restaura en
+   `finally` porque una tabla trucada que sobreviva contamina lo que venga
+   detrás, y el fallo aparecería en otra prueba cualquiera. */
+async function conCuotasEnLaTabla(id, valor, comprueba) {
+  const fila = TABLA.paquetes.find(p => p.id === id);
+  const original = fila.cuotas;
+  try {
+    fila.cuotas = valor;
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: id }), ENV);
+    comprueba(llamadas[0].cuerpo.payment_methods.installments);
+  } finally {
+    fila.cuotas = original;
+  }
+}
+
+test('NUNCA se piden tres cuotas o más: de ahí para arriba el interés lo pagas TÚ', async () => {
+  /* Dos cuotas las financia el banco del comprador y no cuestan nada. Tres ya
+     son meses sin intereses, que absorbe el vendedor: 4.69 % de cada venta.
+     Una errata de un dígito en la tabla de precios no puede convertirse en esa
+     comisión, así que el Worker recorta pase lo que pase. */
+  for (const disparate of [3, 6, 12, 24, 99, '12', Infinity]) {
+    await conCuotasEnLaTabla('20', disparate, n => assert.equal(n, 2,
+      'con cuotas=' + String(disparate) + ' en la tabla, el cobro debe salir con 2'));
+  }
+});
+
+test('una tabla sin la columna cuotas cobra de contado, no a plazos', async () => {
+  /* El valor seguro es el que no cuesta dinero. Si la columna falta —tabla
+     vieja desplegada, JSON a medias— lo que sale es un pago único. */
+  for (const roto of [undefined, null, 0, '', 'dos', NaN, -5]) {
+    await conCuotasEnLaTabla('15', roto, n => assert.equal(n, 1,
+      'con cuotas=' + String(roto) + ' debe caer a 1'));
+  }
+});
+
+test('el checkout abre en pago único aunque el paquete admita dos', async () => {
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: '20' }), ENV);
+  assert.equal(llamadas[0].cuerpo.payment_methods.default_installments, 1,
+    'partir el pago lo elige el comprador; no puede venir marcado de fábrica');
 });
 
 test('los once paquetes cobran exactamente lo que enseña la web', async () => {
@@ -214,5 +276,6 @@ test('la tabla del Worker no está vacía ni trae importes absurdos', () => {
     assert.ok(Number.isInteger(p.total) && p.total > 0, 'importe entero y positivo en ' + p.id);
     assert.ok(p.total < 100000, 'importe con un tope de cordura en ' + p.id);
     assert.ok(p.titulo.length > 0);
+    assert.ok(p.cuotas === 1 || p.cuotas === 2, 'cuotas sólo puede ser 1 o 2 en ' + p.id);
   }
 });

@@ -17,6 +17,10 @@ Por API sí se puede, con un campo:
 payment_methods: { installments: 1 }   // installments = máximo de cuotas
 ```
 
+Y como el campo va por paquete, se puede afinar: los dos más caros ofrecen
+**dos** mensualidades. Ver «Quién paga el interés» más abajo, que es donde está
+el dinero.
+
 Y de paso desaparece el trabajo manual: **ya no hay que crear un enlace por
 paquete**. El cobro se genera al vuelo para los once desde la misma tabla que
 pinta la web.
@@ -82,6 +86,25 @@ ninguna opción de mensualidades**. `installments: 1` debería limitar también 
 verificado. Si siguieran saliendo, se excluye ese tipo de pago en
 `creaPreferencia` y se vuelve a mirar.
 
+## Quién paga el interés
+
+Es la decisión con dinero dentro de este directorio, y no se ve en el código si
+uno no sabe qué mirar. En México:
+
+| Cuotas | Quién financia | Qué te cuesta |
+|---|---|---|
+| **1** | nadie | nada |
+| **2** | el banco **del comprador** | **nada** — cobras el total íntegro |
+| **3 o más** | **tú** | 4.69 % a tres meses, hasta 27.29 % a veinticuatro |
+
+De tres en adelante ya es el catálogo de *meses sin intereses*, y ahí el
+descuento sale del vendedor. Por eso `TOPE_CUOTAS = 2` en `pagos.js` recorta
+cualquier valor de la tabla: poner un `3` de más en una fila de precios no
+puede convertirse en una comisión permanente que nadie note.
+
+Subir ese tope es una decisión comercial. Se toma en `pagos.js`, a la vista, no
+de refilón editando `tools/precios.mjs`.
+
 ## La regla que no se puede romper
 
 **El importe lo pone el Worker, nunca el navegador.** El formulario de la web
@@ -105,12 +128,18 @@ compara las dos y falla si no coinciden; corre en el hook y en el CI.
 node --test test/pagos.test.mjs
 ```
 
-Trece pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble que
-captura lo que se le habría mandado a Mercado Pago. Cubren el importe del
-servidor, `installments: 1`, los once importes contra la tabla, paquete
-inexistente, falta de secreto, origen ajeno, método incorrecto, `/estado` sin
-filtrar el token, el fallo de Mercado Pago terminando en WhatsApp y no en un
-error, la redirección 303 y el tope por IP.
+Dieciocho pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble
+que captura lo que se le habría mandado a Mercado Pago. Cubren el importe del
+servidor, las cuotas de cada paquete contra la tabla, el recorte a dos, la
+caída a pago único con la columna rota o ausente, `default_installments` en 1,
+los once importes contra la tabla, paquete inexistente, falta de secreto,
+origen ajeno, método incorrecto, `/estado` sin filtrar el token, el fallo de
+Mercado Pago terminando en WhatsApp y no en un error, la redirección 303 y el
+tope por IP.
+
+Las cuatro de cuotas están comprobadas por sabotaje: con el tope en 24, con
+`installments` fijo a 1 y con `default_installments` siguiendo a la tabla, cada
+sabotaje pone en rojo justo la prueba que le toca.
 
 ## Lo que este Worker NO hace
 
