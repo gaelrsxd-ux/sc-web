@@ -36,24 +36,24 @@
       "id": "1",
       "piezas": 1,
       "base": "Placa reseñas Google · 1 pieza",
-      "total": 508,
-      "envio": 79,
+      "total": 399,
+      "envio": 0,
       "cuotas": 1
     },
     {
       "id": "2",
       "piezas": 2,
       "base": "Placa reseñas Google · 2 piezas",
-      "total": 768,
-      "envio": 69,
+      "total": 649,
+      "envio": 0,
       "cuotas": 1
     },
     {
       "id": "3",
       "piezas": 3,
       "base": "Placa reseñas Google · 3 piezas",
-      "total": 858,
-      "envio": 59,
+      "total": 799,
+      "envio": 0,
       "cuotas": 1
     },
     {

@@ -9,7 +9,7 @@ node servidor.js 8099 &
 node pruebas/compra.mjs
 ```
 
-Cincuenta y nueve comprobaciones, la mayoría con JavaScript y un bloque final sin él.
+Sesenta y dos comprobaciones, la mayoría con JavaScript y un bloque final sin él.
 
 ## Por qué en un navegador
 
@@ -50,8 +50,8 @@ formulario, esa prueba se pone en rojo.
 | **La vuelta** | `gracias.html` recupera el pedido y arma el WhatsApp; con `?estado=pendiente` **no** da el pago por hecho |
 | **«En blanco»** | salta el paso del negocio **y le quita el `required`** — un campo obligatorio dentro de un bloque escondido bloquea el envío sin decir dónde está el problema |
 | **El zoom del doble toque** | los botones de cantidad llevan `touch-action:manipulation` y el campo del número **no** (ahí mataría el doble toque para seleccionarlo); el pellizco para ampliar sigue permitido en toda la página; hay un `:active` que sustituye al resaltado de toque retirado y el `:hover` vive dentro de `@media (hover:hover)` para que no se quede pegado en iOS |
-| **El empujón al envío gratis** | con 1, 2 o 3 placas avisa de cuánto se ahorra llevando 4, y desaparece a partir de ahí |
-| **La entrega en mano** | con un código postal de la ciudad, la cabecera, el resumen y el botón bajan de $508 a $429 y aparece el aviso — y al formulario **no** se le añade ninguna bandera de «soy local»: eso lo decide el servidor |
+| **El empujón al envío gratis** | hoy NO sale en ninguna cantidad, porque el envío va dentro del precio y no hay umbral que empujar. El mecanismo sigue escrito y se enciende solo el día que vuelva a cobrarse |
+| **La entrega en mano** | con el envío incluido ya no descuenta nada: el importe es el mismo desde la ciudad y desde Ciudad Valles. Lo que cambia es el aviso y la cabecera, que dicen «entrega en mano» — y el aviso **no** promete dinero. Al formulario no se le añade ninguna bandera de «soy local»: eso lo decide el servidor |
 | **Sin JavaScript** | la cifra grande queda **vacía** en vez de mentir, la lista de las 25 cantidades se ve, los cuatro bloques del pedido salen a la vez y el formulario se envía entero |
 
 Ese último bloque es el suelo del que cuelga todo lo demás: si un script falla

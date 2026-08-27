@@ -138,6 +138,18 @@ tumba la preferencia entera.
 final del resumen —donde están las referencias de la dirección—. Hay una prueba
 que llena cada campo hasta su tope y exige que el texto llegue entero.
 
+> **Hoy el envío va DENTRO del precio**, en todas las cantidades, así que no hay
+> nada que descontar y esta función está en reposo: cobra lo mismo desde la
+> ciudad que desde Ciudad Valles. Lo único que sigue haciendo es DECIR, en el
+> concepto del cobro y en el aviso de la venta, que ese pedido se entrega en
+> mano en vez de mandarse por paquetería — que es justo lo que necesita saber
+> quien prepara el paquete.
+>
+> El mecanismo se enciende solo si algún día se vuelve a cobrar envío: basta con
+> poner números en la columna `envio` de `tools/precios.mjs`. Las pruebas lo
+> ejercen con un envío de mentira, precisamente para que siga cubierto mientras
+> la tabla dice cero.
+
 ## Entrega en mano: el único dato del cliente que mueve el importe
 
 El negocio entrega en persona dentro de su ciudad, así que a quien vive ahí no
@@ -196,7 +208,7 @@ compara las dos y falla si no coinciden; corre en el hook y en el CI.
 node --test test/pagos.test.mjs
 ```
 
-Treinta y nueve pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble
+Cuarenta pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble
 que captura lo que se le habría mandado a Mercado Pago. Cubren el importe del
 servidor, las cuotas de cada paquete contra la tabla, el recorte a dos, la
 caída a pago único con la columna rota o ausente, `default_installments` en 1,
