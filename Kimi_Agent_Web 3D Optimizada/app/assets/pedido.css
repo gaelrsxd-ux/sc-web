@@ -113,6 +113,17 @@ main{max-width:560px}
   text-transform:uppercase;padding-top:3px}
 .ped-resumen dd{flex:1;min-width:0;color:var(--ink);overflow-wrap:anywhere}
 
+/* El aviso de entrega en mano. Aparece bajo el código postal en cuanto el
+   número es de la zona: es una buena noticia y llega justo cuando el comprador
+   acaba de teclear el dato que la provoca. */
+.ped-local{margin-top:14px;padding:11px 14px;border:1px solid var(--line);
+  background:rgba(200,169,106,.07);color:var(--bronze-hi);font-size:13px;line-height:1.6}
+
+/* La salida para quien necesita más de lo que hay en la lista. */
+.ped-mas{margin-top:14px;font-size:12.5px}
+.ped-mas a{color:var(--bronze-hi);border-bottom:1px solid var(--line)}
+.ped-mas a:hover,.ped-mas a:focus-visible{color:var(--ink)}
+
 .ped-pie{margin-top:18px;color:var(--dim);font-size:12.5px;line-height:1.7;text-align:center}
 .ped-pie a{color:var(--muted)}
 .ped-pie a:hover{color:var(--bronze-hi)}

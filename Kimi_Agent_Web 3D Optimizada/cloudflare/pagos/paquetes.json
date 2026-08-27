@@ -1,12 +1,43 @@
 {
   "_aviso": "GENERADO por tools/precios.mjs. No editar a mano: se sobrescribe.",
   "moneda": "MXN",
+  "entregaLocal": {
+    "nombre": "San Luis Potosí y Soledad",
+    "rangos": [
+      {
+        "desde": 78000,
+        "hasta": 78393,
+        "zona": "San Luis Potosí capital"
+      },
+      {
+        "desde": 78395,
+        "hasta": 78399,
+        "zona": "San Luis Potosí capital"
+      },
+      {
+        "desde": 78430,
+        "hasta": 78439,
+        "zona": "Soledad de Graciano Sánchez"
+      },
+      {
+        "desde": 78394,
+        "hasta": 78394,
+        "zona": "Villa de Pozos (urbano)"
+      },
+      {
+        "desde": 78421,
+        "hasta": 78421,
+        "zona": "Villa de Pozos (urbano)"
+      }
+    ]
+  },
   "paquetes": [
     {
       "id": "1",
       "piezas": 1,
       "titulo": "Placa reseñas Google · 1 pieza · envío incluido",
       "total": 508,
+      "envio": 79,
       "cuotas": 1
     },
     {
@@ -14,6 +45,7 @@
       "piezas": 2,
       "titulo": "Placa reseñas Google · 2 piezas · envío incluido",
       "total": 768,
+      "envio": 69,
       "cuotas": 1
     },
     {
@@ -21,6 +53,7 @@
       "piezas": 3,
       "titulo": "Placa reseñas Google · 3 piezas · envío incluido",
       "total": 858,
+      "envio": 59,
       "cuotas": 1
     },
     {
@@ -28,6 +61,7 @@
       "piezas": 4,
       "titulo": "Placa reseñas Google · 4 piezas · envío gratis",
       "total": 949,
+      "envio": 0,
       "cuotas": 1
     },
     {
@@ -35,6 +69,7 @@
       "piezas": 5,
       "titulo": "Placa reseñas Google · 5 piezas · envío gratis",
       "total": 1099,
+      "envio": 0,
       "cuotas": 1
     },
     {
@@ -42,6 +77,15 @@
       "piezas": 6,
       "titulo": "Placa reseñas Google · 6 piezas · envío gratis",
       "total": 1249,
+      "envio": 0,
+      "cuotas": 1
+    },
+    {
+      "id": "7",
+      "piezas": 7,
+      "titulo": "Placa reseñas Google · 7 piezas · envío gratis",
+      "total": 1429,
+      "envio": 0,
       "cuotas": 1
     },
     {
@@ -49,6 +93,15 @@
       "piezas": 8,
       "titulo": "Placa reseñas Google · 8 piezas · envío gratis",
       "total": 1599,
+      "envio": 0,
+      "cuotas": 1
+    },
+    {
+      "id": "9",
+      "piezas": 9,
+      "titulo": "Placa reseñas Google · 9 piezas · envío gratis",
+      "total": 1749,
+      "envio": 0,
       "cuotas": 1
     },
     {
@@ -56,6 +109,15 @@
       "piezas": 10,
       "titulo": "Placa reseñas Google · 10 piezas · envío gratis",
       "total": 1899,
+      "envio": 0,
+      "cuotas": 1
+    },
+    {
+      "id": "11",
+      "piezas": 11,
+      "titulo": "Placa reseñas Google · 11 piezas · envío gratis",
+      "total": 2049,
+      "envio": 0,
       "cuotas": 1
     },
     {
@@ -63,6 +125,23 @@
       "piezas": 12,
       "titulo": "Placa reseñas Google · 12 piezas · envío gratis",
       "total": 2199,
+      "envio": 0,
+      "cuotas": 1
+    },
+    {
+      "id": "13",
+      "piezas": 13,
+      "titulo": "Placa reseñas Google · 13 piezas · envío gratis",
+      "total": 2349,
+      "envio": 0,
+      "cuotas": 1
+    },
+    {
+      "id": "14",
+      "piezas": 14,
+      "titulo": "Placa reseñas Google · 14 piezas · envío gratis",
+      "total": 2499,
+      "envio": 0,
       "cuotas": 1
     },
     {
@@ -70,6 +149,39 @@
       "piezas": 15,
       "titulo": "Placa reseñas Google · 15 piezas · envío gratis",
       "total": 2649,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "16",
+      "piezas": 16,
+      "titulo": "Placa reseñas Google · 16 piezas · envío gratis",
+      "total": 2799,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "17",
+      "piezas": 17,
+      "titulo": "Placa reseñas Google · 17 piezas · envío gratis",
+      "total": 2949,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "18",
+      "piezas": 18,
+      "titulo": "Placa reseñas Google · 18 piezas · envío gratis",
+      "total": 3099,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "19",
+      "piezas": 19,
+      "titulo": "Placa reseñas Google · 19 piezas · envío gratis",
+      "total": 3249,
+      "envio": 0,
       "cuotas": 2
     },
     {
@@ -77,6 +189,47 @@
       "piezas": 20,
       "titulo": "Placa reseñas Google · 20 piezas · envío gratis",
       "total": 3399,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "21",
+      "piezas": 21,
+      "titulo": "Placa reseñas Google · 21 piezas · envío gratis",
+      "total": 3549,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "22",
+      "piezas": 22,
+      "titulo": "Placa reseñas Google · 22 piezas · envío gratis",
+      "total": 3699,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "23",
+      "piezas": 23,
+      "titulo": "Placa reseñas Google · 23 piezas · envío gratis",
+      "total": 3849,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "24",
+      "piezas": 24,
+      "titulo": "Placa reseñas Google · 24 piezas · envío gratis",
+      "total": 3999,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "25",
+      "piezas": 25,
+      "titulo": "Placa reseñas Google · 25 piezas · envío gratis",
+      "total": 4149,
+      "envio": 0,
       "cuotas": 2
     }
   ]

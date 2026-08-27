@@ -69,8 +69,7 @@ const PAQUETE_DESDE = 10;
    el enlace por el precio del paquete a secas, el envío de los paquetes de
    menos de diez piezas se queda sin cobrar. */
 /* `cuotas` es el número MÁXIMO de mensualidades que se ofrecen en el checkout.
-   Sin poner nada son 1: pago de contado, que es como está el catálogo entero
-   salvo los dos paquetes de arriba.
+   Sin poner nada es 1: pago de contado.
 
    ⚠ EL DINERO ESTÁ EN QUIÉN PAGA EL INTERÉS, y el número decide cuál de los
    dos casos toca:
@@ -85,19 +84,195 @@ const PAQUETE_DESDE = 10;
    Por eso el Worker recorta cualquier valor a 2 aunque esta tabla diga más:
    una errata de un dígito no puede convertirse en una comisión permanente.
    Ver TOPE_CUOTAS en cloudflare/pagos/pagos.js. */
+
+/* Desde qué importe se ofrecen dos mensualidades. Se decidió por importe y no
+   por cantidad de placas porque lo que hace dudar a alguien es la cifra, no el
+   número de piezas; y porque con veinticinco cantidades, «las dos más caras»
+   dejaría fuera a casi todo el catálogo grande. Cuesta cero: a dos cuotas paga
+   el interés el banco del comprador. */
+const CUOTAS_DESDE = 2500;
+
+/* Los paquetes, en el orden en que se enseñan. `precio` es el TOTAL del
+   paquete en pesos, no el precio por unidad.
+
+   ⚠ ONCE DE ESTOS PRECIOS SON DECISIONES Y CATORCE SON CONSECUENCIAS.
+   Los decididos a mano son 1, 2, 3, 4, 5, 6, 8, 10, 12, 15 y 20 —eran los once
+   tramos que existían cuando el catálogo se elegía de una lista—. El resto se
+   rellenó al pasar a un contador de uno en uno, interpolando dentro de cada
+   tramo y redondeando a que acabaran en 9, que es como está escrito el resto de
+   la lista. De 21 a 25 se sigue con el margen del tramo largo: 150 por placa.
+
+   Se escriben los veinticinco a la vista, y no una fórmula, a propósito: así
+   cualquiera puede cambiar UNO sin entender un algoritmo, y el archivo enseña
+   literalmente lo que se va a cobrar. La interpolación fue un acto de autoría,
+   no una regla de ejecución.
+
+   Al tocar cualquiera de estos números hay una propiedad que no se puede
+   romper: EL PRECIO POR PIEZA TIENE QUE BAJAR SIEMPRE al subir la cantidad.
+   Si en algún escalón sube, comprar más sale peor por unidad y la lista
+   pierde el sentido. `node tools/precios.mjs --tabla` la imprime entera. */
 const PAQUETES = [
-  { piezas:  1, precio:  429, envio: 79, pago: '' },
-  { piezas:  2, precio:  699, envio: 69, pago: '' },
-  { piezas:  3, precio:  799, envio: 59, pago: '' },
-  { piezas:  4, precio:  949, envio:  0, pago: '', destaca: true },
-  { piezas:  5, precio: 1099, envio:  0, pago: '' },
-  { piezas:  6, precio: 1249, envio:  0, pago: '' },
-  { piezas:  8, precio: 1599, envio:  0, pago: '' },
-  { piezas: 10, precio: 1899, envio:  0, pago: '' },
-  { piezas: 12, precio: 2199, envio:  0, pago: '' },
-  { piezas: 15, precio: 2649, envio:  0, pago: '', cuotas: 2 },
-  { piezas: 20, precio: 3399, envio:  0, pago: '', cuotas: 2 },
+  { piezas:  1, precio:  429, envio: 79 },
+  { piezas:  2, precio:  699, envio: 69 },
+  { piezas:  3, precio:  799, envio: 59 },
+  { piezas:  4, precio:  949, envio:  0, destaca: true },
+  { piezas:  5, precio: 1099, envio:  0 },
+  { piezas:  6, precio: 1249, envio:  0 },
+  { piezas:  7, precio: 1429, envio:  0 },
+  { piezas:  8, precio: 1599, envio:  0 },
+  { piezas:  9, precio: 1749, envio:  0 },
+  { piezas: 10, precio: 1899, envio:  0 },
+  { piezas: 11, precio: 2049, envio:  0 },
+  { piezas: 12, precio: 2199, envio:  0 },
+  { piezas: 13, precio: 2349, envio:  0 },
+  { piezas: 14, precio: 2499, envio:  0 },
+  { piezas: 15, precio: 2649, envio:  0 },
+  { piezas: 16, precio: 2799, envio:  0 },
+  { piezas: 17, precio: 2949, envio:  0 },
+  { piezas: 18, precio: 3099, envio:  0 },
+  { piezas: 19, precio: 3249, envio:  0 },
+  { piezas: 20, precio: 3399, envio:  0 },
+  { piezas: 21, precio: 3549, envio:  0 },
+  { piezas: 22, precio: 3699, envio:  0 },
+  { piezas: 23, precio: 3849, envio:  0 },
+  { piezas: 24, precio: 3999, envio:  0 },
+  { piezas: 25, precio: 4149, envio:  0 },
 ];
+
+/* Las cuotas se derivan del importe en vez de escribirse fila a fila: así
+   cambiar CUOTAS_DESDE mueve el corte de golpe y no quedan filas olvidadas. */
+for (const p of PAQUETES) if (p.precio + p.envio >= CUOTAS_DESDE) p.cuotas = 2;
+
+/* La comprobación que protege la escalera entera. Corre SIEMPRE, también en
+   --check, porque un precio que rompa la monotonía no da ningún síntoma: la web
+   se pinta igual, el cobro funciona igual, y lo único que pasa es que a partir
+   de cierta cantidad comprar más sale peor por pieza. Eso lo descubre el
+   cliente, comparando, y ya no hay quien lo explique. */
+(() => {
+  for (let i = 1; i < PAQUETES.length; i++) {
+    const a = PAQUETES[i - 1], b = PAQUETES[i];
+    if (b.piezas !== a.piezas + 1) {
+      throw new Error(`la escalera se salta la cantidad ${a.piezas + 1}: el contador va de uno en uno`);
+    }
+    if (b.precio <= a.precio) {
+      throw new Error(`${b.piezas} placas no cuestan más que ${a.piezas}: ${b.precio} vs ${a.precio}`);
+    }
+    if (b.precio / b.piezas >= a.precio / a.piezas) {
+      throw new Error(
+        `el precio por pieza NO baja de ${a.piezas} a ${b.piezas} placas ` +
+        `(${(a.precio / a.piezas).toFixed(2)} → ${(b.precio / b.piezas).toFixed(2)}). ` +
+        `Comprar más saldría peor por unidad.`);
+    }
+    if (b.envio > a.envio) {
+      throw new Error(`el envío SUBE de ${a.piezas} a ${b.piezas} placas: ${a.envio} → ${b.envio}`);
+    }
+    /* Un envío NEGATIVO haría que la entrega en mano sumara en vez de restar:
+       el comprador local pagaría MÁS de lo que la web le enseñó. Cobrar por
+       encima del precio exhibido no es un descuadre contable, es un problema
+       con PROFECO. Basta un guion de más al editar la fila. */
+    if (!Number.isInteger(b.envio) || b.envio < 0 || b.envio >= b.precio) {
+      throw new Error(`el envío de ${b.piezas} placas (${b.envio}) tiene que ser un entero entre 0 y ${b.precio - 1}`);
+    }
+  }
+})();
+
+/* ---------- ENTREGA EN MANO, SIN COSTE DE ENVÍO ----------
+   El negocio está en San Luis Potosí capital y entrega en mano dentro de su
+   ciudad, así que a quien vive ahí no tiene sentido cobrarle paquetería. Pero
+   «San Luis Potosí» es también un ESTADO enorme: Ciudad Valles está a más de
+   250 km y Río Verde a 130. Regalar el envío a todo el estado sería regalar
+   una paquetería de verdad.
+
+   Por eso el corte no es el estado ni la ciudad que alguien escriba, sino el
+   CÓDIGO POSTAL: un dato que ya hace falta para el envío y que no se puede
+   «elegir» sin cambiar también a dónde llega el paquete.
+
+   ⚠ SÓLO AFECTA A 1, 2 Y 3 PLACAS. De cuatro en adelante el envío ya es gratis
+   para todo México, así que aquí no hay nada que descontar.
+
+   ⚠ ESTOS RANGOS VIAJAN A DOS SITIOS y por eso se escriben una sola vez: al
+   Worker —que es quien decide el importe de verdad— y al JavaScript de la
+   página —que es quien lo enseña—. Escritos por separado, el día que uno
+   cambie la web diría «envío gratis» y el cobro saldría con envío. */
+const ENTREGA_LOCAL = [
+  /* Los rangos salen del catálogo oficial de SEPOMEX del estado 24, no de una
+     web de terceros. En ese catálogo NINGÚN código postal del estado está
+     compartido por dos municipios, así que la prueba por número es determinista.
+
+     ⚠ EL 78394 PARTE LA CAPITAL EN DOS, y por eso hay dos rangos donde parecería
+     que basta uno. Ese código es de Villa de Pozos, que dejó de ser parte de la
+     capital el 1 de octubre de 2024 al convertirse en el municipio 59 del
+     estado. Escribir «78000–78399» de un tirón —que es lo natural— le regala el
+     envío a Villa de Pozos entera sin querer. */
+  { desde: 78000, hasta: 78393, zona: 'San Luis Potosí capital' },
+  { desde: 78395, hasta: 78399, zona: 'San Luis Potosí capital' },
+
+  /* Soledad es municipio aparte pero la misma mancha urbana: el reparto llega
+     igual. El 78431 no existe, así que el rango cerrado es seguro. */
+  { desde: 78430, hasta: 78439, zona: 'Soledad de Graciano Sánchez' },
+
+  /* ⚠ ESTOS DOS SON UNA DECISIÓN DEL NEGOCIO, NO UN DATO. Son la parte URBANA
+     de Villa de Pozos: el sureste de la ciudad, mancha continua, donde el
+     repartidor llega igual de fácil que a la Zona Industrial. Eran capital
+     hasta hace nada. Quitarlos es legítimo; se quitan borrando estas dos
+     líneas y ejecutando `node tools/precios.mjs`. */
+  { desde: 78394, hasta: 78394, zona: 'Villa de Pozos (urbano)' },
+  { desde: 78421, hasta: 78421, zona: 'Villa de Pozos (urbano)' },
+
+  /* LO QUE NO ESTÁ AQUÍ, Y NO ES UN OLVIDO:
+     · 78400–78418 y 78425–78427 son el municipio de la capital pero ZONA RURAL
+       —Bocas está a unos 60 km, La Pila a 10-18, Escalerillas a 15 en la
+       sierra—. El sobre dirá «municipio de San Luis Potosí» y aun así hay que
+       mandarlo por paquetería.
+     · 78420, 78423 y 78424 son el cinturón rural de Villa de Pozos.
+     · 78440–78448 Cerro de San Pedro, 78460–78486 Mexquitic: municipios
+       vecinos, no conurbados.
+     · Río Verde (79600–79647), Ciudad Valles (79000–79098 y 79230–79287),
+       Matehuala (78700–78827) y Tamazunchale (79960–79998) están a cientos de
+       kilómetros. Son el motivo por el que esto se decide por código postal y
+       no por el nombre del estado que alguien teclee. */
+];
+
+/* Guarda de los rangos. Es la ÚNICA pérdida de este diseño que no está acotada
+   en 79 pesos: el abuso máximo de un comprador listo son 79 pesos de una compra
+   real, pero un rango mal escrito regala paquetería nacional en silencio y
+   nada más lo notaría.
+
+   El caso concreto que esto atrapa: alguien quiere decir «la capital y Soledad»
+   y escribe {desde: 78000, hasta: 79999}. Acaba de incluir Ciudad Valles y Río
+   Verde, que es exactamente lo que la lista existe para excluir. O un cero de
+   más, {desde: 0, hasta: 99999}, y es todo México. En los tres casos el HTML se
+   regenera tan contento y las pruebas pasan. */
+(() => {
+  const BANDA = [78000, 79999];   /* toda la banda de códigos del estado */
+  const MAX_ANCHO = 2000;         /* la capital entera son ~400 números */
+  let cubiertos = 0;
+  for (const r of ENTREGA_LOCAL) {
+    const d = Number(r.desde), h = Number(r.hasta);
+    if (!Number.isInteger(d) || !Number.isInteger(h)) {
+      throw new Error(`rango de entrega local con valores que no son números: ${JSON.stringify(r)}`);
+    }
+    if (d > h) throw new Error(`rango al revés: desde ${d} es mayor que hasta ${h}`);
+    if (d < BANDA[0] || h > BANDA[1]) {
+      throw new Error(
+        `el rango ${d}–${h} se sale de los códigos de San Luis Potosí (${BANDA[0]}–${BANDA[1]}). ` +
+        `Fuera de esa banda no hay nada que entregar en mano.`);
+    }
+    if (h - d + 1 > MAX_ANCHO) {
+      throw new Error(
+        `el rango ${d}–${h} cubre ${h - d + 1} códigos postales. La ciudad entera son unos 400: ` +
+        `un rango así regala la paquetería de medio estado.`);
+    }
+    cubiertos += h - d + 1;
+  }
+  if (cubiertos > MAX_ANCHO) {
+    throw new Error(`la entrega en mano cubre ${cubiertos} códigos postales en total, que son demasiados`);
+  }
+})();
+
+/* Cómo se llama la zona en el texto que ve el comprador. */
+const ENTREGA_LOCAL_NOMBRE = 'San Luis Potosí y Soledad';
+
 
 /* ------------------------------------------------------------- HERRAMIENTAS */
 
@@ -132,6 +307,15 @@ function mensaje(p) {
     ? `Total: $${miles(p.precio)} MXN con envío gratis.`
     : `Total: $${miles(p.precio)} MXN + $${p.envio} de envío.`;
   return `Hola. Vengo de la web y quiero ${qué} de reseñas de Google (NFC + QR). ${cierre}`;
+}
+
+/* Quien necesita más de lo que hay en la lista no puede toparse con un botón
+   deshabilitado y nada más: ahí es donde está el pedido grande. El mensaje sale
+   ya escrito diciendo cuántas hacen falta como mínimo, para que la conversación
+   empiece con el dato en vez de con «¿cuántas quieres?». */
+function mensajeMas(tope) {
+  return `Hola. Vengo de la web y necesito más de ${tope} placas de reseñas de Google (NFC + QR). ` +
+         `¿Qué precio me pueden hacer?`;
 }
 
 function etiquetaPedir(p) {
@@ -216,7 +400,7 @@ function tablaContador() {
     t: placas(p),
     tot: total(p),
     e: p.envio,
-    u: Math.round(p.precio / p.piezas),
+    u: Number((p.precio / p.piezas).toFixed(2)),
     d: detalle(p),
     /* Versión corta para la cabecera de pedido.html, donde el desglose no cabe.
        Es el mismo texto que lleva el título del cobro en Mercado Pago, así que
@@ -224,7 +408,11 @@ function tablaContador() {
        palabra por palabra. */
     s: gratis(p) ? 'envío gratis' : 'envío incluido',
   }));
-  return '<script type="application/json" id="pc-tabla">' + JSON.stringify(filas) + '<\/script>';
+  /* `local` viaja para que pedido.html pueda AVISAR de que no se cobrará el
+     envío en cuanto se teclee un código postal de casa. Es sólo el aviso: el
+     descuento lo aplica el Worker, con esta misma lista generada aquí. */
+  const datos = { local: { nombre: ENTREGA_LOCAL_NOMBRE, rangos: ENTREGA_LOCAL }, filas };
+  return '<script type="application/json" id="pc-tabla">' + JSON.stringify(datos) + '<\/script>';
 }
 
 /* La línea chica bajo la cifra.
@@ -239,8 +427,23 @@ function tablaContador() {
    a cómo queda la pieza cuando se llevan varias, que es lo que hace subir el
    contador. Con una sola placa el precio por pieza es el propio precio, así que
    repetirlo sobraría. */
+/* El precio por pieza, con céntimos y sin ceros de adorno: $237.25, $167.35,
+   $207. Redondeado a peso entero, 23 placas (3849/23 = 167.35) y 24 placas
+   (3999/24 = 166.63) enseñaban las DOS «$167»: subir la cantidad cobraba 150
+   pesos más y dejaba el precio por pieza clavado, que se lee como un error.
+   Y todo el tramo de 20 a 25 recorre sólo cuatro pesos de precio unitario, así
+   que con enteros SIEMPRE choca alguna pareja, se redondee como se redondee.
+
+   De paso arregla otra cosa: redondeando a la baja, quien multiplicaba el
+   precio por pieza por la cantidad le salía MENOS de lo que iba a pagar. */
+function porPieza(p) {
+  const u = p.precio / p.piezas;
+  const texto = u.toFixed(2).replace(/\.00$/, '');
+  return '$' + Number(texto).toLocaleString('en-US', { minimumFractionDigits: texto.includes('.') ? 2 : 0 });
+}
+
 function detalle(p) {
-  const unitario = p.piezas === 1 ? '' : ` · $${miles(Math.round(p.precio / p.piezas))} por pieza`;
+  const unitario = p.piezas === 1 ? '' : ` · ${porPieza(p)} por pieza`;
   return gratis(p)
     ? `Envío gratis${unitario}`
     : `$${miles(p.precio)} + $${p.envio} de envío${unitario}`;
@@ -286,23 +489,37 @@ function bloquePedido() {
 }
 
 function bloqueCompra() {
-  const una = PAQUETES.find(p => p.piezas === 1);
-  if (!una) throw new Error('la tabla no tiene el paquete de 1 pieza, que es con lo que arranca el contador');
+  const una = PAQUETES[0];
+  if (!una || una.piezas !== 1) throw new Error('la escalera no empieza en 1 placa');
+  const tope = PAQUETES[PAQUETES.length - 1].piezas;
   const wa = `https://wa.me/${WHATSAPP}?text=${url(mensaje(una))}`;
+  const waMas = `https://wa.me/${WHATSAPP}?text=${url(mensajeMas(tope))}`;
 
   return '<div class="prod-compra">\n' +
     '            <div class="pc-cab">\n' +
-    '              <div class="pc-cant" role="group" aria-label="' + ent('Cantidad de placas') + '">\n' +
+    '              <div class="pc-cant">\n' +
     '                <button class="pc-b" type="button" data-pc="-1" aria-label="' + ent('Quitar una placa') + '">&#8722;</button>\n' +
-    '                <span class="pc-n" data-pc-n aria-live="polite">' + placas(una) + '</span>\n' +
+    /* Un campo de número y no un texto fijo: con veinticinco cantidades, llegar
+       a la última a base de toques son veinticuatro toques. Escribiéndolo es
+       uno. Los botones siguen porque ajustar de uno en uno con el pulgar es más
+       cómodo que abrir el teclado. */
+    '                <input class="pc-n" type="number" inputmode="numeric" step="1"\n' +
+    '                       min="1" max="' + tope + '" value="1" data-pc-n\n' +
+    '                       aria-label="' + ent('Cantidad de placas') + '">\n' +
+    '                <span class="pc-w" data-pc-w>' + ent('placa') + '</span>\n' +
     '                <button class="pc-b" type="button" data-pc="1" aria-label="' + ent('Añadir una placa') + '">+</button>\n' +
     '              </div>\n' +
-    '              <p class="pc-precio"><span class="cifra" data-pc-total>$' + miles(total(una)) + '</span>' +
-    '<span class="u">MXN</span></p>\n' +
+    /* aria-live va en el PRECIO y no en la cantidad: la cantidad ya la anuncia
+       el propio campo al cambiarla, y lo que un lector de pantalla no se
+       enteraría de otro modo es de que el importe se movió. */
+    '              <p class="pc-precio" aria-live="polite"><span class="cifra" data-pc-total>$' +
+    miles(total(una)) + '</span><span class="u">MXN</span></p>\n' +
     '            </div>\n' +
     '            <p class="pc-detalle" data-pc-detalle>' + ent(detalle(una)) + '</p>\n' +
     '            <a class="svc-btn pc-ir" href="pedido.html?n=1" data-pc-ir>' +
     '<span class="dia"></span>' + ent('Comprar ahora') + '</a>\n' +
+    '            <p class="pc-mas"><a href="' + waMas + '" target="_blank" rel="noopener noreferrer">' +
+    ent(`¿Necesitas más de ${tope}? Hablemos el precio`) + '</a></p>\n' +
     '            <p class="pc-wa"><a href="' + wa + '" target="_blank" rel="noopener noreferrer">' +
     ent('o pedirlo por WhatsApp') + '</a></p>\n' +
     '            ' + listaTramos() + '\n' +
@@ -389,11 +606,21 @@ function paquetesJson() {
   return JSON.stringify({
     _aviso: 'GENERADO por tools/precios.mjs. No editar a mano: se sobrescribe.',
     moneda: 'MXN',
+    /* Los códigos postales donde se entrega en mano. El Worker los usa para
+       descontar el envío ÉL MISMO: el navegador nunca manda una bandera de
+       «soy local», sólo el código postal, que ya tiene que mandar para que
+       llegue el paquete. */
+    entregaLocal: { nombre: ENTREGA_LOCAL_NOMBRE, rangos: ENTREGA_LOCAL },
     paquetes: PAQUETES.map(p => ({
       id: String(p.piezas),
       piezas: p.piezas,
       titulo: `Placa reseñas Google · ${piezas(p)} · ${gratis(p) ? 'envío gratis' : 'envío incluido'}`,
+      /* `total` es CON envío; `envio` es lo que de ese total es paquetería. El
+         Worker resta lo segundo cuando el código postal es de los de casa. Van
+         los dos y no uno calculado: el importe que se cobra no puede depender
+         de una resta hecha en dos sitios distintos. */
       total: total(p),
+      envio: p.envio,
       cuotas: p.cuotas || 1,
     })),
   }, null, 2) + '\n';
