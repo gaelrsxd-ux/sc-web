@@ -62,9 +62,9 @@ document.documentElement.classList.add('js');
    "sameAs":[],
    "makesOffer":[
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Diseño Web Profesional","serviceType":"Diseño y desarrollo web"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Perfil de tu Negocio en Google","serviceType":"Gestión de Perfil de Empresa en Google"}},
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Atención al Cliente con IA","serviceType":"Agentes conversacionales con inteligencia artificial"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización de Procesos","serviceType":"Automatización de procesos"}},
-    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Perfil de tu Negocio en Google","serviceType":"Gestión de Perfil de Empresa en Google"}}
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Automatización de Procesos","serviceType":"Automatización de procesos"}}
    ]
   },
   {
@@ -2329,34 +2329,15 @@ html.js .pc-alt{display:none}
         <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
         <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Diseño Web Profesional"><span class="dia"></span>Solicitar</a>
       </article>
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 02</span>
-        <h3>Atención al Cliente con IA</h3>
-        <p><b>Cada llamada o mensaje sin responder puede convertirse en dinero perdido para tu negocio.</b> Un agente de IA atiende llamadas, WhatsApp y mensajes las 24 horas, responde preguntas, agenda citas y ayuda a vender incluso cuando tu negocio está cerrado.</p>
-        <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
-      </article>
-      <!-- Aquí iba "Aplicación Privada para tu Negocio", la 03. Retirada del
-           catálogo: son TRES servicios. Con tres en dos columnas la última ficha
-           queda sola en su fila, así que vuelve a hacer falta que ocupe la fila
-           entera —ver .svc:last-child en la hoja—. Es el mismo problema que
-           tuvo la quinta ficha en su día, con la misma solución. -->
-      <article class="svc rv">
-        <span class="go">↗</span>
-        <span class="idx">/ 03</span>
-        <h3>Automatización de Procesos</h3>
-        <p><b>Cada proceso manual puede hacer que tu equipo desperdicie decenas de horas de trabajo cada mes.</b> Automatizamos tareas para reducir errores, acelerar la operación y permitir que tu empresa se enfoque en crecer, no en repetir el mismo trabajo todos los días.</p>
-        <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
-        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
-      </article>
-      <!-- 04, y va la última a propósito: enlaza con la sección de Productos,
-           que es justo la placa que hace que ese perfil reciba reseñas. Las dos
-           mitades del mismo problema —salir bien en Google y que te califiquen—
-           quedan seguidas. -->
+      <!-- El orden de las cuatro es una decisión comercial, no técnica: la web
+           primero porque es la puerta de entrada, y el perfil de Google segundo
+           porque es lo que más rápido se nota en un negocio local. Si vuelve a
+           cambiar hay que renumerar los `idx` de aquí Y reordenar las ofertas
+           del esquema de datos estructurados de la cabecera, que van en
+           paralelo a esta lista. -->
       <article class="svc rv">
         <span class="go">&#8599;</span>
-        <span class="idx">/ 04</span>
+        <span class="idx">/ 02</span>
         <h3>Perfil de tu Negocio en Google</h3>
         <p><b>Quien te busca en Google y encuentra una ficha vacía, con horarios viejos
           o sin una sola foto, termina yendo al de al lado.</b> Dejamos tu negocio bien
@@ -2365,6 +2346,29 @@ html.js .pc-alt{display:none}
         <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
         <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20que%20configuren%20el%20perfil%20de%20mi%20negocio%20en%20Google." class="svc-btn" target="_blank" rel="noopener noreferrer"
            aria-label="Escribir por WhatsApp sobre el Perfil de tu Negocio en Google"><span class="dia"></span>Solicitar</a>
+      </article>
+      <article class="svc rv">
+        <span class="go">↗</span>
+        <span class="idx">/ 03</span>
+        <h3>Atención al Cliente con IA</h3>
+        <p><b>Cada llamada o mensaje sin responder puede convertirse en dinero perdido para tu negocio.</b> Un agente de IA atiende llamadas, WhatsApp y mensajes las 24 horas, responde preguntas, agenda citas y ayuda a vender incluso cuando tu negocio está cerrado.</p>
+        <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
+        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
+      </article>
+      <!-- Aquí iba "Aplicación Privada para tu Negocio", retirada del catálogo en
+           su día. El resto de este comentario contaba que eran TRES servicios y
+           que por eso la última ficha se estiraba a la fila entera; las dos
+           cosas dejaron de ser ciertas al añadir el perfil de Google. La regla
+           de la hoja ya no depende del número —es
+           `.svc:last-child:nth-child(odd)`, que sólo estira cuando la cuenta es
+           impar—, así que el catálogo puede crecer sin tocar el CSS. -->
+      <article class="svc rv">
+        <span class="go">↗</span>
+        <span class="idx">/ 04</span>
+        <h3>Automatización de Procesos</h3>
+        <p><b>Cada proceso manual puede hacer que tu equipo desperdicie decenas de horas de trabajo cada mes.</b> Automatizamos tareas para reducir errores, acelerar la operación y permitir que tu empresa se enfoque en crecer, no en repetir el mismo trabajo todos los días.</p>
+        <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
+        <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
       </article>
     </div>
 
