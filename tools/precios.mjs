@@ -227,6 +227,32 @@ function notaLista() {
    también este archivo, así que no pueden separarse en silencio. */
 const JSON_WORKER = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'cloudflare', 'pagos', 'paquetes.json');
 
+/* El MISMO Worker, en un solo archivo y con la tabla dentro, para pegar tal cual
+   en el editor del panel de Cloudflare. Existe porque instalar el Worker con
+   `wrangler` exige una terminal, y no todo el mundo tiene por qué pelearse con
+   una: desde el panel se pega un archivo y se pulsa un botón.
+
+   Se GENERA a partir de pagos.js, nunca se escribe a mano. Dos copias del mismo
+   Worker mantenidas por separado divergen, y la que se acabaría quedando vieja
+   es justo la que está desplegada. */
+const JS_PEGAR = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'cloudflare', 'pagos', 'pagos-para-pegar.js');
+const JS_FUENTE = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'cloudflare', 'pagos', 'pagos.js');
+
+function paraPegar() {
+  const fuente = fs.readFileSync(JS_FUENTE, 'utf8');
+  const marca = /\/\* Con atributo de importación[\s\S]*?import TABLA from '\.\/paquetes\.json' with \{ type: 'json' \};/;
+  if (!marca.test(fuente)) {
+    throw new Error('no encuentro la línea que importa paquetes.json en pagos.js; ¿se renombró?');
+  }
+  return fuente.replace(marca,
+    '/* ⚠ ARCHIVO GENERADO — no editar aquí.\n' +
+    '   Es cloudflare/pagos/pagos.js con la tabla de precios metida dentro, para\n' +
+    '   poder pegarlo entero en el editor del panel de Cloudflare sin subir un\n' +
+    '   segundo archivo. Para cambiarlo se edita pagos.js o la tabla de\n' +
+    '   tools/precios.mjs y se ejecuta `node tools/precios.mjs`. */\n' +
+    'const TABLA = ' + paquetesJson().trimEnd() + ';');
+}
+
 function paquetesJson() {
   return JSON.stringify({
     _aviso: 'GENERADO por tools/precios.mjs. No editar a mano: se sobrescribe.',
@@ -291,8 +317,16 @@ const generado = aplica(original);
 
 const jsonEsperado = paquetesJson();
 const jsonActual = fs.existsSync(JSON_WORKER) ? fs.readFileSync(JSON_WORKER, 'utf8') : null;
+const pegarEsperado = paraPegar();
+const pegarActual = fs.existsSync(JS_PEGAR) ? fs.readFileSync(JS_PEGAR, 'utf8') : null;
 
 if (args.includes('--check')) {
+  if (pegarActual !== pegarEsperado) {
+    console.error('\n  cloudflare/pagos/pagos-para-pegar.js está desfasado respecto a pagos.js.');
+    console.error('  Quien lo pegue en Cloudflare desplegaría una versión vieja del Worker.');
+    console.error('  Arréglalo con:  node tools/precios.mjs\n');
+    process.exit(1);
+  }
   if (jsonActual !== jsonEsperado) {
     console.error('\n  La tabla del Worker de cobros no coincide con tools/precios.mjs.');
     console.error('  Publicar así cobraría un importe distinto del que enseña la web.');
@@ -313,6 +347,11 @@ if (jsonActual !== jsonEsperado) {
   fs.mkdirSync(path.dirname(JSON_WORKER), { recursive: true });
   fs.writeFileSync(JSON_WORKER, jsonEsperado);
   console.log('Reescrita la tabla del Worker de cobros (cloudflare/pagos/paquetes.json).');
+}
+
+if (pegarActual !== pegarEsperado) {
+  fs.writeFileSync(JS_PEGAR, pegarEsperado);
+  console.log('Reescrito el Worker de un solo archivo (cloudflare/pagos/pagos-para-pegar.js).');
 }
 
 if (original === generado) {

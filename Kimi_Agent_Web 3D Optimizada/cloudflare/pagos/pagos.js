@@ -54,10 +54,18 @@ const ORIGENES_OK = new Set([
 
 const WHATSAPP = '524423697248';
 
-/* Tope por IP y minuto. No es una barrera contra el fraude —para eso está que
+/* Tope por IP y ventana. No es una barrera contra el fraude —para eso está que
    el importe no venga del cliente— sino contra el bucle: alguien pulsando cien
-   veces crearía cien preferencias y cien llamadas a la API de Mercado Pago. */
-const TOPE_MINUTO = 12;
+   veces crearía cien preferencias y cien llamadas a la API de Mercado Pago.
+
+   ⚠ EL NÚMERO TIENE QUE SER MAYOR QUE LA CANTIDAD DE BOTONES DE LA PÁGINA.
+   Estuvo en 12 con ONCE paquetes en pantalla, y eso lo tropezó el propio
+   titular a los cinco minutos de publicarlo: mirar casi todos los precios ya
+   agotaba el cupo y el comprador se topaba con «demasiados intentos» sin haber
+   hecho nada raro. Treinta deja recorrer la lista entera dos veces largas y
+   sigue cortando un script en seco. */
+const TOPE_VENTANA = 30;
+const VENTANA_MS = 60000;
 
 /* ------------------------------------------------------------------ APOYOS */
 
@@ -104,11 +112,30 @@ async function dentroDelTope(ip) {
   try {
     const clave = new Request('https://limite.interno/pagos/' + encodeURIComponent(ip));
     const cache = caches.default;
+    const ahora = Date.now();
+    let n = 0, inicio = ahora;
+
     const previo = await cache.match(clave);
-    const n = previo ? Number(await previo.text()) || 0 : 0;
-    if (n >= TOPE_MINUTO) return false;
-    await cache.put(clave, new Response(String(n + 1), {
-      headers: { 'Cache-Control': 'max-age=60' },
+    if (previo) {
+      const d = await previo.json().catch(() => null);
+      /* Sólo se arrastra la cuenta si la ventana SIGUE viva. Antes no se
+         guardaba cuándo empezó y el reloj era el max-age de la caché, que cada
+         `put` renovaba: la cuenta no se reiniciaba a los 60 s sino 60 s después
+         del ÚLTIMO toque. Es decir, no era un tope por minuto sino por sesión
+         de clics, y recorrer la lista despacio chocaba igual. Ahora la ventana
+         la marca su propia hora de inicio y vence sola. */
+      if (d && typeof d.inicio === 'number' && ahora - d.inicio < VENTANA_MS) {
+        n = d.n;
+        inicio = d.inicio;
+      }
+    }
+
+    if (n >= TOPE_VENTANA) return false;
+    /* max-age holgado a propósito: quien caduca la ventana es la marca de
+       tiempo de dentro, no la caché. Si la entrada desapareciera antes, la
+       cuenta se reiniciaría sola, que es el lado seguro para el comprador. */
+    await cache.put(clave, new Response(JSON.stringify({ n: n + 1, inicio }), {
+      headers: { 'Cache-Control': 'max-age=180', 'Content-Type': 'application/json' },
     }));
     return true;
   } catch (_) {
