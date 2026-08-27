@@ -68,6 +68,11 @@
            servirse caducado: una copia vieja cobraría $149 de envío a quien la
            web ya no se los cobra, y anunciaría el envío gratis a partir de diez
            cuando empieza en cuatro.
+     · -y  los once paquetes estrenan cobro en línea de contado, por Checkout
+           Pro. Aquí una copia caducada enseñaría el botón viejo, el del enlace
+           suelto con mensualidades, para un paquete que ya se cobra de otra
+           forma: dos caminos de cobro a la vez y sin saber cuál usó quien
+           compró.
      · -x  se puede pagar en línea: el paquete de una pieza estrena botón de pago
            de Mercado Pago, y con él cambian los términos y el aviso de
            privacidad. Aquí una copia caducada es lo más grave que este archivo

@@ -47,7 +47,7 @@ const WHATSAPP = '524423697248';
 
    Y es lo único que permite cobrar de contado: los enlaces del panel dejan las
    mensualidades bloqueadas después de crearlos. Ver cloudflare/pagos/. */
-const COBRO_EN_LINEA = '';
+const COBRO_EN_LINEA = 'https://pagos.sycsolutions.company/ir';
 
 /* A partir de cuántas placas se habla de «el paquete de N» y no de «N placas»
    en el mensaje de WhatsApp. Es una decisión de REDACCIÓN y por eso vive
@@ -69,7 +69,7 @@ const PAQUETE_DESDE = 10;
    el enlace por el precio del paquete a secas, el envío de los paquetes de
    menos de diez piezas se queda sin cobrar. */
 const PAQUETES = [
-  { piezas:  1, precio:  429, envio: 79, pago: 'https://mpago.la/28wz1Dv' },
+  { piezas:  1, precio:  429, envio: 79, pago: '' },
   { piezas:  2, precio:  699, envio: 69, pago: '' },
   { piezas:  3, precio:  799, envio: 59, pago: '' },
   { piezas:  4, precio:  949, envio:  0, pago: '', destaca: true },
@@ -275,7 +275,11 @@ if (args.includes('--tabla')) {
       ('  $' + miles(p.precio)).padEnd(13) +
       (gratis(p) ? '  gratis' : '  $' + p.envio).padEnd(11) +
       ('  $' + miles(total(p))).padEnd(19) +
-      (p.pago ? 'sí' : 'todavía no')
+      /* Con el Worker encendido lo cubre para TODOS, y el enlace suelto de cada
+         fila deja de usarse. Leer sólo `p.pago` decía «todavía no» de los once
+         paquetes cuando los once ya se pueden pagar: una salida que miente es
+         peor que no tenerla. */
+      (COBRO_EN_LINEA ? 'sí (Worker)' : p.pago ? 'sí (enlace)' : 'todavía no')
     );
   }
   console.log('\n  El importe del enlace de Mercado Pago es la columna TOTAL A COBRAR.\n');
