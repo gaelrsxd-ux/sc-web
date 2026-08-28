@@ -40,3 +40,12 @@
 # Sin barra final: en esta caja de pruebas es un ENLACE a otra carpeta, y
 # «node_modules/» sólo casa con un directorio de verdad.
 node_modules
+
+# Scratch de pruebas sueltas en la raíz.
+#
+# Las revisiones automáticas escriben scripts de Playwright de usar y tirar aquí
+# —_a11y_t1.mjs, _v3.mjs y compañía—. Una vez se colaron 22 de ellos en un
+# commit porque `git add -A` los recogió antes de que su autor los borrara. No
+# rompieron nada, pero un commit de nueve archivos que enseña treinta y uno no
+# se puede revisar.
+/_*.mjs

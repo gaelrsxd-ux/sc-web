@@ -187,6 +187,60 @@ test('los servicios están en el catálogo, con su anticipo por debajo del conta
   }
 });
 
+test('el anticipo con ficha propia llega MARCADO al aviso de la venta', async () => {
+  /* La regla —anticipo sólo si la cuenta la creamos nosotros— la aplica el
+     navegador, y el navegador no es de fiar: un formulario mandado a mano puede
+     pedir el anticipo declarando a la vez que ya tiene ficha.
+
+     No se rechaza a propósito: `ficha_tiene` lo declara el comprador, así que
+     bloquear no impide nada —basta con declarar «no»— y sí puede tirar una
+     venta legítima si el script no corre. Lo que hace daño es que pase
+     desapercibido. Esto comprueba que NO pasa desapercibido. */
+  const anticipo = TABLA.paquetes.find(p => p.tipo === 'servicio' && /anticipo/i.test(p.base));
+  assert.ok(anticipo, 'hay algún paquete de anticipo en el catálogo');
+
+  montaCaches();
+  let llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: anticipo.id, ficha_tiene: 'si', negocio: 'El Molino Ruso' }), ENV);
+  assert.match(llamadas[0].cuerpo.additional_info, /REVISAR: anticipo/,
+    'el aviso de la venta tiene que gritar la combinación imposible');
+
+  /* Y SIN RESPONDER A LA PREGUNTA, también. Quien manda el formulario a mano es
+     justamente quien puede omitir el campo, y un anticipo sin declarar que la
+     cuenta está por crear no es más legítimo que uno con ficha propia: es el
+     mismo caso con menos información. La condición mira si se dijo «no», no si
+     se dijo «sí». */
+  for (const raro of [undefined, '', 'SI', 'sí', 'quizá']) {
+    montaCaches();
+    llamadas = montaFetch(okMP);
+    const campos = { paquete: anticipo.id, negocio: 'El Molino Ruso' };
+    if (raro !== undefined) campos.ficha_tiene = raro;
+    await worker.fetch(post(campos), ENV);
+    assert.match(llamadas[0].cuerpo.additional_info, /REVISAR: anticipo/,
+      `«${raro}» no puede colarse como un anticipo legítimo`);
+  }
+
+  /* Y con la combinación legítima NO grita: una marca que sale siempre es una
+     marca que se deja de leer a la semana. */
+  montaCaches();
+  llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: anticipo.id, ficha_tiene: 'no', negocio: 'El Molino Ruso' }), ENV);
+  assert.doesNotMatch(llamadas[0].cuerpo.additional_info, /REVISAR/,
+    'con la combinación legítima no puede saltar la marca');
+});
+
+test('«no dijo si tiene ficha» no se imprime como «la creamos nosotros»', async () => {
+  /* El resumen de la venta es una instrucción de trabajo: «SIN ficha: la
+     creamos» manda crear una cuenta. Dicho sobre alguien que no respondió, es
+     una cuenta duplicada sobre un negocio que ya estaba en Google. */
+  const serv = TABLA.paquetes.find(p => p.tipo === 'servicio');
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: serv.id, negocio: 'El Molino Ruso' }), ENV);
+  assert.match(llamadas[0].cuerpo.additional_info, /NO DIJO si tiene ficha/);
+  assert.doesNotMatch(llamadas[0].cuerpo.additional_info, /SIN ficha: la creamos/);
+});
+
 test('a un servicio NO se le descuenta el envío por ser de San Luis', async () => {
   const serv = TABLA.paquetes.find(p => p.tipo === 'servicio');
   montaCaches();

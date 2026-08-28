@@ -20,7 +20,7 @@ node pruebas/instalaciones.mjs
 ```
 
 Ochenta y nueve comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; veintitrés en la segunda y dieciocho en la tercera.
+bloque final sin él; cincuenta y nueve en la segunda y dieciocho en la tercera.
 
 ## Por qué en un navegador
 
@@ -116,7 +116,7 @@ El segundo camino por el que entra dinero. No reutiliza nada del primero porque
 no se le parece: no hay cantidad, no hay envío, no hay dirección — y sí hay una
 regla comercial que sólo vale en un caso.
 
-### Las dos que justifican el archivo
+### Las tres que justifican el archivo
 
 > **NO viaja ningún importe en el formulario**
 
@@ -136,16 +136,52 @@ contraseña— sí espera al pago.
 Comprobado por sabotaje: cambiando `o.disabled=tiene` por `o.disabled=false`, se
 pone en rojo.
 
+> **la frase de cada paquete deja de prometer el anticipo**
+
+Apagar las opciones no basta. Si la línea de arriba sigue diciendo «págalo de
+contado o deja $750 de anticipo» mientras las opciones de anticipo están grises,
+la página está diciendo dos cosas a la vez. Cada paquete lleva sus dos textos y
+el script cambia el entero, no sólo el estado de los controles.
+
+Son **tres** textos, no dos, y el tercero es el que va escrito en el HTML: el
+que lee quien no ejecuta scripts. Ése tiene que ser cierto en los dos casos a la
+vez —«deja $750 de anticipo **si la cuenta la creamos nosotros**»—, porque ahí
+no hay nadie que vaya a cambiarlo. Estaba escrita la versión de «no tengo
+ficha», que ofrece el anticipo sin condición.
+
+> **el importe se guarda en crudo, no formateado**
+
+`servicio.html` guarda el pedido y `gracias.html` lo enseña, y el importe pasa
+de una a otra por `sessionStorage`. Guardándolo ya formateado —«$1,150», que es
+lo que se pinta en la cifra grande—, `Number('$1,150')` da `NaN` y el comprador
+leía **«$NaN»** en el resumen de lo que acababa de pagar. Van dos atributos: uno
+para pintar y otro, entero, para guardar.
+
+Esta prueba existe porque la que había **se inventaba** el objeto que la primera
+página escribe, así que comprobaba que la segunda sabe leer y nunca que la
+primera sepa escribir. Ahora se compra de verdad —el POST al cobro está
+interceptado, la pestaña vuelve al mismo origen y el `sessionStorage` sigue
+ahí— y se lee lo que haya salido.
+
 ### Lo que cubren las otras
 
 | | |
 |---|---|
-| **Las cuatro formas de comprar** | dos paquetes × contado/anticipo, y **una sola** nace marcada. Con dos `checked` el navegador se queda con la última del documento, así que la página abría con el paquete caro preseleccionado sin que nadie lo hubiera decidido |
+| **Dos paquetes, no cuatro opciones** | cada uno con sus dos formas de pago dentro. En una lista plana de cuatro, el ojo compara importes en vez de paquetes, y «$750» junto a «$1,490» parece un descuento cuando es un anticipo |
+| **La visita, con su matiz al lado** | «Todo hecho» promete ir al negocio a tomar las fotos y eso sólo vale en San Luis Potosí y Soledad. Un matiz que sólo vive en la página de términos se lee **después** de pagar, y quien lo descubre ahí tiene razón en enfadarse |
+| **Lo que falta por cobrar** | quien deja un anticipo se va sin saber cuánto debe si nadie se lo dice — y la cifra grande que acaba de ver es la del anticipo, no la del paquete. Va en el resumen y en el WhatsApp |
+| **El enlace de la ficha** | al corregir a «todavía no aparezco», el campo se **vacía**, no sólo se esconde: un campo escondido conserva su valor y lo manda igual, y el aviso de la venta llegaba diciendo «SIN ficha: la creamos» con el enlace a la ficha que ya existía debajo |
+| **El aviso antes de elegir** | cada paquete dice cómo se puede pagar **antes** de que nadie pulse. Enterarse de que había otra forma de pagar después de haber decidido que no se puede es un cliente perdido por no haberlo dicho a tiempo |
+| **Nada preseleccionado** | ninguna opción nace marcada —en una pantalla de cobro, una opción marcada de fábrica es una que alguien puede comprar sin haberla elegido— y las cuatro llevan `required`, así que sin JavaScript el navegador exige elegir |
+| **Los datos, después** | el bloque del negocio no se pide hasta que hay paquete elegido |
 | **La cifra grande** | sigue a la opción elegida y coincide con la del catálogo |
 | **Lo que llega al cobro** | el paquete elegido y si tiene ficha o no —que es lo que hace legítimo el anticipo—, y **ninguna dirección de envío**: un servicio no se envía |
 | **El teléfono** | el mismo `pattern` que en el pedido, con los escapes puestos; tres cifras rebotan |
 | **La vuelta** | `gracias.html` le dice que nos añada como administrador **y con qué correo**, y **no** le habla de paquetería. El WhatsApp trae escrito si su ficha existe y **no declara ningún importe** |
-| **Sin JavaScript** | los tres bloques se ven, las cuatro opciones están, **cada una lleva su precio escrito** —no calculado— y la cifra grande queda vacía en vez de mentir |
+| **Volver atrás** | el navegador restaura el paquete elegido pero **no vuelve a ejecutar el script** al salir de la caché de páginas: el bloque de datos se quedaba escondido y con él el botón de pagar. Un paquete elegido y ninguna forma de pagarlo, en la pantalla de cobro. Lo arregla `pageshow`, que es el evento que sí llega ahí |
+| **El pago pendiente** | con `?estado=pendiente` la página **no da el pago por hecho**. La rama del servicio pisaba ese aviso y dejaba «Tu pago está pendiente» arriba y «no tienes que hacer nada más» debajo — quien lee eso no vuelve a la tienda a pagar |
+| **Sin JavaScript** | los tres bloques se ven, las cuatro opciones están, **cada una lleva su precio escrito** —no calculado—, la cifra grande queda vacía en vez de mentir y la frase de cada paquete condiciona el anticipo en vez de prometerlo |
+| **`gracias.html` sin JavaScript** | es la misma página para los dos caminos de cobro y sin script no sabe cuál fue, así que el párrafo que trae puesto tiene que valer para los dos. Decía «preparamos tus placas»: a quien acababa de contratar la configuración de su Google le anunciaba un envío que no existe y le escondía el único paso que sí le tocaba a él |
 
 
 ## Lo que NO cubre
