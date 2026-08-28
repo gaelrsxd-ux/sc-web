@@ -170,11 +170,39 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
      mueve: no hay `:hover` en una pantalla táctil. */
   ok(!(await pg.locator('.sv-plan.pulsada').count()),
      'sin tocar nada, ninguna tarjeta se enciende sola');
+
+  /* ⚠ LA HOJA DE ESTILO LLEVA LA HUELLA DE SU CONTENIDO EN EL ENLACE.
+     Sin ella, Safari en iOS reutiliza el CSS viejo con el HTML nuevo y el
+     resultado no parece un fallo de caché: parece un diseño roto. Pasó tres
+     veces en el mismo teléfono, y una de ellas dejó el control de comprar
+     convertido en una rayita de cuatro píxeles. Se comprueba también que la
+     dirección con huella RESPONDA: una huella mal puesta es un 404 y una
+     página sin estilos. */
+  const hojas = await pg.$$eval('link[rel="stylesheet"][href^="assets/"]',
+    ls => ls.map(l => l.getAttribute('href')));
+  ok(hojas.length > 0 && hojas.every(h => /\.css\?v=[a-f0-9]{8}$/.test(h)),
+     'cada hoja de estilo propia lleva la huella de su contenido: ' + hojas.join(' '));
+  const cargadas = await pg.evaluate(() => [...document.styleSheets]
+    .filter(h => h.href && h.href.includes('/assets/')).length);
+  ok(cargadas === hojas.length,
+     `y las ${hojas.length} se cargan de verdad con esa dirección (${cargadas})`);
+
+  /* EN REPOSO LA TARJETA RESPIRA. Es lo que dice «esto se toca» sin escribirlo,
+     y va en el borde para no competir con el precio. */
+  const respira = await pg.$eval('.sv-plan',
+    e => getComputedStyle(e, '::before').animationName);
+  ok(respira === 'svRespira', 'y en reposo el borde respira, para que se vea que es tocable');
   await pg.locator('.sv-plan[data-plan="gp-e"]').click();
   ok(await pg.locator('.sv-plan[data-plan="gp-e"]').evaluate(e => e.classList.contains('pulsada')),
-     'al tocar la tarjeta —no un botón— salta el destello que confirma el toque');
+     'al tocar la tarjeta —no un botón— salta la ola que confirma el toque');
+  /* Y LA OLA SALE DEL PUNTO QUE SE TOCÓ, no del centro: es la diferencia entre
+     una animación que decora y una que contesta al dedo. */
+  const origen = await pg.$eval('.sv-plan[data-plan="gp-e"]',
+    e => ({ x: e.style.getPropertyValue('--x'), y: e.style.getPropertyValue('--y') }));
+  ok(/px$/.test(origen.x) && /px$/.test(origen.y),
+     `la ola sale del punto que se tocó (${origen.x}, ${origen.y})`);
   await hasta(() => pg.$eval('.sv-plan[data-plan="gp-e"]', e => !e.classList.contains('pulsada')),
-              'el destello se limpia solo');
+              'la ola se limpia sola');
   ok(await pg.locator('.sv-plan[data-plan="gp-e"]').evaluate(e => e.classList.contains('abierto')),
      'y el paquete queda abierto');
   await pg.locator('[data-sv-cambiar]').click();

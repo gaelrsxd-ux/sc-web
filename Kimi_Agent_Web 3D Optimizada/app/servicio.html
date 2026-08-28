@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/legal.css">
-<link rel="stylesheet" href="assets/pedido.css">
+<link rel="stylesheet" href="assets/legal.css?v=d943bd39">
+<link rel="stylesheet" href="assets/pedido.css?v=166aa73d">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -359,6 +359,18 @@
          que el siguiente toque vuelva a dispararla. */
       const tarjeta=b.closest('.sv-plan');
       if(tarjeta){
+        /* La ola sale DEL PUNTO QUE SE TOCÓ, no del centro: es la diferencia
+           entre una animación que decora y una que contesta al dedo. Si el
+           clic viene del teclado —`e.detail` vale 0— no hay punto, y entonces
+           sale del centro, que es lo que pone el CSS por defecto. */
+        if(e.detail){
+          const c=tarjeta.getBoundingClientRect();
+          tarjeta.style.setProperty('--x',(e.clientX-c.left)+'px');
+          tarjeta.style.setProperty('--y',(e.clientY-c.top)+'px');
+        }else{
+          tarjeta.style.removeProperty('--x');
+          tarjeta.style.removeProperty('--y');
+        }
         tarjeta.classList.remove('pulsada');
         void tarjeta.offsetWidth;          /* reinicia la animación */
         tarjeta.classList.add('pulsada');

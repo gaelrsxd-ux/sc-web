@@ -222,17 +222,38 @@ main{max-width:560px}
   border:1px solid currentColor;transform:rotate(45deg)}
 
 /* ── LA RESPUESTA AL DEDO ──
-   Tres capas, y cada una responde en un momento distinto:
-   1. Mientras se mantiene pulsado, la tarjeta se hunde un pelo y se enciende.
-      Es inmediata, sin transición de entrada: un color que llega 250 ms
-      después del dedo se lee como retraso, no como respuesta.
-   2. Al soltar, un destello que recorre la tarjeta: es la confirmación de que
-      SÍ se pulsó, que es lo que pidió el titular. Dura 420 ms y se va.
-   3. Y sólo entonces se abre el paquete.
-   Si no se pulsa no pasa absolutamente nada: no hay `:hover` en pantallas
-   táctiles, así que nadie ve moverse una tarjeta que no ha tocado. */
+   Cuatro capas, y cada una contesta en un momento distinto:
+
+   1. EN REPOSO, la tarjeta respira: un resplandor recorre su borde muy despacio
+      y sin parar. Es lo que dice «esto se toca» sin escribirlo — y va en el
+      borde y no en el fondo para que no compita con el texto ni con el precio.
+   2. AL MANTENER PULSADO, se hunde un pelo y se enciende. Inmediata, sin
+      transición de entrada: un color que llega 250 ms después del dedo se lee
+      como retraso, no como respuesta.
+   3. AL SOLTAR, una ola sale del punto exacto donde se tocó y recorre la
+      tarjeta entera. Ésa es la confirmación de que sí se pulsó.
+   4. Y entonces se abre el paquete.
+
+   Si no se toca no pasa nada más que el respiro: no hay `:hover` en una
+   pantalla táctil, así que nadie ve una tarjeta reaccionar a un dedo que no
+   llegó. */
 .sv-plan:has(.sv-elige:not([hidden])){
   transition:border-color .25s,background-color .25s,transform .12s}
+
+/* El respiro. Un resplandor que da la vuelta al borde cada seis segundos. Va en
+   un pseudoelemento con máscara para que sólo pinte el marco de un píxel y no
+   el relleno. */
+.sv-plan:has(.sv-elige:not([hidden]))::before{
+  content:"";position:absolute;inset:-1px;pointer-events:none;z-index:1;
+  border:1px solid transparent;
+  background:linear-gradient(115deg,transparent 42%,var(--bronze-hi) 50%,transparent 58%) border-box;
+  background-size:300% 100%;
+  -webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);
+  mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:.55;animation:svRespira 6s linear infinite}
+@keyframes svRespira{from{background-position:150% 0}to{background-position:-150% 0}}
+
 .sv-plan:has(.sv-elige:active){
   border-color:var(--bronze);background:rgba(200,169,106,.09);
   transform:scale(.988);transition-duration:0s}
@@ -243,19 +264,26 @@ main{max-width:560px}
    por definición: quien navega con teclado tiene que saber dónde está. */
 .sv-plan:has(.sv-elige:focus-visible){outline:1px solid var(--bronze-hi);outline-offset:3px}
 
-/* El destello de confirmación. Va en un pseudoelemento para no tocar el fondo
-   de la tarjeta, y `pointer-events:none` para no comerse el toque siguiente. */
+/* LA OLA. Sale del punto que se tocó —el script escribe `--x` y `--y` con las
+   coordenadas— y crece hasta cubrir la tarjeta. Con `pointer-events:none` para
+   no comerse el toque siguiente. */
 .sv-plan.pulsada::after{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
-  background:linear-gradient(105deg,transparent 30%,rgba(200,169,106,.30) 50%,transparent 70%);
-  background-size:280% 100%;
-  animation:svDestello .42s cubic-bezier(.3,.7,.3,1) forwards}
-@keyframes svDestello{from{background-position:180% 0}to{background-position:-80% 0}}
-/* Quien pidió menos movimiento recibe la confirmación igual, pero sin viaje:
-   un fundido corto en el mismo sitio. */
+  content:"";position:absolute;left:var(--x,50%);top:var(--y,50%);
+  width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;
+  pointer-events:none;z-index:3;background:rgba(200,169,106,.34);
+  animation:svOla .52s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes svOla{
+  from{transform:scale(0);opacity:.9}
+  to{transform:scale(90);opacity:0}}
+
+/* Quien pidió menos movimiento no ve ni el respiro ni el viaje de la ola, pero
+   recibe la confirmación igual: un destello corto en el sitio. */
 @media(prefers-reduced-motion:reduce){
+  .sv-plan:has(.sv-elige:not([hidden]))::before{animation:none;opacity:0}
   .sv-plan:has(.sv-elige:active){transform:none}
-  .sv-plan.pulsada::after{background:rgba(200,169,106,.22);animation:svApaga .42s linear forwards}
+  .sv-plan.pulsada::after{
+    left:0;top:0;width:100%;height:100%;margin:0;border-radius:0;
+    background:rgba(200,169,106,.20);animation:svApaga .42s linear forwards}
   @keyframes svApaga{from{opacity:1}to{opacity:0}}
 }
 
