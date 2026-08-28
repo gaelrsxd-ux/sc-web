@@ -192,37 +192,90 @@ main{max-width:560px}
 
 /* ══ PRIMERO EL PAQUETE, DESPUÉS CÓMO SE PAGA ══
    Con las cuatro formas de pago desplegadas a la vez la pantalla pedía dos
-   decisiones al mismo tiempo. El botón nace escondido en el marcado y lo
-   enciende el script: sin JavaScript no hay botón y se ven las cuatro
+   decisiones al mismo tiempo. El control nace escondido en el marcado y lo
+   enciende el script: sin JavaScript no hay nada que pulsar y se ven las cuatro
    opciones, que es la página de siempre. */
-.sv-elige{display:block;width:100%;margin-top:14px;padding:15px 18px;
-  border:1px solid var(--bronze);background:none;color:var(--bronze-hi);
-  font-family:var(--sans);font-size:11px;letter-spacing:2.6px;text-transform:uppercase;
-  font-weight:500;cursor:pointer;touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;transition:background-color .3s,color .3s}
-.sv-elige:active{background:var(--bronze);color:var(--on-bronze,#0A0B0E);transition-duration:0s}
-@media(hover:hover){.sv-elige:hover{background:var(--bronze);color:var(--on-bronze,#0A0B0E)}}
-.sv-elige:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+.sv-plan{position:relative}
+
+/* ⚠ EL CONTROL ES LA TARJETA ENTERA, no un rectangulito debajo del texto.
+   Antes era un botón normal con su borde y su rótulo, y en iOS salía como una
+   pastilla blanca del sistema: 200 px de objetivo dentro de una tarjeta de 700
+   que ya dice todo lo que hay que saber. Ahora el botón se estira por encima de
+   todo el bloque y no se ve — lo que se ve, y se toca, es la tarjeta.
+
+   `appearance:none` va el primero y a propósito: es lo único que garantiza que
+   iOS no pinte su propio botón encima si cualquier otra declaración de aquí no
+   llegara a aplicarse. */
+.sv-elige{-webkit-appearance:none;appearance:none;
+  position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;
+  border:0;background:none;color:inherit;font:inherit;z-index:2;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.sv-elige[hidden]{display:none}
+
+/* La pista de que esto se toca. Una tarjeta que reacciona al pulsarla no se
+   distingue de un cuadro de texto si nadie lo dice. */
+.sv-pista{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);
+  font-size:10px;letter-spacing:2.4px;text-transform:uppercase;
+  color:var(--bronze-hi);display:flex;align-items:center;gap:9px}
+.sv-pista[hidden]{display:none}
+.sv-pista::before{content:"";width:7px;height:7px;flex:none;
+  border:1px solid currentColor;transform:rotate(45deg)}
+
+/* ── LA RESPUESTA AL DEDO ──
+   Tres capas, y cada una responde en un momento distinto:
+   1. Mientras se mantiene pulsado, la tarjeta se hunde un pelo y se enciende.
+      Es inmediata, sin transición de entrada: un color que llega 250 ms
+      después del dedo se lee como retraso, no como respuesta.
+   2. Al soltar, un destello que recorre la tarjeta: es la confirmación de que
+      SÍ se pulsó, que es lo que pidió el titular. Dura 420 ms y se va.
+   3. Y sólo entonces se abre el paquete.
+   Si no se pulsa no pasa absolutamente nada: no hay `:hover` en pantallas
+   táctiles, así que nadie ve moverse una tarjeta que no ha tocado. */
+.sv-plan:has(.sv-elige:not([hidden])){
+  transition:border-color .25s,background-color .25s,transform .12s}
+.sv-plan:has(.sv-elige:active){
+  border-color:var(--bronze);background:rgba(200,169,106,.09);
+  transform:scale(.988);transition-duration:0s}
+@media(hover:hover){
+  .sv-plan:has(.sv-elige:hover){border-color:var(--bronze);background:rgba(200,169,106,.07)}
+}
+/* El anillo de foco va en la TARJETA y no en el botón invisible, que no se ve
+   por definición: quien navega con teclado tiene que saber dónde está. */
+.sv-plan:has(.sv-elige:focus-visible){outline:1px solid var(--bronze-hi);outline-offset:3px}
+
+/* El destello de confirmación. Va en un pseudoelemento para no tocar el fondo
+   de la tarjeta, y `pointer-events:none` para no comerse el toque siguiente. */
+.sv-plan.pulsada::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:linear-gradient(105deg,transparent 30%,rgba(200,169,106,.30) 50%,transparent 70%);
+  background-size:280% 100%;
+  animation:svDestello .42s cubic-bezier(.3,.7,.3,1) forwards}
+@keyframes svDestello{from{background-position:180% 0}to{background-position:-80% 0}}
+/* Quien pidió menos movimiento recibe la confirmación igual, pero sin viaje:
+   un fundido corto en el mismo sitio. */
+@media(prefers-reduced-motion:reduce){
+  .sv-plan:has(.sv-elige:active){transform:none}
+  .sv-plan.pulsada::after{background:rgba(200,169,106,.22);animation:svApaga .42s linear forwards}
+  @keyframes svApaga{from{opacity:1}to{opacity:0}}
+}
 
 /* El paquete que NO se eligió no se borra: se aparta. Devolverlo es un toque
    en «cambiar», y verlo desaparecer del todo hace dudar de si sigue estando. */
 .sv-plan[hidden]{display:none}
 .sv-plan.abierto{border-color:var(--bronze)}
 
-/* La cabecera del paso, con la salida para volver. Un cobro sin marcha atrás
-   es un cobro que se abandona: quien se equivoca de paquete y no ve cómo
-   deshacerlo cierra la pestaña, no vuelve a empezar. */
+/* La salida para volver. Un cobro sin marcha atrás es un cobro que se abandona:
+   quien se equivoca de paquete y no ve cómo deshacerlo cierra la pestaña. */
 .sv-vuelta{display:flex;align-items:center;justify-content:space-between;gap:12px;
   margin-top:14px}
-.sv-vuelta button{border:none;background:none;padding:8px 0;cursor:pointer;
+.sv-vuelta button{-webkit-appearance:none;appearance:none;
+  border:none;background:none;padding:8px 0;cursor:pointer;
   font-family:var(--sans);font-size:11px;letter-spacing:2.2px;text-transform:uppercase;
   color:var(--muted);touch-action:manipulation;transition:color .3s}
 .sv-vuelta button:hover,.sv-vuelta button:focus-visible{color:var(--bronze-hi)}
 .sv-vuelta[hidden]{display:none}
 
 .sv-pagos[hidden]{display:none}
-/* Un filete que separa el paquete de sus formas de pago: sin él, al
-   descubrirse parecen dos paquetes más. */
 .sv-pagos{margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}
 
 /* Lo que se lee en voz alta pero no ocupa sitio. Sin `display:none`, que lo

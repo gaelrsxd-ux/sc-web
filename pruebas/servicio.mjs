@@ -148,7 +148,37 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(!(await pg.locator('.sv-pagos').first().isVisible()),
      'al entrar NO se ven las formas de pago: sólo los dos paquetes');
   ok(await pg.locator('.sv-elige:visible').count() === 2,
-     'y cada paquete lleva su botón para elegirlo');
+     'y cada paquete lleva su control para elegirlo');
+
+  /* ⚠ EL CONTROL ES LA TARJETA ENTERA, no un rectangulito debajo del texto.
+     Antes era un botón normal, y en iOS salía como una pastilla blanca del
+     sistema: 200 px de objetivo dentro de una tarjeta de 700 que ya dice todo
+     lo que hay que saber. */
+  const tapa = await pg.$eval('.sv-plan',
+    p => { const a = p.getBoundingClientRect(), b = p.querySelector('.sv-elige').getBoundingClientRect();
+           return { ancho: b.width / a.width, alto: b.height / a.height,
+                    ios: getComputedStyle(p.querySelector('.sv-elige')).webkitAppearance }; });
+  ok(tapa.ancho > .95 && tapa.alto > .95,
+     `el control cubre la tarjeta entera (${Math.round(tapa.ancho*100)}% × ${Math.round(tapa.alto*100)}%)`);
+  ok(tapa.ios === 'none',
+     'y sin la apariencia del sistema: en iOS un <button> sin esto sale como una pastilla blanca');
+  ok(await pg.locator('.sv-pista:visible').count() === 2,
+     'y cada tarjeta dice que se toca: una que reacciona al pulsarla no se distingue de un cuadro de texto');
+
+  /* AL TOCAR, UNA SEÑAL. Sin ella, entre el dedo y el cambio de pantalla no
+     pasa nada y quien tiene prisa vuelve a pulsar. Y si NO se toca, nada se
+     mueve: no hay `:hover` en una pantalla táctil. */
+  ok(!(await pg.locator('.sv-plan.pulsada').count()),
+     'sin tocar nada, ninguna tarjeta se enciende sola');
+  await pg.locator('.sv-plan[data-plan="gp-e"]').click();
+  ok(await pg.locator('.sv-plan[data-plan="gp-e"]').evaluate(e => e.classList.contains('pulsada')),
+     'al tocar la tarjeta —no un botón— salta el destello que confirma el toque');
+  await hasta(() => pg.$eval('.sv-plan[data-plan="gp-e"]', e => !e.classList.contains('pulsada')),
+              'el destello se limpia solo');
+  ok(await pg.locator('.sv-plan[data-plan="gp-e"]').evaluate(e => e.classList.contains('abierto')),
+     'y el paquete queda abierto');
+  await pg.locator('[data-sv-cambiar]').click();
+  await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2, 'vuelven los dos');
   ok(!(await pg.locator('[data-sv-vuelta]').isVisible()),
      'sin nada elegido no hay nada que deshacer, así que no hay botón de volver');
 

@@ -82,6 +82,13 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   const mas   = pg.locator('.prod-compra [data-pc="1"]');
   ok(await menos.isVisible() && await mas.isVisible(),
      'la ficha del producto tiene su «−» y su «+»');
+  /* ⚠ LOS DOS PRECIOS DEL PERFIL DE GOOGLE, no un «desde». Enseñar sólo el
+     barato escondía la mitad del catálogo justo donde se decide si entrar. */
+  const dosPrecios = (await pg.locator('[data-svc-desde]').innerText()).replace(/\s+/g, ' ');
+  ok(/\$1,490/.test(dosPrecios) && /\$2,300/.test(dosPrecios),
+     'la tarjeta del perfil de Google enseña los DOS precios: ' + dosPrecios);
+  ok(!/desde/i.test(dosPrecios), 'y ya no dice «desde», que escondía el de arriba');
+
   const desdePortada = (await pg.locator('[data-pc-total]').textContent()).trim();
   ok(await pg.locator('[data-pc-ir]').getAttribute('href') === 'pedido.html?n=1',
      'su botón lleva al pedido');
@@ -393,6 +400,22 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      llevaba ahí, pero un logotipo no se lee como un botón de volver. */
   ok(destinos[0].href === '#top' && /inicio/i.test(destinos[0].titulo),
      'y el primero es Inicio, que lleva a la portada');
+
+  /* ⚠ LLEGAR DESDE EL MENÚ NO PUEDE PINTAR UN RECUADRO. Los paneles llevaban
+     `tabindex="0"`, así que al navegar a «#servicios» el navegador enfocaba el
+     panel y `:focus-visible` dibujaba un marco dorado de lado a lado alrededor
+     de medio catálogo, que no se iba hasta que algo más tomaba el foco.
+     Parecía un fallo de pintado porque lo parecía. */
+  ok(await m.$$eval('.sol-panel', ps => ps.every(p => !p.hasAttribute('tabindex'))),
+     'los paneles no son enfocables: si no, el ancla del menú les da el foco');
+  await m.goto(BASE + '/#servicios', { waitUntil: 'domcontentloaded' });
+  await m.waitForTimeout(900);
+  const marco = await m.evaluate(() => {
+    const p = document.querySelector('.sol-panel:not([hidden])');
+    return { activo: document.activeElement === p, contorno: getComputedStyle(p).outlineStyle };
+  });
+  ok(!marco.activo && marco.contorno === 'none',
+     'y al llegar desde el menú NO se pinta ningún recuadro alrededor del panel');
   ok(await m.locator('#top').count() === 1, 'y ese destino existe de verdad en la página');
   ok(await m.locator('#top .hero-bg').count() === 1,
      'y es la portada con su foto de fondo, no un ancla suelta');
