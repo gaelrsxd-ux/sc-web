@@ -9,7 +9,7 @@ ficha de Google del cliente.
 | | |
 |---|---|
 | `compra.mjs` | la placa: ficha → `pedido.html` → lo que se le manda al Worker → `gracias.html` |
-| `servicio.mjs` | el perfil de Google: `servicio.html` → el cobro → `gracias.html` |
+| `servicio.mjs` | el perfil de Google: `servicio.html` → el cobro → `gracias-servicio.html` |
 | `instalaciones.mjs` | las fotos de clientes de la ficha |
 
 ```sh
@@ -20,7 +20,7 @@ node pruebas/instalaciones.mjs
 ```
 
 Ochenta y nueve comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; cincuenta y nueve en la segunda y dieciocho en la tercera.
+bloque final sin él; ochenta y dos en la segunda y dieciocho en la tercera.
 
 ## Por qué en un navegador
 
@@ -133,8 +133,17 @@ hecho no se deshace y el resto no se cobra. El anticipo sólo se sostiene cuando
 la cuenta la creamos nosotros, porque entonces la entrega final —el correo y la
 contraseña— sí espera al pago.
 
+Son **tres capas**, y hacen falta las tres porque es dinero: el CSS
+(`pointer-events:none`, la única que sigue en pie sin JavaScript), el `disabled`
+del script, y el corte del Worker, que ya no marca sino que **rechaza** la
+combinación explícita con un 409. El argumento de antes —bloquear no impide
+nada, basta con declarar «no»— vale para quien manda el formulario a mano; no
+vale para el cliente honesto sin JavaScript, que era quien de verdad llegaba
+ahí y a quien se le cobraba la mitad de un trabajo cuya entrega no se puede
+retener.
+
 Comprobado por sabotaje: cambiando `o.disabled=tiene` por `o.disabled=false`, se
-pone en rojo.
+pone en rojo; quitando las reglas `:has()` del CSS, tres comprobaciones más.
 
 > **la frase de cada paquete deja de prometer el anticipo**
 
@@ -163,6 +172,25 @@ primera sepa escribir. Ahora se compra de verdad —el POST al cobro está
 interceptado, la pestaña vuelve al mismo origen y el `sessionStorage` sigue
 ahí— y se lee lo que haya salido.
 
+> **el canario del bloque «sin JavaScript»**
+
+Cinco de las seis comprobaciones de ese bloque daban **idéntico con JavaScript
+encendido** —contar `.ped-f` no mira `hidden`, y la cifra grande también nace
+vacía con script cuando no hay nada marcado—, así que el día que la emulación no
+se aplicara el bloque se habría quedado en verde sin haber probado nada. Y pasó:
+bajo carga, el contexto arrancó con JavaScript vivo en dos de cinco ejecuciones.
+
+Ahora lo primero que hace el bloque es afirmar algo que es **falso con script**
+—que el bloque de datos se ve—, así que si la emulación no se aplicó, falla en
+voz alta. Comprobado por sabotaje: poniendo `javaScriptEnabled: true` en ese
+contexto, el canario se pone en rojo.
+
+> **sin JavaScript, el formulario SE ENVÍA**
+
+Todo lo demás de ese bloque mira la página quieta. Lo que hace que «sin
+JavaScript se sigue vendiendo» sea verdad es que el POST salga con lo que hay
+que mandar, y eso no lo comprobaba nadie.
+
 ### Lo que cubren las otras
 
 | | |
@@ -180,9 +208,23 @@ ahí— y se lee lo que haya salido.
 | **La vuelta** | `gracias.html` le dice que nos añada como administrador **y con qué correo**, y **no** le habla de paquetería. El WhatsApp trae escrito si su ficha existe y **no declara ningún importe** |
 | **Volver atrás** | el navegador restaura el paquete elegido pero **no vuelve a ejecutar el script** al salir de la caché de páginas: el bloque de datos se quedaba escondido y con él el botón de pagar. Un paquete elegido y ninguna forma de pagarlo, en la pantalla de cobro. Lo arregla `pageshow`, que es el evento que sí llega ahí |
 | **El pago pendiente** | con `?estado=pendiente` la página **no da el pago por hecho**. La rama del servicio pisaba ese aviso y dejaba «Tu pago está pendiente» arriba y «no tienes que hacer nada más» debajo — quien lee eso no vuelve a la tienda a pagar |
-| **Sin JavaScript** | los tres bloques se ven, las cuatro opciones están, **cada una lleva su precio escrito** —no calculado—, la cifra grande queda vacía en vez de mentir y la frase de cada paquete condiciona el anticipo en vez de prometerlo |
-| **`gracias.html` sin JavaScript** | es la misma página para los dos caminos de cobro y sin script no sabe cuál fue, así que el párrafo que trae puesto tiene que valer para los dos. Decía «preparamos tus placas»: a quien acababa de contratar la configuración de su Google le anunciaba un envío que no existe y le escondía el único paso que sí le tocaba a él |
+| **Sin JavaScript** | los tres bloques se ven, las cuatro opciones están, **cada una lleva su precio escrito** —no calculado—, la cifra grande queda vacía, **la frase cambia con la respuesta** (lo hace el CSS con `:has()`, no el script), la opción de anticipo no se deja pulsar con ficha propia, el enlace de la ficha sólo se pide cuando hay ficha, y el **formulario se envía** con el paquete, la respuesta y ningún importe |
+| **`gracias-servicio.html`** | un servicio vuelve a **su propia página**, elegida por el Worker en `back_urls` y no por un script. Antes las dos compras volvían a la misma, que las distingue leyendo el `sessionStorage` que escribe un script: sin JavaScript se le decía «preparamos tus placas» a quien contrató un perfil de Google y **nunca** veía el correo al que tenía que añadirnos — que es lo que arranca el plazo de entrega. Pagaba y se quedaba esperando algo que dependía de él |
+| **El pago pendiente y el anticipo** | con `?estado=pendiente` **no** se anuncia «Falta por pagar $1,150»: quien tiene un recibo de efectivo sin pagar en la mano no debe sólo el resto — no ha pagado nada, y el primero de los dos pagos hay que hacerlo ahora. Decirle que lo único pendiente es el resto es la forma de que no pague el anticipo |
 
+
+### Por qué no hay ni un reloj fijo
+
+Esta suite se sincronizaba con **20 `waitForTimeout`** de entre 140 y 800 ms. Bajo
+carga —otro Chromium en la misma máquina— se ponía roja dos de cada cinco veces,
+cada vez por parejas distintas de comprobaciones. El rojo no era la página: era
+el reloj. Un margen fijo o sobra —y la suite tarda de más— o falta, y entonces
+miente.
+
+Ahora se espera **a la condición** que la comprobación siguiente necesita
+(`hasta()`), y si no llega lo dice con su nombre en vez de dejar que falle la
+línea de al lado. Comprobado: tres copias de la suite a la vez, las tres en
+verde.
 
 ## Lo que NO cubre
 

@@ -157,6 +157,37 @@ main{max-width:560px}
 .sv-como{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft);
   color:var(--muted);font-size:13px;line-height:1.65}
 .sv-como b{color:var(--bronze-hi);font-weight:500}
+
+/* ══ LAS TRES FRASES SE TURNAN SIN JAVASCRIPT ══
+   Antes era un solo <p> con las dos versiones en atributos `data-` y un script
+   que reescribía su contenido. Sin script sólo existía una de las dos verdades:
+   quien marcaba «ya aparece en Google» seguía leyendo «deja $750 de anticipo»,
+   que es exactamente lo que esta página no puede hacer.
+
+   `:has()` lo resuelve con CSS, que sí corre sin JavaScript, y ya se usa en
+   esta hoja para resaltar la tarjeta marcada. Se turnan por lo que hay marcado
+   ARRIBA, en la pregunta que decide — que nace respondida, así que siempre hay
+   exactamente una visible. */
+.sv-como-no,.sv-como-si{display:none}
+#sv-form:has(input[name="ficha_tiene"][value="no"]:checked) .sv-como-no{display:block}
+#sv-form:has(input[name="ficha_tiene"][value="si"]:checked) .sv-como-si{display:block}
+
+/* Y con ficha propia, la opción de anticipo se apaga aunque no haya script.
+   `pointer-events:none` sobre la tarjeta evita el clic; el `disabled` de verdad
+   lo sigue poniendo el script, y el Worker rechaza la combinación pase lo que
+   pase — son tres capas porque es dinero, y la de CSS es la única que sigue en
+   pie cuando el JavaScript no carga. */
+#sv-form:has(input[name="ficha_tiene"][value="si"]:checked) .ped-op:has(input[data-anticipo]){
+  opacity:.82;border-style:dashed;background:none;pointer-events:none}
+#sv-form:has(input[name="ficha_tiene"][value="si"]:checked) .ped-op:has(input[data-anticipo]) b::after{
+  content:"No disponible con tu ficha";display:block;margin-top:3px;color:var(--dim);
+  font-weight:400;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
+
+/* Y el enlace de la ficha sólo se pide cuando hay ficha que enlazar. Sin script
+   se veía siempre, incluido el estado por defecto «todavía no aparece», donde
+   por definición no existe. */
+[data-sv-ficha]{display:none}
+#sv-form:has(input[name="ficha_tiene"][value="si"]:checked) [data-sv-ficha]{display:block}
 .sv-plan .ped-op{margin-top:10px}
 
 /* Lo que se lee en voz alta pero no ocupa sitio. Sin `display:none`, que lo
@@ -217,6 +248,21 @@ main{max-width:560px}
   color:var(--ink);text-align:center}
 .gr-t em{font-style:italic;color:var(--bronze-hi)}
 .gr-p{margin-top:14px;color:var(--muted);text-align:center;font-size:14.5px;line-height:1.8}
+/* EL PASO QUE LE TOCA AL CLIENTE, en un bloque propio y no dentro del párrafo.
+   Es la única frase de la página de servicios que, si no se lee, deja el
+   trabajo parado sin que nadie sepa por qué: el plazo de entrega no cuenta
+   desde el pago, cuenta desde que nos dan acceso. Va en el marcado —no lo
+   escribe ningún script— y se destaca en bronce para que no se lea de paso. */
+.gr-paso{margin-top:22px;padding:16px 18px;border:1px solid var(--line);
+  background:rgba(200,169,106,.04)}
+.gr-paso p{color:var(--muted);font-size:13.5px;line-height:1.7}
+.gr-paso p+p{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft)}
+.gr-paso b{color:var(--bronze-hi);font-weight:500}
+/* El correo se parte por donde toca en una pantalla estrecha en vez de
+   desbordar la caja, y se puede seleccionar de un toque para copiarlo. */
+.gr-correo{display:inline-block;color:var(--ink);font-weight:400;
+  word-break:break-all;-webkit-user-select:all;user-select:all}
+
 .gr-wa{display:flex;align-items:center;justify-content:center;gap:10px;
   margin-top:28px;min-height:54px;padding:15px 26px;
   background:var(--bronze);color:#0A0B0E;font-size:10.5px;letter-spacing:3px;
