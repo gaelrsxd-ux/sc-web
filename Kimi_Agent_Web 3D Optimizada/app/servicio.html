@@ -27,6 +27,12 @@
 </header>
 
 <main>
+  <!-- La página no tenía encabezado de nivel 1: la cifra grande y el `tag` son
+       decorativos, así que quien navega por encabezados —o quien llega desde el
+       índice de un lector de pantalla— aterrizaba en un formulario sin saber de
+       qué era. No se ve, porque el diseño ya lo dice con la cabecera del
+       producto y meterlo dos veces sería ruido para todos los demás. -->
+  <h1 class="sr">Configurar el perfil de tu negocio en Google</h1>
   <p class="tag">Configurar tu Google</p>
 
   <!-- ⚠ LA CIFRA NACE VACÍA, por lo mismo que en pedido.html: depende de la
@@ -87,36 +93,41 @@
         clientes te dejen rese&#241;as.</p>
 
       <!-- servicio:opciones -->
-      <div class="sv-plan">
+      <div class="sv-plan" role="group" aria-label="Lo esencial, $1,490">
         <p class="sv-nom">Lo esencial<span>$1,490</span></p>
         <p class="sv-que">Con las fotos que t&#250; nos mandes.</p>
-        <p class="sv-como" data-como-no="P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> y los $740 restantes cuando te entreguemos el acceso." data-como-si="Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.">P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> y los $740 restantes cuando te entreguemos el acceso.</p>
+        <p class="sv-como" data-como-no="P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> y los $740 restantes cuando te entreguemos el acceso." data-como-si="Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.">P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> <b>si la cuenta la creamos nosotros</b> &#8212; los $740 restantes cuando te entreguemos el acceso.</p>
         <label class="ped-op">
           <input type="radio" name="paquete" value="gp-e" required
-                 data-tot="$1,490" data-que="Lo esencial &#183; de contado">
+                 data-tot="$1,490" data-num="1490"
+                 data-que="Lo esencial &#183; de contado">
           <b>Pagar $1,490 de contado</b>
           <small>Un solo pago y listo.</small>
         </label>
-        <label class="ped-op sv-anti">
+        <label class="ped-op">
           <input type="radio" name="paquete" value="gp-ea" required
-                 data-tot="$750" data-que="Lo esencial &#183; anticipo" data-anticipo="1">
+                 data-tot="$750" data-num="750" data-resto="740"
+                 data-que="Lo esencial &#183; anticipo" data-anticipo="1">
           <b>Pagar $750 de anticipo</b>
           <small>Y $740 cuando te entreguemos el acceso. S&#243;lo si creamos la cuenta nosotros.</small>
         </label>
       </div>
-      <div class="sv-plan">
+      <div class="sv-plan" role="group" aria-label="Todo hecho, $2,300">
         <p class="sv-nom">Todo hecho<span>$2,300</span></p>
         <p class="sv-que">Vamos a tu negocio y tomamos las fotos.</p>
-        <p class="sv-como" data-como-no="P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> y los $1,150 restantes cuando te entreguemos el acceso." data-como-si="Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.">P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> y los $1,150 restantes cuando te entreguemos el acceso.</p>
+        <p class="sv-nota">La visita es en San Luis Potos&#237; y Soledad. Desde otra ciudad se hace todo lo dem&#225;s igual y las fotos las mandas t&#250;.</p>
+        <p class="sv-como" data-como-no="P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> y los $1,150 restantes cuando te entreguemos el acceso." data-como-si="Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.">P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> <b>si la cuenta la creamos nosotros</b> &#8212; los $1,150 restantes cuando te entreguemos el acceso.</p>
         <label class="ped-op">
           <input type="radio" name="paquete" value="gp-t" required
-                 data-tot="$2,300" data-que="Todo hecho &#183; de contado">
+                 data-tot="$2,300" data-num="2300"
+                 data-que="Todo hecho &#183; de contado">
           <b>Pagar $2,300 de contado</b>
           <small>Un solo pago y listo.</small>
         </label>
-        <label class="ped-op sv-anti">
+        <label class="ped-op">
           <input type="radio" name="paquete" value="gp-ta" required
-                 data-tot="$1,150" data-que="Todo hecho &#183; anticipo" data-anticipo="1">
+                 data-tot="$1,150" data-num="1150" data-resto="1150"
+                 data-que="Todo hecho &#183; anticipo" data-anticipo="1">
           <b>Pagar $1,150 de anticipo</b>
           <small>Y $1,150 cuando te entreguemos el acceso. S&#243;lo si creamos la cuenta nosotros.</small>
         </label>
@@ -131,7 +142,14 @@
          principio: esconderlo en el marcado dejaría el formulario sin la mitad
          de sus campos para quien no ejecute scripts, y un formulario de cobro
          al que le faltan campos no es un inconveniente, es una venta perdida. -->
-    <fieldset class="ped-f" data-sv-datos>
+    <!-- Este bloque APARECE al elegir paquete, y una aparición silenciosa no
+         existe para quien no ve la pantalla: el foco se queda donde estaba y
+         nada avisa de que hay tres campos nuevos entre él y el botón de pagar.
+         El aviso va en una región viva —no se roba el foco, que en mitad de una
+         elección es peor que el silencio— y el bloque se marca como región con
+         nombre para poder saltar a él. -->
+    <p class="sr" role="status" data-sv-aviso></p>
+    <fieldset class="ped-f" data-sv-datos role="group" aria-label="Los datos de tu negocio">
       <legend>Tu negocio</legend>
       <p class="ped-ayuda">Con esto lo encontramos en Google.</p>
 
@@ -202,6 +220,7 @@
   const que=document.querySelector('[data-sv-que]');
   const datos=document.querySelector('[data-sv-datos]');
   const ficha=document.querySelector('[data-sv-ficha]');
+  const aviso=document.querySelector('[data-sv-aviso]');
   const ops=[...form.querySelectorAll('input[name="paquete"]')];
   if(!ops.length)return;
 
@@ -216,7 +235,15 @@
     const m=ops.find(o=>o.checked);
     if(tot)tot.textContent=m?(m.dataset.tot||''):'';
     if(que)que.textContent=m?(m.dataset.que||''):'Elige tu paquete abajo';
-    if(datos)datos.hidden=!m;
+    if(datos){
+      const antes=datos.hidden;
+      datos.hidden=!m;
+      /* Sólo al descubrirlo, y sólo si cambia: una región viva que se reescribe
+         en cada clic se convierte en un loro y se acaba desconectando. */
+      if(aviso&&antes&&m)aviso.textContent=
+        'Listo. Abajo te pedimos los datos de tu negocio y el bot\u00f3n para pagar.';
+      if(aviso&&!m)aviso.textContent='';
+    }
   }
 
   function ajusta(){
@@ -234,8 +261,14 @@
       const t=tiene?l.dataset.comoSi:l.dataset.comoNo;
       if(t)l.innerHTML=t;
     }
-    /* El enlace de la ficha sólo tiene sentido si la ficha existe. */
-    if(ficha)ficha.hidden=!tiene;
+    /* El enlace de la ficha sólo tiene sentido si la ficha existe — y si deja
+       de tenerlo, hay que VACIARLO además de esconderlo: un campo escondido
+       conserva su valor y lo envía igual, así que quien pegaba su ficha y luego
+       corregía a «todavía no aparezco» mandaba las dos cosas a la vez. */
+    if(ficha){
+      ficha.hidden=!tiene;
+      if(!tiene)for(const c of ficha.querySelectorAll('input'))c.value='';
+    }
     if(perdida&&datos)datos.hidden=true;
     pinta();
   }
@@ -261,7 +294,14 @@
   form.addEventListener('submit',()=>{
     const m=ops.find(o=>o.checked);
     if(!m)return;
-    const d={_servicio:1,_t:m.dataset.que||'',_tot:m.dataset.tot||''};
+    /* ⚠ EL ENTERO, NO EL TEXTO. Aquí se guardaba `data-tot` —«$1,490», ya con
+       su coma— y gracias.html lo vuelve a formatear con `Number(v)`, que sobre
+       eso da NaN: el comprador leía «$NaN» en el resumen de lo que acababa de
+       pagar. `data-num` es el mismo importe en crudo. */
+    const d={_servicio:1,_t:m.dataset.que||'',_tot:Number(m.dataset.num)||''};
+    /* Y lo que falta por cobrar, para que la página de gracias pueda decirlo:
+       quien deja un anticipo se va sin saber cuánto debe si nadie se lo dice. */
+    if(m.dataset.resto)d._resto=Number(m.dataset.resto)||'';
     for(const n of ['ficha_tiene','negocio','negocio_ciudad','ficha','nombre','tel','correo']){
       const c=form.querySelector('[name="'+n+'"]:checked')||form.querySelector('[name="'+n+'"]');
       if(c)d[n]=c.value;

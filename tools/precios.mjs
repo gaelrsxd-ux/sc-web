@@ -116,17 +116,26 @@ const SERVICIOS = [
     precio: 2300,
     anticipo: 1150,
     resumen: 'Vamos a tu negocio y tomamos las fotos',
+    /* LA VISITA NO ES NACIONAL Y LA PÁGINA DE COBRO NO PUEDE CALLARLO. Los
+       términos la limitan a San Luis Potosí y Soledad desde el primer día; el
+       titular de esta cifra vive aquí y va en coche. Sin esta línea, alguien de
+       Monterrey pagaba $2,300 leyendo «vamos a tu negocio» y descubría la letra
+       pequeña en la página de términos, que es donde nadie mira antes de pagar.
+       Va en el mismo bloque que la promesa, no en un enlace. */
+    nota: 'La visita es en San Luis Potosí y Soledad. Desde otra ciudad se hace todo '
+        + 'lo demás igual y las fotos las mandas tú.',
     destaca: true,
   },
 ];
 
-/* Días hábiles de entrega, contados DESDE QUE NOS DAN ACCESO y no desde el
-   pago: quien tarda tres semanas en mandar el material no puede dejarnos
-   incumpliendo un plazo propio. El primer día no cuenta aquí —es el de las 24
-   horas de arrepentimiento, que se usa para analizar el mercado y la ficha—. */
-const ENTREGA_DIAS = { min: 1, max: 7, tipico: '2 o 3' };
+/* El plazo de entrega (1 a 7 días hábiles desde que nos dan acceso) y las 24
+   horas de cancelación estuvieron aquí como constantes. No generaban nada: los
+   dos números están escritos a mano en terminos.html, en servicio.html y en
+   gracias.html, y una constante que nadie lee no es una fuente de verdad, es
+   una que parece serlo — que es peor, porque invita a cambiarla y creer que ya
+   está hecho. Viven en el texto legal, que es donde obligan.
 
-/* Las mismas guardas que la escalera de placas, por el mismo motivo: un dedo
+   Las mismas guardas que la escalera de placas, por el mismo motivo: un dedo
    torpe aquí es dinero real y nadie lo ve desde dentro. */
 {
   const vistos = new Set();
@@ -144,7 +153,6 @@ const ENTREGA_DIAS = { min: 1, max: 7, tipico: '2 o 3' };
       throw new Error(`servicio «${s.nombre}»: el anticipo ${s.anticipo} no está entre 1 y ${s.precio - 1}`);
   }
 }
-const CANCELA_HORAS = 24;
 
 const CUOTAS_DESDE = 2500;
 
@@ -475,11 +483,31 @@ function bloqueServicio() {
       : 'Un solo pago.';
     const comoSi = 'Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: '
       + 'el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.';
+    /* LA TERCERA FRASE ES LA QUE VE QUIEN NO EJECUTA SCRIPTS, y por eso es la
+       única que tiene que ser cierta en los dos casos a la vez. Aquí estaba
+       escrita la de «no tengo ficha», que promete el anticipo sin condición; a
+       quien llegaba sin JavaScript con su ficha ya hecha, la página le ofrecía
+       un anticipo que el Worker marca para revisión y que los términos no
+       sostienen. La condición va dentro de la frase, no en el script. */
+    const comoBase = s.anticipo
+      ? `P&#225;galo <b>de contado</b>, o deja <b>${pesos(s.anticipo)} de anticipo</b> `
+        + `<b>si la cuenta la creamos nosotros</b> &#8212; los ${pesos(resto)} restantes `
+        + 'cuando te entreguemos el acceso.'
+      : 'Un solo pago.';
 
+    /* DOS ATRIBUTOS PARA EL MISMO IMPORTE, y no es duplicar por gusto.
+       `data-tot` es lo que se PINTA en la cifra grande, ya con su coma y su
+       peso. `data-num` es el ENTERO, que es lo que se guarda para la página de
+       gracias — que lo vuelve a formatear ella. Cuando esto guardaba el texto,
+       `Number('$1,490')` daba NaN y el comprador leía «$NaN» en el resumen de
+       lo que acababa de pagar. `data-resto` es lo que faltará por cobrar, para
+       que esa misma página pueda decirlo en vez de dejarlo a la imaginación. */
     const opcion = (id, importe, titulo, pie, anticipo) =>
-      '        <label class="ped-op' + (anticipo ? ' sv-anti' : '') + '">\n' +
+      '        <label class="ped-op">\n' +
       `          <input type="radio" name="paquete" value="${id}" required\n` +
-      `                 data-tot="${pesos(importe)}" data-que="${ent(corto + ' · ' + (anticipo ? 'anticipo' : 'de contado'))}"` +
+      `                 data-tot="${pesos(importe)}" data-num="${importe}"` +
+      (anticipo ? ` data-resto="${s.precio - s.anticipo}"` : '') + '\n' +
+      `                 data-que="${ent(corto + ' · ' + (anticipo ? 'anticipo' : 'de contado'))}"` +
       (anticipo ? ' data-anticipo="1"' : '') + '>\n' +
       `          <b>${ent(titulo)}</b>\n` +
       `          <small>${pie}</small>\n` +
@@ -492,10 +520,12 @@ function bloqueServicio() {
       `Y ${pesos(resto)} cuando te entreguemos el acceso. ` + ent('Sólo si creamos la cuenta nosotros.'),
       true));
 
-    return '      <div class="sv-plan">\n' +
+    return '      <div class="sv-plan" role="group" ' +
+      `aria-label="${ent(corto + ', ' + pesos(s.precio))}">\n` +
       `        <p class="sv-nom">${ent(corto)}<span>${pesos(s.precio)}</span></p>\n` +
       `        <p class="sv-que">${ent(s.resumen)}.</p>\n` +
-      `        <p class="sv-como" data-como-no="${comoNo}" data-como-si="${comoSi}">${comoNo}</p>\n` +
+      (s.nota ? `        <p class="sv-nota">${ent(s.nota)}</p>\n` : '') +
+      `        <p class="sv-como" data-como-no="${comoNo}" data-como-si="${comoSi}">${comoBase}</p>\n` +
       ops.join('\n') + '\n      </div>';
   };
   return '<!-- servicio:opciones -->\n' + SERVICIOS.map(bloque).join('\n') +

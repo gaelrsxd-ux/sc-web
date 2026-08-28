@@ -68,6 +68,20 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   ok(await pg.$$eval('input[name="paquete"]', is => is.every(i => i.required)),
      'y las cuatro llevan `required`: sin JavaScript el navegador exige elegir');
 
+  /* ---- LA VISITA NO ES NACIONAL, Y SE DICE AQUÍ ----
+     «Todo hecho» promete ir al negocio a tomar las fotos. Los términos limitan
+     esa visita a San Luis Potosí y Soledad desde el primer día. Un matiz que
+     sólo vive en la página de términos es un matiz que se lee después de pagar,
+     y quien lo descubre ahí tiene razón en enfadarse. */
+  const conVisita = pg.locator('.sv-plan', { hasText: 'Vamos a tu negocio' });
+  ok(await conVisita.locator('.sv-nota').count() === 1,
+     'el paquete que promete la visita lleva su matiz en el mismo bloque');
+  const matiz = (await conVisita.locator('.sv-nota').innerText()).trim();
+  ok(/San Luis Potos/i.test(matiz) && /Soledad/i.test(matiz),
+     'y dice dónde: ' + matiz.replace(/\s+/g, ' '));
+  ok(/otra ciudad|fuera/i.test(matiz) && /fotos las mandas t/i.test(matiz),
+     'y qué pasa desde otra ciudad, que es la mitad que faltaba');
+
   /* ---- los datos no se piden hasta que hay paquete ---- */
   ok(!(await pg.locator('[data-sv-datos]').isVisible()),
      'los datos del negocio NO se piden antes de elegir paquete');
@@ -111,9 +125,25 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   for (const c of conFicha) console.log('      ' + c.replace(/\s+/g, ' '));
   const quedan = await pg.$$eval('input[name="paquete"]', is => is.filter(i => i.checked).length);
   ok(quedan === 0, 'y una elección de anticipo se deshace en vez de quedarse apagada');
+  /* Y SE DICE CON PALABRAS, no sólo con un borde y menos tinta. Quien pulsa una
+     tarjeta y no ve pasar nada no concluye «no está disponible», concluye «esta
+     web no funciona» — y eso pasa en la pantalla de cobro. */
+  const rotulo = await pg.$eval('.ped-op.apagada b',
+    b => getComputedStyle(b, '::after').content);
+  ok(/no disponible/i.test(rotulo), 'y la tarjeta apagada dice EN TEXTO que no está disponible');
 
+  /* Y EL ENLACE DE LA FICHA NO PUEDE SOBREVIVIR AL CAMBIO DE RESPUESTA. Un
+     campo escondido conserva su valor y lo manda igual: quien pegaba su ficha y
+     luego corregía a «todavía no aparezco» mandaba las dos cosas a la vez, y el
+     resumen de la venta llegaba diciendo «SIN ficha: la creamos» con un enlace
+     a la ficha que ya existía debajo. */
+  await elige(pg, 'gp-t');   // el bloque de datos no existe hasta que hay paquete
+  await pg.waitForTimeout(250);
+  await pg.fill('[name=ficha]', 'https://maps.app.goo.gl/ejemplo');
   await elige(pg, 'no');
   await pg.waitForTimeout(250);
+  ok(await pg.$eval('[name=ficha]', i => i.value) === '',
+     'al decir que todavía no aparece, el enlace de la ficha se VACÍA, no sólo se esconde');
   const revividos = await pg.$$eval('input[name="paquete"][data-anticipo]', is => is.map(i => i.disabled));
   ok(revividos.every(d => d === false), 'y vuelven si dice que todavía no aparece en Google');
   const vuelve = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
@@ -149,25 +179,86 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   ok(!(await pg.$eval('[name=tel]', i => i.checkValidity())),
      'un teléfono de tres cifras no pasa la validación');
 
-  /* ---- la vuelta: gracias.html habla de acceso, no de paquetería ---- */
-  await pg.goto(BASE + '/gracias.html');
-  await pg.evaluate(() => sessionStorage.setItem('syc_pedido', JSON.stringify({
-    _servicio: 1, _t: 'Perfil de Google · Todo hecho', _tot: '1150',
-    ficha_tiene: 'si', negocio: 'El Molino Ruso', negocio_ciudad: 'San Luis Potosí',
-    nombre: 'Gael', tel: '4423697248', correo: 'gael@ejemplo.com',
-  })));
-  await pg.reload({ waitUntil: 'domcontentloaded' });
+  /* ---- LA VUELTA, CON LO QUE LA PÁGINA ESCRIBIÓ DE VERDAD ----
+     ⚠ Esto fabricaba a mano el objeto de sessionStorage, y por eso se le pasó
+     el fallo que más se veía de toda la página: servicio.html guardaba el
+     importe YA FORMATEADO —«$1,150»— y gracias.html lo vuelve a formatear con
+     `Number(v)`, que sobre ese texto da NaN. El comprador leía «$NaN» en el
+     resumen de lo que acababa de pagar. Una prueba que se inventa el dato
+     comprueba que la segunda página sabe leer, no que la primera sepa escribir.
+
+     Ahora no se inventa nada: se compra de verdad —el POST al cobro está
+     interceptado, así que la pestaña vuelve al mismo origen y el sessionStorage
+     que escribió el formulario sigue ahí— y se lee lo que haya salido. */
+  const guardado = JSON.parse(await pg.evaluate(() => sessionStorage.getItem('syc_pedido')) || 'null');
+  ok(guardado && guardado._servicio === 1, 'el formulario deja el pedido guardado para la vuelta');
+  ok(typeof guardado._tot === 'number',
+     'y el importe va en CRUDO, no formateado: ' + JSON.stringify(guardado._tot));
+  ok(guardado._resto === 1150, 'con lo que falta por cobrar del anticipo: ' + guardado._resto);
+  ok(!guardado.ficha, 'y sin el enlace de una ficha que dijo no tener');
+
+  await pg.goto(BASE + '/gracias.html', { waitUntil: 'domcontentloaded' });
   await pg.waitForTimeout(500);
+  const trasAnticipo = await pg.locator('main').innerText();
+  ok(!/NaN/.test(trasAnticipo),
+     'y el resumen enseña un importe, no «$NaN»' + (/NaN/.test(trasAnticipo) ? ': ' + trasAnticipo.replace(/\s+/g, ' ').slice(0, 120) : ''));
+  ok(/\$1,150/.test(trasAnticipo), 'el importe que se acaba de pagar, con su formato');
+  /* Quien deja un anticipo se va sin saber cuánto debe si nadie se lo dice, y
+     la cifra grande que acaba de ver es la del anticipo, no la del paquete. */
+  ok(/falta por pagar/i.test(trasAnticipo), 'y le dice lo que FALTA por pagar');
+  ok(/entreguemos el acceso/i.test(trasAnticipo), 'y cuándo se le va a cobrar');
+  const waAnti = decodeURIComponent(await pg.locator('[data-gr-wa]').getAttribute('href'));
+  ok(/Todav[íi]a no aparezco/.test(waAnti), 'el WhatsApp trae escrito que su ficha no existe');
+  ok(/Falta por pagar/.test(waAnti), 'y también lo que queda pendiente, por escrito');
+
+  /* ---- Y AHORA EL OTRO CASO: ficha propia, de contado ---- */
+  await pg.goto(BASE + '/servicio.html', { waitUntil: 'domcontentloaded' });
+  await pg.waitForTimeout(400);
+  await elige(pg, 'si');
+  await pg.waitForTimeout(250);
+  await elige(pg, 'gp-t');
+  await pg.waitForTimeout(250);
+  await pg.fill('[name=negocio]', 'El Molino Ruso');
+  await pg.fill('[name=negocio_ciudad]', 'San Luis Potosí');
+  await pg.fill('[name=nombre]', 'Gael Ramírez');
+  await pg.fill('[name=tel]', '4423697248');
+  await pg.fill('[name=correo]', 'gael@ejemplo.com');
+  await pg.click('#sv-form button[type=submit]');
+  await pg.waitForTimeout(700);
+  await pg.goto(BASE + '/gracias.html', { waitUntil: 'domcontentloaded' });
+  await pg.waitForTimeout(500);
+
   const texto = await pg.locator('main').innerText();
+  ok(!/NaN/.test(texto), 'de contado tampoco sale ningún «NaN»');
+  ok(/\$2,300/.test(texto), 'y el importe es el del paquete completo');
+  ok(!/falta por pagar/i.test(texto), 'de contado NO se le anuncia ningún resto pendiente');
   ok(/administrador/i.test(texto), 'le dice que nos añada como administrador');
   ok(/sc\.solutionscompanymx@gmail\.com/.test(texto), 'y con qué correo exactamente');
-  ok(!/env[íi]o|paqueter[íi]a|direcci[óo]n de entrega/i.test(texto),
-     'y NO le habla de envíos ni de paquetería');
+  /* ⚠ EL PÁRRAFO DE FONDO DECÍA «preparamos tus placas» y lo pisaba el script.
+     Quien contrata un servicio no espera ningún paquete: anunciarle un envío es
+     esconderle el único paso que sí le toca a él. */
+  ok(!/env[íi]o|paqueter[íi]a|placa|direcci[óo]n de entrega/i.test(texto),
+     'y NO le habla de envíos, paquetería ni placas');
   const wa = await pg.locator('[data-gr-wa]').getAttribute('href');
   ok(/Ya%20tengo%20ficha/.test(wa), 'el WhatsApp ya trae escrito que su ficha existe');
   ok(!/\$/.test(decodeURIComponent(wa)),
      'y NO declara ningún importe: el precio bueno es el del aviso de Mercado Pago');
   if (S) await pg.screenshot({ path: S + '/gracias-servicio.png' });
+  await ctx.close();
+}
+
+/* ---- SIN JAVASCRIPT, gracias.html NO PUEDE HABLAR DE PLACAS ----
+   Es la misma página para los dos caminos de cobro y sin script no sabe cuál
+   fue. El párrafo que trae puesto es el único que se lee, así que tiene que ser
+   cierto en los dos casos. Decía «preparamos tus placas». */
+{
+  const ctx = await navegador.newContext({ javaScriptEnabled: false });
+  const pg = await ctx.newPage();
+  await pg.goto(BASE + '/gracias.html', { waitUntil: 'domcontentloaded' });
+  const fondo = (await pg.locator('[data-gr-p]').innerText()).trim();
+  ok(!/placa|env[íi]o|paqueter[íi]a/i.test(fondo),
+     'el párrafo de fondo no promete nada de un camino en el otro: ' + fondo.replace(/\s+/g, ' '));
+  ok(/whatsapp/i.test(fondo), 'y sí dice lo que vale para los dos: que te avisamos');
   await ctx.close();
 }
 
@@ -216,7 +307,7 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   vigila(pg);
   await pg.goto(BASE + '/gracias.html');
   await pg.evaluate(() => sessionStorage.setItem('syc_pedido', JSON.stringify({
-    _servicio: 1, _t: 'Todo hecho · anticipo', _tot: '$1,150', ficha_tiene: 'no',
+    _servicio: 1, _t: 'Todo hecho · anticipo', _tot: 1150, _resto: 1150, ficha_tiene: 'no',
     negocio: 'El Molino Ruso', nombre: 'Gael', tel: '4423697248', correo: 'a@b.com' })));
   await pg.goto(BASE + '/gracias.html?estado=pendiente', { waitUntil: 'domcontentloaded' });
   await pg.waitForTimeout(500);
@@ -244,6 +335,19 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
      'cada una lleva su importe escrito, no calculado por un script');
   ok((await pg.locator('[data-sv-tot]').textContent()).trim() === '',
      'y la cifra grande queda vacía en vez de mentir');
+
+  /* ⚠ Y LA FRASE DE FONDO NO PUEDE PROMETER EL ANTICIPO A SECAS. Aquí estaba
+     escrita la versión de «no tengo ficha», que ofrece el anticipo sin
+     condición; a quien llega sin JavaScript con su ficha ya hecha, la página le
+     ofrecía un anticipo que el Worker marca para revisión y que los términos no
+     sostienen. La condición tiene que estar DENTRO de la frase, porque sin
+     script no hay nadie que la cambie. */
+  const sinJs = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
+  for (const t of sinJs) console.log('      ' + t.replace(/\s+/g, ' '));
+  ok(sinJs.length === 2 && sinJs.every(t => /si la cuenta la creamos nosotros/i.test(t)),
+     'la frase de fondo condiciona el anticipo: sin script nadie va a condicionarlo por ella');
+  ok(sinJs.every(t => /contado/i.test(t)),
+     'y sigue diciendo que se puede pagar de contado, que es lo que vale siempre');
   await ctx.close();
 }
 

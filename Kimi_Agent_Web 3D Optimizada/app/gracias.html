@@ -36,8 +36,13 @@
        el comprador ahora, sin afirmar que el dinero llegó. -->
   <div class="gr-marca" aria-hidden="true">✓</div>
   <h1 class="gr-t" data-gr-t>Gracias por tu <em>pedido</em></h1>
+  <!-- ⚠ ESTE PÁRRAFO ES EL QUE SE LEE SIN JAVASCRIPT, así que tiene que valer
+       para los dos caminos de cobro. Decía «preparamos tus placas», que a quien
+       acababa de contratar la configuración de su Google le anunciaba un envío
+       que no existe — y le escondía el único paso que sí le tocaba a él. Lo
+       concreto lo escribe cada rama del script más abajo. -->
   <p class="gr-p" data-gr-p>Ya lo tenemos. En cuanto Mercado Pago confirme el pago
-    preparamos tus placas y te avisamos por WhatsApp.</p>
+    nos ponemos con ello y te avisamos por WhatsApp.</p>
 
   <!-- El resumen sólo aparece si esta pestaña es la misma en la que se hizo el
        pedido: los datos viven en sessionStorage, no en la dirección, para que
@@ -128,6 +133,9 @@
     if(caja){
       const partes=[
         ['Paquete',(d._t||'')+(d._tot?' — '+pesos(d._tot):'')],
+        /* Quien deja un anticipo se va sin saber cuánto debe si nadie se lo
+           dice, y el importe grande que acaba de ver es el del anticipo. */
+        ['Falta por pagar',d._resto?pesos(d._resto)+' cuando te entreguemos el acceso':''],
         ['Negocio',[d.negocio,d.negocio_ciudad].filter(Boolean).join(', ')],
         ['Ficha',propio?'Ya existe — nos das acceso':'No existe — la creamos nosotros'],
         ['Enlace',d.ficha],
@@ -153,6 +161,7 @@
     if(wa){
       const l=['Hola. Acabo de contratar la configuración de mi Google desde la web.'];
       if(d._t)l.push('Paquete: '+d._t);
+      if(d._resto)l.push('Falta por pagar: '+pesos(d._resto));
       if(d.negocio)l.push('Negocio: '+d.negocio+(d.negocio_ciudad?', '+d.negocio_ciudad:''));
       l.push(propio?'Ya tengo ficha en Google':'Todavía no aparezco en Google');
       if(d.ficha)l.push('Mi ficha: '+d.ficha);
@@ -162,6 +171,12 @@
     }
     return;
   }
+
+  /* Y la placa dice la suya, que antes venía puesta en el HTML. Con el párrafo
+     de fondo ya neutral, si esta línea faltara el comprador de placas leería un
+     texto correcto pero vago; el pendiente sigue mandando sobre las dos ramas. */
+  if(parrafo&&!pendiente)parrafo.textContent='Ya lo tenemos. En cuanto Mercado Pago '+
+    'confirme el pago preparamos tus placas y te avisamos por WhatsApp.';
 
   const envio=[d.calle,d.colonia,d.cp,d.ciudad,d.estado].filter(Boolean).join(', ');
   const placas=d.modo==='blanco'

@@ -534,6 +534,12 @@ function leePedido(form) {
   d._cpExacto = digitos.length === 5;
   if (!CORREO.test(d.correo)) d.correo = '';
   if (d.modo !== 'configuradas' && d.modo !== 'blanco') d.modo = '';
+  /* Lo mismo con la pregunta que decide si el anticipo era legítimo. `modo`
+     estaba normalizado y ésta no, así que un formulario mandado a mano podía
+     llegar con «SI», con «sí» o con cualquier otra cosa: la comparación de
+     abajo fallaba y la marca de revisión no salía. Sólo hay dos respuestas
+     posibles; cualquier otra se queda en vacío y el resumen lo dice. */
+  if (d.ficha_tiene !== 'si' && d.ficha_tiene !== 'no') d.ficha_tiene = '';
   return d;
 }
 
@@ -569,11 +575,21 @@ function resumen(p, d) {
        Lo que hace daño de verdad es que pase DESAPERCIBIDO, y para eso está
        esta marca: el aviso de la venta lo dice en mayúsculas, y el trabajo no
        empieza hasta el día siguiente, así que da tiempo de sobra a pedir el
-       resto antes de tocar nada. */
+       resto antes de tocar nada.
+
+       Y la condición va al revés de como parece: se marca salvo que se haya
+       dicho «no» EXPLÍCITAMENTE. Un anticipo sin respuesta a esa pregunta no es
+       más legítimo que uno con ficha propia — es el mismo caso con menos
+       información, y quien manda el formulario a mano es justamente quien puede
+       omitir el campo. */
     const anticipo = /anticipo/i.test(p.base || '');
-    if (anticipo && d.ficha_tiene === 'si') l.push('REVISAR: anticipo con ficha propia');
+    if (anticipo && d.ficha_tiene !== 'no') l.push('REVISAR: anticipo sin ficha declarada por crear');
     if (d.negocio) l.push(d.negocio + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
-    l.push(d.ficha_tiene === 'si' ? 'YA TIENE ficha' : 'SIN ficha: la creamos');
+    /* Tres estados, no dos: «no lo dijo» no puede imprimirse como «la creamos
+       nosotros», que es una instrucción de trabajo y no un dato. */
+    l.push(d.ficha_tiene === 'si' ? 'YA TIENE ficha'
+         : d.ficha_tiene === 'no' ? 'SIN ficha: la creamos'
+         : 'NO DIJO si tiene ficha');
     if (d.ficha) l.push('Ficha: ' + d.ficha);
     if (d.nombre) l.push('Contacto: ' + d.nombre);
     if (d.tel) l.push('Tel ' + d.tel);
