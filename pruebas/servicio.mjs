@@ -45,14 +45,35 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
 
   /* ---- las cuatro opciones, y UNA sola marcada ---- */
   const ops = pg.locator('input[name="paquete"]');
-  ok(await ops.count() === 4, 'hay cuatro formas de comprar: dos paquetes × contado/anticipo');
+  ok(await ops.count() === 4, 'las cuatro combinaciones existen');
+
+  /* ---- DOS paquetes, y dentro de cada uno sus formas de pago ---- */
+  ok(await pg.locator('.sv-plan').count() === 2, 'hay DOS paquetes, no cuatro opciones sueltas');
+  const dentro = await pg.$$eval('.sv-plan', ps =>
+    ps.map(x => x.querySelectorAll('input[name="paquete"]').length));
+  ok(dentro.every(n => n === 2), 'y cada uno lleva dentro sus dos formas de pago: ' + dentro.join(' y '));
+
+  /* EL AVISO DE CÓMO SE PAGA, ANTES DE ELEGIR. Quien ve una sola cifra decide
+     ahí mismo si sigue; enterarse de que había otra forma de pagar DESPUÉS es
+     un cliente perdido por no haberlo dicho a tiempo. */
+  const avisos = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
+  ok(avisos.length === 2 && avisos.every(t => /contado/i.test(t) && /anticipo/i.test(t)),
+     'cada paquete dice cómo se puede pagar ANTES de elegir');
+  for (const a of avisos) console.log('      ' + a.replace(/\s+/g, ' '));
+
+  /* Nada preseleccionado: una opción marcada de fábrica en una pantalla de cobro
+     es una que alguien puede comprar sin haberla elegido. */
   const marcadas = await pg.$$eval('input[name="paquete"]', is => is.filter(i => i.checked).length);
-  ok(marcadas === 1, `sólo una nace marcada (hay ${marcadas})`);
-  /* Con dos `checked` el navegador se queda con la ÚLTIMA del documento, así
-     que la página abriría con el paquete caro preseleccionado sin que nadie lo
-     hubiera decidido. */
-  const primera = await pg.$eval('input[name="paquete"]:checked', i => i.value);
-  ok(primera === 'gp-e', 'y es la más barata de contado, no la cara (' + primera + ')');
+  ok(marcadas === 0, `ninguna nace marcada en una pantalla de cobro (hay ${marcadas})`);
+  ok(await pg.$$eval('input[name="paquete"]', is => is.every(i => i.required)),
+     'y las cuatro llevan `required`: sin JavaScript el navegador exige elegir');
+
+  /* ---- los datos no se piden hasta que hay paquete ---- */
+  ok(!(await pg.locator('[data-sv-datos]').isVisible()),
+     'los datos del negocio NO se piden antes de elegir paquete');
+  await elige(pg, 'gp-e');
+  await pg.waitForTimeout(250);
+  ok(await pg.locator('[data-sv-datos]').isVisible(), 'y aparecen en cuanto se elige uno');
 
   /* ---- LA QUE JUSTIFICA EL ARCHIVO: no viaja ningún importe ---- */
   const camposForm = await pg.$$eval('#sv-form [name]', es => es.map(e => e.name));
@@ -80,14 +101,23 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   const apagados = await pg.$$eval('input[name="paquete"][data-anticipo]', is => is.map(i => i.disabled));
   ok(apagados.length === 2 && apagados.every(Boolean),
      'con ficha propia, las dos opciones de anticipo quedan deshabilitadas');
-  const sigueMarcada = await pg.$eval('input[name="paquete"]:checked', i => i.value);
-  ok(!sigueMarcada.endsWith('a'),
-     'y la elección se mueve a una de contado en vez de quedarse en una apagada (' + sigueMarcada + ')');
+  /* Y LA FRASE CAMBIA CON LAS OPCIONES. Apagar el anticipo dejando la línea que
+     promete «págalo de contado o deja un anticipo» dejaría la página diciendo
+     dos cosas a la vez, que es justo la contradicción que este orden evita. */
+  const conFicha = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
+  ok(conFicha.every(t => !/deja \$[\d,]+ de anticipo/i.test(t)),
+     'y la frase de cada paquete deja de prometer el anticipo');
+  ok(conFicha.every(t => /ya existe/i.test(t)), 'y explica por qué: la ficha ya existe');
+  for (const c of conFicha) console.log('      ' + c.replace(/\s+/g, ' '));
+  const quedan = await pg.$$eval('input[name="paquete"]', is => is.filter(i => i.checked).length);
+  ok(quedan === 0, 'y una elección de anticipo se deshace en vez de quedarse apagada');
 
   await elige(pg, 'no');
   await pg.waitForTimeout(250);
   const revividos = await pg.$$eval('input[name="paquete"][data-anticipo]', is => is.map(i => i.disabled));
   ok(revividos.every(d => d === false), 'y vuelven si dice que todavía no aparece en Google');
+  const vuelve = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
+  ok(vuelve.every(t => /anticipo/i.test(t)), 'y la frase vuelve a ofrecerlo');
 
   /* ---- lo que llega al cobro ---- */
   await elige(pg, 'gp-ta');
@@ -110,6 +140,9 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
 
   /* ---- teléfono corto rebota: el `pattern` tiene que estar vivo ---- */
   await pg.goto(BASE + '/servicio.html');
+  await pg.waitForTimeout(300);
+  await elige(pg, 'gp-e');            // los datos no existen hasta elegir paquete
+  await pg.waitForTimeout(250);
   await pg.fill('[name=negocio]', 'X'); await pg.fill('[name=negocio_ciudad]', 'Y');
   await pg.fill('[name=nombre]', 'Z'); await pg.fill('[name=correo]', 'a@b.com');
   await pg.fill('[name=tel]', '442');

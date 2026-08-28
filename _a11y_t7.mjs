@@ -1,0 +1,14 @@
+import {chromium} from 'playwright';
+const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+const p=await b.newPage({viewport:{width:390,height:900},deviceScaleFactor:3});
+await p.goto('http://127.0.0.1:8099/servicio.html');
+await p.evaluate(()=>{const e=document.querySelector('input[name=ficha_tiene][value=si]');e.checked=true;e.dispatchEvent(new Event('change',{bubbles:true}));});
+const dis=p.locator('.sv-plan').first().locator('.ped-op.apagada');
+const act=p.locator('.sv-plan').first().locator('.ped-op').first();
+await dis.scrollIntoViewIfNeeded();
+await dis.locator('b').screenshot({path:'/tmp/a11y/dis-b.png'});
+await dis.locator('small').screenshot({path:'/tmp/a11y/dis-s.png'});
+await act.locator('b').screenshot({path:'/tmp/a11y/act-b.png'});
+await act.locator('small').screenshot({path:'/tmp/a11y/act-s.png'});
+console.log('ok');
+await b.close();

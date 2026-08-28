@@ -187,6 +187,33 @@ test('los servicios están en el catálogo, con su anticipo por debajo del conta
   }
 });
 
+test('el anticipo con ficha propia llega MARCADO al aviso de la venta', async () => {
+  /* La regla —anticipo sólo si la cuenta la creamos nosotros— la aplica el
+     navegador, y el navegador no es de fiar: un formulario mandado a mano puede
+     pedir el anticipo declarando a la vez que ya tiene ficha.
+
+     No se rechaza a propósito: `ficha_tiene` lo declara el comprador, así que
+     bloquear no impide nada —basta con declarar «no»— y sí puede tirar una
+     venta legítima si el script no corre. Lo que hace daño es que pase
+     desapercibido. Esto comprueba que NO pasa desapercibido. */
+  const anticipo = TABLA.paquetes.find(p => p.tipo === 'servicio' && /anticipo/i.test(p.base));
+  assert.ok(anticipo, 'hay algún paquete de anticipo en el catálogo');
+
+  montaCaches();
+  let llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: anticipo.id, ficha_tiene: 'si', negocio: 'El Molino Ruso' }), ENV);
+  assert.match(llamadas[0].cuerpo.additional_info, /REVISAR: anticipo con ficha propia/,
+    'el aviso de la venta tiene que gritar la combinación imposible');
+
+  /* Y con la combinación legítima NO grita: una marca que sale siempre es una
+     marca que se deja de leer a la semana. */
+  montaCaches();
+  llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: anticipo.id, ficha_tiene: 'no', negocio: 'El Molino Ruso' }), ENV);
+  assert.doesNotMatch(llamadas[0].cuerpo.additional_info, /REVISAR/,
+    'con la combinación legítima no puede saltar la marca');
+});
+
 test('a un servicio NO se le descuenta el envío por ser de San Luis', async () => {
   const serv = TABLA.paquetes.find(p => p.tipo === 'servicio');
   montaCaches();

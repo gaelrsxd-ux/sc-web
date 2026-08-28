@@ -456,35 +456,50 @@ const SERVICIO = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'servici
    coincidan no es convención ni suerte: los dos los escribe este archivo. */
 function bloqueServicio() {
   const pesos = n => '$' + miles(n);
-  /* ⚠ SÓLO LA PRIMERA VA MARCADA. En un grupo de radios sólo puede haber una
-     `checked`; con varias, el navegador se queda con la ÚLTIMA del documento.
-     La primera versión de esto marcaba todas las de contado y el resultado era
-     que la página abría con el paquete caro preseleccionado — que no es lo que
-     nadie decidió, sino lo que quedó. Se marca la primera y punto. */
-  let primera = true;
-  const linea = (id, s, importe, anticipo) => {
-    const marca = primera ? ' checked' : '';
-    if (!anticipo) primera = false;
+  const bloque = s => {
     const corto = s.corto || s.nombre;
-    const titulo = `${corto} \u2014 ${pesos(importe)} ${anticipo ? 'de anticipo' : 'de contado'}`;
-    const pie = anticipo
-      ? `Pagas ${pesos(importe)} ahora y ${pesos(s.precio - importe)} cuando te entregamos el acceso. `
-        + ent('Sólo si creamos la cuenta nosotros.')
-      : ent(s.resumen);
-    return '      <label class="ped-op">\n' +
-      `        <input type="radio" name="paquete" value="${id}"${marca}\n` +
-      `               data-tot="${pesos(importe)}" data-num="${importe}"\n` +
-      `               data-que="${ent(corto)}"${anticipo ? ' data-anticipo="1"' : ''}>\n` +
-      `        <b>${ent(titulo)}</b>\n` +
-      `        <small>${pie}</small>\n` +
-      '      </label>';
+    const resto = s.anticipo ? s.precio - s.anticipo : 0;
+
+    /* EL AVISO DE CÓMO SE PAGA VA ANTES DE ELEGIR, no después. Quien llega a
+       una pantalla de cobro y ve una sola cifra grande decide ahí mismo si
+       sigue; enterarse de que había otra forma de pagar DESPUÉS de haber
+       decidido que no puede es un cliente perdido por no haberlo dicho a
+       tiempo.
+
+       Y hay dos textos porque hay dos verdades. Con ficha propia el anticipo no
+       existe —no hay entrega que retener— y el script cambia la frase entera en
+       vez de dejar una que se contradice con las opciones de debajo. */
+    const comoNo = s.anticipo
+      ? `P&#225;galo <b>de contado</b>, o deja <b>${pesos(s.anticipo)} de anticipo</b> `
+        + `y los ${pesos(resto)} restantes cuando te entreguemos el acceso.`
+      : 'Un solo pago.';
+    const comoSi = 'Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: '
+      + 'el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.';
+
+    const opcion = (id, importe, titulo, pie, anticipo) =>
+      '        <label class="ped-op' + (anticipo ? ' sv-anti' : '') + '">\n' +
+      `          <input type="radio" name="paquete" value="${id}" required\n` +
+      `                 data-tot="${pesos(importe)}" data-que="${ent(corto + ' · ' + (anticipo ? 'anticipo' : 'de contado'))}"` +
+      (anticipo ? ' data-anticipo="1"' : '') + '>\n' +
+      `          <b>${ent(titulo)}</b>\n` +
+      `          <small>${pie}</small>\n` +
+      '        </label>';
+
+    const ops = [opcion(s.id, s.precio, `Pagar ${pesos(s.precio)} de contado`,
+                        'Un solo pago y listo.', false)];
+    if (s.anticipo) ops.push(opcion(s.id + 'a', s.anticipo,
+      `Pagar ${pesos(s.anticipo)} de anticipo`,
+      `Y ${pesos(resto)} cuando te entreguemos el acceso. ` + ent('Sólo si creamos la cuenta nosotros.'),
+      true));
+
+    return '      <div class="sv-plan">\n' +
+      `        <p class="sv-nom">${ent(corto)}<span>${pesos(s.precio)}</span></p>\n` +
+      `        <p class="sv-que">${ent(s.resumen)}.</p>\n` +
+      `        <p class="sv-como" data-como-no="${comoNo}" data-como-si="${comoSi}">${comoNo}</p>\n` +
+      ops.join('\n') + '\n      </div>';
   };
-  const filas = [];
-  for (const s of SERVICIOS) {
-    filas.push(linea(s.id, s, s.precio, false));
-    if (s.anticipo) filas.push(linea(s.id + 'a', s, s.anticipo, true));
-  }
-  return '<!-- servicio:opciones -->\n' + filas.join('\n') + '\n      <!-- /servicio:opciones -->';
+  return '<!-- servicio:opciones -->\n' + SERVICIOS.map(bloque).join('\n') +
+         '\n      <!-- /servicio:opciones -->';
 }
 
 const BLOQUES_SERVICIO = [

@@ -283,6 +283,22 @@ function resumen(p, d) {
      dos resúmenes distintos, y mezclarlos era pedir que uno de los dos acabase
      diciendo media verdad. */
   if (esServicio(p)) {
+    /* ⚠ EL ANTICIPO CON FICHA PROPIA SE MARCA, NO SE BLOQUEA.
+       La regla es que el anticipo sólo vale cuando la cuenta la creamos
+       nosotros —con ficha ajena no hay entrega que retener—, y en la página la
+       aplica el navegador. Pero el navegador no es de fiar: un formulario
+       mandado a mano puede pedir el anticipo diciendo a la vez que ya tiene
+       ficha.
+
+       No se rechaza, y es deliberado. `ficha_tiene` lo declara el propio
+       comprador, así que bloquear no impide nada —basta con declarar «no»— y en
+       cambio sí puede tirar una venta legítima el día que el script no corra.
+       Lo que hace daño de verdad es que pase DESAPERCIBIDO, y para eso está
+       esta marca: el aviso de la venta lo dice en mayúsculas, y el trabajo no
+       empieza hasta el día siguiente, así que da tiempo de sobra a pedir el
+       resto antes de tocar nada. */
+    const anticipo = /anticipo/i.test(p.base || '');
+    if (anticipo && d.ficha_tiene === 'si') l.push('REVISAR: anticipo con ficha propia');
     if (d.negocio) l.push(d.negocio + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
     l.push(d.ficha_tiene === 'si' ? 'YA TIENE ficha' : 'SIN ficha: la creamos');
     if (d.ficha) l.push('Ficha: ' + d.ficha);

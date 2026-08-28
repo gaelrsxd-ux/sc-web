@@ -20,7 +20,7 @@ node pruebas/instalaciones.mjs
 ```
 
 Ochenta y nueve comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; veintitrés en la segunda y dieciocho en la tercera.
+bloque final sin él; treinta y una en la segunda y dieciocho en la tercera.
 
 ## Por qué en un navegador
 
@@ -116,7 +116,7 @@ El segundo camino por el que entra dinero. No reutiliza nada del primero porque
 no se le parece: no hay cantidad, no hay envío, no hay dirección — y sí hay una
 regla comercial que sólo vale en un caso.
 
-### Las dos que justifican el archivo
+### Las tres que justifican el archivo
 
 > **NO viaja ningún importe en el formulario**
 
@@ -136,11 +136,21 @@ contraseña— sí espera al pago.
 Comprobado por sabotaje: cambiando `o.disabled=tiene` por `o.disabled=false`, se
 pone en rojo.
 
+> **la frase de cada paquete deja de prometer el anticipo**
+
+Apagar las opciones no basta. Si la línea de arriba sigue diciendo «págalo de
+contado o deja $750 de anticipo» mientras las opciones de anticipo están grises,
+la página está diciendo dos cosas a la vez. Cada paquete lleva sus dos textos y
+el script cambia el entero, no sólo el estado de los controles.
+
 ### Lo que cubren las otras
 
 | | |
 |---|---|
-| **Las cuatro formas de comprar** | dos paquetes × contado/anticipo, y **una sola** nace marcada. Con dos `checked` el navegador se queda con la última del documento, así que la página abría con el paquete caro preseleccionado sin que nadie lo hubiera decidido |
+| **Dos paquetes, no cuatro opciones** | cada uno con sus dos formas de pago dentro. En una lista plana de cuatro, el ojo compara importes en vez de paquetes, y «$750» junto a «$1,490» parece un descuento cuando es un anticipo |
+| **El aviso antes de elegir** | cada paquete dice cómo se puede pagar **antes** de que nadie pulse. Enterarse de que había otra forma de pagar después de haber decidido que no se puede es un cliente perdido por no haberlo dicho a tiempo |
+| **Nada preseleccionado** | ninguna opción nace marcada —en una pantalla de cobro, una opción marcada de fábrica es una que alguien puede comprar sin haberla elegido— y las cuatro llevan `required`, así que sin JavaScript el navegador exige elegir |
+| **Los datos, después** | el bloque del negocio no se pide hasta que hay paquete elegido |
 | **La cifra grande** | sigue a la opción elegida y coincide con la del catálogo |
 | **Lo que llega al cobro** | el paquete elegido y si tiene ficha o no —que es lo que hace legítimo el anticipo—, y **ninguna dirección de envío**: un servicio no se envía |
 | **El teléfono** | el mismo `pattern` que en el pedido, con los escapes puestos; tres cifras rebotan |
