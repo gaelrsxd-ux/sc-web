@@ -1760,16 +1760,30 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .pc-ir{justify-self:start;width:fit-content}
 @media(max-width:759px){.pc-ir{width:100%;justify-content:center}}
 
-/* El recorte de la foto llega hasta donde empiezan las dos columnas y no un
-   pixel menos: entre 641 y 759 px la ficha seguia en UNA columna con la foto
-   entera, y salia MAS alta que en un movil de 390. */
+/* LA FICHA DEL PRODUCTO EN MOVIL. Dos bloques:
+
+   · Hasta 759 px —donde empiezan las dos columnas de escritorio— la foto se
+     recorta y la nota deja de ser una caja. Un recuadro con borde y fondo pide
+     la misma atencion que el boton de comprar, y competia con el justo debajo.
+     Entre 641 y 759 px la ficha se quedaba en UNA columna con la foto entera y
+     salia MAS alta que en un movil de 390: por eso el corte va aqui.
+
+   · SE PROBO poner la foto AL LADO del texto y se descarto: en 390 px la
+     columna de texto queda en 200 px, el titulo parte en tres renglones, el
+     parrafo en ocho y «Girar en 3D» en dos. Bajaba de 1.351 a 996 px y salia
+     mas apretada, no mas ordenada. Lo que se recorta es la foto y el texto,
+     no la maqueta. */
 @media(max-width:759px){
   .sol-panel .prod-mini{display:none}
   .sol-panel .prod-envoltura,
-  .sol-panel .prod-fig>.prod-abre{width:min(58vw,260px)}
-  .sol-panel .prod-nota{padding:11px 13px;font-size:12.5px;line-height:1.6}
+  .sol-panel .prod-fig>.prod-abre{width:min(46vw,200px)}
+  .sol-panel .prod-fig{padding:20px 18px 22px}
+  .sol-panel .prod-vista{width:min(100%,260px);margin-bottom:10px}
+  .sol-panel .prod-vista .pv{padding:9px 10px;font-size:9px;letter-spacing:1.6px}
+  .sol-panel .prod-cuerpo{padding:22px 20px 24px}
+  .sol-panel .prod-nota{margin-top:14px;padding:0;border:0;background:none;
+    font-size:12.5px;line-height:1.6}
 }
-
 /* En movil el conmutador ocupa el ancho entero y se reparte en tres: un
    objetivo de un tercio de pantalla no hay que buscarlo con el pulgar. */
 @media(max-width:640px){
@@ -2381,7 +2395,16 @@ html.js .pc-alt{display:none}
     <video class="hv" id="heroVidA" muted playsinline preload="none" aria-hidden="true"></video>
     <video class="hv" id="heroVidB" muted playsinline preload="none" aria-hidden="true"></video>
   </div>
-  <div class="esc" data-src="assets/bg-servicios.webp" data-ancla="#servicios"></div>
+  <!-- ⚠ SE ANCLA A LA SECCION, NO A UN PANEL. Estuvo anclada a `#servicios`,
+       que era una seccion propia hasta que Servicios y Productos se fusionaron
+       en Soluciones. Desde entonces `#servicios` es un PANEL de pestana y nace
+       escondido: `getBoundingClientRect()` sobre algo con `display:none`
+       devuelve ceros, asi que esta escena creia vivir en el pixel 0 con altura
+       0 y el fundido con el hero se calculaba sobre basura. Eso era el salto
+       raro al subir y bajar entre el coche y la casa.
+       La regla, para que no vuelva a pasar: el ancla de una escena tiene que
+       ser algo que SIEMPRE este en el documento y siempre tenga altura. -->
+  <div class="esc" data-src="assets/bg-servicios.webp" data-ancla="#soluciones"></div>
   <div class="esc" data-src="assets/bg-proyectos.webp" data-ancla="#proyectos"></div>
   <div class="esc" data-src="assets/bg-contacto.webp"  data-ancla="#contacto"></div>
   <!-- Velo ÚNICO de toda la página. Antes cada sección pintaba el suyo, y por
@@ -2624,9 +2647,9 @@ html.js .pc-alt{display:none}
         </div>
         <div class="prod-cuerpo">
           <h3>Placa de rese&#241;as para Google</h3>
-          <p><b>Una placa para el mostrador de tu negocio.</b>
-            El cliente acerca el m&#243;vil o escanea el c&#243;digo y va directo a
-            dejarte una rese&#241;a en Google. Sin buscarte y sin instalar nada.</p>
+          <p><b>Una placa para tu mostrador.</b> El cliente acerca el m&#243;vil o
+            escanea el c&#243;digo y <b>te deja una rese&#241;a en Google</b>. Sin buscarte
+            y sin instalar nada.</p>
           <ul class="prod-ul">
             <li>NFC y QR</li>
             <li>Dura de 5 a 10 a&#241;os</li>
@@ -2655,7 +2678,7 @@ html.js .pc-alt{display:none}
           <span class="go">&#8599;</span>
           <span class="idx">/ 01</span>
           <h3>Diseño Web Profesional</h3>
-          <p>Sin p&#225;gina, el cliente que te busca acaba comprándole a otro.</p>
+          <p>Sin p&#225;gina web <b>pierdes al cliente que te busca</b>, y se lo lleva la competencia.</p>
           <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
           <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Diseño Web Profesional"><span class="dia"></span>Solicitar</a>
         </article>
@@ -2663,7 +2686,7 @@ html.js .pc-alt{display:none}
           <span class="go">&#8599;</span>
           <span class="idx">/ 02</span>
           <h3>Perfil de tu Negocio en Google</h3>
-          <p>Si tu negocio sale mal en Google o en Maps, la gente se va al de al lado.</p>
+          <p>Si sales mal en Google o en Maps, <b>la gente se va al negocio de al lado</b>.</p>
           <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
           <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20que%20configuren%20el%20perfil%20de%20mi%20negocio%20en%20Google." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre el Perfil de tu Negocio en Google"><span class="dia"></span>Solicitar</a>
         </article>
@@ -2671,7 +2694,7 @@ html.js .pc-alt{display:none}
           <span class="go">&#8599;</span>
           <span class="idx">/ 03</span>
           <h3>Atención al Cliente con IA</h3>
-          <p>Cada llamada y cada mensaje sin contestar es un cliente que se pierde.</p>
+          <p>Cada mensaje sin contestar <b>es un cliente que pierdes</b> y que gana tu competencia.</p>
           <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
           <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
         </article>
@@ -2679,7 +2702,7 @@ html.js .pc-alt{display:none}
           <span class="go">&#8599;</span>
           <span class="idx">/ 04</span>
           <h3>Automatización de Procesos</h3>
-          <p>Hacerlo todo a mano se come horas cada semana, y las horas son dinero.</p>
+          <p>Hacer todo a mano <b>te cuesta horas y dinero</b> cada semana, para siempre.</p>
           <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
           <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
         </article>
@@ -4766,6 +4789,19 @@ const SIG=(()=>{
         paneles[i].hidden=!activa;
         if(activa)paneles[i].querySelectorAll('.rv').forEach(e=>e.classList.add('in'));
       });
+      /* ⚠ AVISAR DE QUE LA PAGINA HA CAMBIADO DE ALTO. Abrir una pestana
+         esconde dos paneles y la pagina encoge cientos de pixeles de golpe.
+         Quien pinta el fondo cachea las posiciones de las secciones y solo
+         las revisa al desplazarse, asi que si el cambio ocurre con la pagina
+         quieta —al arrancar, y en cada cambio de pestana— se queda con datos
+         viejos: el fundido del hero a la siguiente foto se calculaba con el
+         hero midiendo mas de lo que mide, y la segunda escena no llegaba a
+         entrar hasta el final de la pagina. Ese era el paso raro entre las
+         dos fotos de fondo.
+         Un `resize` sintetico es la senal que TODOS los modulos que miden ya
+         escuchan —el fondo, la barra de avance, la baraja—, asi que no hay
+         que enterarse de cuantos son ni acordarse de avisar a cada uno. */
+      dispatchEvent(new Event('resize'));
       if(mueveFoco)t.focus();
     }
 

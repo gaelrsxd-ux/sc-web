@@ -255,6 +255,58 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      && await pest.nth(1).getAttribute('aria-selected') === 'false',
      'aria-selected sigue a la pestaña abierta');
 
+  /* ---- EL FONDO QUE CAMBIA AL BAJAR ----
+     Cuatro fotos fijas detrás de la página que se relevan al desplazarse. Cada
+     una se ancla a una sección y el relevo se calcula con la posición de ese
+     ancla.
+
+     LA QUE JUSTIFICA ESTAS LÍNEAS: el ancla tiene que MEDIR ALGO. Estuvo
+     apuntando a `#servicios`, que era una sección propia hasta que Servicios y
+     Productos se fusionaron en Soluciones; desde entonces es un panel de
+     pestaña que nace escondido, y `getBoundingClientRect()` sobre algo con
+     `display:none` devuelve ceros. Esa escena creía vivir en el píxel 0 con
+     altura 0 y el fundido se calculaba sobre basura: era el salto raro entre
+     las dos primeras fotos. */
+  await pg.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
+  await pg.waitForTimeout(900);
+  const escenas = await pg.$$eval('#descenso .esc', es => es.map(e => {
+    const sel = e.dataset.ancla, a = document.querySelector(sel);
+    const r = a && a.getBoundingClientRect();
+    return { sel, alto: r ? Math.round(r.height) : 0 };
+  }));
+  ok(escenas.length >= 2, 'hay varias escenas de fondo');
+  const ciegas = escenas.filter(e => e.alto === 0).map(e => e.sel);
+  ok(ciegas.length === 0,
+     'cada escena se ancla a algo que mide' + (ciegas.length ? ': CIEGA(S) ' + ciegas.join(', ') : ''));
+  for (const e of escenas) console.log(`      ${e.sel.padEnd(14)} alto ${e.alto}`);
+
+  /* Y el relevo tiene que ser de ida: cada foto entra una vez y se va una vez.
+     Con un ancla rota la misma escena iba y volvía, que es lo que se ve como
+     un parpadeo al subir y bajar.
+     ⚠ El salto tiene que ser INSTANTÁNEO. La página lleva scroll-behavior
+     suave, y midiendo a mitad de la animación salen valores de un punto que no
+     es el que se pidió — eso me dio un diagnóstico falso una vez. */
+  const curva = [];
+  for (let y = 0; y <= 3200; y += 200) {
+    await pg.evaluate(v => { document.documentElement.style.scrollBehavior = 'auto'; scrollTo(0, v); }, y);
+    await pg.waitForTimeout(90);
+    curva.push(await pg.$$eval('#descenso .esc', es => es.map(e => +getComputedStyle(e).opacity)));
+  }
+  await pg.evaluate(() => { scrollTo(0, 0); document.documentElement.style.scrollBehavior = ''; });
+  let idasYvueltas = 0;
+  for (let c = 0; c < escenas.length; c++) {
+    const col = curva.map(f => f[c]);
+    for (let i = 2; i < col.length; i++)
+      if (col[i-1] - col[i-2] > 0.06 && col[i] - col[i-1] < -0.06) idasYvueltas++;
+  }
+  ok(idasYvueltas === 0,
+     'cada foto de fondo entra y sale UNA vez, sin ir y volver' +
+     (idasYvueltas ? ` (${idasYvueltas} vaivén/vaivenes)` : ''));
+  /* Y que el relevo llegue a ocurrir: con el ancla rota la segunda foto no
+     pasaba del 12% en toda la página. */
+  const maxSegunda = Math.max(...curva.map(f => f[1]));
+  ok(maxSegunda > 0.9, `la segunda foto llega a verse entera (llega a ${maxSegunda.toFixed(2)})`);
+
   /* ---- EL MENU DE SECCIONES ----
      Hasta ahora, en un telefono esta pagina no tenia NINGUNA navegacion: la
      lista de la barra se esconde por debajo de 1080 px y el riel del recorrido
