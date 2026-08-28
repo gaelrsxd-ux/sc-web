@@ -50,31 +50,6 @@ main{max-width:560px}
 .ped-campo>span{display:block;font-size:9.5px;letter-spacing:2.6px;text-transform:uppercase;
   color:var(--muted);margin-bottom:7px}
 .ped-campo>span .opc{letter-spacing:0;text-transform:none;color:var(--dim);font-size:11px}
-/* ---------- EL CONTADOR DE CANTIDAD ----------
-   El desplegable en medio y un botón a cada lado. Los dos botones son cuadrados
-   de 48 px —el mínimo cómodo para un dedo— y no crecen con el ancho: lo que
-   tiene que crecer es el desplegable, que es donde se lee la cantidad y su
-   precio. */
-/* ⚠ `.ped-campo>.ped-cont` y no `.ped-cont` a secas: la regla de al lado
-   —`.ped-campo>span`, que da el estilo al rótulo del campo— es más específica
-   que una clase suelta y ganaba, así que el contador salía apilado en vertical
-   y en versalitas. Aquí van también los reinicios de lo que esa regla hereda. */
-.ped-campo>.ped-cont{display:flex;align-items:stretch;gap:8px;
-  margin-bottom:0;text-transform:none;letter-spacing:0}
-.ped-cont select{flex:1;min-width:0}
-.ped-mas-menos{flex:0 0 auto;width:48px;min-height:48px;
-  background:var(--bg2);color:var(--bronze-hi);border:1px solid var(--line-soft);
-  font-family:var(--sans);font-size:20px;line-height:1;cursor:pointer;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-  transition:border-color .25s,color .25s,background-color .25s}
-.ped-mas-menos:active{background:var(--bronze);color:var(--on-bronze,#0A0B0E);transition-duration:0s}
-@media(hover:hover){.ped-mas-menos:hover:not(:disabled){border-color:var(--bronze)}}
-.ped-mas-menos:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:2px}
-/* En los extremos no se esconde: se apaga. Un botón que desaparece al llegar a
-   1 mueve el desplegable justo cuando el dedo va hacia él. */
-.ped-mas-menos:disabled{color:var(--dim);cursor:default;opacity:.55}
-.ped-mas-menos[hidden]{display:none}
-
 .ped-campo input,.ped-campo select,.ped-campo textarea{
   width:100%;min-height:48px;padding:12px 14px;
   background:var(--bg2);color:var(--ink);border:1px solid var(--line-soft);

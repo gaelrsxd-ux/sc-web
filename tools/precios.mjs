@@ -565,19 +565,14 @@ const BLOQUES_SERVICIO = [
 function bloquePedido() {
   const ops = PAQUETES.map(p =>
     `<option value="${p.piezas}">${placas(p)} &#8212; $${miles(total(p))}</option>`).join('');
-  /* EL «−» Y EL «+» VAN ALREDEDOR DEL DESPLEGABLE, no en su lugar. El <select>
-     con sus 25 opciones es lo que hace que la cantidad se pueda elegir sin
-     JavaScript, y también lo que permite saltar de 1 a 20 sin pulsar veinte
-     veces; los dos botones son para el caso de siempre, que es subir o bajar de
-     uno en uno. Nacen escondidos y los enciende el script, porque sin él no
-     harían nada. */
+  /* AQUÍ NO VAN EL «−» NI EL «+»: van en la portada, que es donde se ve el
+     producto y donde nace la pregunta de cuántas quiero. Estuvieron aquí un
+     rato y sobraban — a esta pantalla se llega con la cantidad ya elegida y
+     puesta en `?n=`, y el desplegable es para corregirla, no para recorrerla de
+     uno en uno. Es además lo que permite elegir sin JavaScript. */
   return '<!-- pedido:cantidad -->\n' +
     '      <label class="ped-campo" for="ped-cant"><span>Cantidad</span>' +
-    '<span class="ped-cont">' +
-    '<button type="button" class="ped-mas-menos" data-cant="-1" aria-label="Una placa menos" hidden>&#8722;</button>' +
-    '<select id="ped-cant" name="paquete">' + ops + '</select>' +
-    '<button type="button" class="ped-mas-menos" data-cant="1" aria-label="Una placa m&#225;s" hidden>+</button>' +
-    '</span></label>\n' +
+    '<select id="ped-cant" name="paquete">' + ops + '</select></label>\n' +
     '      ' + tablaContador() + '\n' +
     '      <!-- /pedido:cantidad -->';
 }
@@ -609,36 +604,71 @@ function precioEsquema() {
   return '"price":"' + total(PAQUETES[0]) + '"';
 }
 
-/* LA FICHA CORTA DE LA PORTADA.
-   Antes esto generaba el contador entero: campo de cantidad, precio en vivo,
-   la lista de las 25 cantidades y su tabla JSON. Todo eso vive ahora en
-   pedido.html, que ya elegía cantidad con un <select> de 25 opciones y ya
-   llevaba el WhatsApp de «más de 25». Duplicarlo en la portada costaba tres
-   pantallas de móvil para responder una pregunta —cuánto cuestan las que yo
-   quiero— que se responde igual de bien un toque después, y con el flujo de
-   compra entero delante.
+/* LA FICHA CORTA DE LA PORTADA — CON SU CONTADOR.
+   El «−» y el «+» estuvieron aquí, se fueron a la página de pedido y vuelven:
+   la cantidad se elige DONDE se ve el producto, que es donde nace la pregunta
+   —cuánto me cuestan las que yo quiero—, y no un toque después.
 
-   Lo que queda en la portada es lo que decide si sigues: desde cuánto y a
-   dónde se va. Sigue generándose desde la tabla y no a mano, porque el fallo
-   que este archivo existe para impedir —la web diciendo un precio y el cobro
-   siendo otro— no depende de cuántas cifras se enseñen, sino de que la que se
-   enseñe salga de aquí. */
+   Lo que NO vuelve es la lista de los 25 tramos que había debajo. Ésa costaba
+   tres pantallas de móvil para decir lo mismo que dice el contador moviéndolo,
+   y quien necesite más de 25 tiene su enlace. La ficha sigue cabiendo en una
+   pantalla.
+
+   El botón se lleva la cantidad elegida en `?n=`, así que la página de pedido
+   abre ya con ella puesta: elegir dos veces lo mismo es el fallo que separó
+   estas dos pantallas en su día, y con el enlace parametrizado no ocurre.
+
+   Todo esto se genera desde la tabla y no a mano, porque el fallo que este
+   archivo existe para impedir —la web diciendo un precio y el cobro siendo
+   otro— no depende de cuántas cifras se enseñen, sino de que salgan de aquí. */
+/* El mensaje ya escrito para pedir más de lo que cubre la escalera. Es el
+   mismo que lleva pedido.html; vive aquí para que la portada no tenga que
+   repetirlo a mano. */
+const WA_MAS = 'https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20'
+  + 'necesito%20m%C3%A1s%20de%2025%20placas%20de%20rese%C3%B1as%20de%20Google%20'
+  + '%28NFC%20%2B%20QR%29.%20%C2%BFQu%C3%A9%20precio%20me%20pueden%20hacer%3F';
+
 function bloqueCompra() {
   const una = PAQUETES[0];
   if (!una || una.piezas !== 1) throw new Error('la escalera no empieza en 1 placa');
+  const max = PAQUETES[PAQUETES.length - 1].piezas;
 
-  /* «Envío incluido» y no «envío gratis»: en la portada no hay ninguna otra
-     cifra al lado con la que contrastar, y «gratis» junto a un precio invita a
-     buscar el coste escondido que no existe. */
-  const envio = gratis(una) ? ent(' · envío incluido') : '';
-
-  return '<div class="prod-compra">\n' +
-    '            <p class="pc-desde"><span class="pc-et">' + ent('Desde') + '</span>' +
+  return '<!-- portada:compra -->\n' +
+    '          <div class="prod-compra">\n' +
+    /* ⚠ EL CONTADOR NACE ESCONDIDO Y LO ENSEÑA EL SCRIPT. Sin JavaScript, el
+       «+» no sumaría, el campo aceptaría un número que nadie leería y el precio
+       de al lado seguiría diciendo el de una placa: tres controles mintiendo a
+       la vez. Escondido, la ficha dice lo que siempre dijo —una placa, $399, y
+       el botón— y la cantidad se elige un toque después, en el desplegable de
+       la página de pedido, que sí funciona sin script. */
+    '            <p class="pc-rot" data-pc-solo-js hidden>' + ent('Cantidad') + '</p>\n' +
+    '            <div class="pc-cab">\n' +
+    '              <div class="pc-cant" data-pc-solo-js hidden>\n' +
+    '                <button class="pc-b" type="button" data-pc="-1" aria-label="' +
+    ent('Quitar una placa') + '">&#8722;</button>\n' +
+    '                <input class="pc-n" type="number" inputmode="numeric" step="1"\n' +
+    `                       min="1" max="${max}" value="1" data-pc-n\n` +
+    '                       aria-label="' + ent('Cantidad de placas') + '">\n' +
+    '                <span class="pc-w" data-pc-w>' + ent('placa') + '</span>\n' +
+    '                <button class="pc-b" type="button" data-pc="1" aria-label="' +
+    ent('Añadir una placa') + '">+</button>\n' +
+    '              </div>\n' +
+    '              <p class="pc-precio" aria-live="polite">' +
     '<span class="cifra" data-pc-total>$' + miles(total(una)) + '</span>' +
-    '<span class="u">MXN' + envio + '</span></p>\n' +
+    '<span class="u">MXN</span></p>\n' +
+    '            </div>\n' +
+    '            <p class="pc-detalle" data-pc-detalle>' + ent(detalle(una)) + '</p>\n' +
+    '            <p class="pc-gratis" data-pc-gratis hidden></p>\n' +
     '            <a class="svc-btn pc-ir" href="pedido.html?n=1" data-pc-ir>' +
     '<span class="dia"></span>' + ent('Ver precios y comprar') + '</a>\n' +
-    '          </div>'
+    /* La salida para quien necesita más de lo que hay en la escalera. Sin ella
+       el «+» se apaga en el tope y no dice por qué, que en un móvil se lee como
+       una web rota. Es el mismo enlace que ya vive en la página de pedido. */
+    `            <p class="pc-mas"><a href="${WA_MAS}" target="_blank" rel="noopener noreferrer">` +
+    ent(`¿Necesitas más de ${max}? Hablemos el precio`) + '</a></p>\n' +
+    '            ' + tablaContador() + '\n' +
+    '          </div>\n' +
+    '          <!-- /portada:compra -->'
 }
 
 
@@ -749,8 +779,14 @@ function desdeServicio() {
 const BLOQUES = [
   { nombre: 'precio del esquema', re: /"price":"\d+"/, pinta: precioEsquema },
   { nombre: 'desde del servicio', re: /<span data-svc-desde>[^<]*<\/span>/, pinta: desdeServicio },
+  /* ⚠ CON MARCAS Y NO CON UN `</a>` FINAL. El patrón anterior terminaba en el
+     cierre del enlace, y al cambiar el marcado —el contador acaba en su tabla
+     de datos, no en un enlace— dejó de encontrar su final y en la segunda pasada
+     se llevó por delante el bloque de al lado, el «desde» del servicio. Las
+     marcas las escribe este mismo archivo, así que el final no depende de cómo
+     acabe el contenido. */
   { nombre: 'bloque de compra',
-    re: /<div class="prod-compra">[\s\S]*?<\/a>\n {10}<\/div>/,
+    re: /<!-- portada:compra -->[\s\S]*?<!-- \/portada:compra -->/,
     pinta: bloqueCompra },
 ];
 

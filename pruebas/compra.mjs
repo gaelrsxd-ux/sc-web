@@ -74,11 +74,51 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pg.waitForTimeout(400);
 
   ok(await pg.locator('#soluciones').count() === 1, 'la portada tiene UNA sección de soluciones');
-  ok(await pg.locator('.prod-compra [data-pc="1"]').count() === 0,
-     'el contador ya NO está en la portada: no hay dos sitios donde elegir cantidad');
+
+  /* ---- EL CONTADOR, EN LA PORTADA ----
+     La cantidad se elige DONDE se ve el producto, que es donde nace la
+     pregunta —cuánto me cuestan las que yo quiero— y no un toque después. */
+  const menos = pg.locator('.prod-compra [data-pc="-1"]');
+  const mas   = pg.locator('.prod-compra [data-pc="1"]');
+  ok(await menos.isVisible() && await mas.isVisible(),
+     'la ficha del producto tiene su «−» y su «+»');
   const desdePortada = (await pg.locator('[data-pc-total]').textContent()).trim();
   ok(await pg.locator('[data-pc-ir]').getAttribute('href') === 'pedido.html?n=1',
      'su botón lleva al pedido');
+
+  /* Espera acotada que NO revienta: así un contador roto se pone en rojo con
+     el nombre de su comprobación en vez de tumbar la suite con un volcado. */
+  const cuando = (fn, ms = 4000) => pg.waitForFunction(fn, null, { timeout: ms })
+    .then(() => true).catch(() => false);
+  const leeN = () => pg.$eval('[data-pc-n]', i => i.value);
+
+  await mas.click(); await mas.click();
+  ok(await cuando(() => document.querySelector('[data-pc-n]').value === '3'),
+     'el «+» sube de uno en uno: ' + await leeN());
+  ok((await pg.locator('[data-pc-total]').textContent()).trim() === '$799',
+     'y el importe le sigue');
+  ok((await pg.locator('[data-pc-w]').textContent()).trim() === 'placas',
+     'y la palabra concuerda en plural');
+  /* La cantidad elegida VIAJA al pedido. Sin esto habría que elegirla dos
+     veces, que es justo lo que separó estas dos pantallas en su día. */
+  ok(await pg.locator('[data-pc-ir]').getAttribute('href') === 'pedido.html?n=3',
+     'y el botón se lleva la cantidad elegida al pedido');
+
+  await menos.click(); await menos.click();
+  ok(await cuando(() => document.querySelector('[data-pc-n]').value === '1'),
+     'y el «−» baja');
+  /* En los extremos se apagan y NO dan la vuelta: un contador que salta de 25
+     a 1 al pulsar «más» parece roto, y en un móvil se pulsa sin mirar. */
+  ok(await menos.isDisabled(), 'en 1 el «−» se apaga');
+  await pg.fill('[data-pc-n]', '25');
+  await pg.locator('[data-pc-n]').blur();
+  ok(await cuando(() => document.querySelector('[data-pc="1"]').disabled),
+     'y en 25 el «+»');
+  /* Y por encima del tope hay salida, que si no el botón apagado no dice por qué. */
+  ok(await pg.locator('.pc-mas a').isVisible(), 'con un enlace para pedir más de 25');
+  await pg.fill('[data-pc-n]', '1');
+  await pg.locator('[data-pc-n]').blur();
+  await cuando(() => document.querySelector('[data-pc-n]').value === '1');
 
   /* ---- de la ficha al pedido ---- */
   await pg.locator('[data-pc-ir]').click();
@@ -93,40 +133,12 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok((await pg.locator('[data-ped-tot]').textContent()).trim() === '$949', 'y su importe');
   ok((await pg.locator('.tag').textContent()).includes('Paso 1 de 4'), 'arranca en el paso 1 de 4');
 
-  /* ---- EL «−» Y EL «+» ----
-     El desplegable sigue siendo el que manda —es lo que hace que la cantidad se
-     pueda elegir sin JavaScript y lo que permite saltar de 1 a 20 sin pulsar
-     veinte veces—, pero subir o bajar de uno en uno es el caso de siempre y
-     pedía dos toques y una lista de 25. */
-  /* Espera acotada que NO revienta: con `waitForFunction` a secas, un contador
-     roto tumbaba la suite entera con un volcado de Playwright y sin decir qué
-     comprobación había fallado. Así el rojo lleva su nombre. */
-  const cuando = (fn, ms = 4000) => pg.waitForFunction(fn, null, { timeout: ms })
-    .then(() => true).catch(() => false);
-  const menos = pg.locator('[data-cant="-1"]');
-  const mas   = pg.locator('[data-cant="1"]');
-  ok(await menos.isVisible() && await mas.isVisible(),
-     'la cantidad tiene su «−» y su «+»');
-  await mas.click();
-  ok(await cuando(() => document.getElementById('ped-cant').value === '5'),
-     'el «+» sube de uno en uno');
-  ok((await pg.locator('[data-ped-tot]').textContent()).trim() === '$1,099',
-     'y el importe grande le sigue');
-  await menos.click(); await menos.click();
-  ok(await cuando(() => document.getElementById('ped-cant').value === '3'),
-     'y el «−» baja');
-
-  /* En los extremos se APAGAN, no desaparecen: un botón que se esfuma al llegar
-     a 1 mueve el desplegable justo cuando el dedo va hacia él. */
-  await pg.selectOption('#ped-cant', '1');
-  await cuando(() => document.querySelector('[data-cant="-1"]').disabled);
-  ok(await menos.isDisabled() && await menos.isVisible(),
-     'en 1 el «−» se apaga pero sigue ahí');
-  await pg.selectOption('#ped-cant', '25');
-  await cuando(() => document.querySelector('[data-cant="1"]').disabled);
-  ok(await mas.isDisabled() && await mas.isVisible(), 'y en 25 el «+»');
-  await pg.selectOption('#ped-cant', '4');
-  await cuando(() => document.getElementById('ped-cant').value === '4');
+  /* El «−» y el «+» NO están aquí: viven en la ficha del producto, que es
+     donde se ve lo que se compra. A esta pantalla se llega con la cantidad ya
+     puesta en `?n=` y el desplegable es para corregirla, no para recorrerla de
+     uno en uno. */
+  ok(await pg.locator('[data-cant]').count() === 0,
+     'el checkout NO repite el contador: la cantidad se elige en la ficha');
 
   /* Los 25 tramos, donde ahora se eligen. Antes se recorrían en la portada a
      base de 24 toques al «+»; aquí se comprueba lo mismo sobre el desplegable
@@ -552,16 +564,22 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(await pg.locator('#servicios .svc').count() === 4, 'y están los cuatro servicios');
   ok(await pg.locator('#clientes .insta-g figure').count() === 3, 'y las tres instalaciones');
   ok((await pg.locator('[data-pc-total]').textContent()).trim() !== '',
-     'y el precio «desde» se lee: es HTML, no lo escribe ningún script');
+     'y el precio de una placa se lee: es HTML, no lo escribe ningún script');
 
-  /* Las 25 cantidades siguen enteras donde ahora se eligen, y sin JavaScript:
+  /* ⚠ EL CONTADOR NACE ESCONDIDO Y LO ENCIENDE EL SCRIPT. Sin JavaScript el
+     «+» no sumaría, el campo aceptaría un número que nadie leería y el precio
+     de al lado seguiría diciendo el de una placa: tres controles mintiendo a la
+     vez. Escondido, la ficha dice lo que siempre dijo —una placa, su precio y
+     el botón— y la cantidad se elige un toque después, en el desplegable de la
+     página de pedido, que sí funciona sin script. */
+  ok(!(await pg.locator('.pc-cant').isVisible()),
+     'sin JS el contador de la ficha NO se enseña: no sumaría nada');
+  ok(await pg.locator('[data-pc-ir]').isVisible(),
+     'pero el botón de comprar sigue ahí, que es lo que no se puede perder');
+
+  /* Las 25 cantidades siguen enteras donde se corrigen, y sin JavaScript:
      un <select> nativo funciona con el script caído. */
   await pg.goto(BASE + '/pedido.html');
-  /* Y los dos botones NO están: nacen con `hidden` en el marcado y los enciende
-     el script. Un «+» que no suma nada es peor que no tenerlo — la lista de 25
-     sigue entera justo detrás, que es la que funciona sin JavaScript. */
-  ok(!(await pg.locator('[data-cant="1"]').isVisible()),
-     'sin JS no hay «+»: sin script no sumaría nada, y el desplegable sí funciona');
   ok(await pg.locator('#ped-cant option').count() === 25,
      'sin JS, pedido.html conserva las veinticinco cantidades');
 
