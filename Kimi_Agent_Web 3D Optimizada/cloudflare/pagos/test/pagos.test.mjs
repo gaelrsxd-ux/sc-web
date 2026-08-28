@@ -154,15 +154,49 @@ test('el checkout abre en pago único aunque el paquete admita dos', async () =>
     'partir el pago lo elige el comprador; no puede venir marcado de fábrica');
 });
 
-test('los once paquetes cobran exactamente lo que enseña la web', async () => {
+test('TODO el catálogo cobra exactamente lo que enseña la web', async () => {
   for (const p of TABLA.paquetes) {
     montaCaches();
     const llamadas = montaFetch(okMP);
     await worker.fetch(post({ paquete: p.id }), ENV);
     assert.equal(llamadas[0].cuerpo.items[0].unit_price, p.total, 'paquete ' + p.id);
-    assert.equal(llamadas[0].cuerpo.items[0].title, p.base + ' · ' + (p.envio > 0 ? 'incluye $' + p.envio + ' de envío' : 'envío gratis'),
-      'concepto del paquete ' + p.id);
+    /* Un servicio no se manda a ninguna parte: su concepto es su nombre y ya.
+       Añadirle «envío gratis» sería prometer una paquetería inexistente en la
+       pantalla donde el comprador mete su tarjeta. */
+    const esperado = p.tipo === 'servicio'
+      ? p.base
+      : p.base + ' · ' + (p.envio > 0 ? 'incluye $' + p.envio + ' de envío' : 'envío gratis');
+    assert.equal(llamadas[0].cuerpo.items[0].title, esperado, 'concepto del paquete ' + p.id);
   }
+});
+
+test('los servicios están en el catálogo, con su anticipo por debajo del contado', () => {
+  const serv = TABLA.paquetes.filter(p => p.tipo === 'servicio');
+  assert.ok(serv.length >= 2, 'hay servicios en el catálogo');
+  for (const s of serv) {
+    assert.equal(s.envio, 0, s.id + ': un servicio no puede llevar envío');
+    assert.equal(s.cuotas, 1, s.id + ': los servicios van a un pago');
+  }
+  /* El anticipo tiene que ser MENOR que su contado. Al revés —o iguales— no es
+     un anticipo: es cobrar de más por pagar a plazos. */
+  for (const a of serv.filter(s => s.id.endsWith('a'))) {
+    const contado = serv.find(s => s.id === a.id.slice(0, -1));
+    assert.ok(contado, 'el anticipo ' + a.id + ' no tiene su contado');
+    assert.ok(a.total < contado.total,
+      `el anticipo ${a.id} (${a.total}) no es menor que su contado (${contado.total})`);
+  }
+});
+
+test('a un servicio NO se le descuenta el envío por ser de San Luis', async () => {
+  const serv = TABLA.paquetes.find(p => p.tipo === 'servicio');
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  /* Un código postal de los de casa. Con la placa esto descuenta la paquetería;
+     con un servicio no hay nada que descontar y el importe no puede moverse. */
+  await worker.fetch(post({ paquete: serv.id, cp: '78000' }), ENV);
+  assert.equal(llamadas[0].cuerpo.items[0].unit_price, serv.total);
+  assert.ok(!/envío|entrega en mano/i.test(llamadas[0].cuerpo.items[0].title),
+    'el concepto de un servicio no habla de envíos: ' + llamadas[0].cuerpo.items[0].title);
 });
 
 /* ═══════════════════════ LOS DATOS DEL PEDIDO ═════════════════════════════ */

@@ -1,17 +1,26 @@
 # Pruebas de navegador
 
-Dos suites. `compra.mjs` cubre el único camino de esta web por el que entra
-dinero: **contador de la ficha → pedido.html → lo que se le manda al Worker →
-gracias.html.** `instalaciones.mjs` cubre las fotos de clientes de la ficha.
+Tres suites, una por cada cosa que puede romperse sola.
+
+Por esta web entra dinero por **dos caminos distintos**, y no comparten casi
+nada: uno vende un objeto que se envía, el otro un trabajo que se hace sobre la
+ficha de Google del cliente.
+
+| | |
+|---|---|
+| `compra.mjs` | la placa: ficha → `pedido.html` → lo que se le manda al Worker → `gracias.html` |
+| `servicio.mjs` | el perfil de Google: `servicio.html` → el cobro → `gracias.html` |
+| `instalaciones.mjs` | las fotos de clientes de la ficha |
 
 ```sh
 node servidor.js 8099 &
 node pruebas/compra.mjs
+node pruebas/servicio.mjs
 node pruebas/instalaciones.mjs
 ```
 
-Sesenta y ocho comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; dieciocho en la segunda.
+Ochenta y nueve comprobaciones en la primera, la mayoría con JavaScript y un
+bloque final sin él; veintitrés en la segunda y dieciocho en la tercera.
 
 ## Por qué en un navegador
 
@@ -101,6 +110,44 @@ que cobra, no tiene ese problema y su bloque sin JavaScript sigue en
 `compra.mjs`.
 
 
+## `servicio.mjs`
+
+El segundo camino por el que entra dinero. No reutiliza nada del primero porque
+no se le parece: no hay cantidad, no hay envío, no hay dirección — y sí hay una
+regla comercial que sólo vale en un caso.
+
+### Las dos que justifican el archivo
+
+> **NO viaja ningún importe en el formulario**
+
+La misma de siempre, y por lo mismo: el precio lo pone el Worker desde su tabla
+y el formulario manda sólo qué paquete se quiere. Comprobado por sabotaje: con
+un `<input type="hidden" name="total">` dentro, dos pruebas se ponen en rojo.
+
+> **con ficha propia, las dos opciones de anticipo quedan deshabilitadas**
+
+Ésta es de dinero, no de interfaz. En un perfil de Google **no se puede retener
+la entrega**: cada foto que se sube es pública y del cliente en el mismo segundo
+en que se sube. Si la cuenta es suya y nos quita de administradores, el trabajo
+hecho no se deshace y el resto no se cobra. El anticipo sólo se sostiene cuando
+la cuenta la creamos nosotros, porque entonces la entrega final —el correo y la
+contraseña— sí espera al pago.
+
+Comprobado por sabotaje: cambiando `o.disabled=tiene` por `o.disabled=false`, se
+pone en rojo.
+
+### Lo que cubren las otras
+
+| | |
+|---|---|
+| **Las cuatro formas de comprar** | dos paquetes × contado/anticipo, y **una sola** nace marcada. Con dos `checked` el navegador se queda con la última del documento, así que la página abría con el paquete caro preseleccionado sin que nadie lo hubiera decidido |
+| **La cifra grande** | sigue a la opción elegida y coincide con la del catálogo |
+| **Lo que llega al cobro** | el paquete elegido y si tiene ficha o no —que es lo que hace legítimo el anticipo—, y **ninguna dirección de envío**: un servicio no se envía |
+| **El teléfono** | el mismo `pattern` que en el pedido, con los escapes puestos; tres cifras rebotan |
+| **La vuelta** | `gracias.html` le dice que nos añada como administrador **y con qué correo**, y **no** le habla de paquetería. El WhatsApp trae escrito si su ficha existe y **no declara ningún importe** |
+| **Sin JavaScript** | los tres bloques se ven, las cuatro opciones están, **cada una lleva su precio escrito** —no calculado— y la cifra grande queda vacía en vez de mentir |
+
+
 ## Lo que NO cubre
 
 - **Mercado Pago.** La petición al Worker se intercepta para poder mirar qué se
@@ -114,7 +161,7 @@ que cobra, no tiene ese problema y su bloque sin JavaScript sigue en
 
 El CI de este repositorio corre sólo lo que no necesita red ni levantar nada:
 escáner de secretos, huellas de la CSP, tabla de precios y las pruebas del
-Worker. Estas suites necesitan Playwright, un Chromium y el servidor local
+Worker. Las tres suites necesitan Playwright, un Chromium y el servidor local
 levantado, y un CI que tarda o falla por motivos que no son suyos se acaba
 ignorando. Se corren a mano antes de tocar el flujo de compra o la ficha.
 

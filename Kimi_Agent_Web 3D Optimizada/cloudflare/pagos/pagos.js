@@ -76,6 +76,11 @@ const VENTANA_MS = 60000;
 
 const paquete = id => TABLA.paquetes.find(p => p.id === String(id));
 
+/* Un servicio no se envía: se trabaja sobre la ficha de Google del cliente. Sin
+   esta distinción el cobro de un perfil diría «envío gratis» en el checkout, y
+   a quien está en San Luis le descontaría una paquetería que nunca existió. */
+const esServicio = p => p && p.tipo === 'servicio';
+
 function pesos(n) {
   return '$' + n.toLocaleString('en-US');
 }
@@ -196,6 +201,11 @@ export const CAMPOS = {
   ciudad:         40,
   estado:         30,
   refs:           80,
+  /* Sólo de los servicios. No se suman al presupuesto de los de arriba: un
+     pedido de placas y uno de servicio son ramas distintas de `resumen()` y
+     nunca coinciden en la misma cadena. Hay una prueba por rama. */
+  ficha_tiene:     2,   /* «si» | «no» */
+  ficha:         120,
 };
 
 /* ⚠ LOS TOPES DE ARRIBA TIENEN UN PRESUPUESTO Y NO SON LIBRES. Casi todos ellos
@@ -263,6 +273,24 @@ function leePedido(form) {
    alguien añade un campo sin mirar. */
 function resumen(p, d) {
   const l = [];
+
+  /* UN SERVICIO NO SE PREPARA, SE TRABAJA, así que su resumen responde otras
+     preguntas: ¿sobre qué ficha?, ¿la creamos nosotros o ya existe? —de eso
+     depende si el anticipo era legítimo—, y ¿por dónde le escribo. No lleva
+     dirección de envío porque no hay nada que enviar, y no lleva «1 pza»
+     porque no se cuenta por piezas.
+     Sale por su propia rama y no por condicionales metidos en la de abajo: son
+     dos resúmenes distintos, y mezclarlos era pedir que uno de los dos acabase
+     diciendo media verdad. */
+  if (esServicio(p)) {
+    if (d.negocio) l.push(d.negocio + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
+    l.push(d.ficha_tiene === 'si' ? 'YA TIENE ficha' : 'SIN ficha: la creamos');
+    if (d.ficha) l.push('Ficha: ' + d.ficha);
+    if (d.nombre) l.push('Contacto: ' + d.nombre);
+    if (d.tel) l.push('Tel ' + d.tel);
+    return l.join(' | ').slice(0, 600);
+  }
+
   /* El título del producto NO se repite aquí: Mercado Pago ya lo enseña como
      concepto del cobro, y son casi sesenta caracteres del presupuesto gastados
      en decir dos veces lo mismo. Queda la cantidad, que es lo que se comprueba
@@ -357,6 +385,7 @@ function esLocal(pedido) {
    total menos su propio envío. No hay ninguna otra rama, y ningún número del
    formulario entra en esta cuenta. */
 function importe(p, pedido) {
+  if (esServicio(p)) return p.total;
   if (!esLocal(pedido)) return p.total;
   /* El descuento se acota POR LOS DOS LADOS, y el lado de arriba es el que de
      verdad importa. La versión anterior era `rebajado > 0 ? rebajado : p.total`,
@@ -392,6 +421,10 @@ function importe(p, pedido) {
    un importe 79 pesos menor. Un fallo silencioso y en la pantalla del cobro.
    Aquí no hay ninguna cadena que buscar. */
 function concepto(p, pedido) {
+  /* El concepto de un servicio ya lo dice todo en su propio nombre —«Perfil de
+     Google · Todo hecho · anticipo»—: añadirle una coletilla de envío sería
+     mentir sobre algo que no se manda a ninguna parte. */
+  if (esServicio(p)) return p.base;
   const enMano = esLocal(pedido) ? ', entrega en mano' : '';
   if (p.envio > 0 && esLocal(pedido)) return p.base + ' · sin cobro de envío, entrega en mano';
   if (p.envio > 0) return p.base + ' · incluye $' + p.envio + ' de envío';

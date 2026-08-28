@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurar tu Google — S&amp;C Solutions</title>
+<meta name="description" content="Elige tu paquete, dinos de qué negocio es y lo dejamos funcionando en Google.">
+<!-- noindex igual que pedido.html: es un paso de un proceso, no una página que
+     nadie deba encontrar suelta en un buscador. -->
+<meta name="robots" content="noindex, follow">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/legal.css">
+<link rel="stylesheet" href="assets/pedido.css">
+</head>
+<body>
+<div class="halo" aria-hidden="true"></div>
+
+<header class="barra">
+  <a class="marca" href="/">
+    <img src="assets/logo.svg" alt="">
+    <b>S&amp;C <em>Solutions</em></b>
+  </a>
+  <a class="volver" href="/#servicios">&#8592; Seguir viendo</a>
+</header>
+
+<main>
+  <p class="tag">Configurar tu Google</p>
+
+  <!-- ⚠ LA CIFRA NACE VACÍA, por lo mismo que en pedido.html: depende de la
+       opción elegida y sólo la puede escribir el script. Con un número puesto
+       en el HTML, quien tenga el JavaScript bloqueado elegiría «Todo hecho» y
+       la tipografía más grande de la página seguiría diciendo otra cosa. Vacía,
+       el único precio en pantalla es el de la opción marcada. -->
+  <div class="ped-prod">
+    <p class="ped-que">Perfil de tu negocio en Google<b data-sv-que>Elige tu paquete abajo</b></p>
+    <p class="ped-tot" data-sv-tot></p>
+  </div>
+
+  <!-- ⚠ AQUÍ TAMPOCO VIAJA NINGÚN IMPORTE. Lo único que se manda es `paquete`,
+       y el precio lo pone el Worker desde su propia tabla. Añadir un campo con
+       el precio rompería lo único que impide que alguien abra las herramientas
+       del navegador y pague un peso. Ver cloudflare/pagos/pagos.js.
+
+       Es un <form> normal con method="post": sin JavaScript se ven los tres
+       bloques a la vez y se envía de una sola vez. -->
+  <form id="sv-form" method="post" action="https://pagos.sycsolutions.company/ir">
+
+    <fieldset class="ped-f">
+      <legend>&#191;Qu&#233; necesitas?</legend>
+      <p class="ped-ayuda">Dejamos tu negocio bien puesto en Google y en Maps:
+        horarios, fotos, servicios, categor&#237;as y el enlace directo para que tus
+        clientes te dejen rese&#241;as.</p>
+
+      <!-- LAS OPCIONES SON CUATRO RADIOS Y NO DOS DESPLEGABLES CRUZADOS, y es a
+           propósito: el valor de cada una es EXACTAMENTE el id que el Worker
+           espera, así que no hay ningún cálculo que hacer en el navegador y el
+           formulario funciona igual con el script caído. Cruzar «paquete» con
+           «forma de pago» habría necesitado JavaScript para componer el id, y
+           sin él se enviaría un paquete que no existe. -->
+      <!-- servicio:opciones -->
+      <label class="ped-op">
+        <input type="radio" name="paquete" value="gp-e" checked
+               data-tot="$1,490" data-num="1490"
+               data-que="Lo esencial">
+        <b>Lo esencial &#8212; $1,490 de contado</b>
+        <small>Con las fotos que t&#250; nos mandes</small>
+      </label>
+      <label class="ped-op">
+        <input type="radio" name="paquete" value="gp-ea"
+               data-tot="$750" data-num="750"
+               data-que="Lo esencial" data-anticipo="1">
+        <b>Lo esencial &#8212; $750 de anticipo</b>
+        <small>Pagas $750 ahora y $740 cuando te entregamos el acceso. S&#243;lo si creamos la cuenta nosotros.</small>
+      </label>
+      <label class="ped-op">
+        <input type="radio" name="paquete" value="gp-t"
+               data-tot="$2,300" data-num="2300"
+               data-que="Todo hecho">
+        <b>Todo hecho &#8212; $2,300 de contado</b>
+        <small>Vamos a tu negocio y tomamos las fotos</small>
+      </label>
+      <label class="ped-op">
+        <input type="radio" name="paquete" value="gp-ta"
+               data-tot="$1,150" data-num="1150"
+               data-que="Todo hecho" data-anticipo="1">
+        <b>Todo hecho &#8212; $1,150 de anticipo</b>
+        <small>Pagas $1,150 ahora y $1,150 cuando te entregamos el acceso. S&#243;lo si creamos la cuenta nosotros.</small>
+      </label>
+      <!-- /servicio:opciones -->
+
+      <p class="ped-mas"><a href="terminos.html#servicios">Qu&#233; incluye cada uno, plazos y cancelaci&#243;n</a></p>
+    </fieldset>
+
+    <fieldset class="ped-f">
+      <legend>Tu negocio</legend>
+      <p class="ped-ayuda">Con esto lo encontramos en Google. Si todav&#237;a no
+        aparece, no pasa nada: lo damos de alta nosotros.</p>
+
+      <!-- ESTA PREGUNTA DECIDE SI EL ANTICIPO ERA LEGÍTIMO, así que va en el
+           resumen que llega al cobro. Si dice que no tiene ficha y resulta que
+           sí, se descubre al día siguiente —durante las 24 horas nadie ha
+           trabajado todavía— y se le pide el resto antes de empezar. -->
+      <label class="ped-op">
+        <input type="radio" name="ficha_tiene" value="no" checked>
+        <b>Todav&#237;a no aparece en Google</b>
+        <small>Creamos la cuenta y la ficha desde cero, y al final te entregamos
+          el acceso.</small>
+      </label>
+      <label class="ped-op">
+        <input type="radio" name="ficha_tiene" value="si">
+        <b>Ya aparece en Google</b>
+        <small>Nos das permiso de administrador y trabajamos sobre tu ficha.
+          Esta opci&#243;n va de contado.</small>
+      </label>
+
+      <label class="ped-campo"><span>Nombre del negocio</span>
+        <input type="text" name="negocio" maxlength="70" required
+               autocomplete="organization" placeholder="Kabuki"></label>
+      <label class="ped-campo"><span>Ciudad</span>
+        <input type="text" name="negocio_ciudad" maxlength="40" required
+               autocomplete="address-level2" placeholder="San Luis Potos&#237;"></label>
+      <label class="ped-campo"><span>Enlace de tu ficha <span class="opc">(si ya la tienes)</span></span>
+        <input type="url" name="ficha" maxlength="120"
+               placeholder="https://maps.app.goo.gl/..."></label>
+    </fieldset>
+
+    <fieldset class="ped-f">
+      <legend>C&#243;mo te avisamos</legend>
+      <label class="ped-campo"><span>Tu nombre</span>
+        <input type="text" name="nombre" maxlength="70" required autocomplete="name"></label>
+      <!-- El mismo patrón que en pedido.html, con los escapes puestos: los
+           navegadores compilan `pattern` con la bandera `v`, que prohíbe ( ) + -
+           sin escapar dentro de una clase. Sin escapar lanza un SyntaxError, se
+           salta la validación entera del campo y acepta «hola» como teléfono. -->
+      <label class="ped-campo"><span>WhatsApp</span>
+        <input type="tel" name="tel" maxlength="15" required inputmode="tel"
+               autocomplete="tel" pattern="[0-9\s\(\)\+\-]{10,20}"
+               placeholder="444 123 4567"></label>
+      <label class="ped-campo"><span>Correo</span>
+        <input type="email" name="correo" maxlength="100" required autocomplete="email"></label>
+
+      <div class="ped-botones">
+        <button type="submit" class="ped-btn fuerte">Pagar</button>
+      </div>
+
+      <p class="ped-pie">Te llevamos a <b>Mercado Pago</b>. Puedes pagar con tarjeta,
+        en efectivo o por transferencia.<br>
+        Nosotros no vemos ni guardamos los datos de tu tarjeta.<br>
+        <a href="terminos.html#servicios">T&#233;rminos</a> &#183; <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
+    </fieldset>
+  </form>
+</main>
+
+<script>
+/* ------------------------------------------------------------------------
+   LO QUE ESTE SCRIPT AÑADE, Y LO QUE PASA SI NO CORRE
+
+   El formulario funciona entero sin él: los tres bloques se ven, cada opción
+   lleva su precio escrito al lado y se envía de una sola vez con la validación
+   del navegador. Esto sólo hace dos cosas, las dos aditivas:
+
+     1. Escribe la cifra grande de arriba, que nace vacía a propósito.
+     2. Apaga las opciones de anticipo cuando el visitante dice que YA tiene
+        ficha. No es una validación de seguridad —el precio lo pone el Worker,
+        no esto—: es evitar que alguien elija de buena fe una combinación que
+        después hay que deshacerle por WhatsApp.
+
+   Si algo de esto revienta, lo peor que pasa es que la cifra de arriba se quede
+   vacía y las cuatro opciones sigan disponibles.
+   --------------------------------------------------------------------- */
+(()=>{
+  const form=document.getElementById('sv-form');
+  if(!form)return;
+  const tot=document.querySelector('[data-sv-tot]');
+  const que=document.querySelector('[data-sv-que]');
+  const ops=[...form.querySelectorAll('input[name="paquete"]')];
+  if(!ops.length)return;
+
+  function pinta(){
+    const m=ops.find(o=>o.checked);
+    if(!m)return;
+    if(tot)tot.textContent=m.dataset.tot||'';
+    if(que)que.textContent=m.dataset.que||'';
+  }
+
+  /* Con ficha propia no hay nada que retener —cada cambio es público y suyo en
+     el momento en que se hace—, así que el anticipo no aplica. Las opciones no
+     se ESCONDEN, se deshabilitan: si desaparecieran, quien ya había marcado una
+     no entendería por qué se le movió la elección. */
+  function ajusta(){
+    const tiene=(form.querySelector('input[name="ficha_tiene"]:checked')||{}).value==='si';
+    let movido=false;
+    for(const o of ops){
+      if(o.dataset.anticipo!=='1')continue;
+      o.disabled=tiene;
+      const caja=o.closest('.ped-op');
+      if(caja)caja.classList.toggle('ped-op-off',tiene);
+      if(tiene&&o.checked){o.checked=false;movido=true;}
+    }
+    /* Si la que estaba marcada se apagó, hay que dejar marcada otra o el
+       formulario se queda sin paquete y el envío falla sin decir por qué. */
+    if(movido){
+      const libre=ops.find(o=>!o.disabled);
+      if(libre)libre.checked=true;
+    }
+    pinta();
+  }
+
+  form.addEventListener('change',e=>{
+    if(e.target.name==='ficha_tiene')ajusta();
+    else if(e.target.name==='paquete')pinta();
+  });
+  ajusta();
+
+  /* El pedido se guarda para gracias.html en sessionStorage y no en la
+     dirección: así no queda un pedido con nombre y teléfono dentro del
+     historial del navegador ni en la pestaña que se quedó abierta. */
+  form.addEventListener('submit',()=>{
+    const m=ops.find(o=>o.checked);
+    if(!m)return;
+    const d={_servicio:1,_t:m.dataset.que||'',_tot:m.dataset.num||''};
+    for(const n of ['ficha_tiene','negocio','negocio_ciudad','ficha','nombre','tel','correo']){
+      const c=form.querySelector('[name="'+n+'"]:checked')||form.querySelector('[name="'+n+'"]');
+      if(c)d[n]=c.value;
+    }
+    try{sessionStorage.setItem('syc_pedido',JSON.stringify(d));}catch(_){}
+  });
+})();
+</script>
+</body>
+</html>
