@@ -200,6 +200,8 @@ que mandar, y eso no lo comprobaba nadie.
 | | |
 |---|---|
 | **Primero el paquete, después cómo se paga** | al entrar sólo se ven los **dos paquetes**; las formas de pago viven dentro de cada uno y no se descubren hasta elegirlo, y entonces el otro paquete se aparta. Con las cuatro desplegadas a la vez la pantalla pedía dos decisiones al mismo tiempo. Comprobado por sabotaje: si el paquete elegido deja de cerrar al otro, o si los pagos nacen visibles, se pone en rojo |
+| **La tarjeta entera se toca** | el control cubre el bloque completo (347×220 sobre 349×222) y lleva `appearance:none` como primera declaración, que es lo único que garantiza que iOS no pinte su propio botón encima si el resto de la regla no llegara a aplicarse. Antes había que acertarle a un rectángulo de 200 px |
+| **Y se ve que se toca** | en reposo un resplandor recorre el borde cada seis segundos, y cada tarjeta dice «toca para elegir». Al soltar, una **ola sale del punto exacto que se tocó** —el script escribe las coordenadas— y recorre la tarjeta. Si no se toca no pasa nada: no hay `:hover` en una pantalla táctil |
 | **La marcha atrás** | «← Cambiar de paquete» devuelve los dos y **desmarca** lo que hubiera: un cobro sin marcha atrás es un cobro que se abandona, y una forma de pago marcada de un paquete que ya no está en pantalla es cobrar a ciegas |
 | **Los datos, al abrir el paquete** | no esperan a la forma de pago: es lo que se pidió —«cuando seleccione el paquete que aparezca todo lo demás»— y evita que el bloque salte al cambiar de una opción a la otra |
 | **Dos paquetes, no cuatro opciones** | cada uno con sus dos formas de pago dentro. En una lista plana de cuatro, el ojo compara importes en vez de paquetes, y «$750» junto a «$1,490» parece un descuento cuando es un anticipo |
@@ -232,6 +234,25 @@ Ahora se espera **a la condición** que la comprobación siguiente necesita
 (`hasta()`), y si no llega lo dice con su nombre en vez de dejar que falle la
 línea de al lado. Comprobado: tres copias de la suite a la vez, las tres en
 verde.
+
+### La huella de las hojas de estilo
+
+Las hojas se sirven bajo un nombre que no cambia nunca, y Safari en iOS las
+reutiliza sin volver a preguntar. El resultado es **HTML nuevo con CSS viejo**,
+que no se parece a un fallo de caché: se parece a un diseño roto. Pasó **tres
+veces en el mismo teléfono**, y cada vez costó descartar que el CSS estuviera
+mal escrito, mal servido o mal desplegado — estaba bien las tres veces:
+
+- un contador de cantidad salió apilado en vertical y en versalitas,
+- un botón salió como la pastilla blanca del sistema de iOS,
+- y ese mismo botón, ya sin rótulo visible, salió como **una rayita de cuatro
+  píxeles** que había que acertar para poder comprar.
+
+`tools/assets.mjs` le pone a cada enlace la huella del contenido del archivo
+(`pedido.css?v=c0026f3b`). Cambia el CSS → cambia la dirección → no hay nada que
+reutilizar. Está en el hook y en el CI, y la suite comprueba además que las
+direcciones con huella **carguen de verdad**: una huella mal puesta es un 404 y
+una página sin estilos.
 
 ## Lo que NO cubre
 

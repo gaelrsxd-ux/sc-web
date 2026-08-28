@@ -48,6 +48,14 @@ jobs:
       - name: Escáner de secretos
         run: node tools/scan-secretos.mjs --todo
 
+      # Las hojas de estilo se sirven bajo un nombre que no cambia nunca, y
+      # Safari en iOS las reutiliza sin volver a preguntar: HTML nuevo con CSS
+      # viejo, que no se parece a un fallo de caché sino a un diseño roto. Pasó
+      # tres veces en el mismo teléfono. La huella del contenido en la
+      # dirección lo cierra: cambia el CSS, cambia la dirección.
+      - name: Huella de las hojas de estilo en su enlace
+        run: node tools/assets.mjs --check
+
       - name: Hashes de la CSP sincronizados con el HTML
         run: node tools/csp-hashes.mjs --check
 

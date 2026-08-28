@@ -20,6 +20,10 @@ node tools/scan-secretos.mjs || exit 1
 #     dar verde sobre un HTML que no es el que se está guardando. Es la mejor
 #     aproximación barata que hay aquí; la red de verdad es el CI, que trabaja
 #     sobre el árbol ya commiteado y por tanto no tiene esta ambigüedad.
+# La huella del contenido en el enlace de cada hoja de estilo. Va ANTES de la
+# CSP porque toca el mismo HTML que ésta firma.
+node tools/assets.mjs --check || exit 1
+
 node tools/csp-hashes.mjs --check || exit 1
 
 # 3 · Ningún documento legal debería salir a producción con marcadores de
