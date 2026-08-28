@@ -1739,6 +1739,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .sol-panel .svc p{margin-top:8px;font-size:13.5px;line-height:1.65}
 .sol-panel .svc ul{margin-top:14px}
 .sol-panel .svc .svc-btn{margin-top:18px}
+/* La línea del precio del único servicio que lo tiene. Va entre las etiquetas y
+   el botón, que es donde la busca el ojo antes de decidir si pulsa. */
+.svc-desde{margin-top:16px;font-size:12.5px;color:var(--muted)}
+.svc-desde span{font-family:var(--serif);font-size:20px;color:var(--ink);
+  font-variant-numeric:tabular-nums;margin-right:6px}
 
 /* La ficha del producto dentro del panel: la foto al lado del texto en cuanto
    hay sitio, para que quepa de una vez en una pantalla. */
@@ -2688,7 +2693,14 @@ html.js .pc-alt{display:none}
           <h3>Perfil de tu Negocio en Google</h3>
           <p>Si sales mal en Google o en Maps, <b>la gente se va al negocio de al lado</b>.</p>
           <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20que%20configuren%20el%20perfil%20de%20mi%20negocio%20en%20Google." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre el Perfil de tu Negocio en Google"><span class="dia"></span>Solicitar</a>
+          <!-- EL ÚNICO SERVICIO CON PRECIO CERRADO, y por eso el único con
+               botón de compra en vez de «Solicitar». Los otros tres se cotizan:
+               una página web para una taquería y una para una clínica no son el
+               mismo trabajo, y ponerles precio fijo sería cobrar de más a unos
+               o de menos a otros. Este no: es una lista concreta, se entrega y
+               se ve. ⚠ La cifra la escribe tools/precios.mjs. -->
+          <p class="svc-desde"><span data-svc-desde>Desde $1,490</span> &#183; precio cerrado</p>
+          <a href="servicio.html" class="svc-btn"><span class="dia"></span>Ver los dos paquetes</a>
         </article>
         <article class="svc" id="svc-atencion">
           <span class="go">&#8599;</span>

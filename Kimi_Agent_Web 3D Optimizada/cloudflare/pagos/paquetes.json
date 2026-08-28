@@ -231,6 +231,42 @@
       "total": 4149,
       "envio": 0,
       "cuotas": 2
+    },
+    {
+      "id": "gp-e",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial",
+      "total": 1490,
+      "envio": 0,
+      "cuotas": 1
+    },
+    {
+      "id": "gp-ea",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial · anticipo",
+      "total": 750,
+      "envio": 0,
+      "cuotas": 1
+    },
+    {
+      "id": "gp-t",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho",
+      "total": 2300,
+      "envio": 0,
+      "cuotas": 1
+    },
+    {
+      "id": "gp-ta",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho · anticipo",
+      "total": 1150,
+      "envio": 0,
+      "cuotas": 1
     }
   ]
 }

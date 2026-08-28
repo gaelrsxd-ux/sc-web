@@ -76,6 +76,76 @@ const COBRO_EN_LINEA = 'https://pagos.sycsolutions.company/ir';
    número de piezas; y porque con veinticinco cantidades, «las dos más caras»
    dejaría fuera a casi todo el catálogo grande. Cuesta cero: a dos cuotas paga
    el interés el banco del comprador. */
+/* ═══════════════════════ LOS SERVICIOS ═══════════════════════
+
+   El perfil de Google, que a diferencia de la placa NO se envía: se entrega
+   trabajando sobre la ficha del cliente. Por eso llevan `tipo: 'servicio'`, que
+   es lo que hace que el Worker no les hable de envíos ni les descuente la
+   entrega en mano, y que el resumen del cobro no diga «1 pza».
+
+   ⚠ EL ANTICIPO SÓLO EXISTE CUANDO LA CUENTA LA CREAMOS NOSOTROS, y no es una
+   regla comercial caprichosa: es la única que se sostiene. En un perfil de
+   Google no se puede retener la entrega —cada foto que se sube es pública y del
+   cliente en el mismo segundo—, así que si la cuenta es suya y nos quita de
+   administradores, el trabajo hecho no se puede deshacer y el resto no se
+   cobra. Cuando la cuenta la creamos nosotros, la entrega final es el correo y
+   la contraseña, y eso sí espera al pago. Con cuenta del cliente: de contado.
+
+   Los `resto` no los cobra esta web: no hay base de datos que sepa quién debe
+   qué, así que el segundo pago es un enlace de Mercado Pago por WhatsApp. El
+   número vive aquí para que la web pueda DECIRLO sin que nadie lo escriba a
+   mano en dos sitios. */
+const SERVICIOS = [
+  {
+    id: 'gp-e',
+    /* DOS NOMBRES A PROPÓSITO. El largo es el que viaja al cobro y el que
+       aparece en el estado de cuenta del comprador, donde «Lo esencial» a secas
+       no dice de qué. El corto es el de la página, donde la cabecera ya dice
+       que esto es el perfil de Google y repetirlo en las cuatro opciones sólo
+       parte los renglones. */
+    nombre: 'Perfil de Google · Lo esencial',
+    corto: 'Lo esencial',
+    precio: 1490,
+    anticipo: 750,
+    resumen: 'Con las fotos que tú nos mandes',
+  },
+  {
+    id: 'gp-t',
+    nombre: 'Perfil de Google · Todo hecho',
+    corto: 'Todo hecho',
+    precio: 2300,
+    anticipo: 1150,
+    resumen: 'Vamos a tu negocio y tomamos las fotos',
+    destaca: true,
+  },
+];
+
+/* Días hábiles de entrega, contados DESDE QUE NOS DAN ACCESO y no desde el
+   pago: quien tarda tres semanas en mandar el material no puede dejarnos
+   incumpliendo un plazo propio. El primer día no cuenta aquí —es el de las 24
+   horas de arrepentimiento, que se usa para analizar el mercado y la ficha—. */
+const ENTREGA_DIAS = { min: 1, max: 7, tipico: '2 o 3' };
+
+/* Las mismas guardas que la escalera de placas, por el mismo motivo: un dedo
+   torpe aquí es dinero real y nadie lo ve desde dentro. */
+{
+  const vistos = new Set();
+  for (const s of SERVICIOS) {
+    if (!/^[a-z0-9-]{1,8}$/.test(s.id))
+      throw new Error(`servicio «${s.nombre}»: el id «${s.id}» no cabe en los 8 caracteres que lee el Worker`);
+    if (vistos.has(s.id)) throw new Error(`servicio: el id «${s.id}» está repetido`);
+    vistos.add(s.id);
+    if (!Number.isInteger(s.precio) || s.precio <= 0)
+      throw new Error(`servicio «${s.nombre}»: el precio no es un entero positivo`);
+    /* Un anticipo mayor o igual que el precio no es un anticipo, y uno de cero
+       cobraría nada. Los dos han pasado por un cambio de tabla a las 2 a.m. */
+    if (s.anticipo !== undefined &&
+        (!Number.isInteger(s.anticipo) || s.anticipo <= 0 || s.anticipo >= s.precio))
+      throw new Error(`servicio «${s.nombre}»: el anticipo ${s.anticipo} no está entre 1 y ${s.precio - 1}`);
+  }
+}
+const CANCELA_HORAS = 24;
+
 const CUOTAS_DESDE = 2500;
 
 /* ⚠ EL ENVÍO ESTÁ EN CERO EN TODAS LAS FILAS, Y ES UNA DECISIÓN, NO UN OLVIDO.
@@ -376,6 +446,52 @@ function detalle(p) {
    listas de precios mantenidas por separado divergen, y el día que diverjan la
    ficha diría un precio, el pedido otro y el cobro un tercero. */
 const PEDIDO = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'pedido.html');
+const SERVICIO = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'servicio.html');
+
+/* Las cuatro opciones de compra de servicio.html. Se generan por el mismo
+   motivo que todo lo demás: el precio que se lee en pantalla y el que cobra el
+   Worker salen de la misma tabla, o antes o después divergen.
+
+   El `value` de cada radio es el id que el Worker busca en su catálogo. Que
+   coincidan no es convención ni suerte: los dos los escribe este archivo. */
+function bloqueServicio() {
+  const pesos = n => '$' + miles(n);
+  /* ⚠ SÓLO LA PRIMERA VA MARCADA. En un grupo de radios sólo puede haber una
+     `checked`; con varias, el navegador se queda con la ÚLTIMA del documento.
+     La primera versión de esto marcaba todas las de contado y el resultado era
+     que la página abría con el paquete caro preseleccionado — que no es lo que
+     nadie decidió, sino lo que quedó. Se marca la primera y punto. */
+  let primera = true;
+  const linea = (id, s, importe, anticipo) => {
+    const marca = primera ? ' checked' : '';
+    if (!anticipo) primera = false;
+    const corto = s.corto || s.nombre;
+    const titulo = `${corto} \u2014 ${pesos(importe)} ${anticipo ? 'de anticipo' : 'de contado'}`;
+    const pie = anticipo
+      ? `Pagas ${pesos(importe)} ahora y ${pesos(s.precio - importe)} cuando te entregamos el acceso. `
+        + ent('Sólo si creamos la cuenta nosotros.')
+      : ent(s.resumen);
+    return '      <label class="ped-op">\n' +
+      `        <input type="radio" name="paquete" value="${id}"${marca}\n` +
+      `               data-tot="${pesos(importe)}" data-num="${importe}"\n` +
+      `               data-que="${ent(corto)}"${anticipo ? ' data-anticipo="1"' : ''}>\n` +
+      `        <b>${ent(titulo)}</b>\n` +
+      `        <small>${pie}</small>\n` +
+      '      </label>';
+  };
+  const filas = [];
+  for (const s of SERVICIOS) {
+    filas.push(linea(s.id, s, s.precio, false));
+    if (s.anticipo) filas.push(linea(s.id + 'a', s, s.anticipo, true));
+  }
+  return '<!-- servicio:opciones -->\n' + filas.join('\n') + '\n      <!-- /servicio:opciones -->';
+}
+
+const BLOQUES_SERVICIO = [
+  { nombre: 'opciones del servicio',
+    re: /<!-- servicio:opciones -->[\s\S]*?<!-- \/servicio:opciones -->/,
+    pinta: bloqueServicio },
+];
 
 function bloquePedido() {
   const ops = PAQUETES.map(p =>
@@ -515,6 +631,17 @@ function paquetesJson() {
       total: total(p),
       envio: p.envio,
       cuotas: p.cuotas || 1,
+    })).concat(SERVICIOS.flatMap(s => {
+      /* Dos filas por servicio: el de contado y el del anticipo. Son dos
+         paquetes distintos para el Worker porque son dos importes distintos, y
+         el importe NUNCA puede salir de lo que mande el navegador. */
+      const fila = (id, base, total) => ({
+        id, tipo: 'servicio', piezas: 1, base, total, envio: 0, cuotas: 1,
+      });
+      const filas = [fila(s.id, s.nombre, s.precio)];
+      if (s.anticipo) filas.push(
+        fila(s.id + 'a', s.nombre + ' · anticipo', s.anticipo));
+      return filas;
     })),
   }, null, 2) + '\n';
 }
@@ -522,8 +649,18 @@ function paquetesJson() {
 /* Cada bloque con el patrón que lo localiza en el HTML. El patrón se ancla en
    marcas que este archivo también escribe, así que si alguien renombra una
    clase, esto falla en voz alta en vez de generar un HTML a medias. */
+/* El «Desde $X» de la ficha del perfil de Google en la portada. Sale de la
+   misma tabla que el catálogo del Worker por el motivo de siempre: una cifra
+   escrita a mano en la portada y otra en el cobro divergen el día que suba el
+   precio, y nadie lo ve desde dentro porque las dos se leen bien por separado. */
+function desdeServicio() {
+  const barato = SERVICIOS.reduce((a, b) => (b.precio < a.precio ? b : a));
+  return `<span data-svc-desde>Desde $${miles(barato.precio)}</span>`;
+}
+
 const BLOQUES = [
   { nombre: 'precio del esquema', re: /"price":"\d+"/, pinta: precioEsquema },
+  { nombre: 'desde del servicio', re: /<span data-svc-desde>[^<]*<\/span>/, pinta: desdeServicio },
   { nombre: 'bloque de compra',
     re: /<div class="prod-compra">[\s\S]*?<\/a>\n {10}<\/div>/,
     pinta: bloqueCompra },
@@ -589,6 +726,17 @@ if (COBRO_EN_LINEA && !pedidoOriginal.includes(`action="${COBRO_EN_LINEA}"`)) {
   process.exit(1);
 }
 
+/* servicio.html: las mismas cuatro opciones que el Worker tiene en su catálogo.
+   Si se separan, la página enseña un precio y el cobro sale por otro — que es
+   exactamente el fallo que este archivo entero existe para impedir. */
+const servicioOriginal = fs.readFileSync(SERVICIO, 'utf8');
+const servicioGenerado = aplica(servicioOriginal, BLOQUES_SERVICIO);
+if (COBRO_EN_LINEA && !servicioOriginal.includes(`action="${COBRO_EN_LINEA}"`)) {
+  console.error(`\n  servicio.html no manda el formulario a ${COBRO_EN_LINEA}.`);
+  console.error('  Con la dirección mal, el botón de pagar no lleva a ninguna parte.\n');
+  process.exit(1);
+}
+
 const pegarEsperado = paraPegar();
 const pegarActual = fs.existsSync(JS_PEGAR) ? fs.readFileSync(JS_PEGAR, 'utf8') : null;
 
@@ -608,6 +756,12 @@ if (args.includes('--check')) {
   if (pedidoOriginal !== pedidoGenerado) {
     console.error('\n  Las cantidades de app/pedido.html no coinciden con la tabla.');
     console.error('  El pedido enseñaría un precio y el cobro sería otro.');
+    console.error('  Arréglalo con:  node tools/precios.mjs\n');
+    process.exit(1);
+  }
+  if (servicioOriginal !== servicioGenerado) {
+    console.error('\n  Los paquetes de app/servicio.html no coinciden con la tabla.');
+    console.error('  La página enseñaría un precio y el cobro sería otro.');
     console.error('  Arréglalo con:  node tools/precios.mjs\n');
     process.exit(1);
   }
@@ -635,6 +789,11 @@ if (pegarActual !== pegarEsperado) {
 if (pedidoOriginal !== pedidoGenerado) {
   fs.writeFileSync(PEDIDO, pedidoGenerado);
   console.log('Reescritas las cantidades de app/pedido.html.');
+}
+
+if (servicioOriginal !== servicioGenerado) {
+  fs.writeFileSync(SERVICIO, servicioGenerado);
+  console.log('Reescritos los paquetes de app/servicio.html.');
 }
 
 if (original === generado) {

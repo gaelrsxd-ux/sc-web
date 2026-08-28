@@ -84,7 +84,7 @@
     if(titulo)titulo.innerHTML='Tu pago está <em>pendiente</em>';
     if(parrafo)parrafo.textContent='Mercado Pago nos avisará en cuanto se complete. '+
       'Si elegiste pagar en efectivo o por transferencia, tienes que terminar el pago '+
-      'con las instrucciones que te dieron; hasta entonces no preparamos el envío.';
+      'con las instrucciones que te dieron; hasta entonces no empezamos.';
   }
 
   let d=null;
@@ -95,6 +95,62 @@
   if(!d||typeof d!=='object')return;
 
   const pesos=n=>'$'+Number(n||0).toLocaleString('en-US');
+
+  /* ─────────────── UN SERVICIO NO SE ENVÍA, SE EMPIEZA ───────────────
+     Y lo que hay que decirle a quien acaba de pagar uno no es «ya lo
+     preparamos», sino QUÉ TIENE QUE HACER ÉL: darnos acceso. Ese es el momento
+     en que arranca el plazo de entrega, así que si esta pantalla no lo dice, el
+     cliente paga y se queda esperando a que pase algo que depende de él. */
+  if(d._servicio){
+    const propio=d.ficha_tiene==='si';
+    if(titulo&&!new URLSearchParams(location.search).get('estado'))
+      titulo.innerHTML='Listo, <em>ya casi</em>';
+    if(parrafo)parrafo.textContent=propio
+      ?'Falta un paso tuyo: añádenos como administrador de tu ficha con el correo '+
+       'sc.solutionscompanymx@gmail.com. En cuanto lo hagas empezamos, y tienes '+
+       'tu perfil listo en 1 a 7 días hábiles (normalmente 2 o 3).'
+      :'No tienes que hacer nada más. Te escribimos por WhatsApp para pedirte lo '+
+       'que necesitemos, y tienes tu perfil listo en 1 a 7 días hábiles '+
+       '(normalmente 2 o 3) desde que tengamos el material.';
+
+    if(caja){
+      const partes=[
+        ['Paquete',(d._t||'')+(d._tot?' — '+pesos(d._tot):'')],
+        ['Negocio',[d.negocio,d.negocio_ciudad].filter(Boolean).join(', ')],
+        ['Ficha',propio?'Ya existe — nos das acceso':'No existe — la creamos nosotros'],
+        ['Enlace',d.ficha],
+        ['Contacto',d.nombre],
+        ['Teléfono',d.tel],
+        ['Correo',d.correo],
+      ];
+      let hay=false;
+      for(const [k,v] of partes){
+        if(!v)continue;
+        hay=true;
+        const fila=document.createElement('div');
+        const dt=document.createElement('dt'),dd=document.createElement('dd');
+        dt.textContent=k;
+        /* textContent y nunca innerHTML: esto es texto del visitante. */
+        dd.textContent=v;
+        fila.append(dt,dd);
+        caja.append(fila);
+      }
+      if(hay)caja.hidden=false;
+    }
+
+    if(wa){
+      const l=['Hola. Acabo de contratar la configuración de mi Google desde la web.'];
+      if(d._t)l.push('Paquete: '+d._t);
+      if(d.negocio)l.push('Negocio: '+d.negocio+(d.negocio_ciudad?', '+d.negocio_ciudad:''));
+      l.push(propio?'Ya tengo ficha en Google':'Todavía no aparezco en Google');
+      if(d.ficha)l.push('Mi ficha: '+d.ficha);
+      if(d.nombre)l.push('Soy: '+d.nombre);
+      if(d.correo)l.push('Correo: '+d.correo);
+      wa.href='https://wa.me/524423697248?text='+encodeURIComponent(l.join('\n'));
+    }
+    return;
+  }
+
   const envio=[d.calle,d.colonia,d.cp,d.ciudad,d.estado].filter(Boolean).join(', ');
   const placas=d.modo==='blanco'
     ?'Sin enlazar, las enlazo yo'
