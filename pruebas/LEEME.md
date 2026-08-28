@@ -19,7 +19,7 @@ node pruebas/servicio.mjs
 node pruebas/instalaciones.mjs
 ```
 
-Noventa y nueve comprobaciones en la primera, la mayoría con JavaScript y un
+Ciento tres comprobaciones en la primera, la mayoría con JavaScript y un
 bloque final sin él; ochenta y nueve en la segunda y dieciocho en la tercera.
 
 ## Por qué en un navegador
@@ -55,7 +55,8 @@ formulario, esa prueba se pone en rojo.
 
 | | |
 |---|---|
-| **El precio de la portada** | la cifra «desde» es la de 1 placa de la tabla, el botón lleva al pedido, y el contador **ya no está** en la portada: no hay dos sitios donde elegir cantidad |
+| **El contador de la portada** | el «−» y el «+» viven en la ficha del producto, que es donde se ve lo que se compra y donde nace la pregunta —cuánto me cuestan las que yo quiero—. La cantidad elegida **viaja** al pedido en `?n=`, así que no se elige dos veces. En los extremos los botones se apagan y no dan la vuelta, y por encima del tope hay un enlace para pedir más |
+| **Y NO se repite en el checkout** | a esa pantalla se llega con la cantidad ya puesta; su desplegable es para corregirla, no para recorrerla de uno en uno |
 | **Los 25 tramos** | se comprueban en `pedido.html`, que es donde ahora se eligen: cada opción del desplegable enseña el importe de la tabla |
 | **El «−» y el «+»** | suben y bajan de uno en uno sobre el mismo desplegable, que sigue siendo el que manda —es lo que permite elegir sin JavaScript y saltar de 1 a 20 sin pulsar veinte veces—. En los extremos se **apagan**, no desaparecen: un botón que se esfuma al llegar a 1 mueve el desplegable justo cuando el dedo va hacia él. Sin JavaScript no están, porque no sumarían nada |
 | **«Inicio» en el menú** | faltaba, y «arriba» es la portada con la foto grande: lo único que alguien reconoce cuando se ha perdido dentro de una página larga. Se comprueba que el destino exista de verdad y sea la portada, no un ancla suelta |
@@ -67,6 +68,7 @@ formulario, esa prueba se pone en rojo.
 | **El zoom del doble toque** | la trampa se mudó del «+» del contador a las tres pestañas, que es lo que ahora se toca rápido: llevan `touch-action:manipulation`, un `:active` que sustituye al resaltado retirado y el `:hover` dentro de `@media (hover:hover)` para que no se quede pegado en iOS. El pellizco para ampliar sigue permitido en toda la página |
 | **El empujón al envío gratis** | hoy NO sale en ninguna cantidad, porque el envío va dentro del precio y no hay umbral que empujar. El mecanismo sigue escrito y se enciende solo el día que vuelva a cobrarse |
 | **La entrega en mano** | con el envío incluido ya no descuenta nada: el importe es el mismo desde la ciudad y desde Ciudad Valles. Lo que cambia es el aviso y la cabecera, que dicen «entrega en mano» — y el aviso **no** promete dinero. Al formulario no se le añade ninguna bandera de «soy local»: eso lo decide el servidor |
+| **El contador, sin JavaScript** | nace escondido y lo enciende el script. Sin él, el «+» no sumaría, el campo aceptaría un número que nadie leería y el precio de al lado seguiría diciendo el de una placa: **tres controles mintiendo a la vez**. Escondido, la ficha dice lo que siempre dijo —una placa, su precio y el botón— y la cantidad se elige un toque después, en el `<select>` del pedido |
 | **Sin JavaScript** | los tres paneles de Soluciones se ven a la vez —el `hidden` lo pone el script, no el marcado—, la cifra grande del pedido queda **vacía** en vez de mentir, las 25 cantidades siguen enteras en su `<select>`, los cuatro bloques del pedido salen a la vez y el formulario se envía entero |
 
 Ese último bloque es el suelo del que cuelga todo lo demás: si un script falla
