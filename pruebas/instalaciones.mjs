@@ -13,8 +13,8 @@ pg.on('console', m => { const t = m.text();
 const fallidas = [];
 pg.on('response', r => { if (r.status() >= 400 && /cliente-/.test(r.url())) fallidas.push(r.status() + ' ' + r.url()); });
 
-await pg.goto(B + '/#casos', { waitUntil: 'networkidle' });
-await pg.waitForTimeout(400);   // #casos abre su pestaña; el panel entra con una transición corta
+await pg.goto(B + '/#clientes', { waitUntil: 'networkidle' });
+await pg.waitForTimeout(400);   // #clientes abre su pestaña; el panel entra con una transición corta
 
 /* ---- la sección existe y las tres fotos cargan de verdad ---- */
 const figs = pg.locator('.insta-g figure');
@@ -63,14 +63,14 @@ const pie2 = await pg.locator('#visor-pie').textContent();
 ok(/frente/i.test(pie2), 'y sigue abriendo por la foto correcta: «' + pie2.trim() + '»');
 await pg.keyboard.press('Escape');
 await pg.waitForTimeout(400);
-await pg.locator('#t-casos').click();
+await pg.locator('#t-clientes').click();
 await pg.waitForTimeout(400);
 if (S) await pg.locator('.insta').screenshot({ path: S + '/insta-escritorio.png' });
 
 /* ---- móvil: tira arrastrable, no tres pantallas apiladas ---- */
 const m = await b.newPage({ viewport: { width: 390, height: 844 } });
 m.on('pageerror', e => err.push('móvil pageerror: ' + e.message));
-await m.goto(B + '/#casos', { waitUntil: 'networkidle' });
+await m.goto(B + '/#clientes', { waitUntil: 'networkidle' });
 await m.waitForTimeout(400);
 await m.locator('.insta').scrollIntoViewIfNeeded();
 await m.waitForTimeout(1200);
@@ -86,7 +86,7 @@ if (S) await m.locator('.insta').screenshot({ path: S + '/insta-movil.png' });
 /* ---- sin JavaScript la sección sigue entera ---- */
 const sin = await b.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
 const p2 = await sin.newPage();
-await p2.goto(B + '/#casos', { waitUntil: 'load' });   // sin JS no hay pestañas: los tres paneles se ven
+await p2.goto(B + '/#clientes', { waitUntil: 'load' });   // sin JS no hay pestañas: los tres paneles se ven
 await p2.waitForTimeout(900);
 ok(await p2.locator('.insta-g figure').count() === 3,
    'sin JavaScript las tres fotos están en el HTML: la sección no la fabrica ningún script');

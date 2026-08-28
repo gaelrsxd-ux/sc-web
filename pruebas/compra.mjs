@@ -220,18 +220,20 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   const pest = pg.locator('.sol-t');
   ok(await pest.count() === 3, 'hay tres pestañas');
   const visible = async id => pg.locator('#' + id).isVisible();
-  ok(await visible('servicios') && !(await visible('productos')) && !(await visible('casos')),
-     'al llegar se abre Servicios y las otras dos están cerradas');
+  /* El producto va PRIMERO: es lo que se vende de una pieza, y quien entra
+     por la portada lo ve sin tocar nada. */
+  ok(await visible('productos') && !(await visible('servicios')) && !(await visible('clientes')),
+     'al llegar se abre El producto y las otras dos están cerradas');
 
   await pest.nth(2).click();
   await pg.waitForTimeout(350);
-  ok(await visible('casos') && !(await visible('servicios')),
-     'al pulsar «Casos reales» cambia el contenido en el MISMO hueco');
-  ok(await pg.locator('#casos .insta-g figure').count() === 3, 'y trae las tres instalaciones');
+  ok(await visible('clientes') && !(await visible('productos')),
+     'al pulsar «Clientes» cambia el contenido en el MISMO hueco');
+  ok(await pg.locator('#clientes .insta-g figure').count() === 3, 'y trae las tres instalaciones');
   /* Los bloques con .rv nacen en opacity 0 y los enciende un observador al
      entrar en pantalla; dentro de un panel cerrado eso no llega a pasar. Si el
      script no les pone .in al abrir, la galería se abre EN BLANCO. */
-  ok(await pg.locator('#casos .insta-g img').first()
+  ok(await pg.locator('#clientes .insta-g img').first()
        .evaluate(e => getComputedStyle(e.closest('.insta') || e).opacity) !== '0',
      'y se ve: al abrir la pestaña se descubre lo que llevaba .rv dentro');
 
@@ -240,18 +242,97 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pest.nth(0).focus();
   await pg.keyboard.press('ArrowRight');
   await pg.waitForTimeout(250);
-  ok(await visible('productos'), 'la flecha derecha abre la siguiente pestaña');
-  ok(await pg.evaluate(() => document.activeElement.id) === 't-productos',
+  ok(await visible('servicios'), 'la flecha derecha abre la siguiente pestaña');
+  ok(await pg.evaluate(() => document.activeElement.id) === 't-servicios',
      'y el foco se va con ella');
   await pg.keyboard.press('End');
   await pg.waitForTimeout(250);
-  ok(await visible('casos'), 'Fin salta a la última');
+  ok(await visible('clientes'), 'Fin salta a la última');
   await pg.keyboard.press('Home');
   await pg.waitForTimeout(250);
-  ok(await visible('servicios'), 'e Inicio vuelve a la primera');
+  ok(await visible('productos'), 'e Inicio vuelve a la primera');
   ok(await pest.nth(0).getAttribute('aria-selected') === 'true'
      && await pest.nth(1).getAttribute('aria-selected') === 'false',
      'aria-selected sigue a la pestaña abierta');
+
+  /* ---- EL MENU DE SECCIONES ----
+     Hasta ahora, en un telefono esta pagina no tenia NINGUNA navegacion: la
+     lista de la barra se esconde por debajo de 1080 px y el riel del recorrido
+     por debajo de 920. La unica forma de llegar a una seccion era el dedo. */
+  const m = await ctx.newPage();
+  vigila(m, errores);
+  await m.setViewportSize({ width: 390, height: 844 });
+  await m.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
+  await m.waitForTimeout(500);
+
+  const boton = m.locator('#men-b'), panel = m.locator('#menu');
+  ok(await boton.isVisible(), 'en móvil hay un botón de menú');
+  ok(!(await panel.isVisible()), 'y el panel nace cerrado');
+  ok(await boton.getAttribute('aria-expanded') === 'false', 'que es lo que dice aria-expanded');
+
+  const caja = await boton.boundingBox();
+  ok(caja.width >= 40 && caja.height >= 40,
+     `el botón mide ${Math.round(caja.width)}×${Math.round(caja.height)}: se puede dar con el pulgar`);
+
+  await boton.click();
+  await m.waitForTimeout(350);
+  ok(await panel.isVisible(), 'al pulsarlo se abre');
+  ok(await boton.getAttribute('aria-expanded') === 'true', 'y lo anuncia');
+
+  /* Cada destino dice QUE HAY detrás, en las palabras de quien pregunta por
+     teléfono. Un menú que sólo dice «Diagnóstico» no lo entiende quien viene
+     a comprar una placa. */
+  const destinos = await m.$$eval('#menu .men-l', as => as.map(a => ({
+    href: a.getAttribute('href'),
+    titulo: a.childNodes[1].textContent.trim(),
+    pie: (a.querySelector('small') || {}).textContent || '' })));
+  ok(destinos.length === 6, 'lleva los seis destinos de la página');
+  ok(destinos.every(d => d.pie.trim().length > 12), 'y cada uno explica qué hay detrás');
+  for (const d of destinos) console.log(`      ${d.href.padEnd(14)} ${d.titulo} — ${d.pie.trim()}`);
+  ok(!destinos.some(d => /diagn[óo]stico|auditar|auditad/i.test(d.titulo + d.pie)),
+     'sin jerga: no dice «diagnóstico» ni «auditar» en ningún destino');
+
+  /* Los cuatro servicios, cada uno al suyo. */
+  const svcs = await m.$$eval('#menu .men-s a', as => as.map(a => a.getAttribute('href')));
+  ok(svcs.length === 4, 'y los cuatro servicios por separado');
+  const perdidos = [];
+  for (const h of svcs) if (!(await m.locator(h).count())) perdidos.push(h);
+  ok(perdidos.length === 0, 'los cuatro tienen destino' + (perdidos.length ? ': ROTOS ' + perdidos : ''));
+
+  /* Escape cierra y devuelve el foco: sin eso quien navega con teclado cierra
+     el menú y su foco se queda dentro de un panel invisible. */
+  await m.keyboard.press('Escape');
+  await m.waitForTimeout(300);
+  ok(!(await panel.isVisible()), 'Escape lo cierra');
+  ok(await m.evaluate(() => document.activeElement.id) === 'men-b', 'y el foco vuelve al botón');
+
+  /* LA QUE JUSTIFICA EL MENU: elegir un servicio lleva a ESE servicio.
+     En móvil las fichas son una baraja que se arrastra de lado, así que abrir
+     la pestaña no basta: si no se centra la elegida, se queda fuera de la
+     pantalla a la derecha y el menú habría mentido. */
+  await boton.click();
+  await m.waitForTimeout(300);
+  await m.locator('#menu .men-s a[href="#svc-atencion"]').click();
+  await m.waitForTimeout(1200);
+  ok(!(await panel.isVisible()), 'al elegir un destino el menú se aparta');
+  ok(await m.locator('#servicios').isVisible(), 'y abre la pestaña donde vive ese servicio');
+  const dentro = await m.locator('#svc-atencion').evaluate(e => {
+    const r = e.getBoundingClientRect();
+    return r.left > -40 && r.right < innerWidth + 40;
+  });
+  ok(dentro, 'con la ficha pedida centrada en la baraja, no fuera de pantalla');
+
+  /* Y saltar a una sección tiene que dejar el conmutador a la vista: si el
+     navegador para dentro del panel, se aterriza en medio del contenido sin
+     ver que hay otras dos pestañas. */
+  await m.goto(BASE + '/#clientes', { waitUntil: 'domcontentloaded' });
+  await m.waitForTimeout(900);
+  const tabsVisibles = await m.locator('.sol-tabs').evaluate(e => {
+    const r = e.getBoundingClientRect();
+    return r.top >= 70 && r.bottom <= innerHeight;
+  });
+  ok(tabsVisibles, 'al saltar a #clientes el conmutador queda a la vista, no tapado por la barra');
+  await m.close();
 
   /* Nueve enlaces de esta página apuntan a #servicios y #productos, y los datos
      estructurados de la cabecera conocen #productos. Llegar por uno de ellos
@@ -369,10 +450,10 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      los casos. Es el mismo suelo que pedido.html. */
   await pg.goto(BASE + '/');
   const ve = async id => pg.locator('#' + id).isVisible();
-  ok(await ve('servicios') && await ve('productos') && await ve('casos'),
+  ok(await ve('productos') && await ve('servicios') && await ve('clientes'),
      'sin JS los tres paneles de Soluciones se ven a la vez');
   ok(await pg.locator('#servicios .svc').count() === 4, 'y están los cuatro servicios');
-  ok(await pg.locator('#casos .insta-g figure').count() === 3, 'y las tres instalaciones');
+  ok(await pg.locator('#clientes .insta-g figure').count() === 3, 'y las tres instalaciones');
   ok((await pg.locator('[data-pc-total]').textContent()).trim() !== '',
      'y el precio «desde» se lee: es HTML, no lo escribe ningún script');
 

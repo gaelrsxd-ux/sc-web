@@ -298,7 +298,7 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
    tres enlaces se fijaban arriba con altura 82 px y caían encima del logo y
    del menú—. Cada <nav> nuevo repetiría el fallo, así que la regla deja de ser
    una lista de excepciones. */
-nav.principal{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,58px);height:82px;background:linear-gradient(180deg,rgba(var(--bg-rgb),.94),rgba(var(--bg-rgb),.6) 75%,transparent);border-bottom:1px solid var(--line-soft)}
+nav.principal{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 clamp(20px,4vw,58px);height:82px;background:linear-gradient(180deg,rgba(var(--bg-rgb),.94),rgba(var(--bg-rgb),.6) 75%,transparent);border-bottom:1px solid var(--line-soft)}
 nav.principal .brand{display:flex;align-items:center;gap:13px}
 nav.principal .brand img{width:42px;height:42px;object-fit:contain}
 nav.principal .brand .bt{font-family:var(--serif);font-size:19px;font-weight:600}
@@ -316,6 +316,74 @@ nav.principal ul a:hover::after{width:100%}
    borde. El menú se enseña sólo cuando cabe entero; por debajo, la página
    funciona igual que en móvil: riel, scroll y el CTA. */
 @media(max-width:1080px){nav.principal ul{display:none}}
+
+/* --------------------------------- EL MENU ---------------------------------
+   Aparece exactamente donde desaparece la lista de arriba —1080 px— y no un
+   pixel antes: mientras la lista cabe, dos navegaciones a la vez son ruido.
+
+   El panel NO es un menu flotante de los que tapan media pantalla y se cierran
+   solos: ocupa el ancho entero bajo la barra, con destinos grandes y una linea
+   que explica cada uno. Quien no sabe lo que es «Diagnostico» necesita leer
+   «te decimos gratis que le falta a tu pagina», y eso no cabe en una pastilla. */
+.men-b{display:none;width:44px;height:44px;align-items:center;justify-content:center;
+  background:none;border:1px solid var(--line);cursor:pointer;
+  /* Igual que las pestanas y los pasos del pedido: dos toques seguidos sobre el
+     mismo boton son el gesto de «acercar» del navegador, y este se toca para
+     abrir y volver a tocar para cerrar. */
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:border-color .3s,background-color .3s}
+.men-b:active{background:var(--bronze);border-color:var(--bronze);transition-duration:0s}
+@media (hover:hover){.men-b:hover{border-color:var(--bronze)}}
+.men-b:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+.men-i{display:block;width:19px}
+.men-i i{display:block;height:1px;background:var(--bronze-hi);margin:4px 0;
+  transition:transform .3s cubic-bezier(.2,.7,.2,1),opacity .2s}
+.men-b:active .men-i i{background:var(--on-bronze)}
+/* Las tres rayas se vuelven aspa al abrir: es la senal de que el mismo boton
+   cierra, y ahorra un segundo boton dentro del panel. */
+.men-b[aria-expanded="true"] .men-i i:nth-child(1){transform:translateY(5px) rotate(45deg)}
+.men-b[aria-expanded="true"] .men-i i:nth-child(2){opacity:0}
+.men-b[aria-expanded="true"] .men-i i:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+
+.men{position:fixed;top:82px;left:0;right:0;bottom:0;z-index:49;
+  background:var(--bg);overflow-y:auto;overscroll-behavior:contain;
+  animation:menEntra .26s cubic-bezier(.2,.7,.2,1) both}
+@keyframes menEntra{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.men{animation:none}}
+.men[hidden]{display:none}
+.men-in{padding:10px clamp(20px,5vw,40px) 40px;max-width:640px;margin:0 auto}
+
+.men-l{display:block;position:relative;padding:17px 0 17px 46px;
+  border-bottom:1px solid var(--line-soft);
+  font-family:var(--serif);font-size:20px;line-height:1.25;color:var(--ink);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.men-l:active{color:var(--bronze-hi)}
+@media (hover:hover){.men-l:hover{color:var(--bronze-hi)}}
+.men-l:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:2px}
+.men-n{position:absolute;left:0;top:22px;font-family:var(--sans);font-size:9.5px;
+  letter-spacing:2.4px;color:var(--bronze)}
+/* La linea de debajo es la que hace entendible el menu: dice QUE HAY detras de
+   cada nombre, en las mismas palabras que usaria quien pregunta por telefono. */
+.men-l small{display:block;margin-top:4px;font-family:var(--sans);font-size:12.5px;
+  line-height:1.55;color:var(--muted);letter-spacing:0}
+
+.men-t{margin:26px 0 12px;font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--bronze)}
+.men-s{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:12px}
+.men-s a{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;
+  border:1px solid var(--line-soft);font-size:12.5px;color:var(--muted);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:color .3s,border-color .3s}
+.men-s a:active{color:var(--bronze-hi);border-color:var(--bronze)}
+@media (hover:hover){.men-s a:hover{color:var(--bronze-hi);border-color:var(--bronze)}}
+.men-s a:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:2px}
+
+@media(max-width:1080px){
+  /* order:-1 lo pone a la IZQUIERDA de «Hablemos» en pantalla sin moverlo en el
+     marcado: el orden de tabulacion sigue siendo el de la barra. */
+  .men-b{display:inline-flex;order:-1}
+}
+@media(max-width:400px){.men-b{width:40px;height:40px}}
 /* Por debajo de ~400 px la barra pedía 363 px: marca (143 con la serif ya
    cargada) + las dos píldoras + "Hablemos" (casi todo relleno y separación
    entre letras). En un móvil de 320 px eso dejaba el botón cortado por el
@@ -1630,13 +1698,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    de pestana porque va encima. */
 .sol-int{margin-top:14px;color:var(--muted);font-size:15px;line-height:1.75;max-width:52ch}
 .sol-sub{margin:0 0 16px;color:var(--dim);font-size:12.5px;letter-spacing:.4px}
-/* El sello del panel del producto. Vivia con la barra flotante que este modulo
-   sustituye; sigue haciendo falta porque es lo unico que dice, dentro del
-   panel, que esto se entrega en una caja y no se factura por horas. */
-.cat-sello{display:inline-flex;align-items:center;gap:9px;padding:7px 14px;
-  border:1px solid var(--line);font-size:9px;letter-spacing:3px;text-transform:uppercase;
-  font-weight:500;color:var(--bronze-hi)}
-.cat-sello::before{content:"";width:6px;height:6px;background:var(--bronze);transform:rotate(45deg)}
 
 .sol-tabs{display:flex;gap:0;margin:26px 0 20px;border:1px solid var(--line-soft);
   background:var(--bg2);width:fit-content;max-width:100%}
@@ -1925,7 +1986,14 @@ html.js .pc-alt{display:none}
    lo que hay que poder leer es justo la palabra que dice dónde estás. */
 @media(max-width:400px){
 }
-#servicios,#productos{scroll-margin-top:158px}
+/* Los tres paneles de Soluciones. Se salta a ellos desde el menu y desde el
+   pie, y el destino tiene que dejar EL CONMUTADOR a la vista: si el navegador
+   para en el panel, el visitante aterriza en medio del contenido sin ver que
+   hay otras dos pestanas. 260 px es la barra (82) mas la cabecera de la
+   seccion, medido.
+   Antes esta regla decia 158 px y compensaba la barra flotante de categorias,
+   que se retiro con el modulo: se quedo apuntando a algo que ya no esta. */
+#productos,#servicios,#clientes{scroll-margin-top:260px}
 #coste{scroll-margin-top:96px}
 .prod-fig{flex-direction:column}
 .prod-foto{width:min(100%,340px);height:auto;display:block;border:1px solid var(--line-soft);
@@ -2323,6 +2391,46 @@ html.js .pc-alt{display:none}
   <div id="veta"></div>
 </div>
 
+<!-- ============ EL MENU DE SECCIONES ============
+     Lo que faltaba. La lista de la barra se esconde por debajo de 1080 px y el
+     riel del recorrido por debajo de 920: entre medias, y en TODO movil, la
+     unica navegacion de esta pagina era el dedo.
+
+     NOMBRES EN CASTELLANO LLANO y no los internos: «Revisa tu pagina» y no
+     «Diagnostico», «Trabajos» y no «Proyectos». Quien entra a comprar una placa
+     no sabe —ni tiene por que— que es auditar una web.
+
+     Los tres primeros abren las pestanas de Soluciones; los cuatro servicios
+     llevan al suyo dentro de la baraja. Todos son ENLACES con su ancla de
+     verdad: sin JavaScript el panel no se despliega, pero cada destino sigue
+     siendo alcanzable y un buscador los sigue.
+-->
+<div class="men" id="menu" hidden>
+  <nav class="men-in" aria-label="Secciones de la p&#225;gina">
+    <a class="men-l" href="#productos"><span class="men-n">01</span>La placa de rese&#241;as
+      <small>Qu&#233; es, para qu&#233; sirve y cu&#225;nto cuesta</small></a>
+    <a class="men-l" href="#servicios"><span class="men-n">02</span>Lo que hacemos
+      <small>P&#225;ginas, Google, atenci&#243;n al cliente y tareas</small></a>
+    <a class="men-l" href="#clientes"><span class="men-n">03</span>Nuestros clientes
+      <small>Negocios que ya la tienen puesta</small></a>
+
+    <p class="men-t">Ir directo a un servicio</p>
+    <div class="men-s">
+      <a href="#svc-web">P&#225;gina web</a>
+      <a href="#svc-google">Tu negocio en Google</a>
+      <a href="#svc-atencion">Atenci&#243;n al cliente</a>
+      <a href="#svc-tareas">Ahorrar trabajo</a>
+    </div>
+
+    <a class="men-l" href="#proyectos"><span class="men-n">04</span>Nuestros trabajos
+      <small>Lo que hemos construido</small></a>
+    <a class="men-l" href="#diagnostico"><span class="men-n">05</span>Revisa tu p&#225;gina
+      <small>Te decimos gratis qu&#233; le falta</small></a>
+    <a class="men-l" href="#contacto"><span class="men-n">06</span>Habla con nosotros
+      <small>WhatsApp, correo y formulario</small></a>
+  </nav>
+</div>
+
 <!-- Avance de lectura. Va fuera de main para que ninguna transformación de
      sección lo arrastre, y por encima de la barra de navegación: dos píxeles
      que dicen cuánto queda son la diferencia entre bajar y abandonar. -->
@@ -2335,8 +2443,8 @@ html.js .pc-alt{display:none}
 <nav class="rail l" id="riel" aria-label="Índice del recorrido">
   <div class="idxr">
     <a href="#soluciones"  data-sec="soluciones">01<b>Soluciones</b></a>
-    <a href="#proyectos"   data-sec="proyectos">02<b>Proyectos</b></a>
-    <a href="#diagnostico" data-sec="diagnostico">03<b>Diagnóstico</b></a>
+    <a href="#proyectos"   data-sec="proyectos">02<b>Trabajos</b></a>
+    <a href="#diagnostico" data-sec="diagnostico">03<b>Tu página</b></a>
     <a href="#contacto"    data-sec="contacto">04<b>Contacto</b></a>
     <span class="sello" aria-hidden="true"></span>
   </div>
@@ -2369,10 +2477,11 @@ html.js .pc-alt{display:none}
     <span class="bt">S&amp;C <em>Solutions</em></span>
   </a>
   <ul>
+    <li><a href="#productos">La placa</a></li>
     <li><a href="#servicios">Servicios</a></li>
-    <li><a href="#productos">Productos</a></li>
-    <li><a href="#proyectos">Proyectos</a></li>
-    <li><a href="#diagnostico">Diagnóstico</a></li>
+    <li><a href="#clientes">Clientes</a></li>
+    <li><a href="#proyectos">Trabajos</a></li>
+    <li><a href="#diagnostico">Revisa tu página</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div style="display:flex;align-items:center;gap:14px">
@@ -2385,6 +2494,14 @@ html.js .pc-alt{display:none}
       <span class="snd-t">Sonido</span>
     </button>
     <a href="#contacto" class="btn solid" style="padding:13px 26px">Hablemos</a>
+    <!-- EL BOTON DEL MENU. Solo aparece cuando la lista de arriba no cabe, que
+         es por debajo de 1080 px: hasta hoy ahi no habia NINGUN menu —la lista
+         se escondia y el riel del recorrido tambien— y en un telefono la unica
+         forma de llegar a una seccion era desplazar la pagina entera. -->
+    <button class="men-b" id="men-b" type="button" aria-expanded="false"
+            aria-controls="menu" aria-label="Abrir el men&#250;">
+      <span class="men-i" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
   </div>
 </nav>
 
@@ -2433,54 +2550,15 @@ html.js .pc-alt{display:none}
     <p class="sol-int">Lo construimos, lo dejamos funcionando y te ense&#241;amos d&#243;nde ya funciona.</p>
 
     <div class="sol-tabs" role="tablist" aria-label="Tipo de soluci&#243;n">
-      <button class="sol-t" type="button" role="tab" id="t-servicios"
-              aria-controls="servicios" aria-selected="true">Servicios</button>
       <button class="sol-t" type="button" role="tab" id="t-productos"
-              aria-controls="productos" aria-selected="false" tabindex="-1">Producto</button>
-      <button class="sol-t" type="button" role="tab" id="t-casos"
-              aria-controls="casos" aria-selected="false" tabindex="-1">Casos reales</button>
-    </div>
-
-    <div class="sol-panel" id="servicios" role="tabpanel" aria-labelledby="t-servicios" tabindex="0">
-      <p class="sol-sub">Lo que construimos para un negocio.</p>
-      <div class="svc-grid baraja" data-baraja="servicio">
-        <article class="svc">
-          <span class="go">&#8599;</span>
-          <span class="idx">/ 01</span>
-          <h3>Diseño Web Profesional</h3>
-          <p>Sitios que generan confianza desde el primer segundo y convierten visitas en clientes.</p>
-          <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Diseño Web Profesional"><span class="dia"></span>Solicitar</a>
-        </article>
-        <article class="svc">
-          <span class="go">&#8599;</span>
-          <span class="idx">/ 02</span>
-          <h3>Perfil de tu Negocio en Google</h3>
-          <p>Tu ficha bien puesta en Google y en Maps: horarios, fotos, servicios y reseñas.</p>
-          <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20que%20configuren%20el%20perfil%20de%20mi%20negocio%20en%20Google." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre el Perfil de tu Negocio en Google"><span class="dia"></span>Solicitar</a>
-        </article>
-        <article class="svc">
-          <span class="go">&#8599;</span>
-          <span class="idx">/ 03</span>
-          <h3>Atención al Cliente con IA</h3>
-          <p>Atiende llamadas y WhatsApp las 24 horas, responde dudas y agenda citas.</p>
-          <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
-        </article>
-        <article class="svc">
-          <span class="go">&#8599;</span>
-          <span class="idx">/ 04</span>
-          <h3>Automatización de Procesos</h3>
-          <p>Menos trabajo repetido y menos errores: horas que tu equipo recupera cada mes.</p>
-          <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
-        </article>
-      </div>
+              aria-controls="productos" aria-selected="true">El producto</button>
+      <button class="sol-t" type="button" role="tab" id="t-servicios"
+              aria-controls="servicios" aria-selected="false" tabindex="-1">Servicios</button>
+      <button class="sol-t" type="button" role="tab" id="t-clientes"
+              aria-controls="clientes" aria-selected="false" tabindex="-1">Clientes</button>
     </div>
 
     <div class="sol-panel" id="productos" role="tabpanel" aria-labelledby="t-productos" tabindex="0">
-      <p class="sol-sub"><span class="cat-sello">Producto f&#237;sico &#183; no es un servicio</span></p>
       <article class="prod">
         <div class="prod-fig">
         <div class="prod-vista" role="group" aria-label="C&#243;mo ver el producto">
@@ -2570,7 +2648,45 @@ html.js .pc-alt{display:none}
       </article>
     </div>
 
-    <div class="sol-panel" id="casos" role="tabpanel" aria-labelledby="t-casos" tabindex="0">
+    <div class="sol-panel" id="servicios" role="tabpanel" aria-labelledby="t-servicios" tabindex="0">
+      <p class="sol-sub">Lo que hacemos para tu negocio.</p>
+      <div class="svc-grid baraja" data-baraja="servicio">
+        <article class="svc" id="svc-web">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 01</span>
+          <h3>Diseño Web Profesional</h3>
+          <p>Sin p&#225;gina, el cliente que te busca acaba comprándole a otro.</p>
+          <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Diseño Web Profesional"><span class="dia"></span>Solicitar</a>
+        </article>
+        <article class="svc" id="svc-google">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 02</span>
+          <h3>Perfil de tu Negocio en Google</h3>
+          <p>Si tu negocio sale mal en Google o en Maps, la gente se va al de al lado.</p>
+          <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20que%20configuren%20el%20perfil%20de%20mi%20negocio%20en%20Google." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre el Perfil de tu Negocio en Google"><span class="dia"></span>Solicitar</a>
+        </article>
+        <article class="svc" id="svc-atencion">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 03</span>
+          <h3>Atención al Cliente con IA</h3>
+          <p>Cada llamada y cada mensaje sin contestar es un cliente que se pierde.</p>
+          <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
+        </article>
+        <article class="svc" id="svc-tareas">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 04</span>
+          <h3>Automatización de Procesos</h3>
+          <p>Hacerlo todo a mano se come horas cada semana, y las horas son dinero.</p>
+          <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
+          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
+        </article>
+      </div>
+    </div>
+
+    <div class="sol-panel" id="clientes" role="tabpanel" aria-labelledby="t-clientes" tabindex="0">
       <p class="sol-sub">Negocios reales que ya las tienen puestas.</p>
         <div class="insta">
         <div class="insta-g">
@@ -2679,7 +2795,7 @@ html.js .pc-alt{display:none}
 <section id="proyectos">
   <div class="wrap">
     <div class="sec-cab">
-      <span class="sec-tag"><span class="n">02 —</span> Proyectos</span>
+      <span class="sec-tag"><span class="n">02 —</span> Trabajos</span>
       <h2 class="title" data-split>Lo que <em>construimos</em></h2>
     </div>
     <div class="works baraja" data-baraja="caso">
@@ -2786,8 +2902,8 @@ html.js .pc-alt{display:none}
      leer otro dominio (CORS); el endpoint se configura en AUDITOR abajo. -->
 <section id="diagnostico">
   <div class="wrap">
-    <span class="sec-tag rv"><span class="n">03 —</span> Diagnóstico</span>
-    <h2 class="title" data-split>Tu web, <em>auditada</em> en 10 segundos</h2>
+    <span class="sec-tag rv"><span class="n">03 —</span> Tu página</span>
+    <h2 class="title" data-split>Te decimos qué le falta a <em>tu página</em></h2>
     <div class="aud-grid">
       <div class="rv">
         <!-- La lista de las seis cosas que se revisan estaba de más: quien no sabe
@@ -3061,10 +3177,11 @@ html.js .pc-alt{display:none}
   <div class="wordmark">S&amp;C <em>Solutions</em></div>
   <p class="motto">Ambición · Estrategia · Resultados</p>
   <div class="fl">
+    <a href="#productos">La placa</a>
     <a href="#servicios">Servicios</a>
-    <a href="#productos">Productos</a>
-    <a href="#proyectos">Proyectos</a>
-    <a href="#diagnostico">Diagnóstico</a>
+    <a href="#clientes">Clientes</a>
+    <a href="#proyectos">Trabajos</a>
+    <a href="#diagnostico">Revisa tu página</a>
     <a href="#contacto">Contacto</a>
   </div>
   <nav class="legal" aria-label="Información legal">
@@ -4577,6 +4694,38 @@ const SIG=(()=>{
      "ver certificado" y abrir un cuadro vac&#237;o destruye justo la confianza que
      la secci&#243;n construye. Abren con lista de UNO: sin botonera. */
 
+  /* ---------- EL MENU DE SECCIONES ----------
+     Abre y cierra el panel, y se aparta solo cuando se elige un destino.
+
+     Lo que hace bien y cuesta poco:
+     · El panel nace con `hidden` en el marcado y sin JavaScript no se abre,
+       pero sus enlaces son anclas de verdad: el destino sigue siendo
+       alcanzable escribiendo la direccion, y un buscador los sigue igual.
+     · Escape cierra, y el foco vuelve al boton. Sin eso, quien navega con
+       teclado cierra el menu y su foco se queda en un panel invisible.
+     · Mientras esta abierto, la pagina de detras no se desplaza.
+     · Al elegir un destino se cierra ANTES de saltar: si se cerrara despues,
+       el salto ocurriria con la pagina bloqueada y no se movería nada. */
+  (()=>{
+    const boton=document.getElementById('men-b'), panel=document.getElementById('menu');
+    if(!boton||!panel)return;
+
+    const abre=v=>{
+      boton.setAttribute('aria-expanded',v?'true':'false');
+      boton.setAttribute('aria-label',v?'Cerrar el menú':'Abrir el menú');
+      panel.hidden=!v;
+      document.body.style.overflow=v?'hidden':'';
+    };
+    boton.addEventListener('click',()=>abre(panel.hidden));
+    addEventListener('keydown',e=>{
+      if(e.key==='Escape'&&!panel.hidden){abre(false);boton.focus();}
+    });
+    panel.addEventListener('click',e=>{ if(e.target.closest('a'))abre(false); });
+    /* Al ensanchar hasta donde la lista de la barra reaparece, un panel abierto
+       se quedaria tapando la pagina con su propio menu ya visible detras. */
+    matchMedia('(min-width:1081px)').addEventListener('change',e=>{ if(e.matches)abre(false); });
+  })();
+
   /* ---------- LAS PESTANAS DE SOLUCIONES ----------
      Tres paneles turnandose en el mismo hueco. Lo que hace este bloque, por
      orden de importancia:
@@ -4637,10 +4786,26 @@ const SIG=(()=>{
     /* Al llegar por #servicios o #productos se abre esa pestana. Se mira
        tambien al cambiar el hash, que es lo que pasa al pulsar el riel o un
        enlace del pie sin recargar. */
+    /* Llegar a un destino que vive DENTRO de una pestana cerrada. Dos casos:
+       · el propio panel (#productos, #servicios, #clientes) → se abre;
+       · una ficha de dentro (#svc-web y companeras) → se abre su panel y,
+         como en movil las fichas son una baraja que se arrastra de lado, se
+         centra la elegida. Sin esto el menu llevaria al sitio correcto y la
+         ficha pedida se quedaria fuera de la pantalla, a la derecha. */
     const porHash=()=>{
       const id=location.hash.slice(1);
-      const t=tabs.find(x=>x.getAttribute('aria-controls')===id);
-      if(t)abre(t,false);
+      if(!id)return;
+      let t=tabs.find(x=>x.getAttribute('aria-controls')===id);
+      const dentro=!t&&document.getElementById(id);
+      if(dentro){
+        const suyo=dentro.closest('.sol-panel');
+        if(suyo)t=tabs.find(x=>x.getAttribute('aria-controls')===suyo.id);
+      }
+      if(!t)return;
+      abre(t,false);
+      if(dentro)requestAnimationFrame(()=>dentro.scrollIntoView(
+        {behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',
+         block:'nearest',inline:'center'}));
     };
     abre(tabs[0],false);
     porHash();
