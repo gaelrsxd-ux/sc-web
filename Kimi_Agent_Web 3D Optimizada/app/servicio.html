@@ -103,11 +103,12 @@
 
       <!-- servicio:opciones -->
       <div class="sv-plan" role="group" aria-label="Lo esencial, $1,490" data-plan="gp-e">
+        <button type="button" class="sv-elige" data-elige="gp-e" hidden><span class="sr">Elegir Lo esencial, $1,490</span></button>
         <p class="sv-nom">Lo esencial<span>$1,490</span></p>
         <p class="sv-que">Con las fotos que t&#250; nos mandes.</p>
         <p class="sv-como sv-como-no">P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> y los $740 restantes cuando te entreguemos el acceso.</p>
         <p class="sv-como sv-como-si">Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.</p>
-        <button type="button" class="sv-elige" data-elige="gp-e" hidden>Elegir Lo esencial</button>
+        <p class="sv-pista" data-sv-pista hidden>Toca para elegir este paquete</p>
         <div class="sv-pagos">
           <label class="ped-op">
             <input type="radio" name="paquete" value="gp-e" required
@@ -126,12 +127,13 @@
         </div>
       </div>
       <div class="sv-plan" role="group" aria-label="Todo hecho, $2,300" data-plan="gp-t">
+        <button type="button" class="sv-elige" data-elige="gp-t" hidden><span class="sr">Elegir Todo hecho, $2,300</span></button>
         <p class="sv-nom">Todo hecho<span>$2,300</span></p>
         <p class="sv-que">Vamos a tu negocio y tomamos las fotos.</p>
         <p class="sv-nota">La visita es en San Luis Potos&#237; y Soledad. Desde otra ciudad se hace todo lo dem&#225;s igual y las fotos las mandas t&#250;.</p>
         <p class="sv-como sv-como-no">P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> y los $1,150 restantes cuando te entreguemos el acceso.</p>
         <p class="sv-como sv-como-si">Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.</p>
-        <button type="button" class="sv-elige" data-elige="gp-t" hidden>Elegir Todo hecho</button>
+        <p class="sv-pista" data-sv-pista hidden>Toca para elegir este paquete</p>
         <div class="sv-pagos">
           <label class="ped-op">
             <input type="radio" name="paquete" value="gp-t" required
@@ -250,6 +252,8 @@
      bloquea el envío hasta que se marque una — no hace falta script para que
      esto se cumpla. */
   if(datos)datos.hidden=true;
+  /* La pista de «toca para elegir» sólo es cierta con el script vivo. */
+  for(const p of form.querySelectorAll('[data-sv-pista]'))p.hidden=false;
 
   /* ══════ PRIMERO EL PAQUETE, DESPUÉS CÓMO SE PAGA ══════
      Con las cuatro formas de pago a la vista a la vez, la pantalla pedía dos
@@ -270,7 +274,11 @@
       p.classList.toggle('abierto',suyo);
       const btn=p.querySelector('.sv-elige');
       const pagos=p.querySelector('.sv-pagos');
+      const pista=p.querySelector('[data-sv-pista]');
       if(btn)btn.hidden=suyo;
+      /* La pista dice «toca para elegir»: mientras el paquete está abierto ya
+         se tocó, y repetirlo sobra. */
+      if(pista)pista.hidden=suyo;
       if(pagos)pagos.hidden=!suyo;
       /* Al cerrar un paquete se le quita la marca: si no, quedaría elegida una
          forma de pago de un paquete que ya no está en pantalla, y el botón de
@@ -344,10 +352,24 @@
   form.addEventListener('click',e=>{
     const b=e.target.closest('.sv-elige');
     if(b){
+      /* ⚠ EL DESTELLO PRIMERO, Y LUEGO SE ABRE. Es lo que hace que un toque se
+         sienta atendido: sin él, entre el dedo y el cambio de pantalla no pasa
+         nada y quien tiene prisa vuelve a pulsar. La clase se quita al terminar
+         la animación —o por reloj, por si el navegador no manda el evento— para
+         que el siguiente toque vuelva a dispararla. */
+      const tarjeta=b.closest('.sv-plan');
+      if(tarjeta){
+        tarjeta.classList.remove('pulsada');
+        void tarjeta.offsetWidth;          /* reinicia la animación */
+        tarjeta.classList.add('pulsada');
+        const limpia=()=>tarjeta.classList.remove('pulsada');
+        tarjeta.addEventListener('animationend',limpia,{once:true});
+        setTimeout(limpia,700);
+      }
       abre(b.dataset.elige);
-      /* Al paquete elegido, no a los datos todavía: debajo del botón acaban de
-         aparecer sus dos formas de pago y saltárselas sería elegir por él. */
-      lleva(b.closest('.sv-plan'));
+      /* Al paquete elegido, no a los datos todavía: debajo acaban de aparecer
+         sus dos formas de pago y saltárselas sería elegir por él. */
+      lleva(tarjeta);
       return;
     }
     if(e.target.closest('[data-sv-cambiar]')){

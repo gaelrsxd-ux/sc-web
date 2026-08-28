@@ -535,6 +535,14 @@ function bloqueServicio() {
        siempre: se pierde el orden, no la venta. */
     return '      <div class="sv-plan" role="group" ' +
       `aria-label="${ent(corto + ', ' + pesos(s.precio))}" data-plan="${s.id}">\n` +
+      /* ⚠ EL CONTROL CUBRE LA TARJETA ENTERA, no es un rectangulito debajo del
+         texto. Un botón de 200 px dentro de una tarjeta de 700 hay que
+         buscarlo; la tarjeta no. Va en `position:absolute` sobre todo el bloque
+         y su texto sólo lo leen los lectores de pantalla — lo que se ve es la
+         tarjeta, que ya dice qué es y cuánto cuesta. Y va PRIMERO en el marcado
+         para que al tabular se llegue al control antes que a su contenido. */
+      `        <button type="button" class="sv-elige" data-elige="${s.id}" hidden>` +
+      `<span class="sr">Elegir ${ent(corto)}, ${pesos(s.precio)}</span></button>\n` +
       `        <p class="sv-nom">${ent(corto)}<span>${pesos(s.precio)}</span></p>\n` +
       `        <p class="sv-que">${ent(s.resumen)}.</p>\n` +
       (s.nota ? `        <p class="sv-nota">${ent(s.nota)}</p>\n` : '') +
@@ -547,8 +555,13 @@ function bloqueServicio() {
          nunca es peor que no tenerlo — parece que sostiene algo. */
       `        <p class="sv-como sv-como-no">${comoNo}</p>\n` +
       `        <p class="sv-como sv-como-si">${comoSi}</p>\n` +
-      `        <button type="button" class="sv-elige" data-elige="${s.id}" hidden>` +
-      `Elegir ${ent(corto)}</button>\n` +
+      /* La pista de que esto se toca, al FINAL: es lo último que se lee antes
+         de decidir, y arriba competía con el precio. Sin ella, una tarjeta que
+         reacciona al pulsarla no se distingue de un cuadro de texto que no hace
+         nada. La enciende el script junto al control, porque sin él no es
+         cierta. */
+      '        <p class="sv-pista" data-sv-pista hidden>' +
+      ent('Toca para elegir este paquete') + '</p>\n' +
       '        <div class="sv-pagos">\n' +
       ops.join('\n') + '\n        </div>\n      </div>';
   };
@@ -772,13 +785,27 @@ function paquetesJson() {
    escrita a mano en la portada y otra en el cobro divergen el día que suba el
    precio, y nadie lo ve desde dentro porque las dos se leen bien por separado. */
 function desdeServicio() {
-  const barato = SERVICIOS.reduce((a, b) => (b.precio < a.precio ? b : a));
-  return `<span data-svc-desde>Desde $${miles(barato.precio)}</span>`;
+  /* ⚠ LOS DOS PRECIOS, NO UN «desde». «Desde $1,490» esconde el paquete de
+     arriba justo donde se decide si vale la pena entrar: quien sólo puede pagar
+     lo básico no sabe que existe algo más, y quien busca lo completo no sabe si
+     su presupuesto alcanza. Enseñando los dos, la tarjeta responde la pregunta
+     entera —cuánto cuesta y cuántas opciones hay— sin un toque de más.
+     Salen ordenados de menor a mayor y de la misma tabla que el cobro. */
+  const orden = [...SERVICIOS].sort((a, b) => a.precio - b.precio);
+  const cifras = orden.map(x =>
+    `<b>$${miles(x.precio)}</b> <i>${ent(x.corto || x.nombre)}</i>`).join('<em>o</em>');
+  return `<span data-svc-desde>${cifras}</span>`;
 }
 
 const BLOQUES = [
   { nombre: 'precio del esquema', re: /"price":"\d+"/, pinta: precioEsquema },
-  { nombre: 'desde del servicio', re: /<span data-svc-desde>[^<]*<\/span>/, pinta: desdeServicio },
+  /* ⚠ `[\s\S]*?` Y NO `[^<]*`. El patrón exigía que dentro del <span> no hubiera
+     ni una etiqueta, y en cuanto el contenido pasó de «Desde $1,490» a dos
+     cifras con su nombre en <b> y <i>, dejó de encontrarse a sí mismo: la
+     segunda pasada del generador decía «esperaba 1 coincidencia y hay 0». Un
+     patrón que describe el CONTENIDO se rompe al cambiar el contenido; éste
+     describe sólo sus extremos, que es lo que este archivo controla. */
+  { nombre: 'desde del servicio', re: /<span data-svc-desde>[\s\S]*?<\/span>/, pinta: desdeServicio },
   /* ⚠ CON MARCAS Y NO CON UN `</a>` FINAL. El patrón anterior terminaba en el
      cierre del enlace, y al cambiar el marcado —el contador acaba en su tabla
      de datos, no en un enlace— dejó de encontrar su final y en la segunda pasada

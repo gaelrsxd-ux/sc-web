@@ -1714,6 +1714,19 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 /* El panel es enfocable para poder llevarle el foco al cambiar de pestana, y
    por eso necesita anillo propio: sin el, quien navega con teclado pulsa una
    flecha y no ve donde ha ido a parar. */
+/* ⚠ EL PANEL YA NO SE ENFOCA, Y POR ESO YA NO PINTA SU RECUADRO.
+   Llevaba `tabindex="0"`. Al llegar desde el menú —«#servicios», «#clientes»—
+   el navegador enfoca el elemento del ancla, y como era enfocable se llevaba el
+   foco y con él `:focus-visible`: un recuadro dorado de lado a lado alrededor
+   de medio catálogo, que aparecía al volver del menú y no se iba hasta que algo
+   más tomaba el foco. Parecía un fallo de pintado porque lo parecía.
+
+   La recomendación de poner `tabindex="0"` en un panel de pestañas es para
+   cuando NO tiene nada enfocable dentro y hay que poder desplazarlo con el
+   teclado. Éstos están llenos de enlaces y botones, así que sobraba.
+
+   Las dos reglas se quedan por si algún día vuelve a haber un panel enfocable:
+   sin elemento que las active no pintan nada. */
 .sol-panel:focus{outline:none}
 .sol-panel:focus-visible{outline:1px solid var(--bronze);outline-offset:6px}
 
@@ -1726,7 +1739,16 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .sol-panel .svc .svc-btn{margin-top:18px}
 /* La línea del precio del único servicio que lo tiene. Va entre las etiquetas y
    el botón, que es donde la busca el ojo antes de decidir si pulsa. */
+/* LOS DOS PRECIOS DEL PERFIL DE GOOGLE, no un «desde». Enseñar sólo el barato
+   escondía la mitad del catálogo justo donde se decide si entrar: quien sólo
+   puede pagar lo básico no sabía que existe algo más, y quien busca lo completo
+   no sabía si le alcanza. */
 .svc-desde{margin-top:16px;font-size:12.5px;color:var(--muted)}
+[data-svc-desde]{display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:4px 9px}
+[data-svc-desde] b{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink)}
+[data-svc-desde] i{font-style:normal;font-size:11px;letter-spacing:.4px;color:var(--muted)}
+[data-svc-desde] em{font-style:normal;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--dim)}
 .svc-desde span{font-family:var(--serif);font-size:20px;color:var(--ink);
   font-variant-numeric:tabular-nums;margin-right:6px}
 
@@ -2584,7 +2606,7 @@ html.js .pc-alt{display:none}
               aria-controls="clientes" aria-selected="false" tabindex="-1">Clientes</button>
     </div>
 
-    <div class="sol-panel" id="productos" role="tabpanel" aria-labelledby="t-productos" tabindex="0">
+    <div class="sol-panel" id="productos" role="tabpanel" aria-labelledby="t-productos">
       <article class="prod">
         <div class="prod-fig">
         <div class="prod-vista" role="group" aria-label="C&#243;mo ver el producto">
@@ -2691,7 +2713,7 @@ html.js .pc-alt{display:none}
       </article>
     </div>
 
-    <div class="sol-panel" id="servicios" role="tabpanel" aria-labelledby="t-servicios" tabindex="0">
+    <div class="sol-panel" id="servicios" role="tabpanel" aria-labelledby="t-servicios">
       <p class="sol-sub">Lo que hacemos para tu negocio.</p>
       <div class="svc-grid baraja" data-baraja="servicio">
         <article class="svc" id="svc-web">
@@ -2714,7 +2736,7 @@ html.js .pc-alt{display:none}
                mismo trabajo, y ponerles precio fijo sería cobrar de más a unos
                o de menos a otros. Este no: es una lista concreta, se entrega y
                se ve. ⚠ La cifra la escribe tools/precios.mjs. -->
-          <p class="svc-desde"><span data-svc-desde>Desde $1,490</span> &#183; precio cerrado</p>
+          <p class="svc-desde"><span data-svc-desde><b>$1,490</b> <i>Lo esencial</i><em>o</em><b>$2,300</b> <i>Todo hecho</i></span></p>
           <a href="servicio.html" class="svc-btn"><span class="dia"></span>Ver los dos paquetes</a>
         </article>
         <article class="svc" id="svc-atencion">
@@ -2736,7 +2758,7 @@ html.js .pc-alt{display:none}
       </div>
     </div>
 
-    <div class="sol-panel" id="clientes" role="tabpanel" aria-labelledby="t-clientes" tabindex="0">
+    <div class="sol-panel" id="clientes" role="tabpanel" aria-labelledby="t-clientes">
       <p class="sol-sub">Negocios reales que ya las tienen puestas.</p>
         <div class="insta">
         <div class="insta-g">
