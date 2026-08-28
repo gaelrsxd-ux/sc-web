@@ -93,6 +93,41 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok((await pg.locator('[data-ped-tot]').textContent()).trim() === '$949', 'y su importe');
   ok((await pg.locator('.tag').textContent()).includes('Paso 1 de 4'), 'arranca en el paso 1 de 4');
 
+  /* ---- EL «−» Y EL «+» ----
+     El desplegable sigue siendo el que manda —es lo que hace que la cantidad se
+     pueda elegir sin JavaScript y lo que permite saltar de 1 a 20 sin pulsar
+     veinte veces—, pero subir o bajar de uno en uno es el caso de siempre y
+     pedía dos toques y una lista de 25. */
+  /* Espera acotada que NO revienta: con `waitForFunction` a secas, un contador
+     roto tumbaba la suite entera con un volcado de Playwright y sin decir qué
+     comprobación había fallado. Así el rojo lleva su nombre. */
+  const cuando = (fn, ms = 4000) => pg.waitForFunction(fn, null, { timeout: ms })
+    .then(() => true).catch(() => false);
+  const menos = pg.locator('[data-cant="-1"]');
+  const mas   = pg.locator('[data-cant="1"]');
+  ok(await menos.isVisible() && await mas.isVisible(),
+     'la cantidad tiene su «−» y su «+»');
+  await mas.click();
+  ok(await cuando(() => document.getElementById('ped-cant').value === '5'),
+     'el «+» sube de uno en uno');
+  ok((await pg.locator('[data-ped-tot]').textContent()).trim() === '$1,099',
+     'y el importe grande le sigue');
+  await menos.click(); await menos.click();
+  ok(await cuando(() => document.getElementById('ped-cant').value === '3'),
+     'y el «−» baja');
+
+  /* En los extremos se APAGAN, no desaparecen: un botón que se esfuma al llegar
+     a 1 mueve el desplegable justo cuando el dedo va hacia él. */
+  await pg.selectOption('#ped-cant', '1');
+  await cuando(() => document.querySelector('[data-cant="-1"]').disabled);
+  ok(await menos.isDisabled() && await menos.isVisible(),
+     'en 1 el «−» se apaga pero sigue ahí');
+  await pg.selectOption('#ped-cant', '25');
+  await cuando(() => document.querySelector('[data-cant="1"]').disabled);
+  ok(await mas.isDisabled() && await mas.isVisible(), 'y en 25 el «+»');
+  await pg.selectOption('#ped-cant', '4');
+  await cuando(() => document.getElementById('ped-cant').value === '4');
+
   /* Los 25 tramos, donde ahora se eligen. Antes se recorrían en la portada a
      base de 24 toques al «+»; aquí se comprueba lo mismo sobre el desplegable
      que de verdad decide lo que se cobra. */
@@ -338,7 +373,17 @@ const navegador = await chromium.launch({ executablePath: CHROME });
     href: a.getAttribute('href'),
     titulo: a.childNodes[1].textContent.trim(),
     pie: (a.querySelector('small') || {}).textContent || '' })));
-  ok(destinos.length === 6, 'lleva los seis destinos de la página');
+  ok(destinos.length === 7, 'lleva los siete destinos de la página');
+
+  /* ⚠ INICIO EL PRIMERO. Faltaba: desde el menú no había forma de volver
+     arriba, y «arriba» es la portada con la foto grande — lo único que alguien
+     reconoce cuando se ha perdido dentro de una página larga. El logotipo ya
+     llevaba ahí, pero un logotipo no se lee como un botón de volver. */
+  ok(destinos[0].href === '#top' && /inicio/i.test(destinos[0].titulo),
+     'y el primero es Inicio, que lleva a la portada');
+  ok(await m.locator('#top').count() === 1, 'y ese destino existe de verdad en la página');
+  ok(await m.locator('#top .hero-bg').count() === 1,
+     'y es la portada con su foto de fondo, no un ancla suelta');
   ok(destinos.every(d => d.pie.trim().length > 12), 'y cada uno explica qué hay detrás');
   for (const d of destinos) console.log(`      ${d.href.padEnd(14)} ${d.titulo} — ${d.pie.trim()}`);
   ok(!destinos.some(d => /diagn[óo]stico|auditar|auditad/i.test(d.titulo + d.pie)),
@@ -512,6 +557,11 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   /* Las 25 cantidades siguen enteras donde ahora se eligen, y sin JavaScript:
      un <select> nativo funciona con el script caído. */
   await pg.goto(BASE + '/pedido.html');
+  /* Y los dos botones NO están: nacen con `hidden` en el marcado y los enciende
+     el script. Un «+» que no suma nada es peor que no tenerlo — la lista de 25
+     sigue entera justo detrás, que es la que funciona sin JavaScript. */
+  ok(!(await pg.locator('[data-cant="1"]').isVisible()),
+     'sin JS no hay «+»: sin script no sumaría nada, y el desplegable sí funciona');
   ok(await pg.locator('#ped-cant option').count() === 25,
      'sin JS, pedido.html conserva las veinticinco cantidades');
 

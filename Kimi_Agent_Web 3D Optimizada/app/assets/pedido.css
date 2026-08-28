@@ -50,6 +50,31 @@ main{max-width:560px}
 .ped-campo>span{display:block;font-size:9.5px;letter-spacing:2.6px;text-transform:uppercase;
   color:var(--muted);margin-bottom:7px}
 .ped-campo>span .opc{letter-spacing:0;text-transform:none;color:var(--dim);font-size:11px}
+/* ---------- EL CONTADOR DE CANTIDAD ----------
+   El desplegable en medio y un botón a cada lado. Los dos botones son cuadrados
+   de 48 px —el mínimo cómodo para un dedo— y no crecen con el ancho: lo que
+   tiene que crecer es el desplegable, que es donde se lee la cantidad y su
+   precio. */
+/* ⚠ `.ped-campo>.ped-cont` y no `.ped-cont` a secas: la regla de al lado
+   —`.ped-campo>span`, que da el estilo al rótulo del campo— es más específica
+   que una clase suelta y ganaba, así que el contador salía apilado en vertical
+   y en versalitas. Aquí van también los reinicios de lo que esa regla hereda. */
+.ped-campo>.ped-cont{display:flex;align-items:stretch;gap:8px;
+  margin-bottom:0;text-transform:none;letter-spacing:0}
+.ped-cont select{flex:1;min-width:0}
+.ped-mas-menos{flex:0 0 auto;width:48px;min-height:48px;
+  background:var(--bg2);color:var(--bronze-hi);border:1px solid var(--line-soft);
+  font-family:var(--sans);font-size:20px;line-height:1;cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:border-color .25s,color .25s,background-color .25s}
+.ped-mas-menos:active{background:var(--bronze);color:var(--on-bronze,#0A0B0E);transition-duration:0s}
+@media(hover:hover){.ped-mas-menos:hover:not(:disabled){border-color:var(--bronze)}}
+.ped-mas-menos:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:2px}
+/* En los extremos no se esconde: se apaga. Un botón que desaparece al llegar a
+   1 mueve el desplegable justo cuando el dedo va hacia él. */
+.ped-mas-menos:disabled{color:var(--dim);cursor:default;opacity:.55}
+.ped-mas-menos[hidden]{display:none}
+
 .ped-campo input,.ped-campo select,.ped-campo textarea{
   width:100%;min-height:48px;padding:12px 14px;
   background:var(--bg2);color:var(--ink);border:1px solid var(--line-soft);
@@ -189,6 +214,41 @@ main{max-width:560px}
 [data-sv-ficha]{display:none}
 #sv-form:has(input[name="ficha_tiene"][value="si"]:checked) [data-sv-ficha]{display:block}
 .sv-plan .ped-op{margin-top:10px}
+
+/* ══ PRIMERO EL PAQUETE, DESPUÉS CÓMO SE PAGA ══
+   Con las cuatro formas de pago desplegadas a la vez la pantalla pedía dos
+   decisiones al mismo tiempo. El botón nace escondido en el marcado y lo
+   enciende el script: sin JavaScript no hay botón y se ven las cuatro
+   opciones, que es la página de siempre. */
+.sv-elige{display:block;width:100%;margin-top:14px;padding:15px 18px;
+  border:1px solid var(--bronze);background:none;color:var(--bronze-hi);
+  font-family:var(--sans);font-size:11px;letter-spacing:2.6px;text-transform:uppercase;
+  font-weight:500;cursor:pointer;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;transition:background-color .3s,color .3s}
+.sv-elige:active{background:var(--bronze);color:var(--on-bronze,#0A0B0E);transition-duration:0s}
+@media(hover:hover){.sv-elige:hover{background:var(--bronze);color:var(--on-bronze,#0A0B0E)}}
+.sv-elige:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+
+/* El paquete que NO se eligió no se borra: se aparta. Devolverlo es un toque
+   en «cambiar», y verlo desaparecer del todo hace dudar de si sigue estando. */
+.sv-plan[hidden]{display:none}
+.sv-plan.abierto{border-color:var(--bronze)}
+
+/* La cabecera del paso, con la salida para volver. Un cobro sin marcha atrás
+   es un cobro que se abandona: quien se equivoca de paquete y no ve cómo
+   deshacerlo cierra la pestaña, no vuelve a empezar. */
+.sv-vuelta{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:14px}
+.sv-vuelta button{border:none;background:none;padding:8px 0;cursor:pointer;
+  font-family:var(--sans);font-size:11px;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--muted);touch-action:manipulation;transition:color .3s}
+.sv-vuelta button:hover,.sv-vuelta button:focus-visible{color:var(--bronze-hi)}
+.sv-vuelta[hidden]{display:none}
+
+.sv-pagos[hidden]{display:none}
+/* Un filete que separa el paquete de sus formas de pago: sin él, al
+   descubrirse parecen dos paquetes más. */
+.sv-pagos{margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}
 
 /* Lo que se lee en voz alta pero no ocupa sitio. Sin `display:none`, que lo
    quitaría también del lector de pantalla, que es justo a quien va dirigido. */
