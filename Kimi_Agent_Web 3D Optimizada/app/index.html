@@ -393,7 +393,7 @@ nav.principal ul a:hover::after{width:100%}
   nav.principal{padding:0 14px}
   nav.principal>div{gap:9px!important}
   nav.principal .btn.solid{padding:13px 14px!important;letter-spacing:2px}
-  .tema,.snd{padding:9px 9px}
+  .tema{padding:9px 9px}
 }
 /* Aun apretada, la barra pide 363 px. En pantallas más angostas cae el
    emblema gráfico y queda el nombre: a 42 px el emblema es una tarjeta
@@ -1139,9 +1139,9 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    Cada selector usa el pseudo-elemento que tenía libre: ::before en .res-tapa
    y ::after en el resto, porque los contrarios ya llevan anillos y subrayados. */
 @media(pointer:coarse){
-  .snd,.btn,.svc-btn,.res-tapa,
+  .btn,.svc-btn,.res-tapa,
   .tema,#costo-cta,.c-enl,.form-nota a,.faq .faq-r a{position:relative}
-  .snd::after,.btn::after,.svc-btn::after,.res-tapa::before,
+  .btn::after,.svc-btn::after,.res-tapa::before,
   .tema::after,#costo-cta::after,.c-enl::before,
   .form-nota a::after,.faq .faq-r a::after{
     content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
@@ -1195,8 +1195,8 @@ footer .legal a:hover{color:var(--bronze)}
 }
 
 /* ---------- TEMA ----------
-   Mismo molde que .snd para que las dos píldoras de la barra lean como un
-   mismo grupo de controles. El diamante reutiliza el lenguaje de los sellos de
+   Ya es el único control de la barra: la píldora del sonido, que compartía este
+   molde, se retiró. El diamante reutiliza el lenguaje de los sellos de
    certificado: hueco en oscuro (el tema por defecto, nada que activar),
    relleno en claro (activo), igual que un sello ganado. */
 .tema{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid var(--line-soft);
@@ -1207,21 +1207,6 @@ footer .legal a:hover{color:var(--bronze)}
 .tema-ico{width:8px;height:8px;flex-shrink:0;border:1px solid currentColor;transform:rotate(45deg);transition:background-color .3s}
 .tema[aria-pressed="true"] .tema-ico{background:currentColor}
 @media(max-width:840px){.tema .tema-t{display:none}.tema{padding:9px 11px}}
-
-/* ---------- SONIDO ---------- */
-.snd{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid var(--line-soft);
-  font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);background:none;
-  font-family:var(--sans);font-weight:500;transition:color .3s,border-color .3s}
-.snd:hover{color:var(--bronze-hi);border-color:var(--line)}
-.snd[aria-pressed="true"]{color:var(--bronze-hi);border-color:var(--line)}
-/* Tres barras que sólo ondean cuando el sonido está activo */
-.snd .eq{display:flex;align-items:flex-end;gap:2px;height:11px}
-.snd .eq i{width:2px;height:3px;background:currentColor;transition:height .3s}
-.snd[aria-pressed="true"] .eq i{animation:eqb .9s ease-in-out infinite alternate}
-.snd[aria-pressed="true"] .eq i:nth-child(2){animation-delay:.18s}
-.snd[aria-pressed="true"] .eq i:nth-child(3){animation-delay:.36s}
-@keyframes eqb{from{height:3px}to{height:11px}}
-@media(max-width:840px){.snd .snd-t{display:none}.snd{padding:9px 11px}}
 
 /* ---------- DIAGNÓSTICO (auditor SEO) ---------- */
 /* La sección entera va más apretada que el resto de la página, y es
@@ -1467,7 +1452,7 @@ footer .legal a:hover{color:var(--bronze)}
 /* ---------- MODO PRESENTACIÓN ----------
    Para enseñar la web en una reunión sin hacer scroll delante del cliente. No
    cambia el contenido: apaga el cromo y mueve de sección en sección. */
-html.pres nav.principal,html.pres .rail,html.pres #avance,html.pres .snd,html.pres .tema{display:none!important}
+html.pres nav.principal,html.pres .rail,html.pres #avance,html.pres .tema{display:none!important}
 html.pres{scroll-behavior:smooth}
 /* Sin barra fija arriba, el margen de anclaje que la compensaba deja un hueco */
 html.pres section[id],html.pres .hero{scroll-margin-top:0}
@@ -1610,7 +1595,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 @media print{
   @page{margin:16mm 14mm}
   /* El lienzo de fondo, los rieles y todo lo que sólo sirve en pantalla */
-  #descenso,#avance,.rail,nav,.snd,.oro-aviso,.pres-idx,
+  #descenso,#avance,.rail,nav,.oro-aviso,.pres-idx,
   .bait-btn,.costo input[type=range],#visor,
   .aud-form,.aud-rival,.aud-cta,.svc-btn,
   .frame button,.ts-caja,.can-alt,
@@ -2435,6 +2420,13 @@ html.js .pc-alt{display:none}
 -->
 <div class="men" id="menu" hidden>
   <nav class="men-in" aria-label="Secciones de la p&#225;gina">
+    <!-- INICIO EL PRIMERO. Faltaba: desde el menú no había forma de volver
+         arriba, y «arriba» es la portada con la foto grande — lo único que
+         alguien reconoce cuando se ha perdido dentro de una página larga. El
+         logotipo ya llevaba ahí, pero un logotipo no se lee como un botón de
+         volver. -->
+    <a class="men-l" href="#top"><span class="men-n">00</span>Inicio
+      <small>La portada, arriba del todo</small></a>
     <a class="men-l" href="#productos"><span class="men-n">01</span>La placa de rese&#241;as
       <small>Qu&#233; es, para qu&#233; sirve y cu&#225;nto cuesta</small></a>
     <a class="men-l" href="#servicios"><span class="men-n">02</span>Lo que hacemos
@@ -2505,6 +2497,7 @@ html.js .pc-alt{display:none}
     <span class="bt">S&amp;C <em>Solutions</em></span>
   </a>
   <ul>
+    <li><a href="#top">Inicio</a></li>
     <li><a href="#productos">La placa</a></li>
     <li><a href="#servicios">Servicios</a></li>
     <li><a href="#clientes">Clientes</a></li>
@@ -2516,10 +2509,6 @@ html.js .pc-alt{display:none}
     <button class="tema" id="tema" type="button" aria-pressed="false" aria-label="Cambiar a tema claro">
       <span class="tema-ico" aria-hidden="true"></span>
       <span class="tema-t">Tema</span>
-    </button>
-    <button class="snd" id="snd" type="button" aria-pressed="false" aria-label="Activar sonido de la página">
-      <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="snd-t">Sonido</span>
     </button>
     <a href="#contacto" class="btn solid" style="padding:13px 26px">Hablemos</a>
     <!-- EL BOTON DEL MENU. Solo aparece cuando la lista de arriba no cabe, que
@@ -4213,7 +4202,6 @@ function cargaTurnstile(){
          en el catch de abajo y convertiría un envío que SÍ llegó en un mensaje
          de error. Es exactamente la mentira que este formulario existe para no
          volver a decir, sólo que del revés. */
-      try{SIG.confirma();}catch(_){}
     }catch(err){
       const q=diagnostico(err);
       if(q.campos){
@@ -4229,232 +4217,11 @@ function cargaTurnstile(){
   });
 })();
 
-/* ---------- FIRMA SONORA ----------
-   Sintetizada con Web Audio: cero archivos, cero peticiones y cero KB. Nace
-   apagada y recuerda la elección, porque un sonido no pedido es una molestia,
-   no una firma. El AudioContext sólo se crea tras un gesto del usuario, que es
-   lo que exigen las políticas de reproducción automática de los navegadores. */
-const SIG=(()=>{
-  const LLAVE='syc-sonido';
-  let ctx=null,mst=null,on=false;
-  function ctxOn(){
-    if(ctx)return ctx;
-    const AC=window.AudioContext||window.webkitAudioContext;
-    if(!AC)return null;
-    ctx=new AC();
-    mst=ctx.createGain();mst.gain.value=.5;mst.connect(ctx.destination);
-    return ctx;
-  }
-
-  /* ---------- AMBIENTE ----------
-     Un fondo armónico que no se repite nunca. No es un archivo en bucle: son
-     cuatro voces de dos osciladores desafinados entre sí, cada una con su
-     propio vaivén de volumen a una velocidad distinta y prima con las demás.
-     Como esos vaivenes nunca vuelven a coincidir, no existe el punto donde
-     "empieza otra vez", que es lo que cansa de la música de fondo en bucle.
-     Cada 34 segundos el acorde se desliza al siguiente en nueve segundos, así
-     que hay movimiento armónico sin un solo corte.
-     Todo el conjunto —armonía, eco y marea— está calibrado para acompañar, no
-     para narrar: si al leer se nota que hay música, está mal puesta.
-     Cero archivos, cero peticiones, cero KB: se sintetiza en el navegador. */
-  /* La paleta anterior era toda menor y sonaba a tráiler de suspense. Ésta se
-     queda en La mayor y evita la nota que provoca esa tensión: el primer acorde
-     ni siquiera lleva tercera, así que no suena alegre ni triste, sólo abierto.
-     Las cuatro voces se mueven además por pasos cortos, y un salto corto es lo
-     que hace que un cambio de acorde pase desapercibido. */
-  const ACORDES=[
-    [110.00,164.81,246.94,329.63],  /* La con novena — abierto, sin tercera */
-    [146.83,220.00,277.18,329.63],  /* Re mayor novena — cálido            */
-    [ 92.50,220.00,277.18,369.99],  /* Fa# menor — el único punto de sombra */
-    [123.47,164.81,246.94,369.99]   /* Mi suspendido — deja la puerta abierta */
-  ];
-  let amb=null,ambG=null,acorde=0,relojAcorde=0;
-
-  function creaAmbiente(){
-    if(amb||!ctx)return;
-    ambG=ctx.createGain();ambG.gain.value=0;      /* entra con fundido */
-    /* Filtro cálido: recorta el brillo para que el fondo no compita con la
-       voz interior de quien está leyendo. */
-    const filtro=ctx.createBiquadFilter();
-    filtro.type='lowpass';filtro.frequency.value=880;filtro.Q.value=.4;
-    /* Vaivén lentísimo del corte: es lo que hace que el fondo "respire" */
-    const lfoF=ctx.createOscillator(),lfoFg=ctx.createGain();
-    lfoF.frequency.value=.021;lfoFg.gain.value=260;
-    lfoF.connect(lfoFg);lfoFg.connect(filtro.frequency);lfoF.start();
-    /* Eco largo y apagado: da el aire de sala sin necesitar ningún archivo de
-       reverberación. El filtro dentro de la realimentación evita que las
-       repeticiones se vuelvan metálicas al acumularse. */
-    /* El eco era largo y muy realimentado: eso es exactamente lo que convierte
-       un fondo en una cripta. Más corto y con la mitad de repeticiones da aire
-       de sala sin que nada suene a cueva. */
-    const eco=ctx.createDelay(1),realim=ctx.createGain(),ecoF=ctx.createBiquadFilter();
-    eco.delayTime.value=.42;realim.gain.value=.18;
-    ecoF.type='lowpass';ecoF.frequency.value=1400;
-    eco.connect(ecoF);ecoF.connect(realim);realim.connect(eco);
-    const mezclaEco=ctx.createGain();mezclaEco.gain.value=.3;
-    filtro.connect(ambG);filtro.connect(eco);eco.connect(mezclaEco);mezclaEco.connect(ambG);
-    ambG.connect(mst);
-
-    const voces=ACORDES[0].map((f,i)=>{
-      const g=ctx.createGain();g.gain.value=.055;
-      /* Dos osciladores por voz, desafinados unos pocos céntimos: ese roce
-         entre ambos es lo que convierte un tono plano en algo con cuerpo. */
-      const a=ctx.createOscillator(),b=ctx.createOscillator();
-      a.type='sine';b.type='triangle';
-      a.frequency.value=f;b.frequency.value=f;
-      a.detune.value=-5;b.detune.value=6;
-      a.connect(g);b.connect(g);g.connect(filtro);
-      a.start();b.start();
-      /* Cada voz respira a su ritmo. Los períodos son distintos y no múltiplos
-         entre sí: por eso la combinación tarda horas en repetirse. */
-      const lfo=ctx.createOscillator(),lg=ctx.createGain();
-      lfo.frequency.value=.026+i*.011;
-      lg.gain.value=.03;
-      lfo.connect(lg);lg.connect(g.gain);lfo.start();
-      return {a,b};
-    });
-    /* ---------- MAREA ----------
-       Una capa de ruido filtrado que sube y baja muy despacio. No pretende
-       imitar una grabación de playa: a este volumen no se identifica como
-       "olas", sólo quita al fondo el vacío de laboratorio que tiene un
-       sintetizador solo y le da algo por dónde respirar.
-       Son cuatro segundos de ruido generados una vez y reproducidos en bucle:
-       cero peticiones, y el bucle no se nota porque lo que se oye no es el
-       ruido sino el vaivén de volumen, que va por otro reloj. */
-    const seg=4,buf=ctx.createBuffer(1,ctx.sampleRate*seg,ctx.sampleRate),d=buf.getChannelData(0);
-    /* Ruido rosa aproximado: el blanco puro silba, y lo que suena a agua o a
-       viento siempre tiene más peso en los graves. */
-    let b0=0,b1=0,b2=0;
-    for(let i=0;i<d.length;i++){
-      const w=Math.random()*2-1;
-      b0=.99765*b0+w*.0990460;
-      b1=.96300*b1+w*.2965164;
-      b2=.57000*b2+w*1.0526913;
-      d[i]=(b0+b1+b2+w*.1848)*.16;
-    }
-    const mar=ctx.createBufferSource();mar.buffer=buf;mar.loop=true;
-    const marF=ctx.createBiquadFilter();
-    marF.type='lowpass';marF.frequency.value=520;marF.Q.value=.3;
-    const marG=ctx.createGain();marG.gain.value=.05;
-    /* El vaivén: catorce segundos por ciclo, ni un respiro igual al anterior
-       porque no coincide con ninguno de los relojes de las voces. */
-    const marL=ctx.createOscillator(),marLg=ctx.createGain();
-    marL.frequency.value=.071;marLg.gain.value=.032;
-    marL.connect(marLg);marLg.connect(marG.gain);marL.start();
-    mar.connect(marF);marF.connect(marG);marG.connect(ambG);
-    mar.start();
-
-    amb={voces,mar};
-    /* El cambio de acorde va por temporizador y no por audio: siete segundos
-       de deslizamiento es demasiado lento para programarlo por eventos. */
-    relojAcorde=setInterval(()=>{
-      if(!ctx||!amb)return;
-      acorde=(acorde+1)%ACORDES.length;
-      const t=ctx.currentTime;
-      ACORDES[acorde].forEach((f,i)=>{
-        const v=amb.voces[i];if(!v)return;
-        v.a.frequency.exponentialRampToValueAtTime(f,t+9);
-        v.b.frequency.exponentialRampToValueAtTime(f,t+9);
-      });
-    },34000);
-  }
-  /* Los fundidos son largos a propósito: un fondo que entra o sale de golpe
-     se nota, y lo que no se nota es justo lo que se agradece. */
-  function subeAmb(){
-    if(!ctx)return;
-    creaAmbiente();
-    if(!ambG)return;
-    const t=ctx.currentTime;
-    ambG.gain.cancelScheduledValues(t);
-    ambG.gain.setValueAtTime(ambG.gain.value,t);
-    ambG.gain.linearRampToValueAtTime(.5,t+5);
-  }
-  function bajaAmb(){
-    if(!ctx||!ambG)return;
-    const t=ctx.currentTime;
-    ambG.gain.cancelScheduledValues(t);
-    ambG.gain.setValueAtTime(ambG.gain.value,t);
-    ambG.gain.linearRampToValueAtTime(0,t+1.4);
-  }
-  /* Envolvente exponencial: el ataque corto y la caída larga son lo que hace
-     que un seno suene a metal templado y no a pitido de microondas. */
-  function tono(f,ret,dur,vol,tipo){
-    if(!ctx)return;
-    const t=ctx.currentTime+ret;
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.type=tipo||'sine';o.frequency.setValueAtTime(f,t);
-    g.gain.setValueAtTime(.0001,t);
-    g.gain.exponentialRampToValueAtTime(vol,t+.014);
-    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    o.connect(g);g.connect(mst);o.start(t);o.stop(t+dur+.03);
-  }
-  const listo=()=>on&&ctx&&ctx.state==='running';
-
-  /* Enciende el contexto y sube el ambiente en cuanto el navegador lo permita.
-     resume() devuelve una promesa: comprobar ctx.state justo después todavía
-     diría "suspended" y el fondo no llegaría a sonar nunca. */
-  function arranca(){
-    if(!ctxOn())return;
-    const listo=()=>{if(on&&!document.hidden)subeAmb();};
-    if(ctx.state==='running'){listo();return;}
-    ctx.resume().then(listo).catch(()=>{});
-  }
-
-  /* Fuera de la pestaña se calla y, si sigue fuera, se suspende el contexto
-     entero: un fondo sonando en una pestaña que nadie mira es batería gastada
-     y, en un portátil, ventilador encendido sin motivo. */
-  let dormir=0;
-  addEventListener('visibilitychange',()=>{
-    if(!ctx)return;
-    clearTimeout(dormir);
-    if(document.hidden){
-      bajaAmb();
-      dormir=setTimeout(()=>{if(document.hidden&&ctx.state==='running')ctx.suspend();},1800);
-    }else if(on)arranca();
-  },{passive:true});
-
-  const api={
-    get activo(){return on;},
-    /* Roce: casi inaudible, sólo confirma que el puntero encontró algo */
-    roce(){if(listo())tono(1174.66,0,.055,.012);},
-    /* Pulsación: dos notas que suben, la respuesta a un clic */
-    clic(){if(!listo())return;tono(587.33,0,.09,.032);tono(880,.045,.13,.026);},
-    /* Confirmación: acorde breve al completar algo. En La, como el ambiente:
-       antes iba en Do y chocaba con el fondo cada vez que sonaba. */
-    confirma(){if(!listo())return;[440,554.37,659.25].forEach((f,i)=>tono(f,i*.07,.5,.03));},
-    /* Firma de entrada: La mayor abierto, lento, como un sello que se posa */
-    firma(){if(!listo())return;[220,329.63,440,554.37].forEach((f,i)=>tono(f,i*.14,2.3,.045));},
-    activa(v){
-      on=v;
-      try{localStorage.setItem(LLAVE,v?'1':'0');}catch(_){}
-      if(v)arranca();else bajaAmb();
-    },
-    /* Arranca solo, sin que nadie tenga que pulsar nada.
-       El único límite es ajeno: ningún navegador —Chrome, Safari, Firefox—
-       deja sonar audio antes de que el visitante interactúe con la página. No
-       es una opción que se pueda activar ni un permiso que se pueda pedir: es
-       una política de reproducción automática y no hay forma de rodearla.
-       Así que se deja todo montado y sonando a volumen cero, y se levanta en
-       el primer gesto que haga —mover la rueda, tocar la pantalla, pulsar una
-       tecla o simplemente desplazarse—, que ocurre en los primeros segundos.
-       Sólo se queda callada si el visitante la apagó en una visita anterior. */
-    inicia(){
-      let guardado=null;
-      try{guardado=localStorage.getItem(LLAVE);}catch(_){}
-      on=guardado!=='0';
-      if(!on)return false;
-      arranca();
-      const gestos=['pointerdown','keydown','wheel','touchstart','scroll'];
-      const despierta=()=>{
-        gestos.forEach(ev=>removeEventListener(ev,despierta));
-        arranca();
-      };
-      gestos.forEach(ev=>addEventListener(ev,despierta,{passive:true}));
-      return true;
-    }
-  };
-  return api;
-})();
+/* La firma sonora se retiró entera —motor de Web Audio, interruptor y todas
+   sus llamadas—. Eran unas 260 líneas que sintetizaban un ambiente y unos
+   tonos al pulsar. Se quita a petición del titular: en un teléfono el sonido
+   de una web se agradece pocas veces y estorba muchas, y su interruptor
+   ocupaba en la barra un sitio que en pantallas estrechas hacía falta. */
 
 /* ---------- INTERRUPTOR DE TEMA ----------
    El estado real ya lo aplicó el script bloqueante del <head> antes del primer
@@ -4482,39 +4249,6 @@ const SIG=(()=>{
   });
 })();
 
-(()=>{
-  const b=document.getElementById('snd');
-  if(!b)return;
-  /* El botón deja de ser un interruptor de encendido y pasa a ser el de
-     silencio: la música ya viene puesta. Con audio que suena solo, el control
-     para callarlo tiene que estar a la vista desde el primer momento, y por
-     eso vive en la barra de navegación y no escondido en el pie. */
-  const pinta=v=>{
-    b.setAttribute('aria-pressed',v?'true':'false');
-    b.setAttribute('aria-label',v?'Silenciar la música de fondo':'Activar la música de fondo');
-    const t=b.querySelector('.snd-t');
-    if(t)t.textContent=v?'Sonido':'Silencio';
-  };
-  pinta(SIG.inicia());
-  b.addEventListener('click',()=>{
-    const nuevo=b.getAttribute('aria-pressed')!=='true';
-    pinta(nuevo);
-    SIG.activa(nuevo);
-    if(nuevo)setTimeout(()=>SIG.firma(),90);
-  });
-  /* Roce sobre lo pulsable y pulso al hacer clic. Delegado en el documento:
-     un solo par de escuchas para toda la página, incluidos los nodos que el
-     JS crea después (los puntos de las reseñas, por ejemplo). */
-  const PULSABLE='a,button,.svc-btn';
-  let ultimo=null;
-  document.addEventListener('pointerover',e=>{
-    if(e.pointerType!=='mouse')return;
-    const t=e.target.closest(PULSABLE);
-    if(t&&t!==ultimo){ultimo=t;SIG.roce();}
-    else if(!t)ultimo=null;
-  },{passive:true});
-  document.addEventListener('click',e=>{if(e.target.closest(PULSABLE))SIG.clic();},{passive:true});
-})();
 
 
 /* ---------- EL PRODUCTO, GIRABLE ----------
@@ -5100,7 +4834,7 @@ function haceQue(ms){
          aparece nada debajo: el bloque que salia ahi repetia la llamada del
          final de la pagina y hacia crecer la seccion justo cuando el visitante
          acababa de terminarla. */
-      if(abiertos===tapas.length){EXP.marca('casos');setTimeout(()=>SIG.confirma(),700);}
+      if(abiertos===tapas.length)EXP.marca('casos');
     });
   });
 })();
@@ -5135,7 +4869,6 @@ function haceQue(ms){
     aviso.innerHTML='<span class="dia" aria-hidden="true"></span>Modo oro · buen ojo';
     document.body.appendChild(aviso);
     requestAnimationFrame(()=>aviso.classList.add('on'));
-    SIG.firma();
     setTimeout(()=>{
       raiz.classList.remove('oro');
       aviso.classList.remove('on');
@@ -5319,7 +5052,6 @@ window.SYC_AUDITOR='https://audit.sycsolutions.company';
     if(!revisita){
       DIAG.guarda(d.url,n,fallos(checks));
       EXP.marca('diag');
-      SIG.confirma();
     }
     /* El botón "Quiero que lo arreglen" es ya sólo un enlace a #contacto: el
        puente se pinta aquí, y no hay campos que rellenar al pulsarlo. */
@@ -5390,7 +5122,6 @@ window.SYC_AUDITOR='https://audit.sycsolutions.company';
     animaAro(aros[1],b.n);
     const volver=document.getElementById('aud-volver');
     if(volver)volver.addEventListener('click',()=>pinta(a.bruto,true));
-    SIG.confirma();
   }
   /* El formulario del rival se monta cada vez que se repinta el informe, porque
      el innerHTML anterior se lleva por delante los oyentes del anterior. */
@@ -5762,7 +5493,6 @@ if(DIAG.lee())EXP.marca('diag');
   /* El resultado ya no viaja a ningún campo: el formulario se retiró porque no
      enviaba nada. El enlace sigue llevando al contacto, y la cifra se queda en
      pantalla para que el visitante la mencione él mismo al escribir. */
-  if(cta)cta.addEventListener('click',()=>SIG.clic());
 })();
 
 /* ---------- MÉTRICAS REALES DE ESTA PÁGINA ----------
@@ -5828,7 +5558,6 @@ if(DIAG.lee())EXP.marca('diag');
       if(d<min){min=d;cerca=n;}
     });
     va(cerca);
-    SIG.clic();
   }
   addEventListener('keydown',e=>{
     /* Nada de atajos mientras se escribe: la P de "proyecto" no puede encender

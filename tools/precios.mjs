@@ -506,15 +506,15 @@ function bloqueServicio() {
        lo que acababa de pagar. `data-resto` es lo que faltará por cobrar, para
        que esa misma página pueda decirlo en vez de dejarlo a la imaginación. */
     const opcion = (id, importe, titulo, pie, anticipo) =>
-      '        <label class="ped-op">\n' +
-      `          <input type="radio" name="paquete" value="${id}" required\n` +
-      `                 data-tot="${pesos(importe)}" data-num="${importe}"` +
+      '          <label class="ped-op">\n' +
+      `            <input type="radio" name="paquete" value="${id}" required\n` +
+      `                   data-tot="${pesos(importe)}" data-num="${importe}"` +
       (anticipo ? ` data-resto="${s.precio - s.anticipo}"` : '') + '\n' +
-      `                 data-que="${ent(corto + ' · ' + (anticipo ? 'anticipo' : 'de contado'))}"` +
+      `                   data-que="${ent(corto + ' · ' + (anticipo ? 'anticipo' : 'de contado'))}"` +
       (anticipo ? ' data-anticipo="1"' : '') + '>\n' +
-      `          <b>${ent(titulo)}</b>\n` +
-      `          <small>${pie}</small>\n` +
-      '        </label>';
+      `            <b>${ent(titulo)}</b>\n` +
+      `            <small>${pie}</small>\n` +
+      '          </label>';
 
     const ops = [opcion(s.id, s.precio, `Pagar ${pesos(s.precio)} de contado`,
                         'Un solo pago y listo.', false)];
@@ -523,8 +523,18 @@ function bloqueServicio() {
       `Y ${pesos(resto)} cuando te entreguemos el acceso. ` + ent('Sólo si creamos la cuenta nosotros.'),
       true));
 
+    /* ⚠ DOS PAQUETES A LA VISTA, NO CUATRO OPCIONES. Con las cuatro formas de
+       pago desplegadas a la vez la pantalla pide dos decisiones al mismo tiempo
+       —qué compro y cómo lo pago— y el ojo acaba comparando importes entre
+       paquetes distintos. Primero se elige el paquete; sus dos formas de pago
+       viven DENTRO y sólo se descubren después.
+
+       El botón «Elegir» nace con `hidden` en el marcado y lo enciende el
+       script, que es el único que puede esconder los pagos. Sin JavaScript no
+       hay botón y las cuatro opciones se ven a la vez, que es la página de
+       siempre: se pierde el orden, no la venta. */
     return '      <div class="sv-plan" role="group" ' +
-      `aria-label="${ent(corto + ', ' + pesos(s.precio))}">\n` +
+      `aria-label="${ent(corto + ', ' + pesos(s.precio))}" data-plan="${s.id}">\n` +
       `        <p class="sv-nom">${ent(corto)}<span>${pesos(s.precio)}</span></p>\n` +
       `        <p class="sv-que">${ent(s.resumen)}.</p>\n` +
       (s.nota ? `        <p class="sv-nota">${ent(s.nota)}</p>\n` : '') +
@@ -537,7 +547,10 @@ function bloqueServicio() {
          nunca es peor que no tenerlo — parece que sostiene algo. */
       `        <p class="sv-como sv-como-no">${comoNo}</p>\n` +
       `        <p class="sv-como sv-como-si">${comoSi}</p>\n` +
-      ops.join('\n') + '\n      </div>';
+      `        <button type="button" class="sv-elige" data-elige="${s.id}" hidden>` +
+      `Elegir ${ent(corto)}</button>\n` +
+      '        <div class="sv-pagos">\n' +
+      ops.join('\n') + '\n        </div>\n      </div>';
   };
   return '<!-- servicio:opciones -->\n' + SERVICIOS.map(bloque).join('\n') +
          '\n      <!-- /servicio:opciones -->';
@@ -552,9 +565,19 @@ const BLOQUES_SERVICIO = [
 function bloquePedido() {
   const ops = PAQUETES.map(p =>
     `<option value="${p.piezas}">${placas(p)} &#8212; $${miles(total(p))}</option>`).join('');
+  /* EL «−» Y EL «+» VAN ALREDEDOR DEL DESPLEGABLE, no en su lugar. El <select>
+     con sus 25 opciones es lo que hace que la cantidad se pueda elegir sin
+     JavaScript, y también lo que permite saltar de 1 a 20 sin pulsar veinte
+     veces; los dos botones son para el caso de siempre, que es subir o bajar de
+     uno en uno. Nacen escondidos y los enciende el script, porque sin él no
+     harían nada. */
   return '<!-- pedido:cantidad -->\n' +
     '      <label class="ped-campo" for="ped-cant"><span>Cantidad</span>' +
-    '<select id="ped-cant" name="paquete">' + ops + '</select></label>\n' +
+    '<span class="ped-cont">' +
+    '<button type="button" class="ped-mas-menos" data-cant="-1" aria-label="Una placa menos" hidden>&#8722;</button>' +
+    '<select id="ped-cant" name="paquete">' + ops + '</select>' +
+    '<button type="button" class="ped-mas-menos" data-cant="1" aria-label="Una placa m&#225;s" hidden>+</button>' +
+    '</span></label>\n' +
     '      ' + tablaContador() + '\n' +
     '      <!-- /pedido:cantidad -->';
 }

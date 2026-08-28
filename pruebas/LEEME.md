@@ -19,8 +19,8 @@ node pruebas/servicio.mjs
 node pruebas/instalaciones.mjs
 ```
 
-Ochenta y nueve comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; ochenta y dos en la segunda y dieciocho en la tercera.
+Noventa y nueve comprobaciones en la primera, la mayoría con JavaScript y un
+bloque final sin él; ochenta y nueve en la segunda y dieciocho en la tercera.
 
 ## Por qué en un navegador
 
@@ -57,6 +57,8 @@ formulario, esa prueba se pone en rojo.
 |---|---|
 | **El precio de la portada** | la cifra «desde» es la de 1 placa de la tabla, el botón lleva al pedido, y el contador **ya no está** en la portada: no hay dos sitios donde elegir cantidad |
 | **Los 25 tramos** | se comprueban en `pedido.html`, que es donde ahora se eligen: cada opción del desplegable enseña el importe de la tabla |
+| **El «−» y el «+»** | suben y bajan de uno en uno sobre el mismo desplegable, que sigue siendo el que manda —es lo que permite elegir sin JavaScript y saltar de 1 a 20 sin pulsar veinte veces—. En los extremos se **apagan**, no desaparecen: un botón que se esfuma al llegar a 1 mueve el desplegable justo cuando el dedo va hacia él. Sin JavaScript no están, porque no sumarían nada |
+| **«Inicio» en el menú** | faltaba, y «arriba» es la portada con la foto grande: lo único que alguien reconoce cuando se ha perdido dentro de una página larga. Se comprueba que el destino exista de verdad y sea la portada, no un ancla suelta |
 | **Las pestañas** | tres paneles turnándose en el mismo hueco, con flechas, Inicio y Fin; `aria-selected` sigue a la abierta; entrar por `#productos` abre la suya; al abrir un panel se descubre lo que lleva `.rv` dentro, o la galería de casos saldría en blanco |
 | **Los pasos** | ninguno se salta con campos vacíos; un teléfono de tres cifras no pasa |
 | **El resumen** | dice el mismo importe que va a cobrarse, y el HTML pegado en un campo sale como texto y no se ejecuta |
@@ -195,6 +197,9 @@ que mandar, y eso no lo comprobaba nadie.
 
 | | |
 |---|---|
+| **Primero el paquete, después cómo se paga** | al entrar sólo se ven los **dos paquetes**; las formas de pago viven dentro de cada uno y no se descubren hasta elegirlo, y entonces el otro paquete se aparta. Con las cuatro desplegadas a la vez la pantalla pedía dos decisiones al mismo tiempo. Comprobado por sabotaje: si el paquete elegido deja de cerrar al otro, o si los pagos nacen visibles, se pone en rojo |
+| **La marcha atrás** | «← Cambiar de paquete» devuelve los dos y **desmarca** lo que hubiera: un cobro sin marcha atrás es un cobro que se abandona, y una forma de pago marcada de un paquete que ya no está en pantalla es cobrar a ciegas |
+| **Los datos, al abrir el paquete** | no esperan a la forma de pago: es lo que se pidió —«cuando seleccione el paquete que aparezca todo lo demás»— y evita que el bloque salte al cambiar de una opción a la otra |
 | **Dos paquetes, no cuatro opciones** | cada uno con sus dos formas de pago dentro. En una lista plana de cuatro, el ojo compara importes en vez de paquetes, y «$750» junto a «$1,490» parece un descuento cuando es un anticipo |
 | **La visita, con su matiz al lado** | «Todo hecho» promete ir al negocio a tomar las fotos y eso sólo vale en San Luis Potosí y Soledad. Un matiz que sólo vive en la página de términos se lee **después** de pagar, y quien lo descubre ahí tiene razón en enfadarse |
 | **Lo que falta por cobrar** | quien deja un anticipo se va sin saber cuánto debe si nadie se lo dice — y la cifra grande que acaba de ver es la del anticipo, no la del paquete. Va en el resumen y en el WhatsApp |

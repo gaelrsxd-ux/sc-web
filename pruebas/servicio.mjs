@@ -27,7 +27,29 @@ const vigila = pg => {
 /* Los radios de verdad están escondidos detrás de su tarjeta —así se diseñó el
    control, para que el objetivo táctil sea la tarjeta entera y no un círculo de
    14 px—. Así que se pulsa la TARJETA, que es lo que hace una persona. */
-const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).click();
+/* Las formas de pago viven DENTRO de su paquete y no se descubren hasta que se
+   elige uno, así que elegir «gp-ta» son dos gestos: abrir «Todo hecho» y luego
+   marcar el anticipo. Es lo que hace una persona, y el ayudante hace los dos
+   para que cada prueba siga leyéndose por lo que comprueba. */
+const elige = async (pg, valor) => {
+  const op = pg.locator(`.ped-op:has(input[value="${valor}"])`);
+  if (!(await op.isVisible())) {
+    const abrir = pg.locator(`.sv-plan:has(input[value="${valor}"]) .sv-elige`);
+    if (await abrir.count()) {
+      /* Con OTRO paquete abierto, éste está escondido y su botón también: hay
+         que volver atrás primero, que es exactamente lo que hace quien se
+         equivoca de paquete. */
+      if (!(await abrir.isVisible())) {
+        const atras = pg.locator('[data-sv-cambiar]');
+        if (await atras.isVisible()) await atras.click();
+        await abrir.waitFor({ state: 'visible', timeout: 4000 });
+      }
+      await abrir.click();
+      await op.waitFor({ state: 'visible', timeout: 4000 });
+    }
+  }
+  await op.click();
+};
 
 /* ⚠ SÓLO LO QUE SE VE. Cada paquete lleva sus DOS frases en el marcado —la de
    «tengo ficha» y la de «no la tengo»— y el CSS enseña una y esconde la otra.
@@ -118,12 +140,53 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(/otra ciudad|fuera/i.test(matiz) && /fotos las mandas t/i.test(matiz),
      'y qué pasa desde otra ciudad, que es la mitad que faltaba');
 
+  /* ---- PRIMERO EL PAQUETE, DESPUÉS CÓMO SE PAGA ----
+     Con las cuatro formas de pago desplegadas a la vez, la pantalla pedía dos
+     decisiones al mismo tiempo y el ojo comparaba importes entre paquetes
+     distintos: «$750» junto a «$1,490» parece un descuento cuando es un
+     anticipo. */
+  ok(!(await pg.locator('.sv-pagos').first().isVisible()),
+     'al entrar NO se ven las formas de pago: sólo los dos paquetes');
+  ok(await pg.locator('.sv-elige:visible').count() === 2,
+     'y cada paquete lleva su botón para elegirlo');
+  ok(!(await pg.locator('[data-sv-vuelta]').isVisible()),
+     'sin nada elegido no hay nada que deshacer, así que no hay botón de volver');
+
+  await pg.locator('[data-elige="gp-t"]').click();
+  await hasta(() => pg.locator('.sv-plan[data-plan="gp-t"] .sv-pagos').isVisible(),
+              'las formas de pago del paquete elegido aparecen');
+  ok(await pg.locator('.sv-plan:visible').count() === 1,
+     'al elegir uno, el otro se aparta: una sola cosa en pantalla');
+  /* Acotado a `.sv-pagos`: la pregunta de la ficha, arriba, usa el mismo
+     molde `.ped-op` y contarlas todas daba cuatro sin que sobrara ninguna. */
+  ok(await pg.locator('.sv-pagos .ped-op:visible').count() === 2,
+     'y sólo salen SUS dos formas de pago, no las cuatro');
+
+  /* LA SALIDA. Un cobro sin marcha atrás es un cobro que se abandona: quien se
+     equivoca de paquete y no ve cómo deshacerlo cierra la pestaña. */
+  ok(await pg.locator('[data-sv-cambiar]').isVisible(),
+     'y aparece el botón para cambiar de paquete');
+  await pg.locator('[data-sv-cambiar]').click();
+  await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2,
+              'vuelven los dos paquetes');
+  ok(await pg.locator('.sv-plan:visible').count() === 2, 'volver deja los dos paquetes otra vez');
+  ok(!(await pg.locator('.sv-pagos').first().isVisible()),
+     'y las formas de pago se vuelven a guardar');
+  ok(await pg.$$eval('input[name="paquete"]', is => is.every(i => !i.checked)),
+     'y NINGUNA queda marcada: cobrar algo que ya no está en pantalla es cobrar a ciegas');
+
   /* ---- los datos no se piden hasta que hay paquete ---- */
   ok(!(await pg.locator('[data-sv-datos]').isVisible()),
      'los datos del negocio NO se piden antes de elegir paquete');
-  await elige(pg, 'gp-e');
-  await hasta(() => pg.locator('[data-sv-datos]').isVisible(), 'los datos aparecen al elegir paquete');
-  ok(await pg.locator('[data-sv-datos]').isVisible(), 'y aparecen en cuanto se elige uno');
+  /* Y aparecen con el PAQUETE abierto, sin esperar a la forma de pago: es lo
+     que el titular pidió —«cuando seleccione el paquete que aparezca todo lo
+     demás»— y evita que el bloque salte al cambiar de una opción a la otra. */
+  await pg.locator('[data-elige="gp-e"]').click();
+  await hasta(() => pg.locator('[data-sv-datos]').isVisible(), 'los datos aparecen al abrir el paquete');
+  ok(await pg.locator('[data-sv-datos]').isVisible(),
+     'y aparecen al ABRIR el paquete, antes de elegir cómo se paga');
+  ok(await pg.$$eval('input[name="paquete"]', is => is.every(i => !i.checked)),
+     'sin que nada quede marcado de fábrica');
 
   /* ---- LA QUE JUSTIFICA EL ARCHIVO: no viaja ningún importe ---- */
   const camposForm = await pg.$$eval('#sv-form [name]', es => es.map(e => e.name));
