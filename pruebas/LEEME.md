@@ -20,7 +20,7 @@ node pruebas/instalaciones.mjs
 ```
 
 Ochenta y nueve comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; treinta y una en la segunda y dieciocho en la tercera.
+bloque final sin él; treinta y siete en la segunda y dieciocho en la tercera.
 
 ## Por qué en un navegador
 
@@ -155,6 +155,8 @@ el script cambia el entero, no sólo el estado de los controles.
 | **Lo que llega al cobro** | el paquete elegido y si tiene ficha o no —que es lo que hace legítimo el anticipo—, y **ninguna dirección de envío**: un servicio no se envía |
 | **El teléfono** | el mismo `pattern` que en el pedido, con los escapes puestos; tres cifras rebotan |
 | **La vuelta** | `gracias.html` le dice que nos añada como administrador **y con qué correo**, y **no** le habla de paquetería. El WhatsApp trae escrito si su ficha existe y **no declara ningún importe** |
+| **Volver atrás** | el navegador restaura el paquete elegido pero **no vuelve a ejecutar el script** al salir de la caché de páginas: el bloque de datos se quedaba escondido y con él el botón de pagar. Un paquete elegido y ninguna forma de pagarlo, en la pantalla de cobro. Lo arregla `pageshow`, que es el evento que sí llega ahí |
+| **El pago pendiente** | con `?estado=pendiente` la página **no da el pago por hecho**. La rama del servicio pisaba ese aviso y dejaba «Tu pago está pendiente» arriba y «no tienes que hacer nada más» debajo — quien lee eso no vuelve a la tienda a pagar |
 | **Sin JavaScript** | los tres bloques se ven, las cuatro opciones están, **cada una lleva su precio escrito** —no calculado— y la cifra grande queda vacía en vez de mentir |
 
 

@@ -171,6 +171,65 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   await ctx.close();
 }
 
+/* ---- VOLVER ATRÁS DESDE MERCADO PAGO ----
+   El navegador restaura el formulario con su paquete todavía marcado, pero de
+   la caché de páginas (bfcache) NO vuelve a ejecutar el script. El bloque de
+   datos se quedaba escondido, y con él el botón de pagar: un paquete elegido y
+   ninguna forma de pagarlo, en la pantalla de cobro. */
+{
+  const ctx = await navegador.newContext();
+  const pg = await ctx.newPage();
+  vigila(pg);
+  await ctx.route(COBRO, r => r.fulfill({ status: 200, contentType: 'text/html', body: 'ok' }));
+
+  await pg.goto(BASE + '/servicio.html', { waitUntil: 'domcontentloaded' });
+  await pg.waitForTimeout(400);
+  await elige(pg, 'gp-t');
+  await pg.waitForTimeout(250);
+  await pg.fill('[name=negocio]', 'El Molino Ruso');
+  await pg.fill('[name=negocio_ciudad]', 'San Luis Potosí');
+  await pg.fill('[name=nombre]', 'Gael');
+  await pg.fill('[name=tel]', '4423697248');
+  await pg.fill('[name=correo]', 'a@b.com');
+  await pg.click('#sv-form button[type=submit]');
+  await pg.waitForTimeout(600);
+  await pg.goBack({ waitUntil: 'domcontentloaded' });
+  await pg.waitForTimeout(800);
+
+  const marcado = await pg.evaluate(() => {
+    const i = document.querySelector('input[name="paquete"]:checked'); return i ? i.value : null; });
+  ok(marcado === 'gp-t', 'al volver atrás el paquete sigue elegido');
+  ok(await pg.locator('#sv-form button[type=submit]').isVisible(),
+     'y el botón de pagar SIGUE ahí: volver atrás no puede dejar un callejón sin salida');
+  ok(await pg.locator('[data-sv-datos]').isVisible(), 'con sus datos, tal como se rellenaron');
+  await ctx.close();
+}
+
+/* ---- UN PAGO PENDIENTE NO SE DA POR HECHO ----
+   Mercado Pago devuelve aquí con ?estado=pendiente cuando el pago es en
+   efectivo o por transferencia y todavía no se ha completado. Decirle «no
+   tienes que hacer nada más» a quien tiene un recibo sin pagar en la mano es
+   la forma de que nadie lo pague nunca. */
+{
+  const ctx = await navegador.newContext();
+  const pg = await ctx.newPage();
+  vigila(pg);
+  await pg.goto(BASE + '/gracias.html');
+  await pg.evaluate(() => sessionStorage.setItem('syc_pedido', JSON.stringify({
+    _servicio: 1, _t: 'Todo hecho · anticipo', _tot: '$1,150', ficha_tiene: 'no',
+    negocio: 'El Molino Ruso', nombre: 'Gael', tel: '4423697248', correo: 'a@b.com' })));
+  await pg.goto(BASE + '/gracias.html?estado=pendiente', { waitUntil: 'domcontentloaded' });
+  await pg.waitForTimeout(500);
+
+  const t = (await pg.locator('[data-gr-t]').innerText()).trim();
+  const par = (await pg.locator('[data-gr-p]').innerText()).trim();
+  ok(/pendiente/i.test(t), 'el título dice que el pago está pendiente');
+  ok(!/no tienes que hacer nada más|falta un paso tuyo/i.test(par),
+     'y el párrafo NO da el pago por hecho: ' + par.slice(0, 70) + '…');
+  ok(/complete|termina el pago/i.test(par), 'sino que le dice cómo terminarlo');
+  await ctx.close();
+}
+
 /* ---- sin JavaScript ---- */
 {
   const ctx = await navegador.newContext({ javaScriptEnabled: false });

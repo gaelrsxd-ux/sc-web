@@ -246,6 +246,15 @@
   });
   ajusta();
 
+  /* ⚠ AL VOLVER ATRÁS DESDE MERCADO PAGO. El navegador restaura el formulario
+     con su paquete todavía marcado, pero de la caché de páginas (bfcache) no
+     vuelve a ejecutar el script: `datos` se quedaba escondido, y con él el
+     botón de pagar. Resultado: un paquete elegido y ninguna forma de pagarlo —
+     un callejón sin salida en la pantalla de cobro, que es el peor sitio donde
+     puede haberlo.
+     `pageshow` es el evento que sí llega en ese caso; `load` no. */
+  addEventListener('pageshow',ajusta);
+
   /* El pedido se guarda para gracias.html en sessionStorage y no en la
      dirección: así no queda un pedido con nombre y teléfono dentro del
      historial del navegador ni en la pestaña que se quedó abierta. */
