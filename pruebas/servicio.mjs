@@ -29,6 +29,42 @@ const vigila = pg => {
    14 px—. Así que se pulsa la TARJETA, que es lo que hace una persona. */
 const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).click();
 
+/* ⚠ SÓLO LO QUE SE VE. Cada paquete lleva sus DOS frases en el marcado —la de
+   «tengo ficha» y la de «no la tengo»— y el CSS enseña una y esconde la otra.
+   Leerlas todas con `textContent` devuelve las dos y da igual cuál esté
+   puesta: la comprobación pasaría en verde con la frase equivocada en
+   pantalla. */
+/* ⚠ NI UN SOLO RELOJ FIJO. Esta suite se sincronizaba con 20 `waitForTimeout`
+   de entre 140 y 800 ms, y bajo carga —otro Chromium en la misma máquina— se
+   ponía roja dos de cada cinco veces, cada vez por parejas distintas de
+   comprobaciones. El rojo no era la página: era el reloj. Un margen fijo o
+   sobra —y entonces la suite tarda de más— o falta, y entonces miente.
+   `hasta()` espera A LA CONDICIÓN que la comprobación siguiente necesita, y si
+   no llega lo dice con su nombre en vez de fallar en la línea de al lado. */
+const hasta = async (cond, que, ms = 8000) => {
+  const fin = Date.now() + ms;
+  for (;;) {
+    try { if (await cond()) return true; } catch (_) { /* navegando: se reintenta */ }
+    if (Date.now() > fin) { ok(false, `ESPERA agotada (${ms} ms): ${que}`); return false; }
+    await new Promise(r => setTimeout(r, 30));
+  }
+};
+
+/* La página está lista cuando su script ya ha escondido el bloque de datos, que
+   es lo primero que hace. Antes de eso no hay nada que comprobar. */
+const lista = pg => hasta(
+  () => pg.$eval('[data-sv-datos]', e => e.hidden), 'el script de servicio.html arrancó');
+
+/* gracias.html está lista cuando ya ha pintado el resumen. Todas las vueltas de
+   esta suite traen pedido en sessionStorage, así que el resumen SIEMPRE acaba
+   apareciendo: si no aparece es un fallo, y esperar a que aparezca lo dice con
+   su nombre en vez de dejar que falle la comprobación de al lado. */
+const graciasLista = pg => hasta(
+  () => pg.locator('[data-gr-resumen]').isVisible(), 'gracias.html pintó su resumen');
+
+const frases = pg => pg.$$eval('.sv-plan .sv-como',
+  ps => ps.filter(x => x.offsetParent !== null).map(x => x.textContent.trim()));
+
 {
   const ctx = await navegador.newContext();
   const pg = await ctx.newPage();
@@ -41,7 +77,7 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   });
 
   await pg.goto(BASE + '/servicio.html', { waitUntil: 'domcontentloaded' });
-  await pg.waitForTimeout(400);
+  await lista(pg);
 
   /* ---- las cuatro opciones, y UNA sola marcada ---- */
   const ops = pg.locator('input[name="paquete"]');
@@ -56,7 +92,7 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   /* EL AVISO DE CÓMO SE PAGA, ANTES DE ELEGIR. Quien ve una sola cifra decide
      ahí mismo si sigue; enterarse de que había otra forma de pagar DESPUÉS es
      un cliente perdido por no haberlo dicho a tiempo. */
-  const avisos = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
+  const avisos = await frases(pg);
   ok(avisos.length === 2 && avisos.every(t => /contado/i.test(t) && /anticipo/i.test(t)),
      'cada paquete dice cómo se puede pagar ANTES de elegir');
   for (const a of avisos) console.log('      ' + a.replace(/\s+/g, ' '));
@@ -86,7 +122,7 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   ok(!(await pg.locator('[data-sv-datos]').isVisible()),
      'los datos del negocio NO se piden antes de elegir paquete');
   await elige(pg, 'gp-e');
-  await pg.waitForTimeout(250);
+  await hasta(() => pg.locator('[data-sv-datos]').isVisible(), 'los datos aparecen al elegir paquete');
   ok(await pg.locator('[data-sv-datos]').isVisible(), 'y aparecen en cuanto se elige uno');
 
   /* ---- LA QUE JUSTIFICA EL ARCHIVO: no viaja ningún importe ---- */
@@ -100,7 +136,9 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   const desc = [];
   for (const v of ['gp-e', 'gp-ea', 'gp-t', 'gp-ta']) {
     await elige(pg, v);
-    await pg.waitForTimeout(140);
+    const suyo = await pg.$eval(`input[value="${v}"]`, i => i.dataset.tot);
+    await hasta(async () => (await pg.locator('[data-sv-tot]').textContent()).trim() === suyo,
+                `la cifra grande alcanza a ${v}`);
     desc.push([v, (await pg.locator('[data-sv-tot]').textContent()).trim()]);
   }
   for (const [v, visto] of desc) console.log(`      ${v.padEnd(6)} enseña ${visto}`);
@@ -111,14 +149,14 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
      perfil de Google no se puede retener la entrega, así que con ficha ajena no
      hay nada que reservar. */
   await elige(pg, 'si');
-  await pg.waitForTimeout(250);
+  await hasta(() => pg.$eval('input[data-anticipo]', i => i.disabled), 'el anticipo se apaga');
   const apagados = await pg.$$eval('input[name="paquete"][data-anticipo]', is => is.map(i => i.disabled));
   ok(apagados.length === 2 && apagados.every(Boolean),
      'con ficha propia, las dos opciones de anticipo quedan deshabilitadas');
   /* Y LA FRASE CAMBIA CON LAS OPCIONES. Apagar el anticipo dejando la línea que
      promete «págalo de contado o deja un anticipo» dejaría la página diciendo
      dos cosas a la vez, que es justo la contradicción que este orden evita. */
-  const conFicha = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
+  const conFicha = await frases(pg);
   ok(conFicha.every(t => !/deja \$[\d,]+ de anticipo/i.test(t)),
      'y la frase de cada paquete deja de prometer el anticipo');
   ok(conFicha.every(t => /ya existe/i.test(t)), 'y explica por qué: la ficha ya existe');
@@ -138,15 +176,15 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
      resumen de la venta llegaba diciendo «SIN ficha: la creamos» con un enlace
      a la ficha que ya existía debajo. */
   await elige(pg, 'gp-t');   // el bloque de datos no existe hasta que hay paquete
-  await pg.waitForTimeout(250);
+  await hasta(() => pg.locator('[name=ficha]').isVisible(), 'el enlace de la ficha se puede rellenar');
   await pg.fill('[name=ficha]', 'https://maps.app.goo.gl/ejemplo');
   await elige(pg, 'no');
-  await pg.waitForTimeout(250);
+  await hasta(() => pg.$eval('input[data-anticipo]', i => !i.disabled), 'el anticipo vuelve');
   ok(await pg.$eval('[name=ficha]', i => i.value) === '',
      'al decir que todavía no aparece, el enlace de la ficha se VACÍA, no sólo se esconde');
   const revividos = await pg.$$eval('input[name="paquete"][data-anticipo]', is => is.map(i => i.disabled));
   ok(revividos.every(d => d === false), 'y vuelven si dice que todavía no aparece en Google');
-  const vuelve = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
+  const vuelve = await frases(pg);
   ok(vuelve.every(t => /anticipo/i.test(t)), 'y la frase vuelve a ofrecerlo');
 
   /* ---- lo que llega al cobro ---- */
@@ -157,7 +195,7 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   await pg.fill('[name=tel]', '4423697248');
   await pg.fill('[name=correo]', 'gael@ejemplo.com');
   await pg.click('#sv-form button[type=submit]');
-  await pg.waitForTimeout(700);
+  await hasta(() => !!enviado, 'el POST llega a la ruta del cobro');
 
   ok(!!enviado, 'el formulario llega al cobro');
   const q = new URLSearchParams(enviado || '');
@@ -170,9 +208,9 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
 
   /* ---- teléfono corto rebota: el `pattern` tiene que estar vivo ---- */
   await pg.goto(BASE + '/servicio.html');
-  await pg.waitForTimeout(300);
+  await lista(pg);
   await elige(pg, 'gp-e');            // los datos no existen hasta elegir paquete
-  await pg.waitForTimeout(250);
+  await hasta(() => pg.locator('[name=tel]').isVisible(), 'los datos ya se pueden rellenar');
   await pg.fill('[name=negocio]', 'X'); await pg.fill('[name=negocio_ciudad]', 'Y');
   await pg.fill('[name=nombre]', 'Z'); await pg.fill('[name=correo]', 'a@b.com');
   await pg.fill('[name=tel]', '442');
@@ -198,7 +236,7 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   ok(!guardado.ficha, 'y sin el enlace de una ficha que dijo no tener');
 
   await pg.goto(BASE + '/gracias.html', { waitUntil: 'domcontentloaded' });
-  await pg.waitForTimeout(500);
+  await graciasLista(pg);
   const trasAnticipo = await pg.locator('main').innerText();
   ok(!/NaN/.test(trasAnticipo),
      'y el resumen enseña un importe, no «$NaN»' + (/NaN/.test(trasAnticipo) ? ': ' + trasAnticipo.replace(/\s+/g, ' ').slice(0, 120) : ''));
@@ -213,20 +251,20 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
 
   /* ---- Y AHORA EL OTRO CASO: ficha propia, de contado ---- */
   await pg.goto(BASE + '/servicio.html', { waitUntil: 'domcontentloaded' });
-  await pg.waitForTimeout(400);
+  await lista(pg);
   await elige(pg, 'si');
-  await pg.waitForTimeout(250);
+  await hasta(() => pg.$eval('input[data-anticipo]', i => i.disabled), 'el anticipo se apaga');
   await elige(pg, 'gp-t');
-  await pg.waitForTimeout(250);
+  await hasta(() => pg.locator('[name=tel]').isVisible(), 'los datos ya se pueden rellenar');
   await pg.fill('[name=negocio]', 'El Molino Ruso');
   await pg.fill('[name=negocio_ciudad]', 'San Luis Potosí');
   await pg.fill('[name=nombre]', 'Gael Ramírez');
   await pg.fill('[name=tel]', '4423697248');
   await pg.fill('[name=correo]', 'gael@ejemplo.com');
   await pg.click('#sv-form button[type=submit]');
-  await pg.waitForTimeout(700);
+  await hasta(() => !!enviado, 'el segundo POST llega al cobro');
   await pg.goto(BASE + '/gracias.html', { waitUntil: 'domcontentloaded' });
-  await pg.waitForTimeout(500);
+  await graciasLista(pg);
 
   const texto = await pg.locator('main').innerText();
   ok(!/NaN/.test(texto), 'de contado tampoco sale ningún «NaN»');
@@ -274,18 +312,21 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   await ctx.route(COBRO, r => r.fulfill({ status: 200, contentType: 'text/html', body: 'ok' }));
 
   await pg.goto(BASE + '/servicio.html', { waitUntil: 'domcontentloaded' });
-  await pg.waitForTimeout(400);
+  await lista(pg);
   await elige(pg, 'gp-t');
-  await pg.waitForTimeout(250);
+  await hasta(() => pg.locator('[name=tel]').isVisible(), 'los datos ya se pueden rellenar');
   await pg.fill('[name=negocio]', 'El Molino Ruso');
   await pg.fill('[name=negocio_ciudad]', 'San Luis Potosí');
   await pg.fill('[name=nombre]', 'Gael');
   await pg.fill('[name=tel]', '4423697248');
   await pg.fill('[name=correo]', 'a@b.com');
   await pg.click('#sv-form button[type=submit]');
-  await pg.waitForTimeout(600);
+  await pg.waitForURL(/pagos\.sycsolutions\.company/, { timeout: 8000 }).catch(() => {});
   await pg.goBack({ waitUntil: 'domcontentloaded' });
-  await pg.waitForTimeout(800);
+  /* Al volver de la caché de páginas el script NO se re-ejecuta: lo que hay que
+     esperar es al `pageshow`, que es lo único que corre ahí. */
+  await hasta(() => pg.locator('#sv-form button[type=submit]').isVisible(),
+              'el botón de pagar reaparece al volver atrás');
 
   const marcado = await pg.evaluate(() => {
     const i = document.querySelector('input[name="paquete"]:checked'); return i ? i.value : null; });
@@ -310,7 +351,8 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
     _servicio: 1, _t: 'Todo hecho · anticipo', _tot: 1150, _resto: 1150, ficha_tiene: 'no',
     negocio: 'El Molino Ruso', nombre: 'Gael', tel: '4423697248', correo: 'a@b.com' })));
   await pg.goto(BASE + '/gracias.html?estado=pendiente', { waitUntil: 'domcontentloaded' });
-  await pg.waitForTimeout(500);
+  await hasta(async () => /pendiente/i.test(await pg.locator('[data-gr-t]').innerText()),
+              'gracias.html reconoció el pago pendiente');
 
   const t = (await pg.locator('[data-gr-t]').innerText()).trim();
   const par = (await pg.locator('[data-gr-p]').innerText()).trim();
@@ -321,11 +363,97 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   await ctx.close();
 }
 
-/* ---- sin JavaScript ---- */
+/* ---- LA PÁGINA DE GRACIAS DEL SERVICIO, SIN JAVASCRIPT ----
+   Es la razón de que exista `gracias-servicio.html`. Las dos compras volvían a
+   la misma página, que distingue una de otra leyendo el sessionStorage que
+   escribe un script. Sin JavaScript no hay nada que leer: al comprador de un
+   servicio se le decía «preparamos tus placas» —un envío que no existe— y NUNCA
+   veía el correo al que tenía que añadirnos, que es lo que arranca el plazo de
+   entrega. Pagaba y se quedaba esperando algo que dependía de él.
+   Ahora la rama la elige el Worker (back_urls) y todo lo importante está en el
+   marcado. */
 {
   const ctx = await navegador.newContext({ javaScriptEnabled: false });
   const pg = await ctx.newPage();
+  await pg.goto(BASE + '/gracias-servicio.html', { waitUntil: 'load' });
+  const t = await pg.locator('main').innerText();
+  ok(/sc\.solutionscompanymx@gmail\.com/.test(t),
+     'SIN SCRIPT dice a qué correo hay que añadirnos: es lo que arranca el plazo');
+  ok(/administrador/i.test(t), 'y con qué permiso');
+  ok(/todav[íi]a no aparece/i.test(t),
+     'y también el otro caso, porque sin script no se puede saber cuál es');
+  ok(!/placa|env[íi]o|paqueter[íi]a/i.test(t), 'y NO habla de placas ni de envíos');
+  ok(/1 a 7 d[íi]as/i.test(t), 'y dice el plazo');
+  const wa = decodeURIComponent(await pg.locator('[data-gr-wa]').getAttribute('href'));
+  ok(/configuraci[óo]n de mi Google/i.test(wa),
+     'y el WhatsApp de fondo ya viene redactado como servicio, no como pedido');
+  /* La vuelta lleva a los servicios, no a la tienda de placas. */
+  ok(await pg.locator('a[href="/#servicios"]').count() > 0, 'y la vuelta lleva a los servicios');
+  await ctx.close();
+}
+
+/* ---- Y CON JAVASCRIPT, LA MISMA PÁGINA AFINA ---- */
+{
+  const ctx = await navegador.newContext();
+  const pg = await ctx.newPage();
+  vigila(pg);
+  await pg.goto(BASE + '/gracias-servicio.html');
+  await pg.evaluate(() => sessionStorage.setItem('syc_pedido', JSON.stringify({
+    _servicio: 1, _t: 'Todo hecho · anticipo', _tot: 1150, _resto: 1150, ficha_tiene: 'no',
+    negocio: 'El Molino Ruso', negocio_ciudad: 'San Luis Potosí', nombre: 'Gael',
+    tel: '4423697248', correo: 'a@b.com' })));
+
+  await pg.goto(BASE + '/gracias-servicio.html', { waitUntil: 'domcontentloaded' });
+  await graciasLista(pg);
+  const conJs = await pg.locator('main').innerText();
+  ok(!/NaN/.test(conJs), 'ningún «NaN» en el importe');
+  ok(/\$1,150/.test(conJs), 'el importe que se acaba de pagar');
+  ok(/falta por pagar/i.test(conJs), 'y lo que queda del anticipo');
+  ok(!/a[ñn][áa]denos como administrador/i.test(
+       (await pg.locator('[data-gr-p]').innerText())),
+     'con la ficha por crear NO se le pide que nos añada: esa cuenta todavía no existe');
+
+  /* ⚠ CON EL PAGO PENDIENTE, «Falta por pagar» MIENTE. Quien tiene un recibo de
+     efectivo sin pagar en la mano no debe sólo el resto: no ha pagado nada, y
+     el primero de los dos pagos hay que hacerlo AHORA. */
+  await pg.goto(BASE + '/gracias-servicio.html?estado=pendiente', { waitUntil: 'domcontentloaded' });
+  await hasta(async () => /pendiente/i.test(await pg.locator('[data-gr-t]').innerText()),
+              'la página reconoció el pago pendiente');
+  const pend = await pg.locator('main').innerText();
+  ok(!/falta por pagar/i.test(pend),
+     'con el pago pendiente NO se anuncia el resto: todavía no ha pagado ni el anticipo');
+  ok(/termina el pago|se complete/i.test(pend), 'sino cómo terminar el que tiene a medias');
+  const waPend = decodeURIComponent(await pg.locator('[data-gr-wa]').getAttribute('href'));
+  ok(!/Falta por pagar/.test(waPend), 'y el WhatsApp tampoco lo declara');
+  await ctx.close();
+}
+
+/* ---- SIN JAVASCRIPT ----
+   ⚠ ESTE BLOQUE PASABA IGUAL CON JAVASCRIPT ENCENDIDO. Cinco de sus seis
+   comprobaciones daban idéntico en los dos contextos —contar `.ped-f` no mira
+   `hidden`, y la cifra grande también nace vacía con script cuando no hay nada
+   marcado—, así que el día que la emulación no se aplicase el bloque se habría
+   quedado en verde sin haber probado nada. Y eso PASÓ: bajo carga, el contexto
+   arrancó con JavaScript vivo en dos de cinco ejecuciones.
+
+   Ahora lo primero que hace es afirmar algo que es FALSO con script, para que
+   el bloque falle en voz alta si la emulación no se aplicó. */
+{
+  const ctx = await navegador.newContext({ javaScriptEnabled: false });
+  const pg = await ctx.newPage();
+  let enviado = null;
+  await ctx.route(COBRO, async ruta => {
+    enviado = ruta.request().postData();
+    await ruta.fulfill({ status: 200, contentType: 'text/html', body: 'ok' });
+  });
   await pg.goto(BASE + '/servicio.html', { waitUntil: 'load' });
+
+  /* EL CANARIO. Con script, `datos.hidden=true` corre al analizar el documento
+     y este bloque está escondido. Si se ve, es que no hay script — y si esto
+     falla, ninguna de las comprobaciones de abajo significa nada. */
+  const canario = await pg.locator('[data-sv-datos]').isVisible();
+  ok(canario, 'CANARIO: sin script el bloque de datos se ve — si esto falla, el resto de este bloque no prueba nada');
+
   ok(await pg.locator('.ped-f').count() === 3, 'sin JS se ven los tres bloques a la vez');
   ok(await pg.locator('input[name="paquete"]').count() === 4, 'y las cuatro opciones');
   /* Cada opción lleva su precio ESCRITO al lado, no calculado: sin script, ese
@@ -336,18 +464,59 @@ const elige = (pg, valor) => pg.locator(`.ped-op:has(input[value="${valor}"])`).
   ok((await pg.locator('[data-sv-tot]').textContent()).trim() === '',
      'y la cifra grande queda vacía en vez de mentir');
 
-  /* ⚠ Y LA FRASE DE FONDO NO PUEDE PROMETER EL ANTICIPO A SECAS. Aquí estaba
-     escrita la versión de «no tengo ficha», que ofrece el anticipo sin
-     condición; a quien llega sin JavaScript con su ficha ya hecha, la página le
-     ofrecía un anticipo que el Worker marca para revisión y que los términos no
-     sostienen. La condición tiene que estar DENTRO de la frase, porque sin
-     script no hay nadie que la cambie. */
-  const sinJs = await pg.$$eval('.sv-plan .sv-como', ps => ps.map(x => x.textContent.trim()));
-  for (const t of sinJs) console.log('      ' + t.replace(/\s+/g, ' '));
-  ok(sinJs.length === 2 && sinJs.every(t => /si la cuenta la creamos nosotros/i.test(t)),
-     'la frase de fondo condiciona el anticipo: sin script nadie va a condicionarlo por ella');
-  ok(sinJs.every(t => /contado/i.test(t)),
-     'y sigue diciendo que se puede pagar de contado, que es lo que vale siempre');
+  /* ⚠ LA FRASE TIENE QUE CAMBIAR SIN SCRIPT. Antes era un solo <p> que el
+     script reescribía, así que sin JavaScript sólo existía una de las dos
+     verdades: quien marcaba «ya aparece en Google» seguía leyendo «deja $750 de
+     anticipo». Ahora son tres párrafos hermanos y los turna el CSS. */
+  /* La pregunta de arriba nace respondida con «todavía no aparece», así que
+     ése es el estado de partida y hay exactamente UNA frase visible por
+     paquete. */
+  const sinFicha = await frases(pg);
+  ok(sinFicha.length === 2 && sinFicha.every(t => /deja \$[\d,]+ de anticipo/i.test(t)),
+     'con ficha por crear lo ofrece, y SIN script: lo hace el CSS');
+
+  await pg.locator('.ped-op:has(input[value="si"])').click();
+  const conFicha = await frases(pg);
+  for (const t of conFicha) console.log('      ' + t.replace(/\s+/g, ' '));
+  ok(conFicha.length === 2 && conFicha.every(t => !/deja \$[\d,]+ de anticipo/i.test(t)),
+     'y con ficha propia DEJA de prometerlo, también sin script');
+  ok(conFicha.every(t => /ya existe/i.test(t)), 'y explica por qué');
+
+  /* Y la opción no se puede pulsar: `pointer-events:none` por CSS. Es la única
+     de las tres capas —CSS, `disabled` del script, y el corte del Worker— que
+     sigue en pie cuando el JavaScript no carga. */
+  const anti = pg.locator('.ped-op:has(input[data-anticipo])').first();
+  await anti.click({ timeout: 1500 }).catch(() => {});
+  ok(!(await pg.locator('input[data-anticipo]').first().isChecked()),
+     'la opción de anticipo no se deja marcar con la ficha ya declarada propia');
+
+  /* El enlace de la ficha sólo se pide cuando hay ficha que enlazar. Sin script
+     se veía siempre, incluido el estado por defecto donde por definición no
+     existe. */
+  ok(await pg.locator('[data-sv-ficha]').isVisible(),
+     'con ficha propia sí se pide el enlace de la ficha');
+  await pg.locator('.ped-op:has(input[value="no"])').click();
+  ok(!(await pg.locator('[data-sv-ficha]').isVisible()),
+     'y con ficha por crear no se pide: no hay ficha que enlazar');
+
+  /* ⚠ LO QUE LA REGLA EXIGE DE VERDAD: QUE EL FORMULARIO SE ENVÍE.
+     Todo lo de arriba mira la página quieta. Lo que hace que «sin JavaScript se
+     sigue vendiendo» sea cierto es que el POST salga con lo que hay que
+     mandar, y eso no lo comprobaba nadie. */
+  await pg.locator('.ped-op:has(input[value="gp-t"])').click();
+  await pg.fill('[name=negocio]', 'El Molino Ruso');
+  await pg.fill('[name=negocio_ciudad]', 'San Luis Potosí');
+  await pg.fill('[name=nombre]', 'Gael');
+  await pg.fill('[name=tel]', '4423697248');
+  await pg.fill('[name=correo]', 'a@b.com');
+  await pg.locator('#sv-form button[type=submit]').click();
+  await pg.waitForURL(/pagos\.sycsolutions\.company/, { timeout: 8000 }).catch(() => {});
+  ok(!!enviado, 'SIN JAVASCRIPT EL FORMULARIO SE ENVÍA: eso es lo que sostiene la regla');
+  const qs = new URLSearchParams(enviado || '');
+  ok(qs.get('paquete') === 'gp-t', 'con el paquete elegido: ' + qs.get('paquete'));
+  ok(qs.get('ficha_tiene') === 'no', 'y con la respuesta que decide el anticipo');
+  ok([...qs.keys()].filter(k => /total|precio|monto|importe/i.test(k)).length === 0,
+     'y sin ningún importe dentro');
   await ctx.close();
 }
 

@@ -96,7 +96,8 @@
       <div class="sv-plan" role="group" aria-label="Lo esencial, $1,490">
         <p class="sv-nom">Lo esencial<span>$1,490</span></p>
         <p class="sv-que">Con las fotos que t&#250; nos mandes.</p>
-        <p class="sv-como" data-como-no="P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> y los $740 restantes cuando te entreguemos el acceso." data-como-si="Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.">P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> <b>si la cuenta la creamos nosotros</b> &#8212; los $740 restantes cuando te entreguemos el acceso.</p>
+        <p class="sv-como sv-como-no">P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> y los $740 restantes cuando te entreguemos el acceso.</p>
+        <p class="sv-como sv-como-si">Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.</p>
         <label class="ped-op">
           <input type="radio" name="paquete" value="gp-e" required
                  data-tot="$1,490" data-num="1490"
@@ -116,7 +117,8 @@
         <p class="sv-nom">Todo hecho<span>$2,300</span></p>
         <p class="sv-que">Vamos a tu negocio y tomamos las fotos.</p>
         <p class="sv-nota">La visita es en San Luis Potos&#237; y Soledad. Desde otra ciudad se hace todo lo dem&#225;s igual y las fotos las mandas t&#250;.</p>
-        <p class="sv-como" data-como-no="P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> y los $1,150 restantes cuando te entreguemos el acceso." data-como-si="Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.">P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> <b>si la cuenta la creamos nosotros</b> &#8212; los $1,150 restantes cuando te entreguemos el acceso.</p>
+        <p class="sv-como sv-como-no">P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> y los $1,150 restantes cuando te entreguemos el acceso.</p>
+        <p class="sv-como sv-como-si">Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.</p>
         <label class="ped-op">
           <input type="radio" name="paquete" value="gp-t" required
                  data-tot="$2,300" data-num="2300"
@@ -256,19 +258,18 @@
       if(caja)caja.classList.toggle('apagada',tiene);
       if(tiene&&o.checked){o.checked=false;perdida=true;}
     }
-    /* La frase de cada paquete tiene que decir lo mismo que sus opciones. */
-    for(const l of form.querySelectorAll('.sv-como')){
-      const t=tiene?l.dataset.comoSi:l.dataset.comoNo;
-      if(t)l.innerHTML=t;
-    }
-    /* El enlace de la ficha sólo tiene sentido si la ficha existe — y si deja
-       de tenerlo, hay que VACIARLO además de esconderlo: un campo escondido
+    /* ⚠ LA FRASE DE CADA PAQUETE YA NO LA ESCRIBE ESTE SCRIPT. Antes era un solo
+       <p> con las dos versiones en atributos `data-` que este bucle reescribía,
+       y sin JavaScript sólo existía una de las dos verdades: quien marcaba «ya
+       aparece en Google» seguía leyendo «deja $750 de anticipo». Ahora son tres
+       párrafos hermanos y los turna el CSS con `:has()`, que corre sin script.
+       Lo mismo con el enlace de la ficha, que se esconde por CSS.
+
+       Lo que sí sigue haciendo falta aquí es VACIARLO: un campo escondido
        conserva su valor y lo envía igual, así que quien pegaba su ficha y luego
-       corregía a «todavía no aparezco» mandaba las dos cosas a la vez. */
-    if(ficha){
-      ficha.hidden=!tiene;
-      if(!tiene)for(const c of ficha.querySelectorAll('input'))c.value='';
-    }
+       corregía a «todavía no aparezco» mandaba las dos cosas a la vez. Eso el
+       CSS no lo puede hacer. */
+    if(ficha&&!tiene)for(const c of ficha.querySelectorAll('input'))c.value='';
     if(perdida&&datos)datos.hidden=true;
     pinta();
   }

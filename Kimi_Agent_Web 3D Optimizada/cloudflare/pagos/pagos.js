@@ -80,6 +80,16 @@ const paquete = id => TABLA.paquetes.find(p => p.id === String(id));
    esta distinción el cobro de un perfil diría «envío gratis» en el checkout, y
    a quien está en San Luis le descontaría una paquetería que nunca existió. */
 const esServicio = p => p && p.tipo === 'servicio';
+/* Un anticipo se reconoce por lo que le falta por cobrar, que es un dato de la
+   tabla, y no sólo por la palabra en el título: quien renombre el concepto no
+   puede apagar sin querer la regla que protege el dinero. Se mira también el
+   título por si la tabla desplegada es anterior a la columna `resto`. */
+const esAnticipo = p => esServicio(p) &&
+  (Number(p.resto) > 0 || /anticipo/i.test(p.base || ''));
+
+/* Donde sí vamos a tomar las fotos. Fuera de aquí, «Todo hecho» se entrega
+   igual salvo la visita, y eso hay que decirlo en el aviso de la venta. */
+const CIUDADES_VISITA = /san\s*luis\s*potos|soledad/i;
 
 function pesos(n) {
   return '$' + n.toLocaleString('en-US');
@@ -309,8 +319,18 @@ function resumen(p, d) {
        más legítimo que uno con ficha propia — es el mismo caso con menos
        información, y quien manda el formulario a mano es justamente quien puede
        omitir el campo. */
-    const anticipo = /anticipo/i.test(p.base || '');
+    const anticipo = esAnticipo(p);
     if (anticipo && d.ficha_tiene !== 'no') l.push('REVISAR: anticipo sin ficha declarada por crear');
+    /* CUÁNTO FALTA POR COBRAR, por el mismo canal que el cobro. Ese número sólo
+       existía en el sessionStorage del navegador del comprador —quien lo
+       cambiase desde las herramientas del navegador le enseñaba al vendedor lo
+       que quisiera— y al aviso de la venta no llegaba por ningún lado. */
+    if (anticipo && Number(p.resto) > 0) l.push('ANTICIPO: faltan ' + pesos(p.resto));
+    /* Y SI LA VISITA NO APLICA, DICHO ARRIBA. Es la mitad de lo que separa este
+       paquete del otro, y quien prepara el trabajo tenía que caer en la cuenta
+       leyendo la ciudad en mitad de una línea. */
+    if (p.visita && !CIUDADES_VISITA.test(d.negocio_ciudad || ''))
+      l.push('SIN VISITA: fuera de SLP/Soledad, fotos del cliente');
     if (d.negocio) l.push(d.negocio + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
     /* Tres estados, no dos: «no lo dijo» no puede imprimirse como «la creamos
        nosotros», que es una instrucción de trabajo y no un dato. */
@@ -507,13 +527,27 @@ async function creaPreferencia(p, env, origen, pedido) {
       installments: cuotas(p),
       default_installments: 1,
     },
-    back_urls: {
+    back_urls: (() => {
       /* A gracias.html y no a la portada: ahí es donde el comprador ve su
-         pedido y donde tiene el botón de WhatsApp con todo escrito. */
-      success: origen + '/gracias.html',
-      pending: origen + '/gracias.html?estado=pendiente',
-      failure: origen + '/?pago=cancelado',
-    },
+         pedido y donde tiene el botón de WhatsApp con todo escrito.
+
+         ⚠ Y LA RAMA LA DECIDE EL SERVIDOR, que es el único que la sabe con
+         certeza. Las dos compras volvían a la misma página, y esa página sólo
+         distingue servicio de placa leyendo el sessionStorage que escribe un
+         script. Sin JavaScript no hay nada que leer: a quien acababa de
+         contratar la configuración de su Google se le decía «preparamos tus
+         placas» y NUNCA veía la única frase que importa —que nos añada como
+         administradores con nuestro correo—, que es la que arranca el plazo de
+         entrega. Pagaba y se quedaba esperando algo que dependía de él.
+         Aquí `esServicio(p)` ya lo sabe, así que se manda a una página cuyo
+         texto es cierto desde el marcado, sin depender de ningún script. */
+      const pagina = esServicio(p) ? '/gracias-servicio.html' : '/gracias.html';
+      return {
+        success: origen + pagina,
+        pending: origen + pagina + '?estado=pendiente',
+        failure: origen + '/?pago=cancelado',
+      };
+    })(),
     auto_return: 'approved',
     /* Lo que el comprador ve en el estado de cuenta de su tarjeta. Sin esto
        aparece un nombre que no reconoce y acaba en una contracargo. */
@@ -640,7 +674,40 @@ export default {
       return pagina('Ese paquete no existe.', null, 404);
     }
 
-    const destino = await creaPreferencia(p, env, ORIGEN, pedido);
+    /* ⚠ ANTICIPO CON FICHA DECLARADA PROPIA: AQUÍ SÍ SE PARA.
+       Esto antes sólo se marcaba, con el argumento de que bloquear no impide
+       nada —basta con declarar «no»— y sí puede tirar una venta legítima si el
+       script no corre. El argumento vale para quien manda el formulario a
+       mano; no vale para el CLIENTE HONESTO SIN JAVASCRIPT, que es quien de
+       verdad llegaba aquí: marcaba «ya aparece en Google», marcaba el anticipo
+       porque nada se lo impedía, y se le cobraba la mitad de un trabajo cuya
+       entrega no se puede retener —en un perfil de Google cada foto es pública
+       y del cliente en el segundo en que se sube—. Ni él ni nosotros
+       queríamos eso.
+       Se para SÓLO en la contradicción explícita, con la respuesta ya saneada a
+       'si' o 'no': quien no respondió sigue pasando y sale marcado con REVISAR,
+       porque ahí falta información, no sobra. Y no es un error seco: la página
+       ofrece el WhatsApp para terminar la compra por el otro camino. */
+    if (esAnticipo(p) && pedido.ficha_tiene === 'si') {
+      console.log('anticipo-con-ficha-propia', id.slice(0, 8));
+      return pagina(
+        'El anticipo sólo se puede dejar cuando la cuenta de Google la creamos nosotros. ' +
+        'Como tu ficha ya existe, este paquete va de contado: vuelve atrás y elige el pago ' +
+        'completo, o escríbenos y lo vemos.', p, 409, pedido);
+    }
+
+    /* ⚠ SE VUELVE AL ORIGEN DESDE EL QUE SE COMPRÓ, no al apex siempre.
+       Este Worker acepta el formulario desde tres orígenes (ORIGENES_OK) pero
+       construía la vuelta con la constante, así que quien compraba desde
+       www.sycsolutions.company o desde syc-solutions.pages.dev volvía al apex.
+       Y el pedido viaja en sessionStorage, que es POR ORIGEN: la vuelta caía en
+       un almacén vacío y la página perdía el resumen, el WhatsApp escrito y —en
+       un servicio— el paso del correo de administrador. Se compraba bien y se
+       volvía a una pantalla que no sabía nada.
+       Si el origen no viene o no está en la lista se usa el apex, que es el
+       comportamiento de antes. */
+    const vuelta = origen && ORIGENES_OK.has(origen) ? origen : ORIGEN;
+    const destino = await creaPreferencia(p, env, vuelta, pedido);
     if (!destino) {
       return pagina('Mercado Pago no respondió. No se te ha cobrado nada.', p, 502, pedido);
     }

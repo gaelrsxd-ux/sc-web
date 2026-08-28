@@ -199,18 +199,28 @@ test('el anticipo con ficha propia llega MARCADO al aviso de la venta', async ()
   const anticipo = TABLA.paquetes.find(p => p.tipo === 'servicio' && /anticipo/i.test(p.base));
   assert.ok(anticipo, 'hay algún paquete de anticipo en el catálogo');
 
+  /* ⚠ CON LA FICHA DECLARADA PROPIA YA NO SE COBRA: se para.
+     Antes esto sólo se marcaba. El argumento —bloquear no impide nada, basta
+     con declarar «no»— vale para quien manda el formulario a mano, no para el
+     cliente honesto sin JavaScript, que era quien de verdad llegaba aquí y a
+     quien se le cobraba la mitad de un trabajo cuya entrega no se puede
+     retener. */
   montaCaches();
   let llamadas = montaFetch(okMP);
-  await worker.fetch(post({ paquete: anticipo.id, ficha_tiene: 'si', negocio: 'El Molino Ruso' }), ENV);
-  assert.match(llamadas[0].cuerpo.additional_info, /REVISAR: anticipo/,
-    'el aviso de la venta tiene que gritar la combinación imposible');
+  const corte = await worker.fetch(
+    post({ paquete: anticipo.id, ficha_tiene: 'si', negocio: 'El Molino Ruso' }), ENV);
+  assert.equal(corte.status, 409, 'la contradicción explícita se rechaza, no se cobra');
+  assert.equal(llamadas.length, 0, 'y no se llega a crear ninguna preferencia de pago');
+  const html = await corte.text();
+  assert.match(html, /de contado/i, 'y se le dice por dónde sí puede seguir');
+  assert.match(html, /wa\.me/, 'con una salida por WhatsApp, que no es un error seco');
 
   /* Y SIN RESPONDER A LA PREGUNTA, también. Quien manda el formulario a mano es
      justamente quien puede omitir el campo, y un anticipo sin declarar que la
      cuenta está por crear no es más legítimo que uno con ficha propia: es el
      mismo caso con menos información. La condición mira si se dijo «no», no si
      se dijo «sí». */
-  for (const raro of [undefined, '', 'SI', 'sí', 'quizá']) {
+  for (const raro of [undefined, '', 'SI', 'sí', 'quizá']) {   // 'si' exacto ya se rechaza arriba
     montaCaches();
     llamadas = montaFetch(okMP);
     const campos = { paquete: anticipo.id, negocio: 'El Molino Ruso' };
@@ -227,6 +237,90 @@ test('el anticipo con ficha propia llega MARCADO al aviso de la venta', async ()
   await worker.fetch(post({ paquete: anticipo.id, ficha_tiene: 'no', negocio: 'El Molino Ruso' }), ENV);
   assert.doesNotMatch(llamadas[0].cuerpo.additional_info, /REVISAR/,
     'con la combinación legítima no puede saltar la marca');
+});
+
+test('el aviso de la venta dice CUÁNTO falta por cobrar de un anticipo', async () => {
+  /* Ese número sólo existía en el sessionStorage del navegador del comprador:
+     cualquiera podía cambiarlo desde las herramientas del navegador y el
+     vendedor vería lo que el comprador quisiera. Ahora sale de la tabla y viaja
+     por el mismo canal que el cobro. */
+  const anticipo = TABLA.paquetes.find(p => p.tipo === 'servicio' && Number(p.resto) > 0);
+  assert.ok(anticipo, 'la tabla declara lo que queda por cobrar');
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: anticipo.id, ficha_tiene: 'no', negocio: 'El Molino Ruso' }), ENV);
+  assert.match(llamadas[0].cuerpo.additional_info,
+    new RegExp('ANTICIPO: faltan \\$' + anticipo.resto.toLocaleString('en-US')),
+    'con el importe exacto de la tabla');
+});
+
+test('«Todo hecho» desde fuera de San Luis se marca SIN VISITA', async () => {
+  /* La visita es la mitad de lo que separa este paquete del de $1,490. Quien
+     prepara el trabajo tenía que caer en la cuenta leyendo la ciudad en mitad
+     de una línea. */
+  const conVisita = TABLA.paquetes.find(p => p.visita && !p.resto);
+  assert.ok(conVisita, 'algún paquete declara que lleva visita');
+
+  for (const [ciudad, marcado] of [
+    ['Monterrey', true], ['Ciudad de México', true], ['', true],
+    ['San Luis Potosí', false], ['san luis potosi', false],
+    ['Soledad de Graciano Sánchez', false],
+  ]) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: conVisita.id, ficha_tiene: 'no', negocio: 'X', negocio_ciudad: ciudad }), ENV);
+    const info = llamadas[0].cuerpo.additional_info;
+    assert.equal(/SIN VISITA/.test(info), marcado, `«${ciudad}» → ${marcado ? 'marcado' : 'sin marca'}`);
+  }
+
+  /* Y el paquete sin visita nunca lleva la marca: una que sale siempre se deja
+     de leer a la semana. */
+  const sinVisita = TABLA.paquetes.find(p => p.tipo === 'servicio' && !p.visita);
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: sinVisita.id, ficha_tiene: 'no', negocio: 'X', negocio_ciudad: 'Monterrey' }), ENV);
+  assert.doesNotMatch(llamadas[0].cuerpo.additional_info, /SIN VISITA/);
+});
+
+test('se vuelve al origen desde el que se compró, no al apex siempre', async () => {
+  /* El pedido viaja en sessionStorage, que es POR ORIGEN. Volviendo a otro
+     dominio la página cae en un almacén vacío y pierde el resumen, el WhatsApp
+     escrito y —en un servicio— el paso del correo de administrador. */
+  for (const origen of ['https://www.sycsolutions.company', 'https://syc-solutions.pages.dev']) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: '1' }, { headers: { Origin: origen } }), ENV);
+    assert.ok(llamadas[0].cuerpo.back_urls.success.startsWith(origen),
+      `desde ${origen} se vuelve a ${origen}, no a otro sitio`);
+  }
+  /* Sin cabecera Origin se sigue usando el apex, que es lo de antes. */
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  const req = new Request('https://pagos.sycsolutions.company/ir', {
+    method: 'POST', body: (() => { const f = new FormData(); f.append('paquete', '1'); return f; })(),
+    headers: { 'CF-Connecting-IP': '203.0.113.9' },
+  });
+  await worker.fetch(req, ENV);
+  assert.ok(llamadas[0].cuerpo.back_urls.success.startsWith('https://sycsolutions.company'));
+});
+
+test('un SERVICIO vuelve a su propia página de gracias, y una placa a la suya', async () => {
+  /* La página sólo distingue una compra de otra leyendo el sessionStorage que
+     escribe un script. Sin JavaScript no hay nada que leer, y al comprador de
+     un servicio se le decía «preparamos tus placas» sin llegar a ver nunca que
+     tenía que darnos acceso. Aquí el servidor sí lo sabe. */
+  const serv = TABLA.paquetes.find(p => p.tipo === 'servicio' && !p.resto);
+  montaCaches();
+  let llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: serv.id, ficha_tiene: 'no' }), ENV);
+  assert.match(llamadas[0].cuerpo.back_urls.success, /\/gracias-servicio\.html$/);
+  assert.match(llamadas[0].cuerpo.back_urls.pending, /\/gracias-servicio\.html\?estado=pendiente$/);
+
+  montaCaches();
+  llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: '1' }), ENV);
+  assert.match(llamadas[0].cuerpo.back_urls.success, /\/gracias\.html$/);
+  assert.match(llamadas[0].cuerpo.back_urls.pending, /\/gracias\.html\?estado=pendiente$/);
 });
 
 test('«no dijo si tiene ficha» no se imprime como «la creamos nosotros»', async () => {

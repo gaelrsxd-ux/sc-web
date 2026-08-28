@@ -124,6 +124,11 @@ const SERVICIOS = [
        Va en el mismo bloque que la promesa, no en un enlace. */
     nota: 'La visita es en San Luis Potosí y Soledad. Desde otra ciudad se hace todo '
         + 'lo demás igual y las fotos las mandas tú.',
+    /* Y la misma condición, en un dato que pueda leer el Worker. La página ya
+       se lo avisa al comprador; el otro extremo —quien prepara el trabajo— no
+       se enteraba por ningún lado y tenía que caer en la cuenta leyendo la
+       ciudad en mitad de una línea. */
+    visita: true,
     destaca: true,
   },
 ];
@@ -140,10 +145,19 @@ const SERVICIOS = [
 {
   const vistos = new Set();
   for (const s of SERVICIOS) {
-    if (!/^[a-z0-9-]{1,8}$/.test(s.id))
-      throw new Error(`servicio «${s.nombre}»: el id «${s.id}» no cabe en los 8 caracteres que lee el Worker`);
-    if (vistos.has(s.id)) throw new Error(`servicio: el id «${s.id}» está repetido`);
-    vistos.add(s.id);
+    /* ⚠ SE VALIDA EL ID QUE DE VERDAD SE PUBLICA, no el que está escrito arriba.
+       El del anticipo es `s.id + 'a'` y se construye en dos sitios —el bloque
+       de la página y la tabla del Worker— sin pasar por aquí. Con un id de 8
+       caracteres, que la guarda aceptaba, el anticipo salía de 9: el navegador
+       manda los nueve, el Worker recorta a ocho (`.slice(0, 8)`) y acaba
+       cobrando el paquete DE CONTADO — o, si el recorte no casa con nada,
+       responde «Ese paquete no existe» y la venta se cae. */
+    for (const id of s.anticipo ? [s.id, s.id + 'a'] : [s.id]) {
+      if (!/^[a-z0-9-]{1,8}$/.test(id))
+        throw new Error(`servicio «${s.nombre}»: el id «${id}» no cabe en los 8 caracteres que lee el Worker`);
+      if (vistos.has(id)) throw new Error(`servicio: el id «${id}» está repetido`);
+      vistos.add(id);
+    }
     if (!Number.isInteger(s.precio) || s.precio <= 0)
       throw new Error(`servicio «${s.nombre}»: el precio no es un entero positivo`);
     /* Un anticipo mayor o igual que el precio no es un anticipo, y uno de cero
@@ -483,17 +497,6 @@ function bloqueServicio() {
       : 'Un solo pago.';
     const comoSi = 'Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: '
       + 'el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.';
-    /* LA TERCERA FRASE ES LA QUE VE QUIEN NO EJECUTA SCRIPTS, y por eso es la
-       única que tiene que ser cierta en los dos casos a la vez. Aquí estaba
-       escrita la de «no tengo ficha», que promete el anticipo sin condición; a
-       quien llegaba sin JavaScript con su ficha ya hecha, la página le ofrecía
-       un anticipo que el Worker marca para revisión y que los términos no
-       sostienen. La condición va dentro de la frase, no en el script. */
-    const comoBase = s.anticipo
-      ? `P&#225;galo <b>de contado</b>, o deja <b>${pesos(s.anticipo)} de anticipo</b> `
-        + `<b>si la cuenta la creamos nosotros</b> &#8212; los ${pesos(resto)} restantes `
-        + 'cuando te entreguemos el acceso.'
-      : 'Un solo pago.';
 
     /* DOS ATRIBUTOS PARA EL MISMO IMPORTE, y no es duplicar por gusto.
        `data-tot` es lo que se PINTA en la cifra grande, ya con su coma y su
@@ -525,7 +528,15 @@ function bloqueServicio() {
       `        <p class="sv-nom">${ent(corto)}<span>${pesos(s.precio)}</span></p>\n` +
       `        <p class="sv-que">${ent(s.resumen)}.</p>\n` +
       (s.nota ? `        <p class="sv-nota">${ent(s.nota)}</p>\n` : '') +
-      `        <p class="sv-como" data-como-no="${comoNo}" data-como-si="${comoSi}">${comoBase}</p>\n` +
+      /* DOS PÁRRAFOS HERMANOS Y NO UNO CON DOS ATRIBUTOS. Con un solo <p> que
+         el script reescribe, sin JavaScript sólo existe una de las dos verdades
+         y la otra no hay quien la enseñe. Siendo hermanos los turna el CSS con
+         `:has()` sobre el radio marcado, que funciona sin script.
+         Son dos y no tres porque la pregunta de arriba nace respondida: no hay
+         estado «sin contestar» que cubrir, y un párrafo que no puede verse
+         nunca es peor que no tenerlo — parece que sostiene algo. */
+      `        <p class="sv-como sv-como-no">${comoNo}</p>\n` +
+      `        <p class="sv-como sv-como-si">${comoSi}</p>\n` +
       ops.join('\n') + '\n      </div>';
   };
   return '<!-- servicio:opciones -->\n' + SERVICIOS.map(bloque).join('\n') +
@@ -680,12 +691,21 @@ function paquetesJson() {
       /* Dos filas por servicio: el de contado y el del anticipo. Son dos
          paquetes distintos para el Worker porque son dos importes distintos, y
          el importe NUNCA puede salir de lo que mande el navegador. */
-      const fila = (id, base, total) => ({
+      const fila = (id, base, total, resto) => ({
         id, tipo: 'servicio', piezas: 1, base, total, envio: 0, cuotas: 1,
+        ...(resto ? { resto } : {}),
+        ...(s.visita ? { visita: true } : {}),
       });
       const filas = [fila(s.id, s.nombre, s.precio)];
+      /* `resto` es lo que queda por cobrar después del anticipo. Va EN LA TABLA
+         y no sólo en el navegador: hasta ahora ese número existía únicamente en
+         el sessionStorage del comprador, así que el aviso de la venta que le
+         llega al titular no lo traía por ningún lado — y cualquiera podía
+         cambiarlo desde las herramientas del navegador y el vendedor vería lo
+         que el comprador quisiera. Con esto el importe autoritativo llega por
+         el mismo canal que el cobro. */
       if (s.anticipo) filas.push(
-        fila(s.id + 'a', s.nombre + ' · anticipo', s.anticipo));
+        fila(s.id + 'a', s.nombre + ' · anticipo', s.anticipo, s.precio - s.anticipo));
       return filas;
     })),
   }, null, 2) + '\n';

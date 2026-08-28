@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pedido recibido — S&amp;C Solutions</title>
-<meta name="description" content="Tu pedido de placas de reseñas para Google quedó registrado.">
+<!-- Neutra a propósito: esta página sirve a los dos caminos de cobro mientras
+     el Worker desplegado siga mandando aquí los servicios, y es lo que se ve en
+     la vista previa cuando alguien comparte el enlace por WhatsApp. Decía «tu
+     pedido de placas», que a quien contrató un servicio es sencillamente falso. -->
+<meta name="description" content="Tu pedido quedó registrado.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -120,6 +124,11 @@
       ?'añádenos como administrador de tu ficha con el correo sc.solutionscompanymx@gmail.com'
       :'te escribimos por WhatsApp para pedirte lo que necesitemos';
     if(titulo&&!pendiente)titulo.innerHTML='Listo, <em>ya casi</em>';
+    /* La pestaña y el enlace de vuelta también hablaban de placas: «Pedido
+       recibido» y «Volver a la tienda» apuntando a la sección del producto. */
+    document.title='Contratado — S&C Solutions';
+    const vuelta=document.querySelector('a[href="/#productos"]');
+    if(vuelta){vuelta.href='/#servicios';vuelta.textContent='Volver a los servicios';}
     if(parrafo)parrafo.textContent=pendiente
       ?'Mercado Pago nos avisará en cuanto se complete. Si elegiste pagar en '+
        'efectivo o por transferencia, termina el pago con las instrucciones que '+
@@ -134,8 +143,16 @@
       const partes=[
         ['Paquete',(d._t||'')+(d._tot?' — '+pesos(d._tot):'')],
         /* Quien deja un anticipo se va sin saber cuánto debe si nadie se lo
-           dice, y el importe grande que acaba de ver es el del anticipo. */
-        ['Falta por pagar',d._resto?pesos(d._resto)+' cuando te entreguemos el acceso':''],
+           dice, y el importe grande que acaba de ver es el del anticipo.
+
+           ⚠ PERO CON EL PAGO PENDIENTE ESTA FILA MIENTE. El arreglo del
+           pendiente protegía el título y el párrafo y esta línea se pintaba
+           igual, así que a quien tiene un recibo de efectivo sin pagar en la
+           mano se le decía que lo único pendiente son $1,150 «cuando te
+           entreguemos el acceso» — cuando no ha pagado nada y el primero de los
+           dos pagos hay que hacerlo AHORA. Es la forma de que no pague el
+           anticipo, que es justo la venta que el aviso existe para salvar. */
+        ['Falta por pagar',(!pendiente&&d._resto)?pesos(d._resto)+' cuando te entreguemos el acceso':''],
         ['Negocio',[d.negocio,d.negocio_ciudad].filter(Boolean).join(', ')],
         ['Ficha',propio?'Ya existe — nos das acceso':'No existe — la creamos nosotros'],
         ['Enlace',d.ficha],
@@ -161,7 +178,7 @@
     if(wa){
       const l=['Hola. Acabo de contratar la configuración de mi Google desde la web.'];
       if(d._t)l.push('Paquete: '+d._t);
-      if(d._resto)l.push('Falta por pagar: '+pesos(d._resto));
+      if(!pendiente&&d._resto)l.push('Falta por pagar: '+pesos(d._resto));
       if(d.negocio)l.push('Negocio: '+d.negocio+(d.negocio_ciudad?', '+d.negocio_ciudad:''));
       l.push(propio?'Ya tengo ficha en Google':'Todavía no aparezco en Google');
       if(d.ficha)l.push('Mi ficha: '+d.ficha);

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contratado — S&amp;C Solutions</title>
+<meta name="description" content="Tu configuración del perfil de Google quedó registrada.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/legal.css">
+<link rel="stylesheet" href="assets/pedido.css">
+</head>
+<body>
+<div class="halo" aria-hidden="true"></div>
+
+<header class="barra">
+  <a class="marca" href="/">
+    <img src="assets/logo.svg" alt="">
+    <b>S&amp;C <em>Solutions</em></b>
+  </a>
+  <a class="volver" href="/">← Volver al inicio</a>
+</header>
+
+<main>
+  <!-- ══════════ POR QUÉ ESTA PÁGINA EXISTE ══════════
+       Un servicio no se envía, se empieza — y lo que hay que decirle a quien
+       acaba de contratar uno no es «ya lo preparamos», sino QUÉ TIENE QUE HACER
+       ÉL: darnos acceso. Ese es el momento en que arranca el plazo de entrega.
+
+       Antes las dos compras volvían a gracias.html, que distingue una de otra
+       leyendo el sessionStorage que escribe un script. Sin JavaScript no hay
+       nada que leer: al comprador de un servicio se le decía «preparamos tus
+       placas» —un envío que no existe— y NUNCA veía el correo al que tenía que
+       añadirnos. Pagaba y se quedaba esperando algo que dependía de él.
+
+       Aquí la rama la decide el Worker (back_urls, cloudflare/pagos/pagos.js),
+       que es el único que la sabe con certeza, y todo lo que hace falta está
+       ESCRITO EN EL MARCADO. El script de abajo sólo añade el resumen del
+       pedido y el WhatsApp ya redactado; si no corre, no se pierde nada
+       importante.
+
+       ⚠ ESTA PÁGINA NO CONFIRMA NINGÚN COBRO POR SÍ SOLA. Es una dirección
+       pública: cualquiera puede escribirla sin haber pagado. Lo que confirma un
+       pago es el aviso de Mercado Pago, y por eso el texto habla de lo que hace
+       el comprador ahora, sin afirmar que el dinero llegó. -->
+  <div class="gr-marca" aria-hidden="true">✓</div>
+  <h1 class="gr-t" data-gr-t>Listo, <em>ya casi</em></h1>
+
+  <!-- Este párrafo es el que se lee sin JavaScript, así que dice los DOS casos:
+       sin script no se puede saber cuál es, y callarse el que toque es
+       justamente el fallo que esta página vino a arreglar. Con script, la rama
+       de abajo lo cambia por el que corresponde. -->
+  <p class="gr-p" data-gr-p>Ya lo tenemos. En cuanto Mercado Pago confirme el pago
+    empezamos, y tienes tu perfil listo en 1 a 7 d&#237;as h&#225;biles &#8212;normalmente 2 o 3&#8212;
+    desde que tengamos el acceso y el material.</p>
+
+  <!-- EL PASO DEL CLIENTE, EN EL MARCADO Y NO EN UN SCRIPT. Es la única frase
+       de toda la página que, si falta, deja el trabajo parado sin que nadie
+       sepa por qué. -->
+  <div class="gr-paso">
+    <p><b>Si tu negocio ya aparece en Google:</b> falta un paso tuyo &#8212;
+      a&#241;&#225;denos como <b>administrador</b> de tu ficha con el correo
+      <b class="gr-correo">sc.solutionscompanymx@gmail.com</b>. En cuanto lo hagas empezamos.</p>
+    <p><b>Si todav&#237;a no apareces:</b> no tienes que hacer nada m&#225;s. Creamos la
+      cuenta y la ficha nosotros y te escribimos por WhatsApp para pedirte lo que
+      necesitemos; al terminar te entregamos el acceso.</p>
+  </div>
+
+  <!-- El resumen sólo aparece si esta pestaña es la misma en la que se contrató:
+       los datos viven en sessionStorage, no en la dirección, para que un pedido
+       con nombre y teléfono no acabe en el historial del navegador. -->
+  <dl class="ped-resumen" data-gr-resumen hidden style="margin-top:30px"></dl>
+
+  <a class="gr-wa" data-gr-wa
+     href="https://wa.me/524423697248?text=Hola.%20Acabo%20de%20contratar%20la%20configuraci%C3%B3n%20de%20mi%20Google%20desde%20la%20web."
+     target="_blank" rel="noopener noreferrer">Escr&#237;benos por WhatsApp</a>
+
+  <p class="ped-pie">As&#237; lo tenemos por escrito y puedes preguntarnos
+    cualquier cosa por el mismo sitio.</p>
+
+  <p class="ped-pie" style="margin-top:26px">
+    <a href="/#servicios">Volver a los servicios</a> &#183;
+    <a href="terminos.html#perfil-google">T&#233;rminos</a> &#183;
+    <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
+</main>
+
+<script>
+/* ------------------------------------------------------------------------
+   EL PEDIDO, DE VUELTA
+
+   servicio.html guardó lo que el visitante escribió justo antes de salir hacia
+   Mercado Pago. Aquí se recupera para dos cosas: enseñárselo —para que vea que
+   no se perdió nada— y dejar el WhatsApp escrito de una vez.
+
+   Todo esto es opcional por diseño. Sin JavaScript, sin sessionStorage o
+   abierto en otra pestaña, el marcado de arriba ya dice lo importante —incluido
+   el correo al que hay que añadirnos— y el botón de WhatsApp sigue funcionando
+   con un mensaje genérico.
+   --------------------------------------------------------------------- */
+(()=>{
+  const wa=document.querySelector('[data-gr-wa]');
+  const caja=document.querySelector('[data-gr-resumen]');
+  const titulo=document.querySelector('[data-gr-t]');
+  const parrafo=document.querySelector('[data-gr-p]');
+
+  /* Un pago en efectivo o por transferencia vuelve aquí SIN estar cobrado
+     todavía. Decirle «ya casi está» a quien tiene un recibo sin pagar en la
+     mano es la forma de que nadie lo pague nunca. */
+  const pendiente=new URLSearchParams(location.search).get('estado')==='pendiente';
+  if(pendiente){
+    if(titulo)titulo.innerHTML='Tu pago est&#225; <em>pendiente</em>';
+    if(parrafo)parrafo.textContent='Mercado Pago nos avisará en cuanto se complete. '+
+      'Si elegiste pagar en efectivo o por transferencia, tienes que terminar el pago '+
+      'con las instrucciones que te dieron; hasta entonces no empezamos.';
+  }
+
+  let d=null;
+  try{
+    const bruto=sessionStorage.getItem('syc_pedido');
+    if(bruto)d=JSON.parse(bruto);
+  }catch(_){}
+  if(!d||typeof d!=='object')return;
+
+  const pesos=n=>'$'+Number(n||0).toLocaleString('en-US');
+  const propio=d.ficha_tiene==='si';
+
+  /* Con el dato delante ya se puede decir UNO de los dos casos en vez de los
+     dos. El pendiente manda: el paso del cliente se sigue diciendo, pero detrás
+     de «cuando se complete», que es cuando es verdad. */
+  if(!pendiente&&parrafo){
+    parrafo.textContent=propio
+      ?'Falta un paso tuyo: añádenos como administrador de tu ficha con el correo '+
+       'sc.solutionscompanymx@gmail.com. En cuanto lo hagas empezamos, y tienes tu perfil '+
+       'listo en 1 a 7 días hábiles (normalmente 2 o 3).'
+      :'No tienes que hacer nada más: te escribimos por WhatsApp para pedirte lo que '+
+       'necesitemos, y tienes tu perfil listo en 1 a 7 días hábiles (normalmente 2 o 3) '+
+       'desde que tengamos el material.';
+  }
+
+  if(caja){
+    const partes=[
+      ['Paquete',(d._t||'')+(d._tot?' — '+pesos(d._tot):'')],
+      /* ⚠ CON EL PAGO PENDIENTE ESTA FILA MIENTE, y por eso no se pinta.
+         Quien tiene un recibo de efectivo sin pagar en la mano no debe «$1,150
+         cuando te entreguemos el acceso»: no ha pagado nada todavía, y el
+         primero de los dos pagos hay que hacerlo AHORA. Decirle que lo único
+         pendiente es el resto es la forma de que no pague el anticipo. */
+      ['Falta por pagar',(!pendiente&&d._resto)?pesos(d._resto)+' cuando te entreguemos el acceso':''],
+      ['Negocio',[d.negocio,d.negocio_ciudad].filter(Boolean).join(', ')],
+      ['Ficha',propio?'Ya existe — nos das acceso':'No existe — la creamos nosotros'],
+      ['Enlace',d.ficha],
+      ['Contacto',d.nombre],
+      ['Teléfono',d.tel],
+      ['Correo',d.correo],
+    ];
+    let hay=false;
+    for(const [k,v] of partes){
+      if(!v)continue;
+      hay=true;
+      const fila=document.createElement('div');
+      const dt=document.createElement('dt'),dd=document.createElement('dd');
+      dt.textContent=k;
+      /* textContent y nunca innerHTML: esto es texto del visitante. */
+      dd.textContent=v;
+      fila.append(dt,dd);
+      caja.append(fila);
+    }
+    if(hay)caja.hidden=false;
+  }
+
+  if(wa){
+    const l=['Hola. Acabo de contratar la configuración de mi Google desde la web.'];
+    if(d._t)l.push('Paquete: '+d._t);
+    if(!pendiente&&d._resto)l.push('Falta por pagar: '+pesos(d._resto));
+    if(d.negocio)l.push('Negocio: '+d.negocio+(d.negocio_ciudad?', '+d.negocio_ciudad:''));
+    l.push(propio?'Ya tengo ficha en Google':'Todavía no aparezco en Google');
+    if(d.ficha)l.push('Mi ficha: '+d.ficha);
+    if(d.nombre)l.push('Soy: '+d.nombre);
+    if(d.correo)l.push('Correo: '+d.correo);
+    wa.href='https://wa.me/524423697248?text='+encodeURIComponent(l.join('\n'));
+  }
+})();
+</script>
+</body>
+</html>
