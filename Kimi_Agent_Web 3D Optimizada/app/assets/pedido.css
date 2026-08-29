@@ -184,6 +184,21 @@ main{max-width:560px}
 #sv-form:has(input[name="ficha_tiene"][value="no"]:checked) .sv-como-no{display:block}
 #sv-form:has(input[name="ficha_tiene"][value="si"]:checked) .sv-como-si{display:block}
 
+/* Y lo mismo dentro de «ver qué incluye»: un punto que sólo es cierto en uno de
+   los dos casos se turna con la misma pregunta. «Contestamos hasta 30 reseñas
+   que ya te dejaron» es papel mojado para quien acaba de marcar que todavía no
+   aparece en Google — no hay ninguna que contestar—, y dejarlo puesto es
+   ofrecer trabajo que no existe justo donde se compara qué se lleva cada
+   paquete.
+
+   ⚠ SÓLO SE ESCONDE LO CONDICIONAL. El punto que vale en los dos casos va sin
+   clase y por tanto siempre se ve: en un navegador que no entienda `:has()`
+   —que es donde estas reglas no llegan— la lista pierde el matiz, no la
+   promesa. */
+.sv-solo-si,.sv-solo-no{display:none}
+#sv-form:has(input[name="ficha_tiene"][value="si"]:checked) .sv-solo-si{display:list-item}
+#sv-form:has(input[name="ficha_tiene"][value="no"]:checked) .sv-solo-no{display:list-item}
+
 /* Y con ficha propia, la opción de anticipo se apaga aunque no haya script.
    `pointer-events:none` sobre la tarjeta evita el clic; el `disabled` de verdad
    lo sigue poniendo el script, y el Worker rechaza la combinación pase lo que

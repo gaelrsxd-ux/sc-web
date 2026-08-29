@@ -265,10 +265,42 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
      aparece en Google le estamos creando la ficha de cero y no hay ninguna
      reseña anterior. Ninguna línea puede dar por hecho que ya existan. */
   const todas = [...suyos, ...baratos];
-  ok(!todas.some(x => /que ya te (dejaron|dieron)|reseñas anteriores|tus reseñas de antes/i.test(x)),
-     'ninguna línea da por hecho que el negocio ya tenga reseñas');
-  ok(todas.some(x => /reseñas que tengas/i.test(x)),
-     'y la de las reseñas es cierta con reseñas y sin ellas');
+
+  /* ⚠ EL FALLO QUE ENCONTRÓ EL DUEÑO, SEGUNDA VUELTA. «Contestamos las reseñas
+     que tengas, hasta 30» no es falso —quien no tiene ninguna tiene cero— pero
+     es papel mojado para la mitad de los compradores: acaban de marcar
+     «todavía no aparece en Google», que es la PRIMERA pregunta de la pantalla,
+     y dos renglones después se les ofrece contestar reseñas que no existen.
+
+     Así que se comprueba lo que se VE, no lo que está escrito: con la ficha
+     por crear esa línea no puede aparecer, y con la ficha ya existente sí. */
+  const puntosVisibles = () => pg.$$eval('.sv-plan[data-plan="gp-t"] .sv-mas li',
+    ls => ls.filter(x => x.offsetParent !== null).map(x => x.textContent.trim()));
+
+  const conFichaNueva = await puntosVisibles();
+  ok(!conFichaNueva.some(x => /que ya te dejaron|reseñas anteriores/i.test(x)),
+     'con la ficha por crear, NINGUNA línea ofrece contestar reseñas que no existen');
+  ok(conFichaNueva.some(x => /respuestas para las reseñas que vayan llegando/i.test(x)),
+     'pero sí la que es cierta en los dos casos: dejar escritas las respuestas');
+
+  await pg.locator('.ped-op:has(input[name="ficha_tiene"][value="si"])').click();
+  await hasta(() => puntosVisibles().then(v => v.some(x => /que ya te dejaron/i.test(x))),
+              'y al marcar «ya aparece en Google» sí aparece la de las 30');
+  const conFichaPropia = await puntosVisibles();
+  ok(conFichaPropia.length === conFichaNueva.length + 1,
+     `que es una línea MÁS, no una distinta (${conFichaNueva.length} → ${conFichaPropia.length})`);
+  await pg.locator('.ped-op:has(input[name="ficha_tiene"][value="no"])').click();
+  await hasta(() => puntosVisibles().then(v => !v.some(x => /que ya te dejaron/i.test(x))),
+              'y vuelve a irse al cambiar de opinión');
+
+  /* ⚠ LO CONDICIONAL SE ESCONDE; LO QUE VALE SIEMPRE, NUNCA. En un navegador
+     que no entienda `:has()` ninguna regla de las de arriba llega, así que un
+     punto marcado como condicional se quedaría escondido para todo el mundo.
+     Por eso el que es cierto en los dos casos va SIN clase. */
+  const condicionales = await pg.$$eval('.sv-plan[data-plan="gp-t"] .sv-mas li',
+    ls => ls.filter(x => /sv-solo-/.test(x.className)).map(x => x.textContent.trim()));
+  ok(condicionales.length === 1 && /que ya te dejaron/i.test(condicionales[0]),
+     'y sólo esa línea es condicional: el resto se ve pase lo que pase');
   /* Google retiró la mensajería del Perfil de Negocio el 31 de julio de 2024.
      Vender hoy algo que ya no existe es una devolución garantizada. */
   ok(!todas.some(x => /mensajes de google|mensajer/i.test(x)),
