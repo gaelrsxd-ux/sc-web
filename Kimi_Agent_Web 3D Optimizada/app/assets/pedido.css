@@ -195,6 +195,18 @@ main{max-width:560px}
    clase y por tanto siempre se ve: en un navegador que no entienda `:has()`
    —que es donde estas reglas no llegan— la lista pierde el matiz, no la
    promesa. */
+/* Cuando se pulsa «Elige cómo lo pagas», la vista salta hasta estas dos
+   opciones. Un salto sin nada que mirar al llegar se lee como que la página se
+   movió sola, así que al llegar parpadean una vez. */
+.sv-pagos.pide{animation:svPide 1.6s ease-out}
+@keyframes svPide{
+  0%,100%{box-shadow:none}
+  15%,60%{box-shadow:0 0 0 1px var(--bronze)}
+}
+@media (prefers-reduced-motion:reduce){
+  .sv-pagos.pide{animation:none;box-shadow:0 0 0 1px var(--bronze)}
+}
+
 .sv-solo-si,.sv-solo-no{display:none}
 #sv-form:has(input[name="ficha_tiene"][value="si"]:checked) .sv-solo-si{display:list-item}
 #sv-form:has(input[name="ficha_tiene"][value="no"]:checked) .sv-solo-no{display:list-item}
