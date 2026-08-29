@@ -20,7 +20,7 @@ node pruebas/instalaciones.mjs
 ```
 
 Ciento veintidós comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; ciento veintiséis en la segunda y dieciocho en la tercera.
+bloque final sin él; ciento treinta en la segunda y dieciocho en la tercera.
 
 ⚠ **El único `force: true` de las tres suites está en el bloque sin JavaScript
 de `compra.mjs`, y no es pereza.** Antes de pulsar, Playwright espera a que el

@@ -173,7 +173,20 @@ const SERVICIOS = [
       'Vamos a tu negocio y tomamos hasta 20 fotos, sin costo extra (San Luis Potos\u00ed y Soledad)',
       'Cargamos hasta 20 productos o servicios con su precio',
       'Marcamos tus formas de pago, accesibilidad y estacionamiento',
-      'Contestamos las reseñas que tengas, hasta 30, y dejamos respuestas listas',
+      /* ⚠ ESTA LÍNEA SÓLO EXISTE SI HAY RESEÑAS QUE CONTESTAR, y la pantalla ya
+         sabe si las hay: la primera pregunta del formulario es justo ésa. Decía
+         «contestamos las reseñas que tengas, hasta 30», que no es falso —quien
+         no tiene ninguna tiene cero— pero es papel mojado para la mitad de los
+         compradores: acaban de marcar «todavía no aparece en Google» y dos
+         renglones después se les ofrece contestar reseñas que no existen. Se
+         turna con la misma regla de CSS que ya turna el párrafo del anticipo,
+         y por tanto también sin JavaScript. */
+      { solo: 'si', texto: 'Contestamos una por una hasta 30 reseñas que ya te dejaron' },
+      /* Y ésta va SIN condición y en segundo lugar a propósito: es cierta en
+         los dos casos, así que es la que queda cuando la de arriba se apaga —y
+         la única que se ve en un navegador tan viejo que no entienda `:has()`,
+         donde ninguna de las dos condicionales aparecería. */
+      'Dejamos escritas las respuestas para las reseñas que vayan llegando',
       'Dejamos puestas las preguntas que más te hacen, con su respuesta',
       'Publicamos tus primeros avisos y novedades con foto',
       'Revisamos qué tienen puesto los negocios como el tuyo',
@@ -245,10 +258,22 @@ const SERVICIOS = [
       throw new Error(`servicio «${s.nombre}»: no puede heredar de sí mismo`);
     /* Una línea repetida entre los dos saldría DOS VECES SEGUIDAS en la misma
        tarjeta, que es justo lo que el dueño pidió que no pasara. */
+    /* Un punto con condición se escribe `{ solo: 'si'|'no', texto }`. Un `solo`
+       mal escrito no rompe nada visible: la clase que sale no la enciende
+       ninguna regla del CSS y la línea desaparece de las dos vistas. */
+    for (const x of s.incluye || []) {
+      if (typeof x === 'string') { if (x.trim()) continue;
+        throw new Error(`servicio «${s.nombre}»: hay un punto vacío en «incluye»`); }
+      if (x.solo !== 'si' && x.solo !== 'no')
+        throw new Error(`servicio «${s.nombre}»: «solo» vale «si» o «no», no «${x.solo}»`);
+      if (!x.texto || !String(x.texto).trim())
+        throw new Error(`servicio «${s.nombre}»: un punto con condición se quedó sin texto`);
+    }
     if (s.hereda) {
       const otro = SERVICIOS.find(x => x.id === s.hereda);
-      const suyas = new Set((otro && otro.incluye) || []);
-      for (const linea of s.incluye || [])
+      const texto = x => typeof x === 'string' ? x : x.texto;
+      const suyas = new Set(((otro && otro.incluye) || []).map(texto));
+      for (const linea of (s.incluye || []).map(texto))
         if (suyas.has(linea))
           throw new Error(`servicio «${s.nombre}»: «${linea}» ya está en «${otro.corto || otro.nombre}»`);
     }
@@ -568,6 +593,13 @@ function bloqueServicio() {
   /* El paquete del que éste hereda su lista, si es que hereda de alguno. Se
      busca por id y no se copia a mano: así, el día que a «Lo esencial» se le
      añada una línea, aparece sola en la tarjeta del caro. */
+  /* Un punto de la lista es una cadena, o un objeto `{ solo, texto }` cuando
+     sólo vale en uno de los dos casos de la pregunta de arriba. La clase la
+     apaga o la enciende el CSS con `:has()`, igual que al párrafo del anticipo:
+     sin JavaScript también. */
+  const punto = x => typeof x === 'string'
+    ? `<li>${ent(x)}</li>`
+    : `<li class="sv-solo-${x.solo}">${ent(x.texto)}</li>`;
   const heredado = s => {
     if (!s.hereda) return null;
     const otro = SERVICIOS.find(x => x.id === s.hereda);
@@ -662,11 +694,11 @@ function bloqueServicio() {
       (s.incluye && s.incluye.length
         ? '        <details class="sv-mas">\n' +
           `          <summary>${ent('Ver qué incluye')}</summary>\n` +
-          '          <ul>' + s.incluye.map(x => `<li>${ent(x)}</li>`).join('') + '</ul>\n' +
+          '          <ul>' + s.incluye.map(punto).join('') + '</ul>\n' +
           (heredado(s)
             ? `          <p class="sv-mas-y">${ent('Y todo lo de «' + heredado(s).nombreCorto + '»:')}</p>\n` +
               '          <ul class="sv-mas-h">' +
-              heredado(s).incluye.map(x => `<li>${ent(x)}</li>`).join('') + '</ul>\n'
+              heredado(s).incluye.map(punto).join('') + '</ul>\n'
             : '') +
           '        </details>\n'
         : '') +
