@@ -52,8 +52,13 @@ Fuera de `app/` viven las cosas que no se publican:
 
 ```
 tools/precios.mjs       ← LA TABLA DE PRECIOS. Única fuente: reescribe la ficha
-                          de producto, pedido.html y la tabla del Worker.
+                          de producto, pedido.html, los paquetes de Google de
+                          servicio.html y la tabla del Worker.
+tools/assets.mjs        ← pone la huella del contenido en el enlace de cada
+                          hoja de estilo, para que no se sirva CSS viejo
 tools/csp-hashes.mjs    ← recalcula las huellas de la CSP tras tocar un script
+tools/cp.mjs            ← convierte el catálogo de SEPOMEX en las colonias por
+                          código postal y la lista de ciudades del formulario
 cloudflare/pagos/       ← el Worker que cobra (Checkout Pro de Mercado Pago)
 pruebas/compra.mjs      ← la compra de punta a punta en un navegador
 servidor.js             ← servidor local para verla con sus cabeceras

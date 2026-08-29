@@ -19,8 +19,18 @@ node pruebas/servicio.mjs
 node pruebas/instalaciones.mjs
 ```
 
-Ciento tres comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; ciento doce en la segunda y dieciocho en la tercera.
+Ciento veintidós comprobaciones en la primera, la mayoría con JavaScript y un
+bloque final sin él; ciento veintiséis en la segunda y dieciocho en la tercera.
+
+⚠ **El único `force: true` de las tres suites está en el bloque sin JavaScript
+de `compra.mjs`, y no es pereza.** Antes de pulsar, Playwright espera a que el
+elemento deje de moverse, y lo mide comparando su posición en dos fotogramas
+seguidos (`requestAnimationFrame`). Con el JavaScript apagado el navegador no
+ejecuta esas llamadas, y en una página quieta —`pedido.html` no tiene ninguna
+animación en marcha— no hay nada que fuerce un repintado: los dos fotogramas no
+llegan nunca y el clic caduca a los treinta segundos con un «element is not
+stable» que no habla de esta web, sino del medidor. Que el botón sea visible y
+alcanzable se comprueba aparte, con un `isVisible()`.
 
 ## Por qué en un navegador
 

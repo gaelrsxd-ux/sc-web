@@ -150,7 +150,10 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   const matiz = (await conVisita.locator('.sv-nota').innerText()).trim();
   ok(/San Luis Potos/i.test(matiz) && /Soledad/i.test(matiz),
      'y dice dónde: ' + matiz.replace(/\s+/g, ' '));
-  ok(/otra ciudad|fuera/i.test(matiz) && /fotos las mandas t/i.test(matiz),
+  /* Se busca lo que la frase tiene que DECIR y no cómo lo dice: «las fotos las
+     mandas tú» y «las fotos nos las mandas tú» son la misma promesa, y una
+     prueba que se cae al mover un pronombre mide la redacción, no el contrato. */
+  ok(/otra ciudad|fuera/i.test(matiz) && /fotos[^.]*mandas t/i.test(matiz),
      'y qué pasa desde otra ciudad, que es la mitad que faltaba');
 
   /* ---- PRIMERO EL PAQUETE, DESPUÉS CÓMO SE PAGA ----
@@ -214,6 +217,53 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   await pg.locator('.sv-plan[data-plan="gp-e"] .sv-mas summary').click();
   await hasta(() => pg.$eval('.sv-plan[data-plan="gp-e"] .sv-mas', d => !d.open), 'y se vuelve a plegar');
 
+  /* ── LO QUE HEREDA EL PAQUETE CARO, A LA VISTA ──
+     «Todo lo de Lo esencial» obligaba a subir a la otra tarjeta y abrir OTRO
+     desplegable para saber qué era «todo». Nadie compara dos paquetes así: se
+     lee el de arriba, se olvida la mitad y se compra el barato por cansancio.
+     Las dos listas van ahora seguidas dentro del mismo desplegable. */
+  await pg.locator('.sv-plan[data-plan="gp-t"] .sv-mas summary').click();
+  await hasta(() => pg.$eval('.sv-plan[data-plan="gp-t"] .sv-mas', d => d.open),
+              'el paquete caro también se abre');
+  /* `:not(.sv-mas-h)`: las DOS listas son hijas directas del desplegable, así
+     que un `>ul li` a secas devuelve las diecisiete y la comprobación de
+     repetidos acabaría comparándose consigo misma. */
+  const suyos = await pg.$$eval('.sv-plan[data-plan="gp-t"] .sv-mas>ul:not(.sv-mas-h) li',
+                                ls => ls.map(x => x.textContent.trim()));
+  const heredados = await pg.$$eval('.sv-plan[data-plan="gp-t"] .sv-mas-h li',
+                                    ls => ls.map(x => x.textContent.trim()));
+  const baratos = await pg.$$eval('.sv-plan[data-plan="gp-e"] .sv-mas li',
+                                  ls => ls.map(x => x.textContent.trim()));
+  ok(heredados.length === baratos.length && heredados.every((x, i) => x === baratos[i]),
+     `«Todo hecho» enseña ahí mismo los ${heredados.length} puntos de «Lo esencial»`);
+  ok(await pg.locator('.sv-plan[data-plan="gp-t"] .sv-mas-y').isVisible(),
+     'con un rótulo que dice de dónde salen, para que no se lean como diecisiete seguidos');
+  /* ⚠ NI UNA LÍNEA REPETIDA. La tarjeta enseña las dos listas juntas: una línea
+     que estuviera en las dos saldría dos veces seguidas, que es justo lo que el
+     dueño pidió que no pasara —«sin repetir cosas obvias o lo mismo con
+     diferentes palabras»—. */
+  ok(!suyos.some(x => baratos.includes(x)),
+     `y ninguno de sus ${suyos.length} puntos propios repite uno del barato`);
+  ok(suyos.length > baratos.length,
+     `el de $2,300 pone más trabajo encima del otro: ${suyos.length} puntos propios contra ${baratos.length}`);
+
+  /* ⚠ EL FALLO QUE ENCONTRÓ EL DUEÑO. «Contestamos hasta 30 reseñas que ya te
+     dejaron» es imposible para la mitad de los compradores: a quien todavía no
+     aparece en Google le estamos creando la ficha de cero y no hay ninguna
+     reseña anterior. Ninguna línea puede dar por hecho que ya existan. */
+  const todas = [...suyos, ...baratos];
+  ok(!todas.some(x => /que ya te (dejaron|dieron)|reseñas anteriores|tus reseñas de antes/i.test(x)),
+     'ninguna línea da por hecho que el negocio ya tenga reseñas');
+  ok(todas.some(x => /reseñas que tengas/i.test(x)),
+     'y la de las reseñas es cierta con reseñas y sin ellas');
+  /* Google retiró la mensajería del Perfil de Negocio el 31 de julio de 2024.
+     Vender hoy algo que ya no existe es una devolución garantizada. */
+  ok(!todas.some(x => /mensajes de google|mensajer/i.test(x)),
+     'y no se vende la mensajería de Google, que Google retiró en 2024');
+  await pg.locator('.sv-plan[data-plan="gp-t"] .sv-mas summary').click();
+  await hasta(() => pg.$eval('.sv-plan[data-plan="gp-t"] .sv-mas', d => !d.open),
+              'y se vuelve a plegar');
+
   /* ⚠ EL RESUMEN NO PUEDE SONAR A «ESTO VA DE FOTOS». Decía «Con las fotos que
      tú nos mandes» y «Vamos a tu negocio y tomamos las fotos»: quien no sabe
      qué es configurar un perfil de Google leía eso y entendía que el paquete
@@ -224,6 +274,14 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
      'ninguno de los dos resúmenes empieza hablando sólo de fotos');
   ok(/ficha|google/i.test(titulares[0]),
      'el primero dice lo que de verdad se compra: la ficha');
+  /* ⚠ Y NINGUNO PUEDE SUGERIR QUE EL BARATO SE ENTREGA A MEDIAS. Decían «lista
+     para recibir reseñas» contra «lo dejamos funcionando nosotros»: leídos uno
+     al lado del otro, el de $1,490 parecía quedarse a medio hacer. Los dos se
+     entregan funcionando; lo que cambia es cuánto pone cada uno. */
+  ok(/funcionando|completa/i.test(titulares[0]),
+     'el barato dice que TAMBIÉN queda funcionando: ' + titulares[0]);
+  ok(/todo lo de/i.test(titulares[1]),
+     'y el caro empieza reconociendo que lo lleva todo: ' + titulares[1]);
 
   /* ── EL PASO EN EL QUE SE ESTÁ ──
      Una pantalla que va descubriendo bloques no dice cuánto falta, y no saber
@@ -477,6 +535,37 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(!/\$/.test(decodeURIComponent(wa)),
      'y NO declara ningún importe: el precio bueno es el del aviso de Mercado Pago');
   if (S) await pg.screenshot({ path: S + '/gracias-servicio.png' });
+
+  /* ── LAS CIUDADES DE MÉXICO EN EL CAMPO «CIUDAD» ──
+     Aquí la ciudad es la del NEGOCIO y no hay código postal del que deducirla:
+     se sugiere y ya. Las 2.528 pesan 43 KB y no se piden hasta que alguien va a
+     escribir una — la mayoría de quien abre esta página no llega a este campo,
+     y cobrarle la descarga por si acaso sería cobrársela para nada. */
+  await pg.goto(BASE + '/servicio.html');
+  ok(await pg.$$eval('#mx-ciudades option', o => o.length) === 0,
+     'la lista de ciudades no se descarga al abrir la página');
+  /* Hay que elegir paquete antes: el bloque de los datos del negocio no existe
+     hasta entonces, y `focus()` sobre un campo escondido no enfoca nada ni
+     dispara nada — la espera se agotaría midiendo el escondite, no la lista. */
+  await tocaPlan(pg, 'gp-e');
+  await hasta(() => pg.$eval('[name=negocio_ciudad]', e => e.offsetParent !== null),
+              'el campo de la ciudad aparece al elegir paquete');
+  await pg.locator('[name=negocio_ciudad]').focus();
+  await hasta(() => pg.$eval('#mx-ciudades', d => d.options.length > 2000),
+              'al tocar el campo de la ciudad llegan todas');
+  ok(await pg.$$eval('#mx-ciudades option',
+                     o => o.some(x => x.value === 'Soledad de Graciano Sánchez')),
+     'con la ciudad de al lado incluida, escrita como se escribe');
+  /* ⚠ Y SIGUE SIENDO UN CAMPO DE TEXTO. La lista sugiere, no encierra: un
+     nombre que SEPOMEX no tenga no puede impedir contratar. */
+  ok(await pg.locator('[name=negocio_ciudad]').evaluate(e => e.type === 'text'),
+     'y el campo sigue siendo de texto: se puede escribir una ciudad que no esté');
+  /* ⚠ Y ENCHUFADO A ELLA. Sin esto, quitar el `list=` del marcado dejaba la
+     lista llenándose sin que ningún campo la usara: función muerta, suite en
+     verde. */
+  ok(await pg.locator('[name=negocio_ciudad]').evaluate(e => !!e.list && e.list.id === 'mx-ciudades'),
+     'y enchufado a la lista, que es lo que la hace servir de algo');
+
   await ctx.close();
 }
 

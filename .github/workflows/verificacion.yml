@@ -65,6 +65,15 @@ jobs:
       - name: Precios del HTML generados desde la tabla
         run: node tools/precios.mjs --check
 
+      # Las colonias por código postal y la lista de ciudades que rellenan el
+      # formulario de envío. No vuelve a descargar el catálogo de SEPOMEX: sólo
+      # comprueba que lo publicado se sostiene solo —códigos de cinco dígitos,
+      # cada uno en su archivo, y ningún estado fuera de los que ofrece el
+      # desplegable de pedido.html, que es el fallo que dejaría el campo
+      # «Estado» vacío sin decir por qué.
+      - name: Colonias y ciudades bien generadas
+        run: node tools/cp.mjs --check
+
       # El Worker de cobros. Estas pruebas no necesitan red ni wrangler: el
       # fetch se sustituye por un doble. La que justifica tenerlas en CI es la
       # que exige que el importe salga de la tabla del servidor y no del

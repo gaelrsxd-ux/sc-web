@@ -15,10 +15,10 @@ main{max-width:560px}
 /* Qué se está comprando, siempre a la vista. No es decoración: en un flujo por
    pasos es fácil olvidar la cantidad tres pantallas después, y descubrirla en
    Mercado Pago es donde se abandona la compra. */
-.ped-prod{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:16px 18px;border:1px solid var(--line-soft);background:rgba(200,169,106,.05)}
+.ped-prod{display:flex;align-items:center;gap:16px 20px;flex-wrap:wrap;
+  padding:22px 24px;border:1px solid var(--line-soft);background:rgba(200,169,106,.05)}
 .ped-prod .ped-que{flex:1 1 auto;min-width:0;font-size:13.5px;color:var(--muted);line-height:1.6}
-.ped-prod .ped-que b{display:block;color:var(--ink);font-weight:500}
+.ped-prod .ped-que b{display:block;margin-top:3px;color:var(--ink);font-weight:500}
 .ped-prod .ped-tot{font-family:var(--serif);font-size:29px;line-height:1;color:var(--ink);
   font-variant-numeric:tabular-nums}
 
@@ -137,6 +137,13 @@ main{max-width:560px}
 /* El aviso de entrega en mano. Aparece bajo el código postal en cuanto el
    número es de la zona: es una buena noticia y llega justo cuando el comprador
    acaba de teclear el dato que la provoca. */
+/* Lo que el código postal averiguó. Va DEBAJO de los campos que rellena y no
+   encima: es la consecuencia de lo que se acaba de escribir, no una
+   instrucción previa. Y sin caja ni borde —el aviso de la entrega en mano, que
+   está tres campos más abajo, sí la lleva, y dos recuadros seguidos compiten
+   entre sí en vez de decir cada uno lo suyo. */
+.ped-pista{margin-top:9px;font-size:12px;line-height:1.6;color:var(--dim)}
+.ped-pista[hidden]{display:none}
 .ped-local{margin-top:14px;padding:11px 14px;border:1px solid var(--line);
   background:rgba(200,169,106,.07);color:var(--bronze-hi);font-size:13px;line-height:1.6}
 
@@ -236,6 +243,17 @@ main{max-width:560px}
   font-size:13px;line-height:1.6;color:var(--muted)}
 .sv-mas li::before{content:"";position:absolute;left:2px;top:8px;
   width:5px;height:5px;border:1px solid var(--bronze);transform:rotate(45deg)}
+
+/* ── LO QUE HEREDA DEL OTRO PAQUETE ──
+   Va DENTRO del mismo desplegable, debajo de lo suyo, para que las dos listas
+   se lean de una vez. El rótulo separa una de otra —sin él son diecisiete
+   puntos seguidos y no se sabe cuál es la diferencia— y los puntos heredados
+   van un punto más pequeños y con el rombo hueco: son ciertos, pero no son la
+   razón por la que este paquete cuesta $810 más. */
+.sv-mas-y{margin-top:14px;padding-top:11px;border-top:1px solid var(--line-soft);
+  font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:var(--bronze-hi)}
+.sv-mas-h li{font-size:12.5px;color:var(--dim)}
+.sv-mas-h li::before{border-color:var(--line);background:none}
 
 /* La pista de que esto se toca. Una tarjeta que reacciona al pulsarla no se
    distingue de un cuadro de texto si nadie lo dice. */

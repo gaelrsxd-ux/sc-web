@@ -1658,16 +1658,16 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   background:radial-gradient(120% 90% at 50% 15%,rgba(200,169,106,.10),transparent 70%);
   border-bottom:1px solid var(--line-soft)}
 .prod-cuerpo{padding:clamp(28px,3.4vw,48px)}
-.prod-cuerpo h3{font-size:clamp(24px,2.6vw,33px);margin:14px 0 14px;color:var(--bronze);line-height:1.15}
+.prod-cuerpo h3{font-size:clamp(24px,2.6vw,33px);margin:8px 0 10px;color:var(--bronze);line-height:1.15}
 .prod-cuerpo>p{color:var(--muted);font-size:15px;line-height:1.8;max-width:560px}
 .prod-cuerpo>p b{color:var(--ink);font-weight:500}
-.prod-ul{list-style:none;margin-top:22px;display:flex;flex-wrap:wrap;gap:9px}
+.prod-ul{list-style:none;margin-top:15px;display:flex;flex-wrap:wrap;gap:9px}
 .prod-ul li{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bronze-hi);
   border:1px solid var(--line);padding:7px 13px}
 /* La nota bajo el bloque de compra. Sigue en uso; el resto de reglas de esta
    zona —.prod-cta, .prod-precio, .prod-envio y las treinta de .pm-*— se fueron
    con la lista de once filas que sustituyó el contador. */
-.prod-nota{margin-top:20px;padding:16px 18px;border:1px solid var(--line-soft);
+.prod-nota{margin-top:16px;padding:14px 16px;border:1px solid var(--line-soft);
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13.5px;line-height:1.75}
 .prod-nota b{color:var(--bronze-hi);font-weight:500}
 
@@ -1754,7 +1754,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
 /* La ficha del producto dentro del panel: la foto al lado del texto en cuanto
    hay sitio, para que quepa de una vez en una pantalla. */
-.sol-panel .prod{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+.sol-panel .prod{display:grid;grid-template-columns:1fr;gap:18px;align-items:start}
 @media(min-width:760px){.sol-panel .prod{grid-template-columns:minmax(0,320px) 1fr;gap:40px}}
 
 /* El precio: una sola cifra, la de entrada. El resto de la escalera —las 25
@@ -1764,7 +1764,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .pc-desde .cifra{font-family:var(--serif);font-size:clamp(34px,5.6vw,46px);line-height:1;
   color:var(--ink);font-variant-numeric:tabular-nums}
 .pc-desde .u{font-size:11.5px;letter-spacing:1.4px;color:var(--muted)}
-.sol-panel .prod-nota{margin-top:18px;font-size:13px}
+.sol-panel .prod-nota{margin-top:15px;font-size:13px}
 /* El boton NO se estira. `.svc-btn` es inline-flex, pero dentro de una rejilla
    el alineado por defecto lo lleva a `stretch` y sale de borde a borde: con el
    anillo pulsante de `::before` encima, los dos extremos se ven como recortes.
@@ -1789,12 +1789,16 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .sol-panel .prod-mini{display:none}
   .sol-panel .prod-envoltura,
   .sol-panel .prod-fig>.prod-abre{width:min(46vw,200px)}
-  .sol-panel .prod-fig{padding:20px 18px 22px}
-  .sol-panel .prod-vista{width:min(100%,260px);margin-bottom:10px}
+  .sol-panel .prod-fig{padding:14px 14px 16px}
+  .sol-panel .prod-vista{width:min(100%,260px);margin-bottom:8px}
   .sol-panel .prod-vista .pv{padding:9px 10px;font-size:9px;letter-spacing:1.6px}
-  .sol-panel .prod-cuerpo{padding:22px 20px 24px}
-  .sol-panel .prod-nota{margin-top:14px;padding:0;border:0;background:none;
+  .sol-panel .prod-cuerpo{padding:18px 18px 20px}
+  .sol-panel .prod-nota{margin-top:12px;padding:0;border:0;background:none;
     font-size:12.5px;line-height:1.6}
+  /* El p&#225;rrafo de arriba respira menos en un m&#243;vil: a 1,8 de interlineado
+     cuatro renglones son 108 px, y en esta pesta&#241;a cada p&#237;xel de alto es uno
+     m&#225;s que hay que bajar para llegar al bot&#243;n de comprar. */
+  .sol-panel .prod-cuerpo>p{line-height:1.7}
 }
 /* En movil el conmutador ocupa el ancho entero y se reparte en tres: un
    objetivo de un tercio de pantalla no hay que buscarlo con el pulgar. */
@@ -1882,10 +1886,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    que un lector de pantalla anuncie el cambio —si no, los botones no dicen nada
    al pulsarse—; lo segundo, para que la caja no se ensanche al pasar de «6
    placas» a «12 placas» y arrastre el precio medio píxel a la izquierda. */
-.prod-compra{margin-top:26px;padding-top:24px;border-top:1px solid var(--line-soft)}
+.prod-compra{margin-top:19px;padding-top:18px;border-top:1px solid var(--line-soft)}
 /* El rótulo del contador. Sin él, un «−  1 placa  +» suelto debajo del texto
    se lee como una paginación y no como «elige cuántas quieres». */
-.pc-rot{margin-top:22px;margin-bottom:10px;font-size:9.5px;letter-spacing:3px;
+.pc-rot{margin-top:0;margin-bottom:9px;font-size:9.5px;letter-spacing:3px;
   text-transform:uppercase;color:var(--dim)}
 .pc-cab{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap}
 .pc-cant{display:flex;align-items:center;flex:none;border:1px solid var(--line)}
@@ -1969,9 +1973,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    el que esta web dice «esto te conviene». Desaparece al llegar al tramo:
    sigue estando en el HTML, sólo que oculto, para que no dé un salto de altura
    al cambiar de cantidad. */
-.pc-gratis{margin-top:7px;font-size:11.5px;letter-spacing:.3px;color:var(--bronze-hi)}
+.pc-gratis{margin-top:6px;font-size:11.5px;letter-spacing:.3px;color:var(--bronze-hi)}
 .pc-gratis[hidden]{display:none}
-.pc-mas{margin-top:14px;text-align:center;font-size:12.5px}
+.pc-mas{margin-top:12px;text-align:center;font-size:12.5px}
 .pc-mas a{color:var(--bronze-hi);border-bottom:1px solid var(--line);transition:color .3s}
 .pc-mas a:hover,.pc-mas a:focus-visible{color:var(--ink)}
 .pc-precio{display:flex;align-items:baseline;gap:8px;margin-left:auto}
@@ -1980,9 +1984,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .pc-precio .u{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim)}
 /* min-height reservado: el desglose pasa de una línea a dos según la cantidad, y
    sin reserva el botón de comprar da un salto al mover el contador. */
-.pc-detalle{margin-top:11px;font-size:9.5px;letter-spacing:2.2px;text-transform:uppercase;
+.pc-detalle{margin-top:9px;font-size:9.5px;letter-spacing:2.2px;text-transform:uppercase;
   color:var(--dim);min-height:13px}
-.prod-cuerpo .prod-compra .pc-ir{margin-top:19px;width:100%;justify-content:center}
+.prod-cuerpo .prod-compra .pc-ir{margin-top:16px;width:100%;justify-content:center}
 .pc-wa{margin-top:13px;text-align:center;font-size:12.5px}
 .pc-wa a{color:var(--muted);border-bottom:1px solid var(--line-soft);transition:color .3s}
 .pc-wa a:hover,.pc-wa a:focus-visible{color:var(--bronze-hi)}
@@ -2081,7 +2085,7 @@ html.js .pc-alt{display:none}
 .prod-foto{width:100%;height:auto;display:block;border:1px solid var(--line-soft);
   box-shadow:0 24px 44px rgba(0,0,0,.55)}
 .prod-fig>.prod-abre{width:min(100%,400px)}
-.prod-mini{display:flex;gap:12px;margin-top:12px;width:min(100%,400px)}
+.prod-mini{display:flex;gap:12px;margin-top:10px;width:min(100%,400px)}
 .prod-mini .prod-abre{width:calc(50% - 6px)}
 .prod-mini img{width:100%;height:auto;display:block;border:1px solid var(--line-soft);
   opacity:.82;transition:opacity .35s ease}
@@ -2127,7 +2131,7 @@ html.js .pc-alt{display:none}
    ⚠ LAS FOTOS SIGUEN MANDANDO. Son la vista por defecto; esto es el
    complemento que deja verlo por detras y de canto, angulos de los que no hay
    foto. La cara impresa no se dibuja: se fotografia. */
-.prod-vista{display:flex;border:1px solid var(--line);width:min(100%,400px);margin-bottom:12px}
+.prod-vista{display:flex;border:1px solid var(--line);width:min(100%,400px);margin-bottom:10px}
 .prod-vista .pv{flex:1;min-height:42px;border:0;background:none;cursor:pointer;
   font-size:9.5px;letter-spacing:2.4px;text-transform:uppercase;font-weight:500;color:var(--dim);
   transition:color .3s ease,background-color .3s ease}

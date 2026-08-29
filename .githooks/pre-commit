@@ -47,3 +47,10 @@ fi
 #     fallo que produce es de los peores de esta web: la página enseña un precio
 #     y el WhatsApp que se abre pide otro. Lo descubre el cliente, al pedir.
 node tools/precios.mjs --check || exit 1
+
+# 5 · Las colonias por código postal y la lista de ciudades del formulario de
+#     envío. No descarga nada: comprueba que lo que se publica se sostiene solo
+#     —cinco dígitos por código, cada uno en su archivo y ningún estado fuera
+#     de los que ofrece el desplegable de pedido.html—. Un estado que el
+#     desplegable no tiene deja ese campo VACÍO sin avisar de nada.
+node tools/cp.mjs --check || exit 1

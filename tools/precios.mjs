@@ -111,18 +111,32 @@ const SERVICIOS = [
        que tú nos mandes», que es cierto pero es la LETRA PEQUEÑA puesta de
        titular: quien no sabe qué es configurar un perfil de Google leía eso y
        entendía que el paquete son fotos. Lo que compra es la ficha entera
-       montada y lista; lo de las fotos es una condición, y va detrás. */
-    resumen: 'Tu ficha de Google completa y lista para recibir reseñas',
+       montada y lista; lo de las fotos es una condición, y va detrás.
+
+       ⚠ Y TAMPOCO PUEDE SONAR A MEDIA ENTREGA. Este decía «completa y lista
+       para recibir reseñas» y el otro «lo dejamos funcionando nosotros», que
+       leídos uno al lado del otro dicen que el barato NO se deja funcionando.
+       Es falso: los dos se entregan funcionando. La diferencia no es el
+       resultado, es CUÁNTO PONE CADA UNO — y eso es lo que dicen ahora. */
+    resumen: 'Tu ficha de Google queda completa y funcionando: tus datos, tus fotos y tu enlace de reseñas',
     /* Lo que incluye, en la propia tarjeta y no en la página de términos. Antes
        había que salir a un texto legal con plazos y cancelación mezclados,
        leerlo entero y volver — y eso es un cliente perdido por pereza. Frases
-       cortas, sin jerga, y la condición al final. */
+       cortas, sin jerga, y la condición al final.
+
+       ⚠ CADA LÍNEA TIENE QUE SER CIERTA EN LOS DOS CASOS: con una ficha que ya
+       existe y con una que creamos de cero. Es la regla que se saltaba la línea
+       de las reseñas del otro paquete —«contestamos hasta 30 reseñas que ya te
+       dejaron» a quien todavía no aparece en Google—, y la que obliga aquí a que
+       la primera diga las tres puertas de entrada en vez de una. */
     incluye: [
-      'Horarios, dirección y teléfono, bien puestos',
-      'Categorías y a qué se dedica tu negocio',
-      'La descripción de tu negocio, escrita por nosotros',
-      'El enlace directo para que te dejen reseñas',
-      'Las fotos las mandas tú',
+      'Creamos tu ficha de Google, la reclamamos o entramos a la tuya',
+      'Elegimos tu categoría principal y las otras con las que te buscan',
+      'Ponemos el mapa en tu puerta o en la zona que cubres',
+      'Ponemos horarios, teléfono, WhatsApp y sitio web al día',
+      'Escribimos tu descripción con las palabras que la gente busca',
+      'Subimos y acomodamos las fotos que nos mandas',
+      'La cuenta queda a tu nombre, con tu enlace de reseñas',
     ],
   },
   {
@@ -131,22 +145,49 @@ const SERVICIOS = [
     corto: 'Todo hecho',
     precio: 2300,
     anticipo: 1150,
-    resumen: 'Todo lo de «Lo esencial», y lo dejamos funcionando nosotros',
+    resumen: 'Todo lo de «Lo esencial», y además la dejamos llena: fotos, productos, preguntas y publicaciones',
+    /* ⚠ NINGUNA DE ESTAS DIEZ LÍNEAS REPITE UNA DE «LO ESENCIAL», y no es
+       elegancia: la tarjeta enseña las dos listas, una debajo de otra, y una
+       línea repetida se vería dos veces seguidas. Lo que hereda lo pone la
+       plantilla —ver `hereda`—, no una línea escrita a mano que dijera «todo lo
+       de Lo esencial» y que habría que acordarse de mantener.
+
+       ⚠ «CONTESTAMOS LAS RESEÑAS QUE TENGAS, HASTA 30» Y NO «LAS QUE YA TE
+       DEJARON». Es el arreglo del fallo que encontró el dueño: a la mitad de los
+       compradores les estamos creando la ficha de cero y no hay ninguna reseña
+       anterior que contestar. Así la línea es cierta con reseñas y sin ellas, y
+       la segunda mitad —dejar las respuestas escritas— es trabajo real en los
+       dos casos.
+
+       ⚠ NO ESTÁ «ACTIVAMOS LOS MENSAJES DE GOOGLE», y estuvo a punto: Google
+       retiró la mensajería del Perfil de Negocio el 31 de julio de 2024. Vender
+       hoy algo que ya no existe es una devolución garantizada. */
     incluye: [
-      'Todo lo de «Lo esencial»',
-      'Vamos a tu negocio y tomamos las fotos (hasta 20)',
-      'Contestamos hasta 30 reseñas que ya te dejaron',
-      'Dejamos puestas las preguntas frecuentes y tus primeras publicaciones',
-      'Un reporte con capturas de antes y después',
+      'Vamos a tu negocio y tomamos hasta 20 fotos',
+      'Cargamos hasta 20 productos o servicios con su precio',
+      'Marcamos tus formas de pago, accesibilidad y estacionamiento',
+      'Contestamos las reseñas que tengas, hasta 30, y dejamos respuestas listas',
+      'Dejamos puestas las preguntas que más te hacen, con su respuesta',
+      'Publicamos tus primeros avisos y novedades con foto',
+      'Revisamos qué tienen puesto los negocios como el tuyo',
+      'Revisamos si tu negocio sale repetido y lo reportamos',
+      'Te mandamos tu cartel con QR de reseñas, listo para imprimir',
+      'Te entregamos un reporte con capturas y te explicamos cómo mantenerla',
     ],
+    /* De quién hereda la lista. La tarjeta de este paquete enseña ADEMÁS los
+       puntos del otro, sin que haya que abrirlo ni volver atrás: «pon que puedan
+       ver que tiene lo de esencial por si hay algún huevón», y tiene razón —
+       nadie compara dos tarjetas abriendo y cerrando desplegables. */
+    hereda: 'gp-e',
     /* LA VISITA NO ES NACIONAL Y LA PÁGINA DE COBRO NO PUEDE CALLARLO. Los
        términos la limitan a San Luis Potosí y Soledad desde el primer día; el
        titular de esta cifra vive aquí y va en coche. Sin esta línea, alguien de
        Monterrey pagaba $2,300 leyendo «vamos a tu negocio» y descubría la letra
        pequeña en la página de términos, que es donde nadie mira antes de pagar.
        Va en el mismo bloque que la promesa, no en un enlace. */
-    nota: 'La visita es en San Luis Potosí y Soledad. Desde otra ciudad se hace todo '
-        + 'lo demás igual y las fotos las mandas tú.',
+    nota: 'La visita es sólo en San Luis Potosí y Soledad de Graciano Sánchez; ahí las '
+        + 'fotos las tomamos nosotros. Desde otra ciudad hacemos todo lo demás igual y '
+        + 'las fotos nos las mandas tú.',
     /* Y la misma condición, en un dato que pueda leer el Worker. La página ya
        se lo avisa al comprador; el otro extremo —quien prepara el trabajo— no
        se enteraba por ningún lado y tenía que caer en la cuenta leyendo la
@@ -188,6 +229,22 @@ const SERVICIOS = [
     if (s.anticipo !== undefined &&
         (!Number.isInteger(s.anticipo) || s.anticipo <= 0 || s.anticipo >= s.precio))
       throw new Error(`servicio «${s.nombre}»: el anticipo ${s.anticipo} no está entre 1 y ${s.precio - 1}`);
+    /* Heredar de un id que no existe deja la tarjeta del paquete caro SIN la
+       lista del barato y sin decir nada: se ve bien, vende menos, y no hay
+       forma de notarlo mirando la página. */
+    if (s.hereda !== undefined && !SERVICIOS.some(x => x.id === s.hereda))
+      throw new Error(`servicio «${s.nombre}»: hereda de «${s.hereda}», que no es ningún paquete`);
+    if (s.hereda === s.id)
+      throw new Error(`servicio «${s.nombre}»: no puede heredar de sí mismo`);
+    /* Una línea repetida entre los dos saldría DOS VECES SEGUIDAS en la misma
+       tarjeta, que es justo lo que el dueño pidió que no pasara. */
+    if (s.hereda) {
+      const otro = SERVICIOS.find(x => x.id === s.hereda);
+      const suyas = new Set((otro && otro.incluye) || []);
+      for (const linea of s.incluye || [])
+        if (suyas.has(linea))
+          throw new Error(`servicio «${s.nombre}»: «${linea}» ya está en «${otro.corto || otro.nombre}»`);
+    }
   }
 }
 
@@ -501,6 +558,15 @@ const SERVICIO = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'servici
    coincidan no es convención ni suerte: los dos los escribe este archivo. */
 function bloqueServicio() {
   const pesos = n => '$' + miles(n);
+  /* El paquete del que éste hereda su lista, si es que hereda de alguno. Se
+     busca por id y no se copia a mano: así, el día que a «Lo esencial» se le
+     añada una línea, aparece sola en la tarjeta del caro. */
+  const heredado = s => {
+    if (!s.hereda) return null;
+    const otro = SERVICIOS.find(x => x.id === s.hereda);
+    if (!otro) return null;
+    return { nombreCorto: otro.corto || otro.nombre, incluye: otro.incluye || [] };
+  };
   const bloque = s => {
     const corto = s.corto || s.nombre;
     const resto = s.anticipo ? s.precio - s.anticipo : 0;
@@ -579,10 +645,22 @@ function bloqueServicio() {
          script, y plegado no roba ni una línea a la decisión de arriba.
          Va por ENCIMA del control que cubre la tarjeta (z-index en el CSS) para
          que abrirlo no sea, además, elegir el paquete. */
+      /* ⚠ Y LO QUE HEREDA VA DENTRO DEL MISMO DESPLEGABLE, no en un «todo lo
+         de Lo esencial» que obligue a subir a la otra tarjeta y abrir OTRO
+         desplegable para saber qué es «todo». Nadie compara dos paquetes así:
+         se lee el de arriba, se olvida la mitad y se compra el barato por
+         cansancio. Aquí las dos listas caen seguidas, la propia primero
+         —que es la que justifica los $810 de diferencia— y la heredada
+         debajo, con su rótulo. */
       (s.incluye && s.incluye.length
         ? '        <details class="sv-mas">\n' +
           `          <summary>${ent('Ver qué incluye')}</summary>\n` +
           '          <ul>' + s.incluye.map(x => `<li>${ent(x)}</li>`).join('') + '</ul>\n' +
+          (heredado(s)
+            ? `          <p class="sv-mas-y">${ent('Y todo lo de «' + heredado(s).nombreCorto + '»:')}</p>\n` +
+              '          <ul class="sv-mas-h">' +
+              heredado(s).incluye.map(x => `<li>${ent(x)}</li>`).join('') + '</ul>\n'
+            : '') +
           '        </details>\n'
         : '') +
       /* DOS PÁRRAFOS HERMANOS Y NO UNO CON DOS ATRIBUTOS. Con un solo <p> que
