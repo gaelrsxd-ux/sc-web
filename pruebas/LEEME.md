@@ -20,7 +20,7 @@ node pruebas/instalaciones.mjs
 ```
 
 Ciento tres comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; ochenta y nueve en la segunda y dieciocho en la tercera.
+bloque final sin él; ciento doce en la segunda y dieciocho en la tercera.
 
 ## Por qué en un navegador
 
@@ -201,6 +201,9 @@ que mandar, y eso no lo comprobaba nadie.
 |---|---|
 | **Primero el paquete, después cómo se paga** | al entrar sólo se ven los **dos paquetes**; las formas de pago viven dentro de cada uno y no se descubren hasta elegirlo, y entonces el otro paquete se aparta. Con las cuatro desplegadas a la vez la pantalla pedía dos decisiones al mismo tiempo. Comprobado por sabotaje: si el paquete elegido deja de cerrar al otro, o si los pagos nacen visibles, se pone en rojo |
 | **La tarjeta entera se toca** | el control cubre el bloque completo (347×220 sobre 349×222) y lleva `appearance:none` como primera declaración, que es lo único que garantiza que iOS no pinte su propio botón encima si el resto de la regla no llegara a aplicarse. Antes había que acertarle a un rectángulo de 200 px |
+| **Qué incluye, en la tarjeta** | plegado en un `<details>` y no en la página de términos, donde había que salir, leer un texto legal con plazos y cancelación mezclados, y volver. Va **por encima** del control que cubre la tarjeta —`z-index`—, así que abrirlo no es además elegir el paquete: son dos gestos en el mismo sitio y cada uno hace lo suyo. Se comprueba preguntando qué hay en ese punto (`elementFromPoint`), no dejando que el clic reviente: un choque de capas tiene que salir como un rojo con nombre |
+| **El resumen no habla sólo de fotos** | decía «Con las fotos que tú nos mandes» y «Vamos a tu negocio y tomamos las fotos». Quien no sabe qué es configurar un perfil de Google leía eso y entendía que el paquete **son** fotos; lo que compra es la ficha entera montada, y lo de las fotos es una condición |
+| **El paso en el que se está** | «Paso 1 de 3» → 2 al abrir un paquete → 3 al elegir cómo se paga. Una pantalla que va descubriendo bloques no dice cuánto falta, y no saber cuánto falta es por lo que se abandona un cobro |
 | **Y se ve que se toca** | en reposo un resplandor recorre el borde cada seis segundos, y cada tarjeta dice «toca para elegir». Al soltar, una **ola sale del punto exacto que se tocó** —el script escribe las coordenadas— y recorre la tarjeta. Si no se toca no pasa nada: no hay `:hover` en una pantalla táctil |
 | **La marcha atrás** | «← Cambiar de paquete» devuelve los dos y **desmarca** lo que hubiera: un cobro sin marcha atrás es un cobro que se abandona, y una forma de pago marcada de un paquete que ya no está en pantalla es cobrar a ciegas |
 | **Los datos, al abrir el paquete** | no esperan a la forma de pago: es lo que se pidió —«cuando seleccione el paquete que aparezca todo lo demás»— y evita que el bloque salte al cambiar de una opción a la otra |

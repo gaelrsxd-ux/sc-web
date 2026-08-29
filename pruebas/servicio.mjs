@@ -31,6 +31,19 @@ const vigila = pg => {
    elige uno, así que elegir «gp-ta» son dos gestos: abrir «Todo hecho» y luego
    marcar el anticipo. Es lo que hace una persona, y el ayudante hace los dos
    para que cada prueba siga leyéndose por lo que comprueba. */
+/* Toca la tarjeta ARRIBA, donde está el nombre del paquete, y no en su centro.
+   El control invisible cubre el bloque entero, pero «ver qué incluye» va por
+   encima de él —tiene su propio gesto— y cae justo en medio: pulsar ahí no
+   elige nada, y una prueba que lo hiciera estaría midiendo otra cosa.
+
+   Va por `position` sobre el propio control y no por coordenadas de pantalla:
+   así Playwright lo trae a la vista, espera a que deje de moverse —la página se
+   desplaza con animación— y comprueba que el punto pulsado sea de verdad este
+   elemento. Con `mouse.click` no hay nada de eso y el clic cae donde la tarjeta
+   ya no está. */
+const tocaPlan = (pg, plan) =>
+  pg.locator(`.sv-plan[data-plan="${plan}"] .sv-elige`).click({ position: { x: 24, y: 18 } });
+
 const elige = async (pg, valor) => {
   const op = pg.locator(`.ped-op:has(input[value="${valor}"])`);
   if (!(await op.isVisible())) {
@@ -44,7 +57,7 @@ const elige = async (pg, valor) => {
         if (await atras.isVisible()) await atras.click();
         await abrir.waitFor({ state: 'visible', timeout: 4000 });
       }
-      await abrir.click();
+      await tocaPlan(pg, await abrir.getAttribute('data-elige'));
       await op.waitFor({ state: 'visible', timeout: 4000 });
     }
   }
@@ -165,6 +178,59 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(await pg.locator('.sv-pista:visible').count() === 2,
      'y cada tarjeta dice que se toca: una que reacciona al pulsarla no se distingue de un cuadro de texto');
 
+  /* ── QUÉ INCLUYE, EN LA PROPIA TARJETA ──
+     Antes esto sólo vivía en la página de términos, mezclado con plazos y
+     cancelación: había que salir, leer un texto legal entero y volver. Y el
+     desplegable va POR ENCIMA del control que cubre la tarjeta, así que abrirlo
+     no puede ser además elegir el paquete: son dos gestos en el mismo sitio. */
+  ok(await pg.locator('.sv-mas').count() === 2, 'cada paquete dice qué incluye sin salir de aquí');
+  ok(await pg.$$eval('.sv-mas', ds => ds.every(d => !d.open)),
+     'y nace plegado: desplegado robaría la pantalla a la decisión de arriba');
+  const puntos = await pg.$$eval('.sv-mas li', ls => ls.length);
+  ok(puntos >= 8, `con lo que incluye cada uno en frases cortas (${puntos} en total)`);
+
+  /* ⚠ Y ES ÉL QUIEN RECIBE EL TOQUE. El control que elige el paquete cubre la
+     tarjeta entera; sin `z-index` por encima, el desplegable queda debajo y no
+     hay forma de abrirlo. Se comprueba preguntando QUÉ HAY en ese punto, y no
+     dejando que el clic reviente: un choque de capas tiene que salir como un
+     rojo con nombre, no como un volcado que tumba la suite entera. */
+  /* Traído a la vista primero: `elementFromPoint` sólo mira DENTRO de la
+     pantalla, y sobre un punto que queda debajo del pliegue devuelve `null`
+     —que no es «lo tapa otro», es «no estabas mirando ahí»—. */
+  await pg.locator('.sv-plan[data-plan="gp-e"] .sv-mas summary').scrollIntoViewIfNeeded();
+  const encima = await pg.$eval('.sv-plan[data-plan="gp-e"] .sv-mas summary', e => {
+    const c = e.getBoundingClientRect();
+    const t = document.elementFromPoint(c.left + c.width / 2, c.top + c.height / 2);
+    return !!(t && t.closest('.sv-mas'));
+  });
+  ok(encima, 'y es él quien recibe el toque, no el control que cubre la tarjeta');
+
+  await pg.locator('.sv-plan[data-plan="gp-e"] .sv-mas summary').click();
+  await hasta(() => pg.$eval('.sv-plan[data-plan="gp-e"] .sv-mas', d => d.open),
+              'se abre al tocarlo');
+  ok(!(await pg.locator('.sv-plan[data-plan="gp-e"]').evaluate(e => e.classList.contains('abierto'))),
+     'y abrirlo NO elige el paquete: son dos gestos distintos en el mismo sitio');
+  ok(await pg.locator('.sv-plan:visible').count() === 2, 'ni aparta al otro paquete');
+  await pg.locator('.sv-plan[data-plan="gp-e"] .sv-mas summary').click();
+  await hasta(() => pg.$eval('.sv-plan[data-plan="gp-e"] .sv-mas', d => !d.open), 'y se vuelve a plegar');
+
+  /* ⚠ EL RESUMEN NO PUEDE SONAR A «ESTO VA DE FOTOS». Decía «Con las fotos que
+     tú nos mandes» y «Vamos a tu negocio y tomamos las fotos»: quien no sabe
+     qué es configurar un perfil de Google leía eso y entendía que el paquete
+     son fotos. Lo que compra es la ficha entera montada. */
+  const titulares = await pg.$$eval('.sv-que', ps => ps.map(x => x.textContent.trim()));
+  for (const t of titulares) console.log('      ' + t);
+  ok(!titulares.some(t => /^(con|vamos)[^.]*fotos/i.test(t)),
+     'ninguno de los dos resúmenes empieza hablando sólo de fotos');
+  ok(/ficha|google/i.test(titulares[0]),
+     'el primero dice lo que de verdad se compra: la ficha');
+
+  /* ── EL PASO EN EL QUE SE ESTÁ ──
+     Una pantalla que va descubriendo bloques no dice cuánto falta, y no saber
+     cuánto falta es el motivo por el que se abandona un cobro. */
+  const paso = () => pg.locator('[data-sv-paso]').innerText().then(t => t.trim());
+  ok(/paso 1 de 3/i.test(await paso()), 'el rótulo dice en qué paso se está: ' + await paso());
+
   /* AL TOCAR, UNA SEÑAL. Sin ella, entre el dedo y el cambio de pantalla no
      pasa nada y quien tiene prisa vuelve a pulsar. Y si NO se toca, nada se
      mueve: no hay `:hover` en una pantalla táctil. */
@@ -192,7 +258,11 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   const respira = await pg.$eval('.sv-plan',
     e => getComputedStyle(e, '::before').animationName);
   ok(respira === 'svRespira', 'y en reposo el borde respira, para que se vea que es tocable');
-  await pg.locator('.sv-plan[data-plan="gp-e"]').click();
+  /* Se toca el TÍTULO y no el centro de la tarjeta: con «ver qué incluye»
+     desplegado, el centro cae dentro de ese bloque —que tiene su propio
+     control y no elige nada—, y la prueba estaría midiendo otra cosa. Tocar
+     el nombre del paquete es lo que hace una persona. */
+  await tocaPlan(pg, 'gp-e');
   ok(await pg.locator('.sv-plan[data-plan="gp-e"]').evaluate(e => e.classList.contains('pulsada')),
      'al tocar la tarjeta —no un botón— salta la ola que confirma el toque');
   /* Y LA OLA SALE DEL PUNTO QUE SE TOCÓ, no del centro: es la diferencia entre
@@ -205,12 +275,16 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
               'la ola se limpia sola');
   ok(await pg.locator('.sv-plan[data-plan="gp-e"]').evaluate(e => e.classList.contains('abierto')),
      'y el paquete queda abierto');
+  ok(/paso 2 de 3/i.test(await paso()), 'y el rótulo avanza al paso 2: ' + await paso());
+  await elige(pg, 'gp-e');
+  await hasta(async () => /paso 3 de 3/i.test(await paso()), 'el rótulo llega al paso 3');
+  ok(/paso 3 de 3/i.test(await paso()), 'y al elegir cómo se paga, al 3: ' + await paso());
   await pg.locator('[data-sv-cambiar]').click();
   await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2, 'vuelven los dos');
   ok(!(await pg.locator('[data-sv-vuelta]').isVisible()),
      'sin nada elegido no hay nada que deshacer, así que no hay botón de volver');
 
-  await pg.locator('[data-elige="gp-t"]').click();
+  await tocaPlan(pg, 'gp-t');
   await hasta(() => pg.locator('.sv-plan[data-plan="gp-t"] .sv-pagos').isVisible(),
               'las formas de pago del paquete elegido aparecen');
   ok(await pg.locator('.sv-plan:visible').count() === 1,
@@ -239,7 +313,7 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   /* Y aparecen con el PAQUETE abierto, sin esperar a la forma de pago: es lo
      que el titular pidió —«cuando seleccione el paquete que aparezca todo lo
      demás»— y evita que el bloque salte al cambiar de una opción a la otra. */
-  await pg.locator('[data-elige="gp-e"]').click();
+  await tocaPlan(pg, 'gp-e');
   await hasta(() => pg.locator('[data-sv-datos]').isVisible(), 'los datos aparecen al abrir el paquete');
   ok(await pg.locator('[data-sv-datos]').isVisible(),
      'y aparecen al ABRIR el paquete, antes de elegir cómo se paga');

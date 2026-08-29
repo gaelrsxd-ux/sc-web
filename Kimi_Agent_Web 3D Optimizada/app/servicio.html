@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=d943bd39">
-<link rel="stylesheet" href="assets/pedido.css?v=166aa73d">
+<link rel="stylesheet" href="assets/pedido.css?v=8299e22a">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -33,7 +33,12 @@
        qué era. No se ve, porque el diseño ya lo dice con la cabecera del
        producto y meterlo dos veces sería ruido para todos los demás. -->
   <h1 class="sr">Configurar el perfil de tu negocio en Google</h1>
-  <p class="tag">Configurar tu Google</p>
+  <!-- El rótulo dice EN QUÉ PASO SE ESTÁ, como en la página de pedido. Sin él,
+       una pantalla que va descubriendo bloques no dice cuánto falta, y no saber
+       cuánto falta es el motivo por el que se abandona un cobro. Nace con el
+       nombre de la pantalla: sin JavaScript no hay pasos que contar porque se
+       ve todo a la vez, y entonces el rótulo tiene que decir algo cierto. -->
+  <p class="tag" data-sv-paso>Configurar tu Google</p>
 
   <!-- ⚠ LA CIFRA NACE VACÍA, por lo mismo que en pedido.html: depende de la
        opción elegida y sólo la puede escribir el script. Con un número puesto
@@ -105,9 +110,13 @@
       <div class="sv-plan" role="group" aria-label="Lo esencial, $1,490" data-plan="gp-e">
         <button type="button" class="sv-elige" data-elige="gp-e" hidden><span class="sr">Elegir Lo esencial, $1,490</span></button>
         <p class="sv-nom">Lo esencial<span>$1,490</span></p>
-        <p class="sv-que">Con las fotos que t&#250; nos mandes.</p>
+        <p class="sv-que">Tu ficha de Google completa y lista para recibir rese&#241;as.</p>
+        <details class="sv-mas">
+          <summary>Ver qu&#233; incluye</summary>
+          <ul><li>Horarios, direcci&#243;n y tel&#233;fono, bien puestos</li><li>Categor&#237;as y a qu&#233; se dedica tu negocio</li><li>La descripci&#243;n de tu negocio, escrita por nosotros</li><li>El enlace directo para que te dejen rese&#241;as</li><li>Las fotos las mandas t&#250;</li></ul>
+        </details>
         <p class="sv-como sv-como-no">P&#225;galo <b>de contado</b>, o deja <b>$750 de anticipo</b> y los $740 restantes cuando te entreguemos el acceso.</p>
-        <p class="sv-como sv-como-si">Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.</p>
+        <p class="sv-como sv-como-si">Como tu ficha <b>ya existe</b>, este paquete se paga <b>de contado</b>. El anticipo s&#243;lo existe cuando la cuenta la creamos nosotros.</p>
         <p class="sv-pista" data-sv-pista hidden>Toca para elegir este paquete</p>
         <div class="sv-pagos">
           <label class="ped-op">
@@ -129,10 +138,14 @@
       <div class="sv-plan" role="group" aria-label="Todo hecho, $2,300" data-plan="gp-t">
         <button type="button" class="sv-elige" data-elige="gp-t" hidden><span class="sr">Elegir Todo hecho, $2,300</span></button>
         <p class="sv-nom">Todo hecho<span>$2,300</span></p>
-        <p class="sv-que">Vamos a tu negocio y tomamos las fotos.</p>
+        <p class="sv-que">Todo lo de &#171;Lo esencial&#187;, y lo dejamos funcionando nosotros.</p>
         <p class="sv-nota">La visita es en San Luis Potos&#237; y Soledad. Desde otra ciudad se hace todo lo dem&#225;s igual y las fotos las mandas t&#250;.</p>
+        <details class="sv-mas">
+          <summary>Ver qu&#233; incluye</summary>
+          <ul><li>Todo lo de &#171;Lo esencial&#187;</li><li>Vamos a tu negocio y tomamos las fotos (hasta 20)</li><li>Contestamos hasta 30 rese&#241;as que ya te dejaron</li><li>Dejamos puestas las preguntas frecuentes y tus primeras publicaciones</li><li>Un reporte con capturas de antes y despu&#233;s</li></ul>
+        </details>
         <p class="sv-como sv-como-no">P&#225;galo <b>de contado</b>, o deja <b>$1,150 de anticipo</b> y los $1,150 restantes cuando te entreguemos el acceso.</p>
-        <p class="sv-como sv-como-si">Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.</p>
+        <p class="sv-como sv-como-si">Como tu ficha <b>ya existe</b>, este paquete se paga <b>de contado</b>. El anticipo s&#243;lo existe cuando la cuenta la creamos nosotros.</p>
         <p class="sv-pista" data-sv-pista hidden>Toca para elegir este paquete</p>
         <div class="sv-pagos">
           <label class="ped-op">
@@ -153,7 +166,7 @@
       </div>
       <!-- /servicio:opciones -->
 
-      <p class="ped-mas"><a href="terminos.html#servicios">Qu&#233; incluye cada uno, plazos y cancelaci&#243;n</a></p>
+      <p class="ped-mas"><a href="terminos.html#servicios">Plazos y cancelaci&#243;n</a></p>
     </fieldset>
 
     <!-- ══════════ PASO 3 · LOS DATOS ══════════
@@ -240,6 +253,7 @@
   const datos=document.querySelector('[data-sv-datos]');
   const ficha=document.querySelector('[data-sv-ficha]');
   const aviso=document.querySelector('[data-sv-aviso]');
+  const rotulo=document.querySelector('[data-sv-paso]');
   const ops=[...form.querySelectorAll('input[name="paquete"]')];
   if(!ops.length)return;
   const planes=[...form.querySelectorAll('.sv-plan')];
@@ -298,6 +312,10 @@
     const hay=!!form.querySelector('.sv-plan.abierto');
     if(tot)tot.textContent=m?(m.dataset.tot||''):'';
     if(que)que.textContent=m?(m.dataset.que||''):'Elige tu paquete abajo';
+    /* Tres pasos, y el rótulo dice en cuál se está: elegir paquete, elegir cómo
+       se paga, y escribir los datos. Se cuenta por lo que YA está decidido, no
+       por lo que se ve: es lo mismo que hace la página de pedido. */
+    if(rotulo)rotulo.textContent='Paso '+(m?3:hay?2:1)+' de 3';
     if(datos){
       const antes=datos.hidden;
       datos.hidden=!hay;
