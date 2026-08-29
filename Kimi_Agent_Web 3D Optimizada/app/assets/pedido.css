@@ -212,6 +212,31 @@ main{max-width:560px}
   cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .sv-elige[hidden]{display:none}
 
+/* ── QUÉ INCLUYE, PLEGADO EN LA PROPIA TARJETA ──
+   ⚠ `z-index:3` Y `position:relative` NO SON DECORACIÓN: el control que elige
+   el paquete cubre la tarjeta entera con `z-index:2`, así que sin esto el
+   desplegable quedaría debajo y no se podría abrir. Y como el manejador de
+   clics sólo mira `.sv-elige`, abrirlo no elige nada: son dos gestos distintos
+   en el mismo sitio, y cada uno hace lo suyo. */
+.sv-mas{position:relative;z-index:3;margin-top:12px}
+.sv-mas summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  padding:6px 0;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);list-style:none;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;transition:color .25s}
+.sv-mas summary::-webkit-details-marker{display:none}
+/* El triángulo lo dibujamos nosotros: el del sistema es minúsculo y cambia de
+   forma entre navegadores. Gira al abrir, que es lo que dice qué va a pasar. */
+.sv-mas summary::before{content:"";width:0;height:0;flex:none;
+  border-left:4px solid currentColor;border-top:3.5px solid transparent;
+  border-bottom:3.5px solid transparent;transition:transform .25s}
+.sv-mas[open] summary::before{transform:rotate(90deg)}
+.sv-mas summary:hover,.sv-mas summary:focus-visible{color:var(--bronze-hi)}
+.sv-mas ul{list-style:none;margin:8px 0 2px;padding:0}
+.sv-mas li{position:relative;padding-left:18px;margin-top:7px;
+  font-size:13px;line-height:1.6;color:var(--muted)}
+.sv-mas li::before{content:"";position:absolute;left:2px;top:8px;
+  width:5px;height:5px;border:1px solid var(--bronze);transform:rotate(45deg)}
+
 /* La pista de que esto se toca. Una tarjeta que reacciona al pulsarla no se
    distingue de un cuadro de texto si nadie lo dice. */
 .sv-pista{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);

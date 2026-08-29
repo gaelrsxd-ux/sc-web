@@ -107,7 +107,23 @@ const SERVICIOS = [
     corto: 'Lo esencial',
     precio: 1490,
     anticipo: 750,
-    resumen: 'Con las fotos que tú nos mandes',
+    /* ⚠ EL RESUMEN NO PUEDE SONAR A «ESTO VA DE FOTOS». Decía «Con las fotos
+       que tú nos mandes», que es cierto pero es la LETRA PEQUEÑA puesta de
+       titular: quien no sabe qué es configurar un perfil de Google leía eso y
+       entendía que el paquete son fotos. Lo que compra es la ficha entera
+       montada y lista; lo de las fotos es una condición, y va detrás. */
+    resumen: 'Tu ficha de Google completa y lista para recibir reseñas',
+    /* Lo que incluye, en la propia tarjeta y no en la página de términos. Antes
+       había que salir a un texto legal con plazos y cancelación mezclados,
+       leerlo entero y volver — y eso es un cliente perdido por pereza. Frases
+       cortas, sin jerga, y la condición al final. */
+    incluye: [
+      'Horarios, dirección y teléfono, bien puestos',
+      'Categorías y a qué se dedica tu negocio',
+      'La descripción de tu negocio, escrita por nosotros',
+      'El enlace directo para que te dejen reseñas',
+      'Las fotos las mandas tú',
+    ],
   },
   {
     id: 'gp-t',
@@ -115,7 +131,14 @@ const SERVICIOS = [
     corto: 'Todo hecho',
     precio: 2300,
     anticipo: 1150,
-    resumen: 'Vamos a tu negocio y tomamos las fotos',
+    resumen: 'Todo lo de «Lo esencial», y lo dejamos funcionando nosotros',
+    incluye: [
+      'Todo lo de «Lo esencial»',
+      'Vamos a tu negocio y tomamos las fotos (hasta 20)',
+      'Contestamos hasta 30 reseñas que ya te dejaron',
+      'Dejamos puestas las preguntas frecuentes y tus primeras publicaciones',
+      'Un reporte con capturas de antes y después',
+    ],
     /* LA VISITA NO ES NACIONAL Y LA PÁGINA DE COBRO NO PUEDE CALLARLO. Los
        términos la limitan a San Luis Potosí y Soledad desde el primer día; el
        titular de esta cifra vive aquí y va en coche. Sin esta línea, alguien de
@@ -495,8 +518,12 @@ function bloqueServicio() {
       ? `P&#225;galo <b>de contado</b>, o deja <b>${pesos(s.anticipo)} de anticipo</b> `
         + `y los ${pesos(resto)} restantes cuando te entreguemos el acceso.`
       : 'Un solo pago.';
-    const comoSi = 'Como tu ficha <b>ya existe</b>, este paquete va <b>de contado</b>: '
-      + 'el trabajo se hace sobre una cuenta que ya controlas y no hay entrega que reservar.';
+    /* En castellano llano. Decía «el trabajo se hace sobre una cuenta que ya
+       controlas y no hay entrega que reservar», que es exacto y no lo entiende
+       nadie que no sepa ya de qué va. Lo que hay que decir es qué le toca a él:
+       este paquete se paga entero, y por qué. */
+    const comoSi = 'Como tu ficha <b>ya existe</b>, este paquete se paga <b>de contado</b>. '
+      + 'El anticipo s&#243;lo existe cuando la cuenta la creamos nosotros.';
 
     /* DOS ATRIBUTOS PARA EL MISMO IMPORTE, y no es duplicar por gusto.
        `data-tot` es lo que se PINTA en la cifra grande, ya con su coma y su
@@ -546,6 +573,18 @@ function bloqueServicio() {
       `        <p class="sv-nom">${ent(corto)}<span>${pesos(s.precio)}</span></p>\n` +
       `        <p class="sv-que">${ent(s.resumen)}.</p>\n` +
       (s.nota ? `        <p class="sv-nota">${ent(s.nota)}</p>\n` : '') +
+      /* ⚠ QUÉ INCLUYE, AQUÍ MISMO Y PLEGADO. Antes esto sólo vivía en la página
+         de términos, mezclado con plazos y cancelación: había que salir, leer un
+         texto legal entero y volver. Un <details> nativo lo abre y lo cierra sin
+         script, y plegado no roba ni una línea a la decisión de arriba.
+         Va por ENCIMA del control que cubre la tarjeta (z-index en el CSS) para
+         que abrirlo no sea, además, elegir el paquete. */
+      (s.incluye && s.incluye.length
+        ? '        <details class="sv-mas">\n' +
+          `          <summary>${ent('Ver qué incluye')}</summary>\n` +
+          '          <ul>' + s.incluye.map(x => `<li>${ent(x)}</li>`).join('') + '</ul>\n' +
+          '        </details>\n'
+        : '') +
       /* DOS PÁRRAFOS HERMANOS Y NO UNO CON DOS ATRIBUTOS. Con un solo <p> que
          el script reescribe, sin JavaScript sólo existe una de las dos verdades
          y la otra no hay quien la enseñe. Siendo hermanos los turna el CSS con
