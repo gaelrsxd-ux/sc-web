@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=d943bd39">
-<link rel="stylesheet" href="assets/pedido.css?v=8299e22a">
+<link rel="stylesheet" href="assets/pedido.css?v=ff6fd7e0">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -114,7 +114,7 @@
                placeholder="Ej. Café Central"></label>
       <label class="ped-campo"><span>Ciudad</span>
         <input type="text" name="negocio_ciudad" maxlength="40" autocomplete="address-level2"
-               placeholder="Ej. San Luis Potosí"></label>
+               list="mx-ciudades" placeholder="Ej. San Luis Potosí"></label>
       <label class="ped-campo"><span>Dirección <i class="opc">— opcional</i></span>
         <input type="text" name="negocio_dir" maxlength="70" placeholder="Calle y número del negocio"></label>
 
@@ -158,10 +158,26 @@
         <input type="text" name="calle" maxlength="90" required autocomplete="address-line1"></label>
       <div class="ped-par">
         <label class="ped-campo"><span>Colonia</span>
-          <input type="text" name="colonia" maxlength="50" required autocomplete="address-line2"></label>
+          <input type="text" name="colonia" maxlength="50" required autocomplete="address-line2"
+                 list="mx-colonias"></label>
         <label class="ped-campo"><span>Ciudad</span>
-          <input type="text" name="ciudad" maxlength="40" required autocomplete="address-level2"></label>
+          <input type="text" name="ciudad" maxlength="40" required autocomplete="address-level2"
+                 list="mx-ciudades"></label>
       </div>
+      <!-- Lo que el c&#243;digo postal acaba de averiguar. Nace vac&#237;o y escondido: sin
+           JavaScript no hay nada que decir aqu&#237;, y los tres campos siguen siendo
+           de texto libre, que es lo que hace que esto no pueda estorbar. -->
+      <p class="ped-pista" data-mx-pista hidden></p>
+      <!-- ⚠ LAS DOS LISTAS NACEN VAC&#205;AS Y ES LO CORRECTO. Un &#171;datalist&#187; sin
+           opciones no hace nada: el campo se comporta como el de texto de
+           siempre. Las llena el script de abajo &#8212;las colonias, cuando el c&#243;digo
+           postal ya son cinco d&#237;gitos; las ciudades, al tocar el campo&#8212; y as&#237;
+           la p&#225;gina no carga 3 MB de cat&#225;logo que casi nadie va a necesitar.
+           Y siguen siendo SUGERENCIAS: se puede escribir una colonia que no
+           est&#233; en la lista, que es justo lo que hace falta en un
+           fraccionamiento nuevo que SEPOMEX todav&#237;a no tiene. -->
+      <datalist id="mx-colonias"></datalist>
+      <datalist id="mx-ciudades"></datalist>
       <label class="ped-campo"><span>Estado</span>
         <select name="estado" required autocomplete="address-level1">
           <option value="">Elige tu estado</option>
@@ -433,6 +449,126 @@
   cabecera();
   sincronizaRequeridos();
   muestra();
+})();
+</script>
+<script>
+/* ------------------------------------------------------------------------
+   EL CÓDIGO POSTAL SABE MÁS QUE QUIEN LO ESCRIBE
+
+   Tres campos seguidos de texto libre —código postal, colonia y ciudad— en un
+   móvil y justo antes de pagar. Lo que llegaba era «lomas 4a», «Lomas cuarta
+   seccion» y «Lomas 4ta Secc.» para la misma calle; y una dirección mal
+   escrita no es un dato feo, es un paquete que vuelve y una venta que hay que
+   perseguir por WhatsApp.
+
+   Con los cinco dígitos puestos ya se sabe el estado, la ciudad y las colonias
+   posibles: son datos públicos de SEPOMEX que este repositorio publica
+   troceados por zona (tools/cp.mjs → assets/mx/NN.json). Así que se rellenan
+   solos y la colonia pasa a elegirse de una lista en vez de escribirse.
+
+   TRES REGLAS QUE NO SE TOCAN:
+
+   · SIGUE SIENDO TEXTO LIBRE. Un «datalist» sugiere, no obliga. Si su colonia
+     no está —un fraccionamiento nuevo, un cambio que SEPOMEX aún no recogió—,
+     se escribe igual y el pedido sale. Una lista cerrada aquí sería una venta
+     perdida por un dato que ni siquiera es nuestro.
+
+   · LO QUE ESCRIBIÓ UNA PERSONA MANDA SIEMPRE. Sólo se rellena un campo vacío,
+     o uno que rellenamos nosotros y nadie ha tocado desde entonces. Corregir a
+     mano el estado y ver cómo se vuelve a cambiar solo es de las cosas que
+     hacen abandonar un formulario.
+
+   · SIN ESTO LA PÁGINA FUNCIONA IGUAL. Si el archivo de la zona no llega, si
+     el JavaScript falla o si el navegador no sabe de «datalist», los tres
+     campos son los de siempre. Nada de lo de aquí abajo es obligatorio para
+     comprar, y por eso vive en su propio bloque: para que no pueda llevarse
+     por delante el formulario si algo sale mal.
+   --------------------------------------------------------------------- */
+(()=>{
+  const q=n=>document.querySelector('[name='+n+']');
+  const cp=q('cp'),colonia=q('colonia'),ciudad=q('ciudad'),estado=q('estado'),
+        negocio=q('negocio_ciudad');
+  const colonias=document.getElementById('mx-colonias');
+  const ciudades=document.getElementById('mx-ciudades');
+  const pista=document.querySelector('[data-mx-pista]');
+  if(!cp||!colonias)return;
+
+  const pinta=(lista,nombres)=>{
+    const f=document.createDocumentFragment();
+    for(const n of nombres){const o=document.createElement('option');o.value=n;f.append(o);}
+    lista.replaceChildren(f);
+  };
+
+  /* Cada zona se pide UNA sola vez por visita, y se guarda la PROMESA y no el
+     resultado: tecleando deprisa los cinco dígitos llegan tres veces seguidas y
+     con el resultado se dispararían tres descargas del mismo archivo. */
+  const pedidas=new Map();
+  const trae=ruta=>{
+    if(!pedidas.has(ruta))pedidas.set(ruta,
+      fetch(ruta).then(r=>r.ok?r.json():null).catch(()=>null));
+    return pedidas.get(ruta);
+  };
+
+  /* «Esto lo puse yo y nadie lo ha tocado». Se guarda junto al valor puesto: si
+     luego alguien lo cambia, deja de coincidir y el campo pasa a ser suyo. */
+  const nuestro=c=>c&&c.dataset.mx!==undefined&&c.value===c.dataset.mx;
+  const pon=(c,v)=>{
+    if(!c||!v)return;
+    if(c.value&&!nuestro(c))return;
+    c.value=v;
+    /* En un desplegable, un valor que no existe entre las opciones deja el
+       campo VACÍO sin avisar. Vale más no tocarlo que borrar lo que hubiera. */
+    if(c.value!==v){c.value=c.dataset.mx||'';return;}
+    c.dataset.mx=v;
+  };
+
+  let ultimo='';
+  async function mira(){
+    const d=String(cp.value||'').replace(/\D/g,'');
+    if(d.length!==5){ultimo='';if(pista)pista.hidden=true;return;}
+    if(d===ultimo)return;
+    ultimo=d;
+    const zona=await trae('assets/mx/'+d.slice(0,2)+'.json');
+    /* Mientras se descargaba, el código postal pudo cambiar. Contestar a un
+       código que ya no está escrito rellenaría la ciudad de otro sitio. */
+    if(String(cp.value||'').replace(/\D/g,'')!==d)return;
+    const v=zona&&zona.z&&zona.z[d];
+    if(!v){
+      pinta(colonias,[]);
+      if(pista){
+        pista.textContent=zona
+          ?'No tenemos ese código postal en la lista. Escribe tu colonia y tu ciudad a mano.'
+          :'';
+        pista.hidden=!zona;
+      }
+      return;
+    }
+    pinta(colonias,v[2]);
+    pon(estado,zona.e[v[0]]);
+    pon(ciudad,zona.c[v[1]]);
+    if(pista){
+      pista.textContent=v[2].length===1
+        ?'El '+d+' es de la colonia '+v[2][0]+'. Si la tuya es otra, escríbela.'
+        :v[2].length+' colonias en el '+d+'. Escribe las primeras letras y elige la tuya.';
+      pista.hidden=false;
+    }
+  }
+  cp.addEventListener('input',mira);
+  cp.addEventListener('change',mira);
+  if(cp.value)mira();
+
+  /* Las 2.528 ciudades pesan 43 KB y no hacen falta hasta que alguien va a
+     escribir una. Se piden al primer contacto con cualquiera de los dos campos
+     —el de la ciudad del envío o el del negocio— y ya sirven para los dos. */
+  if(ciudades){
+    const traeCiudades=()=>trae('assets/mx/ciudades.json')
+      .then(l=>{if(Array.isArray(l)&&!ciudades.firstChild)pinta(ciudades,l);});
+    for(const c of [ciudad,negocio]){
+      if(!c)continue;
+      c.addEventListener('focus',traeCiudades,{once:true});
+      c.addEventListener('input',traeCiudades,{once:true});
+    }
+  }
 })();
 </script>
 </body>

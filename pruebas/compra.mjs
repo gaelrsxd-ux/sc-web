@@ -558,6 +558,96 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pg.goto(BASE + '/pedido.html');
   ok(await pg.locator('#ped-cant').inputValue() === '1', 'sin ?n también');
 
+  /* ---- EL CÓDIGO POSTAL RELLENA LO QUE SABE ----
+     Tres campos seguidos de texto libre —código postal, colonia y ciudad— en
+     un móvil y justo antes de pagar es de donde salían «lomas 4a», «Lomas
+     cuarta seccion» y «Lomas 4ta Secc.» para la misma calle. Una dirección mal
+     escrita no es un dato feo: es un paquete que vuelve.
+
+     Lo que se comprueba aquí no es que la lista exista, sino las tres reglas
+     que la hacen inofensiva: que sugiera y no obligue, que no pise lo que
+     escribió una persona, y que la página siga vendiendo si el catálogo no
+     llega. */
+  await pg.goto(BASE + '/pedido.html?n=1');
+  await pg.locator('.ped-op:has([value=blanco])').click();
+  await pg.locator('[data-paso="1"] [data-sigue]').click();
+
+  await pg.fill('[name=cp]', '78216');
+  await pg.waitForFunction(() => document.querySelector('#mx-colonias').options.length > 0,
+                           null, { timeout: 8000 });
+  const colonias = await pg.$$eval('#mx-colonias option', o => o.map(x => x.value));
+  ok(colonias.length === 3 && colonias.includes('Lomas Cuarta Sección'),
+     'el 78216 despliega sus colonias: ' + colonias.join(' · '));
+  /* ⚠ Y EL CAMPO TIENE QUE ESTAR ENCHUFADO A ESA LISTA. Sin esta comprobación,
+     quitar el `list=` del marcado dejaba la lista llenándose en un rincón del
+     documento sin que ningún campo la usara —la función muerta y la suite en
+     verde—. Se probó quitándolo: pasaban las 119. */
+  ok(await pg.locator('[name=colonia]').evaluate(e => !!e.list && e.list.id === 'mx-colonias'),
+     'y el campo de la colonia está enchufado a ella');
+  ok(await pg.locator('[name=ciudad]').evaluate(e => !!e.list && e.list.id === 'mx-ciudades'),
+     'el de la ciudad, a la de las ciudades');
+  ok(await pg.locator('[name=negocio_ciudad]').evaluate(e => !!e.list && e.list.id === 'mx-ciudades'),
+     'y el de la ciudad del negocio, a la misma');
+  ok(await pg.locator('[name=estado]').inputValue() === 'San Luis Potosí',
+     'y el estado se rellena solo');
+  ok(await pg.locator('[name=ciudad]').inputValue() === 'San Luis Potosí', 'y la ciudad también');
+  ok(/78216/.test(await pg.locator('[data-mx-pista]').textContent()),
+     'con una pista que dice de dónde salen: «' +
+     (await pg.locator('[data-mx-pista]').textContent()).trim() + '»');
+
+  /* ⚠ EL CAMPO SIGUE SIENDO DE TEXTO. Un fraccionamiento nuevo que SEPOMEX aún
+     no tiene no puede impedir una compra: la lista sugiere, no encierra. */
+  await pg.fill('[name=colonia]', 'Fraccionamiento que no existe');
+  ok(await pg.locator('[name=colonia]').inputValue() === 'Fraccionamiento que no existe',
+     'y aun así se puede escribir una colonia que no está en la lista');
+
+  /* ⚠ LO ESCRITO A MANO MANDA. Corregir la ciudad y ver cómo se vuelve a
+     cambiar sola es de las cosas que hacen abandonar un formulario. */
+  await pg.fill('[name=ciudad]', 'Villa de Reyes');
+  await pg.fill('[name=cp]', '64000');
+  await pg.waitForFunction(() => document.querySelector('[name=estado]').value === 'Nuevo León',
+                           null, { timeout: 8000 });
+  ok(await pg.locator('[name=ciudad]').inputValue() === 'Villa de Reyes',
+     'lo que escribió una persona NO se pisa al cambiar el código postal');
+  ok(await pg.locator('[name=estado]').inputValue() === 'Nuevo León',
+     'pero lo que rellenamos nosotros sí se corrige');
+
+  /* ⚠ EL NOMBRE DEL ESTADO TIENE QUE SER EL DEL DESPLEGABLE. El catálogo
+     oficial dice «Coahuila de Zaragoza» y el formulario sólo tiene
+     «Coahuila»: un valor que no existe entre las opciones deja el desplegable
+     VACÍO sin avisar de nada. */
+  await pg.evaluate(() => {
+    const e = document.querySelector('[name=estado]');
+    e.value = ''; delete e.dataset.mx;
+  });
+  await pg.fill('[name=cp]', '27000');
+  await pg.waitForFunction(() => document.querySelector('[name=estado]').value !== '',
+                           null, { timeout: 8000 });
+  ok(await pg.locator('[name=estado]').inputValue() === 'Coahuila',
+     '«Coahuila de Zaragoza» llega como «Coahuila», que es lo que ofrece el desplegable');
+
+  /* Un código que no está en el catálogo no puede dejar la pantalla muda ni
+     bloquear nada: se dice y se sigue a mano. */
+  await pg.fill('[name=cp]', '78999');
+  await pg.waitForFunction(() => /a mano/.test(document.querySelector('[data-mx-pista]').textContent),
+                           null, { timeout: 8000 });
+  ok(await pg.locator('[name=colonia]').isEditable(),
+     'un código postal desconocido lo dice y deja seguir a mano');
+
+  /* Las 2.528 ciudades no se descargan hasta que alguien va a escribir una.
+     Se mira en una pestaña RECIÉN ABIERTA: en la de arriba ya se escribió en
+     el campo de la ciudad, y eso es justo lo que dispara la descarga. */
+  await pg.goto(BASE + '/pedido.html?n=1');
+  await pg.locator('.ped-op:has([value=blanco])').click();
+  await pg.locator('[data-paso="1"] [data-sigue]').click();
+  ok(await pg.$$eval('#mx-ciudades option', o => o.length) === 0,
+     'la lista de ciudades no se descarga hasta que hace falta');
+  await pg.locator('[name=ciudad]').focus();
+  await pg.waitForFunction(() => document.querySelector('#mx-ciudades').options.length > 2000,
+                           null, { timeout: 8000 });
+  ok(await pg.$$eval('#mx-ciudades option', o => o.length) > 2000,
+     'y al tocar el campo llegan todas');
+
   ok(errores.length === 0, 'ni un error de JavaScript o de consola' +
      (errores.length ? ':\n      ' + errores.join('\n      ') : ''));
   await ctx.close();
@@ -620,7 +710,20 @@ const navegador = await chromium.launch({ executablePath: CHROME });
     cp: '78000', correo: 'ana@ejemplo.com', calle: 'Hidalgo 45', colonia: 'Centro', ciudad: 'SLP',
   })) await pg.fill('[name=' + k + ']', v);
   await pg.selectOption('[name=estado]', 'San Luis Potosí');
-  await pg.locator('[data-ped-pagar]').click();
+  /* ⚠ `force` AQUÍ Y SÓLO AQUÍ, Y NO ES PEREZA. Antes de pulsar, Playwright
+     espera a que el elemento deje de moverse, y eso lo mide comparando su
+     posición en DOS FOTOGRAMAS SEGUIDOS (requestAnimationFrame). Con el
+     JavaScript apagado el navegador no ejecuta esas llamadas, y en una página
+     quieta —pedido.html no tiene ninguna animación en marcha— tampoco hay
+     nada que fuerce un repintado: los dos fotogramas no llegan nunca y el
+     clic caduca a los treinta segundos con un «element is not stable» que no
+     habla de esta web, sino del medidor.
+
+     Lo que se está comprobando es que un formulario normal, con method="post"
+     y sin una línea de script, envía los campos correctos. Que el botón sea
+     visible y alcanzable ya se comprobó arriba. */
+  ok(await pg.locator('[data-ped-pagar]').isVisible(), 'el botón de pagar está a la vista');
+  await pg.locator('[data-ped-pagar]').click({ force: true });
   await pg.waitForTimeout(700);
 
   const campos = Object.fromEntries(new URLSearchParams(enviado || ''));
