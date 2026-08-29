@@ -466,6 +466,15 @@
    troceados por zona (tools/cp.mjs → assets/mx/NN.json). Así que se rellenan
    solos y la colonia pasa a elegirse de una lista en vez de escribirse.
 
+   ⚠⚠ NUNCA MÁS DE OCHO OPCIONES DENTRO DE UN «datalist», Y ESTO NO ES UNA
+   OPTIMIZACIÓN: ES EL ARREGLO DE UN BLOQUEO. La primera versión metía las
+   2.528 ciudades de una vez —y hasta 287 colonias en el código postal más
+   poblado—. En un iPhone eso CONGELA la página: el desplegable de sugerencias
+   no lo dibuja esta web, lo dibuja Safari, y con miles de elementos se queda
+   trabado con el teclado abierto y sin forma de salir. Pasó en el campo de la
+   ciudad, que es el que más tiene. Ahora la lista se rehace en cada tecla con
+   las OCHO que coinciden y nunca hay más de ocho en el documento.
+
    TRES REGLAS QUE NO SE TOCAN:
 
    · SIGUE SIENDO TEXTO LIBRE. Un «datalist» sugiere, no obliga. Si su colonia
@@ -493,10 +502,43 @@
   const pista=document.querySelector('[data-mx-pista]');
   if(!cp||!colonias)return;
 
+  /* El tope que evita el bloqueo. Ocho caben en la tira de sugerencias de un
+     móvil sin desplazarse, así que subirlo no enseñaría más y sí volvería a
+     acercarse al problema. */
+  const TOPE=8;
+  /* Quien escribe «san luis potosi» en un teclado de móvil tiene que encontrar
+     «San Luis Potosí»: se comparan las dos cosas sin acentos y sin mayúsculas. */
+  /* Los acentos se escriben ESCAPADOS y no con los caracteres de verdad: son
+     marcas combinantes invisibles en un editor, y este repositorio ya mezcla
+     texto en UTF-8 con entidades numéricas. Un carácter invisible que nadie
+     ve al revisar es un carácter que alguien borra sin querer. */
+  const llano=t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+
   const pinta=(lista,nombres)=>{
+    /* Rehacer la lista con exactamente lo mismo que ya tiene cierra la tira de
+       sugerencias mientras se escribe. Si no cambia nada, no se toca. */
+    if([...lista.options].map(o=>o.value).join('\n')===nombres.join('\n'))return;
     const f=document.createDocumentFragment();
     for(const n of nombres){const o=document.createElement('option');o.value=n;f.append(o);}
     lista.replaceChildren(f);
+  };
+
+  /* Los que EMPIEZAN por lo escrito primero —que es lo que espera quien teclea
+     las primeras letras de su ciudad— y los que lo llevan dentro después. En
+     cuanto hay ocho que empiezan, se deja de buscar.
+
+     Con el campo vacío: si la lista entera cabe en el tope se enseña entera
+     —el caso normal de las colonias, que son cinco de media—, y si no, nada:
+     ocho ciudades al azar de las 2.528 no ayudan a nadie. */
+  const busca=(todos,llanos,texto)=>{
+    const t=llano(String(texto||'').trim());
+    if(!t)return todos.length<=TOPE?todos.slice():[];
+    const inicio=[],dentro=[];
+    for(let i=0;i<llanos.length&&inicio.length<TOPE;i++){
+      if(llanos[i].startsWith(t))inicio.push(todos[i]);
+      else if(dentro.length<TOPE&&llanos[i].includes(t))dentro.push(todos[i]);
+    }
+    return inicio.concat(dentro).slice(0,TOPE);
   };
 
   /* Cada zona se pide UNA sola vez por visita, y se guarda la PROMESA y no el
@@ -522,6 +564,11 @@
     c.dataset.mx=v;
   };
 
+  /* ---- LAS COLONIAS DEL CÓDIGO POSTAL ---- */
+  let colTodas=[],colLlanas=[];
+  const pintaColonias=()=>pinta(colonias,busca(colTodas,colLlanas,colonia&&colonia.value));
+  if(colonia)colonia.addEventListener('input',pintaColonias);
+
   let ultimo='';
   async function mira(){
     const d=String(cp.value||'').replace(/\D/g,'');
@@ -534,7 +581,7 @@
     if(String(cp.value||'').replace(/\D/g,'')!==d)return;
     const v=zona&&zona.z&&zona.z[d];
     if(!v){
-      pinta(colonias,[]);
+      colTodas=[];colLlanas=[];pinta(colonias,[]);
       if(pista){
         pista.textContent=zona
           ?'No tenemos ese código postal en la lista. Escribe tu colonia y tu ciudad a mano.'
@@ -543,13 +590,18 @@
       }
       return;
     }
-    pinta(colonias,v[2]);
+    colTodas=v[2];
+    colLlanas=colTodas.map(llano);
+    pintaColonias();
     pon(estado,zona.e[v[0]]);
     pon(ciudad,zona.c[v[1]]);
     if(pista){
-      pista.textContent=v[2].length===1
-        ?'El '+d+' es de la colonia '+v[2][0]+'. Si la tuya es otra, escríbela.'
-        :v[2].length+' colonias en el '+d+'. Escribe las primeras letras y elige la tuya.';
+      pista.textContent=colTodas.length===1
+        ?'El '+d+' es de la colonia '+colTodas[0]+'. Si la tuya es otra, escríbela.'
+        :colTodas.length+' colonias en el '+d+
+         (colTodas.length>TOPE
+           ?'. Escribe las primeras letras para encontrar la tuya.'
+           :'. Escribe las primeras letras y elige la tuya.');
       pista.hidden=false;
     }
   }
@@ -557,16 +609,28 @@
   cp.addEventListener('change',mira);
   if(cp.value)mira();
 
-  /* Las 2.528 ciudades pesan 43 KB y no hacen falta hasta que alguien va a
-     escribir una. Se piden al primer contacto con cualquiera de los dos campos
-     —el de la ciudad del envío o el del negocio— y ya sirven para los dos. */
+  /* ---- LAS CIUDADES DE MÉXICO ----
+     Las 2.528 pesan 43 KB y no hacen falta hasta que alguien va a escribir una.
+     Se piden al primer contacto con cualquiera de los dos campos —el de la
+     ciudad del envío o el del negocio— y ya sirven para los dos. Lo que se
+     descarga es la lista entera; lo que se PINTA nunca pasa de ocho. */
   if(ciudades){
-    const traeCiudades=()=>trae('assets/mx/ciudades.json')
-      .then(l=>{if(Array.isArray(l)&&!ciudades.firstChild)pinta(ciudades,l);});
+    let ciuTodas=null,ciuLlanas=null;
+    const pintaCiudades=campo=>{
+      if(ciuTodas)pinta(ciudades,busca(ciuTodas,ciuLlanas,campo.value));
+    };
+    const traeCiudades=campo=>{
+      if(ciuTodas)return pintaCiudades(campo);
+      return trae('assets/mx/ciudades.json').then(l=>{
+        if(!Array.isArray(l))return;
+        ciuTodas=l;ciuLlanas=l.map(llano);
+        pintaCiudades(campo);
+      });
+    };
     for(const c of [ciudad,negocio]){
       if(!c)continue;
-      c.addEventListener('focus',traeCiudades,{once:true});
-      c.addEventListener('input',traeCiudades,{once:true});
+      c.addEventListener('focus',()=>traeCiudades(c));
+      c.addEventListener('input',()=>traeCiudades(c));
     }
   }
 })();

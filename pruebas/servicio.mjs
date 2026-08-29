@@ -595,12 +595,27 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   await tocaPlan(pg, 'gp-e');
   await hasta(() => pg.$eval('[name=negocio_ciudad]', e => e.offsetParent !== null),
               'el campo de la ciudad aparece al elegir paquete');
+  /* ⚠⚠ Y AL TOCARLO SIGUE VACÍA, QUE ES EL ARREGLO DE UN BLOQUEO. La primera
+     versión metía las 2.528 de golpe: en un iPhone eso CONGELA la página —la
+     tira de sugerencias la dibuja Safari, no esta web, y con miles de
+     elementos se queda trabada con el teclado abierto y sin salida—. Lo
+     encontró el dueño en este mismo campo, desde su móvil. */
   await pg.locator('[name=negocio_ciudad]').focus();
-  await hasta(() => pg.$eval('#mx-ciudades', d => d.options.length > 2000),
-              'al tocar el campo de la ciudad llegan todas');
-  ok(await pg.$$eval('#mx-ciudades option',
-                     o => o.some(x => x.value === 'Soledad de Graciano Sánchez')),
-     'con la ciudad de al lado incluida, escrita como se escribe');
+  await pg.waitForTimeout(700);
+  ok(await pg.$$eval('#mx-ciudades option', o => o.length) === 0,
+     'al tocar el campo de la ciudad la lista sigue vacía: se llena al escribir');
+
+  await pg.fill('[name=negocio_ciudad]', 'soledad de graciano');
+  await hasta(() => pg.$eval('#mx-ciudades', d => d.options.length > 0),
+              'y al escribir aparecen las que coinciden');
+  const sugeridas = await pg.$$eval('#mx-ciudades option', o => o.map(x => x.value));
+  ok(sugeridas.includes('Soledad de Graciano Sánchez'),
+     'sin acentos y en minúsculas encuentra «Soledad de Graciano Sánchez»');
+  ok(sugeridas.length <= 8, `y nunca hay más de ocho a la vez (${sugeridas.length})`);
+  await pg.fill('[name=negocio_ciudad]', 's');
+  await pg.waitForTimeout(300);
+  ok(await pg.$$eval('#mx-ciudades option', o => o.length) <= 8,
+     'ni con una sola letra, que es donde más coincidencias hay');
   /* ⚠ Y SIGUE SIENDO UN CAMPO DE TEXTO. La lista sugiere, no encierra: un
      nombre que SEPOMEX no tenga no puede impedir contratar. */
   ok(await pg.locator('[name=negocio_ciudad]').evaluate(e => e.type === 'text'),

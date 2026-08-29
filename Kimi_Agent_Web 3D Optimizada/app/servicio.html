@@ -476,6 +476,14 @@
    ese campo — la inmensa mayoría de quien abre esta página no llega hasta
    aquí, y cobrarle la descarga por si acaso sería cobrársela para nada.
 
+   ⚠⚠ NUNCA MÁS DE OCHO OPCIONES DENTRO DEL «datalist», Y ESTO NO ES UNA
+   OPTIMIZACIÓN: ES EL ARREGLO DE UN BLOQUEO. La primera versión metía las
+   2.528 ciudades de una vez. En un iPhone eso CONGELA la página: la tira de
+   sugerencias no la dibuja esta web, la dibuja Safari, y con miles de
+   elementos se queda trabada con el teclado abierto y sin forma de salir.
+   Pasó justo en este campo. Ahora se descarga la lista entera pero sólo se
+   PINTAN las ocho que coinciden con lo tecleado, y se rehacen en cada tecla.
+
    Sigue siendo un campo de texto: la lista sugiere, no obliga. Si algo falla
    —la descarga, el JavaScript, un navegador sin «datalist»— el campo es el de
    siempre y el pedido sale igual. Por eso esto vive en su propio bloque y no
@@ -485,8 +493,46 @@
   const campo=document.querySelector('[name=negocio_ciudad]');
   const lista=document.getElementById('mx-ciudades');
   if(!campo||!lista)return;
-  let pedida=false;
+
+  /* Ocho caben en la tira de sugerencias de un móvil sin desplazarse, así que
+     subirlo no enseñaría más y sí volvería a acercarse al bloqueo. */
+  const TOPE=8;
+  /* Quien escribe «san luis potosi» en un teclado de móvil tiene que encontrar
+     «San Luis Potosí»: se comparan las dos cosas sin acentos y sin mayúsculas.
+     Los acentos van ESCAPADOS y no con los caracteres de verdad: son marcas
+     combinantes invisibles en un editor, y un carácter que nadie ve al revisar
+     es un carácter que alguien borra sin querer. */
+  const llano=t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+
+  let todas=null,llanas=null,pedida=false;
+
+  const pinta=nombres=>{
+    /* Rehacer la lista con exactamente lo mismo que ya tiene cierra la tira de
+       sugerencias mientras se escribe. Si no cambia nada, no se toca. */
+    if([...lista.options].map(o=>o.value).join('\n')===nombres.join('\n'))return;
+    const f=document.createDocumentFragment();
+    for(const n of nombres){const o=document.createElement('option');o.value=n;f.append(o);}
+    lista.replaceChildren(f);
+  };
+
+  /* Las que EMPIEZAN por lo escrito primero —que es lo que espera quien teclea
+     las primeras letras de su ciudad— y las que lo llevan dentro después. En
+     cuanto hay ocho que empiezan, se deja de buscar. Con el campo vacío no se
+     pinta ninguna: ocho ciudades al azar de las 2.528 no ayudan a nadie. */
+  const sugiere=()=>{
+    if(!todas)return;
+    const t=llano(String(campo.value||'').trim());
+    if(!t)return pinta([]);
+    const inicio=[],dentro=[];
+    for(let i=0;i<llanas.length&&inicio.length<TOPE;i++){
+      if(llanas[i].startsWith(t))inicio.push(todas[i]);
+      else if(dentro.length<TOPE&&llanas[i].includes(t))dentro.push(todas[i]);
+    }
+    pinta(inicio.concat(dentro).slice(0,TOPE));
+  };
+
   const trae=async()=>{
+    if(todas)return sugiere();
     if(pedida)return;
     pedida=true;
     try{
@@ -494,13 +540,12 @@
       if(!r.ok)return;
       const nombres=await r.json();
       if(!Array.isArray(nombres))return;
-      const f=document.createDocumentFragment();
-      for(const n of nombres){const o=document.createElement('option');o.value=n;f.append(o);}
-      lista.replaceChildren(f);
+      todas=nombres;llanas=nombres.map(llano);
+      sugiere();
     }catch(_){}
   };
-  campo.addEventListener('focus',trae,{once:true});
-  campo.addEventListener('input',trae,{once:true});
+  campo.addEventListener('focus',trae);
+  campo.addEventListener('input',trae);
 })();
 </script>
 </body>

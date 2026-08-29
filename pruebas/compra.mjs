@@ -634,19 +634,67 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(await pg.locator('[name=colonia]').isEditable(),
      'un código postal desconocido lo dice y deja seguir a mano');
 
+  /* ⚠⚠ EL TOPE DE OCHO, QUE ES EL ARREGLO DE UN BLOQUEO Y NO UNA FINURA.
+     La primera versión metía las 2.528 ciudades de golpe dentro del
+     «datalist» —y hasta 287 colonias en el código postal más poblado—. En un
+     iPhone eso CONGELA la página: la tira de sugerencias no la dibuja esta
+     web, la dibuja Safari, y con miles de elementos se queda trabada con el
+     teclado abierto y sin salida. Lo encontró el dueño usando su propia web
+     desde el móvil, que es donde compra su cliente.
+
+     Así que lo que se comprueba no es que la lista exista: es que NUNCA haya
+     más de ocho opciones en el documento, se escriba lo que se escriba. */
+  const opciones = id => pg.$$eval('#' + id + ' option', o => o.map(x => x.value));
+
+  const cpMasPoblado = '85203';   // 287 colonias, el peor caso del catálogo
+  /* ⚠ EL CAMPO DE LA COLONIA, VACÍO PRIMERO. Viene con «Fraccionamiento que no
+     existe» de la comprobación de más arriba, y con texto dentro la lista sale
+     filtrada a cero: la comprobación del tope pasaría sin medir el tope. Se vio
+     saboteando —se levantó el límite a 5.000 y esta línea siguió en verde—, que
+     es exactamente para lo que sirve sabotear. */
+  await pg.fill('[name=colonia]', '');
+  await pg.fill('[name=cp]', cpMasPoblado);
+  await pg.waitForFunction(() => /287/.test(document.querySelector('[data-mx-pista]').textContent),
+                           null, { timeout: 8000 });
+  ok((await opciones('mx-colonias')).length <= 8,
+     'con 287 colonias en el código postal, el desplegable NO se llena de 287');
+  ok(/escribe las primeras letras/i.test(await pg.locator('[data-mx-pista]').textContent()),
+     'y la pista dice cómo encontrarla: escribiendo');
+  await pg.fill('[name=colonia]', 'villa');
+  await pg.waitForFunction(() => document.querySelector('#mx-colonias').options.length > 0,
+                           null, { timeout: 8000 });
+  const filtradas = await opciones('mx-colonias');
+  ok(filtradas.length <= 8 && filtradas.every(x => /villa/i.test(x)),
+     `y al escribir «villa» salen sólo las que la llevan (${filtradas.length})`);
+
   /* Las 2.528 ciudades no se descargan hasta que alguien va a escribir una.
      Se mira en una pestaña RECIÉN ABIERTA: en la de arriba ya se escribió en
      el campo de la ciudad, y eso es justo lo que dispara la descarga. */
   await pg.goto(BASE + '/pedido.html?n=1');
   await pg.locator('.ped-op:has([value=blanco])').click();
   await pg.locator('[data-paso="1"] [data-sigue]').click();
-  ok(await pg.$$eval('#mx-ciudades option', o => o.length) === 0,
+  ok((await opciones('mx-ciudades')).length === 0,
      'la lista de ciudades no se descarga hasta que hace falta');
+
+  /* ⚠ Y AL TOCAR EL CAMPO SIGUE VACÍA. Ocho ciudades al azar de las 2.528 no
+     ayudan a nadie, y las 2.528 son justo lo que colgaba el teléfono. */
   await pg.locator('[name=ciudad]').focus();
-  await pg.waitForFunction(() => document.querySelector('#mx-ciudades').options.length > 2000,
+  await pg.waitForTimeout(600);
+  ok((await opciones('mx-ciudades')).length === 0,
+     'y al tocar el campo tampoco se llena: se llena al escribir');
+
+  /* Sin acentos y en minúsculas, que es como se teclea en un móvil. */
+  await pg.fill('[name=ciudad]', 'san luis potosi');
+  await pg.waitForFunction(() => document.querySelector('#mx-ciudades').options.length > 0,
                            null, { timeout: 8000 });
-  ok(await pg.$$eval('#mx-ciudades option', o => o.length) > 2000,
-     'y al tocar el campo llegan todas');
+  const ciu = await opciones('mx-ciudades');
+  ok(ciu.includes('San Luis Potosí'),
+     '«san luis potosi» sin acentos encuentra «San Luis Potosí»');
+  ok(ciu.length <= 8, `y nunca hay más de ocho a la vez (${ciu.length})`);
+  await pg.fill('[name=ciudad]', 's');
+  await pg.waitForTimeout(300);
+  ok((await opciones('mx-ciudades')).length <= 8,
+     'ni con una sola letra, que es donde más coincidencias hay');
 
   ok(errores.length === 0, 'ni un error de JavaScript o de consola' +
      (errores.length ? ':\n      ' + errores.join('\n      ') : ''));
