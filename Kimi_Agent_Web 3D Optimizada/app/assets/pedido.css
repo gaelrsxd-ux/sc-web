@@ -15,8 +15,13 @@ main{max-width:560px}
 /* Qué se está comprando, siempre a la vista. No es decoración: en un flujo por
    pasos es fácil olvidar la cantidad tres pantallas después, y descubrirla en
    Mercado Pago es donde se abandona la compra. */
+/* ⚠ Y SEPARADO DEL RÓTULO DE ARRIBA. «.tag» no lleva margen inferior —en las
+   páginas legales le sigue un <h1> que ya trae el suyo—, así que aquí el borde
+   del recuadro caía pegado a las letras de «PASO 1 DE 3» y las dos cosas se
+   leían como una sola. El margen va en el recuadro y no en el rótulo, para no
+   mover de sitio los títulos de los textos legales. */
 .ped-prod{display:flex;align-items:center;gap:16px 20px;flex-wrap:wrap;
-  padding:22px 24px;border:1px solid var(--line-soft);background:rgba(200,169,106,.05)}
+  margin-top:16px;padding:22px 24px;border:1px solid var(--line-soft);background:rgba(200,169,106,.05)}
 .ped-prod .ped-que{flex:1 1 auto;min-width:0;font-size:13.5px;color:var(--muted);line-height:1.6}
 .ped-prod .ped-que b{display:block;margin-top:3px;color:var(--ink);font-weight:500}
 .ped-prod .ped-tot{font-family:var(--serif);font-size:29px;line-height:1;color:var(--ink);

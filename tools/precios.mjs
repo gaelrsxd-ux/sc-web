@@ -163,7 +163,14 @@ const SERVICIOS = [
        retiró la mensajería del Perfil de Negocio el 31 de julio de 2024. Vender
        hoy algo que ya no existe es una devolución garantizada. */
     incluye: [
-      'Vamos a tu negocio y tomamos hasta 20 fotos',
+      /* ⚠ LA CIUDAD Y EL «SIN COSTO» VAN EN ESTA LÍNEA, aunque el matiz de
+         arriba ya diga las dos cosas. Este desplegable se lee SOLO: quien lo
+         abre está comparando listas y no vuelve al párrafo de encima, así que
+         «vamos a tu negocio» sin ciudad promete una visita a Monterrey, y sin
+         «sin costo extra» deja pensando si la visita se cobra aparte. Es la
+         línea que justifica los $810 de diferencia: no puede depender de que
+         alguien haya leído otro renglón. */
+      'Vamos a tu negocio y tomamos hasta 20 fotos, sin costo extra (San Luis Potos\u00ed y Soledad)',
       'Cargamos hasta 20 productos o servicios con su precio',
       'Marcamos tus formas de pago, accesibilidad y estacionamiento',
       'Contestamos las reseñas que tengas, hasta 30, y dejamos respuestas listas',
