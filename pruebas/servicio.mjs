@@ -247,6 +247,19 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(suyos.length > baratos.length,
      `el de $2,300 pone más trabajo encima del otro: ${suyos.length} puntos propios contra ${baratos.length}`);
 
+  /* ⚠ LA LÍNEA DE LA VISITA NO PUEDE VENDER UN VIAJE A MONTERREY. El matiz de
+     arriba ya dice dónde vamos y que fuera de ahí las fotos las manda él, pero
+     este desplegable se lee SOLO: quien lo abre está comparando listas y no
+     vuelve al párrafo de encima. Y es la línea que justifica los $810 de
+     diferencia, así que también tiene que decir que la visita no se cobra
+     aparte — sin eso, la duda «¿y la visita cuánto me cuesta?» se queda sin
+     contestar justo donde se decide la compra. */
+  const visita = suyos.find(x => /vamos a tu negocio/i.test(x));
+  ok(visita && /San Luis Potos/i.test(visita),
+     'la línea de la visita dice a qué ciudad vamos, sin depender del párrafo de arriba');
+  ok(visita && /sin costo|incluid/i.test(visita),
+     'y que no se cobra aparte: «' + (visita || '—') + '»');
+
   /* ⚠ EL FALLO QUE ENCONTRÓ EL DUEÑO. «Contestamos hasta 30 reseñas que ya te
      dejaron» es imposible para la mitad de los compradores: a quien todavía no
      aparece en Google le estamos creando la ficha de cero y no hay ninguna
