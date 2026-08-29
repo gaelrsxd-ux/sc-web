@@ -44,6 +44,18 @@ const vigila = pg => {
 const tocaPlan = (pg, plan) =>
   pg.locator(`.sv-plan[data-plan="${plan}"] .sv-elige`).click({ position: { x: 24, y: 18 } });
 
+/* ⚠ EL `disabled` DE UN RADIO DE PAGO TIENE AHORA DOS MOTIVOS, y hay que
+   preguntar por el que se quiere medir. Uno es la regla comercial —el anticipo
+   no aplica si la ficha ya existe—; el otro es que su paquete está ESCONDIDO,
+   y ahí se apaga a propósito: es lo que arregló el botón de pagar muerto, que
+   el navegador no puede señalar un control inválido que no se ve.
+
+   Así que «el primer input[data-anticipo] del documento» ya no dice nada sobre
+   la regla comercial: dice en qué paquete estamos. Se pregunta por los del
+   paquete a la vista, que son los que el comprador puede tocar. */
+const anticiposALaVista = pg => pg.$$eval(
+  '.sv-plan:not([hidden]) input[name="paquete"][data-anticipo]', is => is.map(i => i.disabled));
+
 const elige = async (pg, valor) => {
   const op = pg.locator(`.ped-op:has(input[value="${valor}"])`);
   if (!(await op.isVisible())) {
@@ -379,9 +391,61 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(await pg.locator('.sv-plan[data-plan="gp-e"]').evaluate(e => e.classList.contains('abierto')),
      'y el paquete queda abierto');
   ok(/paso 2 de 3/i.test(await paso()), 'y el rótulo avanza al paso 2: ' + await paso());
+
+  /* ── ⚠⚠ EL BOTÓN DE PAGAR NO PUEDE MORIRSE EN SILENCIO ──
+     Con el paquete abierto pero SIN forma de pago marcada, el botón de pagar
+     se pulsaba y no pasaba absolutamente nada. Ni mensaje, ni error, ni salto.
+     Y se llega ahí sin esfuerzo: los datos del negocio aparecen al abrir el
+     paquete, así que se baja hasta el botón sin pasar por las dos opciones.
+
+     El motivo: los cuatro radios se llaman `paquete` y llevan `required`; al
+     abrir uno, el OTRO se esconde con sus dos radios dentro. El navegador
+     tenía que señalar el primer control inválido —uno de los escondidos— y no
+     puede enfocar lo que no se ve, así que cancelaba el envío sin decir nada.
+     Lo dejaba escrito en la consola: «An invalid form control with
+     name='paquete' is not focusable», que es donde no mira quien compra.
+
+     Esta suite no lo cazó porque SIEMPRE elegía forma de pago antes de enviar.
+     El camino que se rompía era justo el que nadie probaba. */
+  const invalidos = () => pg.$$eval('#sv-form input[name="paquete"]',
+    is => is.filter(i => i.willValidate && !i.checkValidity())
+            .map(i => ({ v: i.value, visible: !!i.offsetParent })));
+  const malos = await invalidos();
+  ok(malos.length > 0 && malos.every(x => x.visible),
+     `ningún radio inválido queda escondido: el navegador puede señalarlos todos (${malos.length})`);
+  ok(await pg.$$eval('.sv-plan[hidden] input[name="paquete"]', is => is.every(i => i.disabled)),
+     'los del paquete escondido quedan fuera de la validación');
+  ok(await pg.$eval('.sv-plan.abierto input[name="paquete"]:not([data-anticipo])',
+                    i => !i.disabled),
+     'y el de contado del paquete abierto NO: sin él se podría pagar sin elegir');
+
+  /* Y EL BOTÓN DICE LO QUE FALTA. Un «Pagar» que no paga es la peor versión de
+     este fallo: parece que la web está rota. */
+  const botonPago = pg.locator('#sv-form button[type=submit]');
+  ok(/elige c[óo]mo lo pagas/i.test(await botonPago.textContent()),
+     'el botón dice lo que falta en vez de prometer un cobro: «' +
+     (await botonPago.textContent()).trim() + '»');
+
+  for (const [k, v] of Object.entries({
+    negocio: 'Kabuki', negocio_ciudad: 'San Luis Potosí', nombre: 'Gael',
+    tel: '4443697248', correo: 'gael@ejemplo.com',
+  })) await pg.fill('[name=' + k + ']', v);
+  const antesDePulsar = enviado;
+  await botonPago.click();
+  await pg.waitForTimeout(700);
+  ok(enviado === antesDePulsar, 'pulsarlo sin elegir NO cobra nada, que es lo correcto');
+  ok(/falta elegir c[óo]mo lo pagas/i.test(
+       await pg.locator('[data-sv-aviso]').textContent()),
+     'pero sí lo dice, y por escrito para quien no ve la pantalla');
+  ok(await pg.locator('.sv-plan.abierto .sv-pagos').evaluate(e => e.classList.contains('pide')),
+     'y las dos opciones parpadean al llegar, para que el salto tenga sentido');
+
   await elige(pg, 'gp-e');
   await hasta(async () => /paso 3 de 3/i.test(await paso()), 'el rótulo llega al paso 3');
   ok(/paso 3 de 3/i.test(await paso()), 'y al elegir cómo se paga, al 3: ' + await paso());
+  ok(/pagar \$1,490/i.test(await botonPago.textContent()),
+     'y el botón pasa a decir lo que va a cobrar: «' +
+     (await botonPago.textContent()).trim() + '»');
   await pg.locator('[data-sv-cambiar]').click();
   await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2, 'vuelven los dos');
   ok(!(await pg.locator('[data-sv-vuelta]').isVisible()),
@@ -447,10 +511,11 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
      perfil de Google no se puede retener la entrega, así que con ficha ajena no
      hay nada que reservar. */
   await elige(pg, 'si');
-  await hasta(() => pg.$eval('input[data-anticipo]', i => i.disabled), 'el anticipo se apaga');
-  const apagados = await pg.$$eval('input[name="paquete"][data-anticipo]', is => is.map(i => i.disabled));
-  ok(apagados.length === 2 && apagados.every(Boolean),
-     'con ficha propia, las dos opciones de anticipo quedan deshabilitadas');
+  await hasta(() => anticiposALaVista(pg).then(a => a.length > 0 && a.every(Boolean)),
+              'el anticipo se apaga');
+  const apagados = await anticiposALaVista(pg);
+  ok(apagados.length > 0 && apagados.every(Boolean),
+     `con ficha propia, las opciones de anticipo a la vista quedan deshabilitadas (${apagados.length})`);
   /* Y LA FRASE CAMBIA CON LAS OPCIONES. Apagar el anticipo dejando la línea que
      promete «págalo de contado o deja un anticipo» dejaría la página diciendo
      dos cosas a la vez, que es justo la contradicción que este orden evita. */
@@ -477,11 +542,13 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   await hasta(() => pg.locator('[name=ficha]').isVisible(), 'el enlace de la ficha se puede rellenar');
   await pg.fill('[name=ficha]', 'https://maps.app.goo.gl/ejemplo');
   await elige(pg, 'no');
-  await hasta(() => pg.$eval('input[data-anticipo]', i => !i.disabled), 'el anticipo vuelve');
+  await hasta(() => anticiposALaVista(pg).then(a => a.length > 0 && a.every(d => !d)),
+              'el anticipo vuelve');
   ok(await pg.$eval('[name=ficha]', i => i.value) === '',
      'al decir que todavía no aparece, el enlace de la ficha se VACÍA, no sólo se esconde');
-  const revividos = await pg.$$eval('input[name="paquete"][data-anticipo]', is => is.map(i => i.disabled));
-  ok(revividos.every(d => d === false), 'y vuelven si dice que todavía no aparece en Google');
+  const revividos = await anticiposALaVista(pg);
+  ok(revividos.length > 0 && revividos.every(d => d === false),
+     'y vuelven si dice que todavía no aparece en Google');
   const vuelve = await frases(pg);
   ok(vuelve.every(t => /anticipo/i.test(t)), 'y la frase vuelve a ofrecerlo');
 
@@ -551,7 +618,8 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   await pg.goto(BASE + '/servicio.html', { waitUntil: 'domcontentloaded' });
   await lista(pg);
   await elige(pg, 'si');
-  await hasta(() => pg.$eval('input[data-anticipo]', i => i.disabled), 'el anticipo se apaga');
+  await hasta(() => anticiposALaVista(pg).then(a => a.length > 0 && a.every(Boolean)),
+              'el anticipo se apaga');
   await elige(pg, 'gp-t');
   await hasta(() => pg.locator('[name=tel]').isVisible(), 'los datos ya se pueden rellenar');
   await pg.fill('[name=negocio]', 'El Molino Ruso');

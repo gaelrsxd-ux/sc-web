@@ -20,7 +20,7 @@ node pruebas/instalaciones.mjs
 ```
 
 Ciento veintiocho comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; ciento treinta y tres en la segunda y dieciocho en la
+bloque final sin él; ciento cuarenta y una en la segunda y dieciocho en la
 tercera.
 
 ⚠ **El único `force: true` de las tres suites está en el bloque sin JavaScript

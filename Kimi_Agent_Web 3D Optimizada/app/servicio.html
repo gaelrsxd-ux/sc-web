@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=d943bd39">
-<link rel="stylesheet" href="assets/pedido.css?v=1c2d7448">
+<link rel="stylesheet" href="assets/pedido.css?v=a824bc63">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -265,6 +265,7 @@
   const planes=[...form.querySelectorAll('.sv-plan')];
   const vuelta=form.querySelector('[data-sv-vuelta]');
   const cambiar=form.querySelector('[data-sv-cambiar]');
+  const pagar=form.querySelector('button[type="submit"]');
 
   /* NADA NACE MARCADO, y es deliberado en una pantalla de cobro: una opción
      preseleccionada es una que alguien puede comprar sin haberla elegido. Los
@@ -315,9 +316,36 @@
        marcada: es lo que el titular pidió —que al elegir paquete aparezca todo
        lo demás— y además evita que el bloque salte al entrar y salir de una
        opción a otra dentro del mismo paquete. */
-    const hay=!!form.querySelector('.sv-plan.abierto');
+    const abierto=form.querySelector('.sv-plan.abierto');
+    const hay=!!abierto;
+
+    /* ⚠⚠ EL BOTÓN DE PAGAR NO HACÍA NADA, Y ESTE ERA EL MOTIVO.
+       Los cuatro radios se llaman `paquete` y llevan `required`. Al abrir un
+       paquete, el OTRO se esconde con sus dos radios dentro. Si nadie había
+       marcado forma de pago —y es facilísimo: los datos aparecen al abrir el
+       paquete, así que se baja hasta el botón sin pasar por las opciones—, el
+       navegador tenía que señalar el primer control inválido, que es uno de los
+       ESCONDIDOS. No se puede enfocar lo que no se ve, así que cancelaba el
+       envío EN SILENCIO: el botón se pulsaba y no pasaba nada, sin mensaje. En
+       la consola quedaba «An invalid form control with name='paquete' is not
+       focusable», que es un sitio donde no mira quien está comprando.
+
+       Un control `disabled` queda fuera de la validación, así que los del
+       paquete escondido dejan de estorbar. El de contado del paquete abierto
+       NUNCA se apaga, de modo que el grupo sigue siendo obligatorio: esto no
+       abre la puerta a pagar sin elegir. */
+    const tiene=(form.querySelector('input[name="ficha_tiene"]:checked')||{}).value==='si';
+    for(const o of ops)
+      o.disabled=(hay&&o.closest('.sv-plan')!==abierto)||
+                 (o.dataset.anticipo==='1'&&tiene);
+
     if(tot)tot.textContent=m?(m.dataset.tot||''):'';
     if(que)que.textContent=m?(m.dataset.que||''):'Elige tu paquete abajo';
+    /* Y EL BOTÓN DICE LO QUE FALTA en vez de prometer un cobro que todavía no
+       puede hacer. Un «Pagar» que no paga es la peor versión de este fallo:
+       parece que la web está rota. Con la forma de pago marcada lleva su
+       importe, como en la página de la placa. */
+    if(pagar)pagar.textContent=m?('Pagar '+(m.dataset.tot||'')).trim():'Elige c\u00f3mo lo pagas';
     /* Tres pasos, y el rótulo dice en cuál se está: elegir paquete, elegir cómo
        se paga, y escribir los datos. Se cuenta por lo que YA está decidido, no
        por lo que se ve: es lo mismo que hace la página de pedido. */
@@ -338,7 +366,10 @@
     let perdida=false;
     for(const o of ops){
       if(o.dataset.anticipo!=='1')continue;
-      o.disabled=tiene;
+      /* El `disabled` ya no se escribe aquí: lo decide `pinta()`, que es quien
+         conoce los DOS motivos por los que un radio queda fuera —su paquete
+         está escondido, o es un anticipo que no aplica— y tiene que combinarlos.
+         Escribirlo en dos sitios era volver a encender el que el otro apagó. */
       const caja=o.closest('.ped-op');
       if(caja)caja.classList.toggle('apagada',tiene);
       if(tiene&&o.checked){o.checked=false;perdida=true;}
@@ -446,6 +477,37 @@
   /* El pedido se guarda para gracias.html en sessionStorage y no en la
      dirección: así no queda un pedido con nombre y teléfono dentro del
      historial del navegador ni en la pestaña que se quedó abierta. */
+  /* ⚠ Y SI AUN ASÍ SE PULSA SIN HABER ELEGIDO, SE LLEVA A LAS OPCIONES.
+     El globo que saca el navegador se dibuja sobre el control inválido, y aquí
+     los círculos de verdad miden CERO píxeles y son transparentes —lo que se
+     ve y se toca es la tarjeta entera, que es como se diseñó—. Un globo sobre
+     un punto sin tamaño acaba en cualquier sitio de la pantalla, o en ninguno.
+
+     `invalid` NO burbujea: hay que escucharlo en fase de captura sobre el
+     formulario. `preventDefault()` sólo quita el globo; el envío sigue
+     bloqueado, que es lo correcto — no se paga sin elegir cómo. */
+  let pidiendo=false;
+  form.addEventListener('invalid',e=>{
+    if(e.target.name!=='paquete')return;
+    e.preventDefault();
+    /* Los cuatro radios avisan a la vez; el salto y el aviso, una sola vez. */
+    if(pidiendo)return;
+    pidiendo=true;
+    setTimeout(()=>{pidiendo=false;},0);
+    const abierto=form.querySelector('.sv-plan.abierto');
+    const pagos=abierto&&abierto.querySelector('.sv-pagos');
+    lleva(pagos||abierto||form.querySelector('.sv-plan'));
+    if(pagos){
+      /* Un salto sin nada que mirar al llegar se lee como que la página se
+         movió sola. Se reinicia la animación por si se pulsa dos veces. */
+      pagos.classList.remove('pide');
+      void pagos.offsetWidth;
+      pagos.classList.add('pide');
+    }
+    /* Y dicho, para quien no ve la pantalla: el salto no le dice nada. */
+    if(aviso)aviso.textContent='Falta elegir c\u00f3mo lo pagas.';
+  },true);
+
   form.addEventListener('submit',()=>{
     const m=ops.find(o=>o.checked);
     if(!m)return;
