@@ -1430,6 +1430,40 @@ footer .legal a:hover{color:var(--bronze)}
   padding-bottom:7px;transition:.35s;white-space:nowrap}
 .costo-pie a:hover{color:var(--bronze);border-color:var(--bronze)}
 
+/* ── LA CALCULADORA, COMPACTA EN MÓVIL ──
+   Apilada a una columna medía 663 px en un teléfono de 390: pantalla y media
+   para dos deslizadores y un número. Lo que la engordaba no era el contenido
+   sino el APILADO: rótulo, cifra enorme y deslizador uno debajo de otro, tres
+   pisos por campo, y el resultado en otros tres.
+
+   El arreglo es de maqueta, no de recorte: cada campo pasa a UNA fila —rótulo
+   a la izquierda, cifra a la derecha, el deslizador pegado debajo— y el
+   resultado a UNA línea con el año al lado. No se pierde ni un dato ni un
+   control; se pierden los pisos. En escritorio no cambia nada: las tres
+   columnas ya eran compactas. */
+@media(max-width:860px){
+  .costo{padding:20px 18px 22px}
+  .costo h3{margin-top:8px;font-size:21px}
+  .costo-grid{margin-top:16px;gap:18px}
+  .costo-campo{display:grid;grid-template-columns:1fr auto;align-items:baseline;
+    column-gap:12px;row-gap:10px}
+  .costo-campo label{margin-bottom:0;line-height:1.7}
+  .costo-campo .val{margin-bottom:0;font-size:21px;white-space:nowrap}
+  .costo-campo .val small{margin-left:5px}
+  .costo-campo input{grid-column:1/-1;
+    /* El pulgar del deslizador mide 15 px: sin este respiro se pisa con la
+       fila de abajo y el dedo agarra el campo equivocado. */
+    margin:6px 0 4px}
+  /* El resultado, en una línea de lectura corrida: «se te va cada mes $8,660 ·
+     al año $104,000». La cifra grande sigue siendo la protagonista, pero ya no
+     necesita un piso para el rótulo y otro para el año. */
+  .costo-res{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:12px;
+    row-gap:2px;padding-top:16px}
+  .costo-res .rn{font-size:31px;margin-top:0}
+  .costo-res .ry{margin-top:0;font-size:12.5px}
+  .costo-pie{margin-top:16px;padding-top:14px;gap:12px}
+}
+
 /* ---------- MÉTRICAS REALES DE ESTA PÁGINA ----------
    Tres cifras medidas en el navegador del visitante con Performance API. No
    son una promesa de rendimiento: son lo que acaba de pasar en su equipo. */
@@ -2850,9 +2884,11 @@ html.js .pc-alt{display:none}
       </div>
     </div>
     <div class="costo-pie">
-      <p>Son tus dos cifras multiplicadas, nada más: horas × coste × 4,33 semanas.
-        No incluye los errores que provoca el trabajo manual ni lo que dejas de
-        hacer mientras lo haces, porque eso no lo sabemos y no vamos a inventarlo.</p>
+      <!-- Una frase y no tres: la honestidad se queda —es la multiplicación del
+           visitante, sin inventos— pero dicha al paso. El párrafo largo hacía
+           que la calculadora ocupara pantalla y media en un móvil. -->
+      <p>Horas × coste × 4,33 semanas, nada más — sin contar los errores del
+        trabajo manual ni lo que dejas de hacer mientras tanto.</p>
       <a href="#contacto" id="costo-cta"><span class="dia" aria-hidden="true"></span>Quiero automatizarlo</a>
     </div>
   </div>
