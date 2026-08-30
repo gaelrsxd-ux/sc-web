@@ -2128,7 +2128,9 @@ html.js .pc-alt{display:none}
   box-shadow:0 24px 44px rgba(0,0,0,.55)}
 .prod-fig>.prod-abre{width:min(100%,400px)}
 .prod-mini{display:flex;gap:12px;margin-top:10px;width:min(100%,400px)}
-.prod-mini .prod-abre{width:calc(50% - 6px)}
+/* Tres por fila desde que son tres: a dos, la nueva quedaba viuda en su
+   propia fila y la ficha crecía justo lo que acabamos de quitarle. */
+.prod-mini .prod-abre{width:calc((100% - 24px)/3)}
 .prod-mini img{width:100%;height:auto;display:block;border:1px solid var(--line-soft);
   opacity:.82;transition:opacity .35s ease}
 .prod-mini .prod-abre:hover img,.prod-mini .prod-abre:focus-visible img{opacity:1}
@@ -2713,6 +2715,19 @@ html.js .pc-alt{display:none}
         srcset="assets/producto-resenas-trasera-480.webp 480w, assets/producto-resenas-trasera-900.webp 900w"
         sizes="(max-width:899px) 40vw, 15vw" width="900" height="1200" loading="lazy" decoding="async"
         alt="El reverso de la placa, negro liso y sin impresi&#243;n, apoyado en su base.">
+        </button>
+        <!-- La vista explotada: qu&#233; lleva dentro y por qu&#233; cuesta lo que cuesta.
+             Es la foto que responde la objeci&#243;n del precio &#8212;PVC r&#237;gido, chip
+             NFC, soporte de acero&#8212; y por eso vive en la galer&#237;a y no en un
+             p&#225;rrafo m&#225;s: se mira, no se lee. -->
+        <button class="prod-abre" type="button" data-galeria="producto"
+        data-grande="assets/producto-capas-1100.webp"
+        data-pie="Por dentro, capa a capa" data-alt="Vista explotada de la placa: el frente impreso, el n&#250;cleo r&#237;gido de PVC, el chip NFC con su antena, la capa adhesiva y el soporte trasero en negro mate."
+        aria-label="Ampliar la foto: por dentro, capa a capa">
+        <img class="" src="assets/producto-capas-900.webp"
+        srcset="assets/producto-capas-480.webp 480w, assets/producto-capas-900.webp 900w"
+        sizes="(max-width:899px) 40vw, 15vw" width="900" height="1125" loading="lazy" decoding="async"
+        alt="Vista explotada de la placa: el frente impreso, el n&#250;cleo r&#237;gido de PVC, el chip NFC con su antena, la capa adhesiva y el soporte trasero en negro mate.">
         </button>
         </div>
         </div>

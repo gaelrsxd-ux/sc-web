@@ -149,6 +149,10 @@ main{max-width:560px}
    entre sí en vez de decir cada uno lo suyo. */
 .ped-pista{margin-top:9px;font-size:12px;line-height:1.6;color:var(--dim)}
 .ped-pista[hidden]{display:none}
+/* La vista explotada plegada bajo el encabezado del pedido. */
+.ped-capas{margin-top:14px}
+.ped-capas img{margin-top:10px;max-width:100%;height:auto;display:block;
+  border:1px solid var(--line-soft)}
 .ped-local{margin-top:14px;padding:11px 14px;border:1px solid var(--line);
   background:rgba(200,169,106,.07);color:var(--bronze-hi);font-size:13px;line-height:1.6}
 
