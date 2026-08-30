@@ -1793,7 +1793,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 
 /* La ficha del producto dentro del panel: la foto al lado del texto en cuanto
    hay sitio, para que quepa de una vez en una pantalla. */
-.sol-panel .prod{display:grid;grid-template-columns:1fr;gap:18px;align-items:start}
+/* 10 y no 18: entre la foto y el texto ya suman aire el relleno inferior de
+   la figura y el superior del cuerpo — tres espacios apilados se leían como un
+   costurón vacío en mitad de la ficha. El de escritorio pone el suyo aparte. */
+.sol-panel .prod{display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
 @media(min-width:760px){.sol-panel .prod{grid-template-columns:minmax(0,320px) 1fr;gap:40px}}
 
 /* El precio: una sola cifra, la de entrada. El resto de la escalera —las 25
@@ -1828,10 +1831,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .sol-panel .prod-mini{display:none}
   .sol-panel .prod-envoltura,
   .sol-panel .prod-fig>.prod-abre{width:min(46vw,200px)}
-  .sol-panel .prod-fig{padding:14px 14px 16px}
+  .sol-panel .prod-fig{padding:12px 12px 8px}
   .sol-panel .prod-vista{width:min(100%,260px);margin-bottom:8px}
   .sol-panel .prod-vista .pv{padding:9px 10px;font-size:9px;letter-spacing:1.6px}
-  .sol-panel .prod-cuerpo{padding:18px 18px 20px}
+  .sol-panel .prod-cuerpo{padding:12px 16px 18px}
   .sol-panel .prod-nota{margin-top:12px;padding:0;border:0;background:none;
     font-size:12.5px;line-height:1.6}
   /* El p&#225;rrafo de arriba respira menos en un m&#243;vil: a 1,8 de interlineado
@@ -2715,9 +2718,11 @@ html.js .pc-alt{display:none}
         </div>
         <div class="prod-cuerpo">
           <h3>Placa de rese&#241;as para Google</h3>
-          <p><b>Una placa para tu mostrador.</b> El cliente acerca el m&#243;vil o
-            escanea el c&#243;digo y <b>te deja una rese&#241;a en Google</b>. Sin buscarte
-            y sin instalar nada.</p>
+          <!-- Sin el «Una placa para tu mostrador» de arranque: el titular de
+               arriba ya dice qué es, y repetirlo costaba un renglón entero.
+               La frase abre por la acción, que es lo que vende. -->
+          <p><b>El cliente acerca el m&#243;vil</b> o escanea el c&#243;digo y <b>te deja
+            su rese&#241;a en Google</b>. Sin buscarte y sin instalar nada.</p>
           <ul class="prod-ul">
             <li>NFC y QR</li>
             <li>Dura de 5 a 10 a&#241;os</li>
@@ -2750,8 +2755,10 @@ html.js .pc-alt{display:none}
             <script type="application/json" id="pc-tabla">{"local":{"nombre":"San Luis Potosí y Soledad","rangos":[{"desde":78000,"hasta":78393,"zona":"San Luis Potosí capital"},{"desde":78395,"hasta":78399,"zona":"San Luis Potosí capital"},{"desde":78430,"hasta":78439,"zona":"Soledad de Graciano Sánchez"},{"desde":78394,"hasta":78394,"zona":"Villa de Pozos (urbano)"},{"desde":78421,"hasta":78421,"zona":"Villa de Pozos (urbano)"}]},"filas":[{"n":1,"t":"1 placa","tot":399,"e":0,"u":399,"d":"Envío gratis","s":"envío gratis","g":""},{"n":2,"t":"2 placas","tot":649,"e":0,"u":324.5,"d":"Envío gratis · $324.50 por pieza","s":"envío gratis","g":""},{"n":3,"t":"3 placas","tot":799,"e":0,"u":266.33,"d":"Envío gratis · $266.33 por pieza","s":"envío gratis","g":""},{"n":4,"t":"4 placas","tot":949,"e":0,"u":237.25,"d":"Envío gratis · $237.25 por pieza","s":"envío gratis","g":""},{"n":5,"t":"5 placas","tot":1099,"e":0,"u":219.8,"d":"Envío gratis · $219.80 por pieza","s":"envío gratis","g":""},{"n":6,"t":"6 placas","tot":1249,"e":0,"u":208.17,"d":"Envío gratis · $208.17 por pieza","s":"envío gratis","g":""},{"n":7,"t":"7 placas","tot":1429,"e":0,"u":204.14,"d":"Envío gratis · $204.14 por pieza","s":"envío gratis","g":""},{"n":8,"t":"8 placas","tot":1599,"e":0,"u":199.88,"d":"Envío gratis · $199.88 por pieza","s":"envío gratis","g":""},{"n":9,"t":"9 placas","tot":1749,"e":0,"u":194.33,"d":"Envío gratis · $194.33 por pieza","s":"envío gratis","g":""},{"n":10,"t":"10 placas","tot":1899,"e":0,"u":189.9,"d":"Envío gratis · $189.90 por pieza","s":"envío gratis","g":""},{"n":11,"t":"11 placas","tot":2049,"e":0,"u":186.27,"d":"Envío gratis · $186.27 por pieza","s":"envío gratis","g":""},{"n":12,"t":"12 placas","tot":2199,"e":0,"u":183.25,"d":"Envío gratis · $183.25 por pieza","s":"envío gratis","g":""},{"n":13,"t":"13 placas","tot":2349,"e":0,"u":180.69,"d":"Envío gratis · $180.69 por pieza","s":"envío gratis","g":""},{"n":14,"t":"14 placas","tot":2499,"e":0,"u":178.5,"d":"Envío gratis · $178.50 por pieza","s":"envío gratis","g":""},{"n":15,"t":"15 placas","tot":2649,"e":0,"u":176.6,"d":"Envío gratis · $176.60 por pieza","s":"envío gratis","g":""},{"n":16,"t":"16 placas","tot":2799,"e":0,"u":174.94,"d":"Envío gratis · $174.94 por pieza","s":"envío gratis","g":""},{"n":17,"t":"17 placas","tot":2949,"e":0,"u":173.47,"d":"Envío gratis · $173.47 por pieza","s":"envío gratis","g":""},{"n":18,"t":"18 placas","tot":3099,"e":0,"u":172.17,"d":"Envío gratis · $172.17 por pieza","s":"envío gratis","g":""},{"n":19,"t":"19 placas","tot":3249,"e":0,"u":171,"d":"Envío gratis · $171 por pieza","s":"envío gratis","g":""},{"n":20,"t":"20 placas","tot":3399,"e":0,"u":169.95,"d":"Envío gratis · $169.95 por pieza","s":"envío gratis","g":""},{"n":21,"t":"21 placas","tot":3549,"e":0,"u":169,"d":"Envío gratis · $169 por pieza","s":"envío gratis","g":""},{"n":22,"t":"22 placas","tot":3699,"e":0,"u":168.14,"d":"Envío gratis · $168.14 por pieza","s":"envío gratis","g":""},{"n":23,"t":"23 placas","tot":3849,"e":0,"u":167.35,"d":"Envío gratis · $167.35 por pieza","s":"envío gratis","g":""},{"n":24,"t":"24 placas","tot":3999,"e":0,"u":166.63,"d":"Envío gratis · $166.63 por pieza","s":"envío gratis","g":""},{"n":25,"t":"25 placas","tot":4149,"e":0,"u":165.96,"d":"Envío gratis · $165.96 por pieza","s":"envío gratis","g":""}]}</script>
           </div>
           <!-- /portada:compra -->
-          <p class="prod-nota"><b>Env&#237;o incluido</b> a todo M&#233;xico &#183; en San Luis y
-            Soledad te la <b>instalamos</b> en persona.</p>
+          <!-- Abre por la instalación, que es lo único que el «ENVÍO GRATIS» de
+               veinte píxeles más arriba no dice ya. -->
+          <p class="prod-nota">En San Luis y Soledad te la <b>instalamos</b> en
+            persona &#183; env&#237;o incluido a todo M&#233;xico.</p>
         </div>
       </article>
     </div>
