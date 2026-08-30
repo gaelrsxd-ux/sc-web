@@ -2092,6 +2092,29 @@ html.js .pc-alt{display:none}
    ni se pinta—; con varias aparecen el paso y la cuenta.
    Cuatro maneras de salir, que es lo que pedía el encargo: la equis, tocar
    fuera de la foto, la tecla Escape y —en el móvil— deslizar hacia abajo. */
+/* ⚠ LA BASE DEL VISOR: la caja fija a pantalla completa, su fondo, la foto y
+   la equis. Se fue con la limpieza de «Sobre nosotros», porque entonces su
+   única sección se iba con ella, y nadie notó que el marcado y el script se
+   quedaban: la galería llamaba a un visor sin estilos. Al tocar una foto, el
+   foco saltaba a una equis invisible al principio de la página, el fondo se
+   quedaba sin desplazamiento y en un teléfono —sin tecla Escape— eso es una
+   pantalla congelada que sólo se arregla recargando. Si estas reglas vuelven
+   a parecer huérfanas, no lo son: su elemento está al principio del <body>,
+   antes de <main> —por eso el salto era al inicio de la página—, y lo abren
+   las galerías de producto y de instalaciones. */
+#visor{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;
+  padding:clamp(20px,4vw,56px);background:rgba(6,7,9,.985);opacity:0;visibility:hidden;
+  transition:opacity .45s ease,visibility .45s}
+#visor.on{opacity:1;visibility:visible}
+#visor figure{max-width:1080px;width:100%;text-align:center;transform:translateY(18px) scale(.985);
+  transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+#visor.on figure{transform:none}
+#visor img{width:100%;height:auto;max-height:76vh;object-fit:contain;border:1px solid var(--line)}
+#visor figcaption{margin-top:20px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted)}
+#visor .cerrar{position:absolute;top:clamp(16px,2.4vw,30px);right:clamp(16px,2.4vw,30px);
+  width:46px;height:46px;border:1px solid var(--line);background:none;color:var(--bronze-hi);
+  font-family:var(--serif);font-size:23px;line-height:1;cursor:pointer;transition:.35s}
+#visor .cerrar:hover{background:var(--bronze);color:var(--on-bronze);border-color:var(--bronze)}
 #visor .vnav{position:absolute;left:50%;bottom:clamp(16px,3vh,30px);transform:translateX(-50%);
   display:flex;align-items:center;gap:14px;padding:7px 10px;border:1px solid var(--line);
   background:rgba(var(--bg-rgb),.9)}

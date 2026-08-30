@@ -40,9 +40,26 @@ ok(!/[«"'"].{15,}[»"'"]\s*[—-]/.test(texto), 'no hay ninguna frase entrecomi
 ok(!/\b(5|cinco|4|cuatro)\s*(estrellas|de 5)\b/i.test(texto), 'no se inventa ninguna calificación');
 
 /* ---- el visor: dos listas separadas ---- */
+const scrollAntes = await pg.evaluate(() => Math.round(scrollY));
 await pg.locator('.insta-g figure').first().locator('button').click();
 await pg.waitForTimeout(600);
 ok(await pg.locator('#visor').isVisible(), 'la primera foto abre el visor');
+
+/* ⚠ LO QUE ESTE ARCHIVO NO VIO UNA VEZ: el visor «funcionaba» —contaba,
+   pasaba fotos, cerraba— con sus estilos de caja borrados. Sin position:fixed
+   se abría como un div más del flujo, al principio de la página: el foco
+   saltaba hasta allí, el fondo se quedaba sin desplazamiento y en un teléfono
+   era una pantalla congelada que sólo se arreglaba recargando. isVisible() y
+   textContent() no ven la diferencia; estas tres sí. */
+const vcaja = await pg.locator('#visor').evaluate(e => {
+  const c = getComputedStyle(e), r = e.getBoundingClientRect();
+  return { pos: c.position, op: c.opacity,
+           cubre: r.x <= 0 && r.y <= 0 && r.width >= innerWidth && r.height >= innerHeight };
+});
+ok(vcaja.pos === 'fixed' && vcaja.cubre, 'el visor es un diálogo fijo que tapa la pantalla, no un div en el flujo (' + vcaja.pos + ')');
+ok(vcaja.op === '1', 'y se ve de verdad, no en opacity 0 (está en ' + vcaja.op + ')');
+ok(Math.round(await pg.evaluate(() => scrollY)) === scrollAntes,
+   'abrirlo no arrastra la página al principio');
 const cuenta = await pg.locator('#visor-cuenta').textContent();
 ok(/\b3\b/.test(cuenta), 'el visor cuenta 3 y no 6: la lista está separada de la del producto (dice «' + cuenta.trim() + '»)');
 const pie1 = await pg.locator('#visor-pie').textContent();
@@ -81,6 +98,25 @@ const desliza = await m.locator('.insta-g').evaluate(e => e.scrollWidth > e.clie
 ok(desliza, 'la tira se desliza de lado en móvil');
 const filas = await m.locator('.insta-g figure').evaluateAll(fs => [...new Set(fs.map(f => Math.round(f.getBoundingClientRect().top)))].length);
 ok(filas === 1, 'las tres van en un solo renglón (renglones: ' + filas + ')');
+
+/* ---- móvil: tocar una foto abre un diálogo del que se puede SALIR ----
+   El teléfono no tiene tecla Escape: si la equis no está en pantalla, el
+   visitante se queda encerrado. Es exactamente lo que pasó con los estilos
+   del visor borrados, y el celular de verdad hubo que reiniciarlo. */
+const scrollM = await m.evaluate(() => Math.round(scrollY));
+await m.locator('.insta-g figure').first().locator('button').click();
+await m.waitForTimeout(600);
+const vm = await m.locator('#visor').boundingBox();
+ok(vm && vm.width >= 390 && vm.height >= 844, 'en el teléfono el visor tapa la pantalla entera');
+ok(Math.round(await m.evaluate(() => scrollY)) === scrollM, 'y no arrastra la página a ninguna parte');
+const eqm = await m.locator('#visor .cerrar').boundingBox();
+ok(eqm && eqm.y >= 0 && eqm.x >= 0 && eqm.y + eqm.height <= 844 && eqm.x + eqm.width <= 390,
+   'la equis está dentro de la pantalla del teléfono');
+await m.locator('#visor .cerrar').click();
+await m.waitForTimeout(600);
+ok(await m.locator('#visor').isHidden(), 'la equis cierra el visor');
+ok(await m.evaluate(() => getComputedStyle(document.body).overflow !== 'hidden'),
+   'y la página vuelve a poder desplazarse');
 if (S) await m.locator('.insta').screenshot({ path: S + '/insta-movil.png' });
 
 /* ---- sin JavaScript la sección sigue entera ---- */
