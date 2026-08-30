@@ -80,6 +80,8 @@ const pie2 = await pg.locator('#visor-pie').textContent();
 ok(/frente/i.test(pie2), 'y sigue abriendo por la foto correcta: «' + pie2.trim() + '»');
 await pg.keyboard.press('Escape');
 await pg.waitForTimeout(400);
+ok(await pg.locator('.prod-mas').isHidden(),
+   'en escritorio el aviso de «más fotos» no está: las miniaturas ya lo dicen');
 await pg.locator('#t-clientes').click();
 await pg.waitForTimeout(400);
 if (S) await pg.locator('.insta').screenshot({ path: S + '/insta-escritorio.png' });
@@ -117,6 +119,25 @@ await m.waitForTimeout(600);
 ok(await m.locator('#visor').isHidden(), 'la equis cierra el visor');
 ok(await m.evaluate(() => getComputedStyle(document.body).overflow !== 'hidden'),
    'y la página vuelve a poder desplazarse');
+
+/* ---- móvil: se sabe que hay más fotos aunque las miniaturas no estén ----
+   Las miniaturas se esconden para que la ficha no crezca, pero eso dejaba la
+   foto principal como si fuera la única —y sin pinta de tocable. La píldora
+   «Ver las 4 fotos» es parte del botón: anuncia y abre. */
+await m.locator('#t-productos').click();
+await m.waitForTimeout(400);
+ok(await m.locator('.prod-mini').isHidden(), 'las miniaturas siguen fuera del móvil: la ficha no crece');
+const mas = m.locator('.prod-mas');
+ok(await mas.isVisible(), 'pero el aviso de la galería está a la vista');
+const nmas = parseInt((await mas.textContent()).replace(/\D/g, ''), 10);
+const reales = await m.locator('[data-galeria="producto"]').count();
+ok(nmas === reales, 'y su número dice la verdad: anuncia ' + nmas + ' y hay ' + reales);
+await mas.click();
+await m.waitForTimeout(600);
+const cuentaM = (await m.locator('#visor-cuenta').textContent()).trim();
+ok(cuentaM.endsWith('/ ' + reales), 'tocar el aviso abre la galería completa (dice «' + cuentaM + '»)');
+await m.locator('#visor .cerrar').click();
+await m.waitForTimeout(600);
 if (S) await m.locator('.insta').screenshot({ path: S + '/insta-movil.png' });
 
 /* ---- sin JavaScript la sección sigue entera ---- */

@@ -1829,6 +1829,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      no la maqueta. */
 @media(max-width:759px){
   .sol-panel .prod-mini{display:none}
+  /* Con las miniaturas fuera, algo tiene que decir que hay más fotos: esta
+     píldora bajo la foto anuncia la galería y, como es parte del botón,
+     tocarla la abre. Sustituye también a la lupa de «Ampliar»: dos rótulos
+     para el mismo toque serían ruido. */
+  .sol-panel .prod-mas{display:block;width:max-content;margin:9px auto 0;
+    padding:6px 11px;border:1px solid var(--line);background:rgba(var(--bg-rgb),.86);
+    font-size:9px;letter-spacing:2.4px;text-transform:uppercase;color:var(--bronze-hi)}
+  .sol-panel .prod-fig .prod-lupa{display:none}
   .sol-panel .prod-envoltura,
   .sol-panel .prod-fig>.prod-abre{width:min(46vw,200px)}
   .sol-panel .prod-fig{padding:12px 12px 8px}
@@ -2161,6 +2169,10 @@ html.js .pc-alt{display:none}
 /* La lupa se retira en el movil: ahi no hay puntero que la justifique y tapa
    parte de la foto, que es justo lo que se ha ido a mirar. */
 @media(max-width:560px){.prod-lupa{display:none}}
+/* «Ver las 4 fotos»: nace escondido y sólo lo enciende el bloque del móvil,
+   donde las miniaturas no están. En escritorio sobraría: las tres miniaturas
+   ya dicen que hay más. Va bajo la foto y no encima, para no tapar la placa. */
+.prod-mas{display:none}
 /* ================== EL PRODUCTO, GIRABLE EN 3D ==================
    LA FOTO REAL, GIRANDO. Un 360 fotografico de verdad son 24 o 36 tomas sobre
    un plato giratorio con luz constante, y hay TRES fotos: arrastrar tres fotos
@@ -2719,6 +2731,11 @@ html.js .pc-alt{display:none}
         srcset="assets/producto-resenas-frontal-480.webp 480w, assets/producto-resenas-frontal-900.webp 900w"
         sizes="(max-width:899px) 82vw, 30vw" width="900" height="1200" loading="lazy" decoding="async"
         alt="La placa de rese&#241;as vista de frente sobre una mesa de madera: placa negra con el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas doradas, un c&#243;digo QR y la indicaci&#243;n &#171;Tap o Scan&#187;."><span class="prod-lupa">Ampliar</span>
+        <!-- Sólo se pinta en el móvil, donde las miniaturas no están: sin él,
+             la foto parece única y ni siquiera se sabe que es tocable. Vive
+             DENTRO del botón: tocarlo abre la galería, no es un adorno. El «4»
+             lo vigila pruebas/instalaciones.mjs contra la cuenta real. -->
+        <span class="prod-mas">Ver las 4 fotos</span>
         </button>
         <div class="prod-mini">
         <button class="prod-abre" type="button" data-galeria="producto"
