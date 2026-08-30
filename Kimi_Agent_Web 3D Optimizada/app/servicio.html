@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=d943bd39">
-<link rel="stylesheet" href="assets/pedido.css?v=388a262e">
+<link rel="stylesheet" href="assets/pedido.css?v=6f48126f">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -67,18 +67,17 @@
          que este orden evita. -->
     <fieldset class="ped-f">
       <legend>Para empezar</legend>
-      <p class="ped-ayuda">Esto cambia lo que hay que hacer y c&#243;mo puedes pagarlo.</p>
+      <p class="ped-ayuda">De esto depende c&#243;mo puedes pagarlo.</p>
 
       <label class="ped-op">
         <input type="radio" name="ficha_tiene" value="no" checked>
         <b>Todav&#237;a no aparece en Google</b>
-        <small>Creamos la cuenta y la ficha desde cero, y al final te entregamos
-          el acceso.</small>
+        <small>Creamos la cuenta y la ficha; al terminar, el acceso es tuyo.</small>
       </label>
       <label class="ped-op">
         <input type="radio" name="ficha_tiene" value="si">
         <b>Ya aparece en Google</b>
-        <small>Nos das permiso de administrador y trabajamos sobre tu ficha.</small>
+        <small>Nos das acceso de administrador y trabajamos sobre la tuya.</small>
       </label>
     </fieldset>
 
@@ -93,10 +92,12 @@
          formulario, así que esto se envía igual con el script caído. -->
     <fieldset class="ped-f">
       <legend>Elige tu paquete</legend>
-      <p class="ped-ayuda">Dejamos tu negocio bien puesto en Google y en Maps:
-        horarios, fotos, servicios, categor&#237;as y el enlace directo para que tus
-        clientes te dejen rese&#241;as. Al elegirlo puedes a&#241;adirle tus placas de
-        rese&#241;as con descuento.</p>
+      <!-- Una frase, no un inventario: el detalle vive en «ver qué incluye» de
+           cada tarjeta, y repetirlo aquí era leer lo mismo dos veces. Con un
+           paquete ABIERTO este párrafo ya no orienta nada —se eligió— y el
+           script lo esconde; sin JavaScript se ve siempre. -->
+      <p class="ped-ayuda" data-sv-intro>Tu negocio bien puesto en Google y en Maps
+        &#8212; y tus placas de rese&#241;as, si quieres a&#241;adirlas.</p>
 
       <!-- LA SALIDA. Un cobro sin marcha atrás es un cobro que se abandona:
            quien se equivoca de paquete y no ve cómo deshacerlo cierra la
@@ -171,7 +172,7 @@
            data-precio="250" data-max="2" data-esc="399,649"
            data-umbral="2500">
         <p class="sv-extra-t">&#191;Le a&#241;ades tus placas de rese&#241;as?</p>
-        <p class="sv-extra-p">A diferencia del cartel de papel, la placa es la pieza r&#237;gida de tu mostrador: la tocan con el tel&#233;fono y les abre tu rese&#241;a. A&#241;&#225;delas por $250 cada una &#8212; el env&#237;o o la instalaci&#243;n van por nuestra cuenta.</p>
+        <p class="sv-extra-p">La tocan con el tel&#233;fono y les abre tu rese&#241;a &#8212; es la placa r&#237;gida del mostrador, no el cartel de papel. $250 cada una, con env&#237;o o instalaci&#243;n.</p>
         <div class="sv-cant" role="group" aria-label="Cu&#225;ntas placas">
           <button type="button" class="sv-pm" data-sv-placa="-1" aria-label="Quitar una placa">&#8722;</button>
           <span class="sv-pn" data-sv-placa-n aria-live="polite"><span data-sv-placa-vis>Sin placas</span><span class="sr" data-sv-placa-sr></span></span>
@@ -278,6 +279,7 @@
   if(!ops.length)return;
   const planes=[...form.querySelectorAll('.sv-plan')];
   const vuelta=form.querySelector('[data-sv-vuelta]');
+  const intro=form.querySelector('[data-sv-intro]');
   const cambiar=form.querySelector('[data-sv-cambiar]');
   const pagar=form.querySelector('button[type="submit"]');
   /* ── LAS PLACAS DEL PAQUETE ──
@@ -344,6 +346,9 @@
       if(!suyo)for(const o of p.querySelectorAll('input[name="paquete"]'))o.checked=false;
     }
     if(vuelta)vuelta.hidden=!id;
+    /* El párrafo de la comparación se va con ella: con un paquete abierto ya
+       no orienta, estorba entre el rótulo y la tarjeta. */
+    if(intro)intro.hidden=!!id;
     pinta();
   }
 

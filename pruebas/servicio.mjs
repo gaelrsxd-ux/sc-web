@@ -451,6 +451,33 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(!(await pg.locator('[data-sv-vuelta]').isVisible()),
      'sin nada elegido no hay nada que deshacer, así que no hay botón de volver');
 
+  /* ── SÓLO LO NECESARIO EN CADA MOMENTO ──
+     El titular lo pidió así: «captar clientes y que sepan dónde están y qué
+     compran, sin llenar de tanto dato». La regla que lo cumple: un texto vive
+     mientras es la única fuente de su información, y muere cuando un control a
+     la vista ya la dice. En la comparación, la frase del pago y el párrafo de
+     arriba orientan; con el paquete abierto, los radios dicen el pago con su
+     importe y el párrafo ya no orienta nada. */
+  ok(await pg.locator('[data-sv-intro]').isVisible(),
+     'comparando, el párrafo de «Elige tu paquete» orienta y se ve');
+  ok((await frases(pg)).length === 2,
+     'y cada paquete avisa de sus formas de pago, porque los radios están guardados');
+
+  await tocaPlan(pg, 'gp-e');
+  await hasta(() => pg.$eval('.sv-plan[data-plan="gp-e"]', e => e.classList.contains('abierto')),
+              'un paquete abierto para mirar qué sobra');
+  ok(!(await pg.locator('[data-sv-intro]').isVisible()),
+     'abierto el paquete, el párrafo de arriba se retira: ya no orienta, estorba');
+  ok((await frases(pg)).length === 0,
+     'y la frase del pago también: los dos radios ya lo dicen con su importe');
+  ok(await pg.locator('.sv-plan[data-plan="gp-e"] .sv-pagos').isVisible(),
+     'porque las formas de pago están a la vista, que es quien la sustituye');
+  await pg.locator('[data-sv-cambiar]').click();
+  await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2,
+              'y al volver a comparar, vuelven párrafo y frases');
+  ok(await pg.locator('[data-sv-intro]').isVisible(), 'el párrafo');
+  ok((await frases(pg)).length === 2, 'y las frases');
+
   /* ── LAS PLACAS DENTRO DEL PAQUETE ──
      «Que elija una, dos placas de reseñas y configurar tu perfil de Google»,
      pidió el titular. La regla de fondo es una sola: TODO importe a la vista
@@ -718,8 +745,14 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   const revividos = await anticiposALaVista(pg);
   ok(revividos.length > 0 && revividos.every(d => d === false),
      'y vuelven si dice que todavía no aparece en Google');
-  const vuelve = await frases(pg);
-  ok(vuelve.every(t => /anticipo/i.test(t)), 'y la frase vuelve a ofrecerlo');
+  /* Con el paquete ABIERTO la frase está escondida a propósito —los radios ya
+     dicen lo mismo—, así que aquí se lee el MARCADO del plan a la vista:
+     `frases()` filtra por visibilidad y devolvería una lista vacía, y un
+     `every` sobre vacío pasa sin medir nada. */
+  const vuelve = await pg.$$eval('.sv-plan:not([hidden]) .sv-como-no',
+    ps => ps.map(x => x.textContent));
+  ok(vuelve.length > 0 && vuelve.every(t => /anticipo/i.test(t)),
+     'y la frase vuelve a ofrecerlo');
 
   /* ---- lo que llega al cobro ---- */
   await elige(pg, 'gp-ta');
@@ -791,6 +824,10 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
               'el anticipo se apaga');
   await elige(pg, 'gp-t');
   await hasta(() => pg.locator('[name=tel]').isVisible(), 'los datos ya se pueden rellenar');
+  /* La tarjeta apagada dice «No disponible con tu ficha» en el rótulo; su
+     letra pequeña explicaba lo mismo con más palabras. Una sola vez basta. */
+  ok(!(await pg.locator('.ped-op.apagada small').first().isVisible()),
+     'la tarjeta apagada no repite en letra pequeña lo que ya dice su rótulo');
   await pg.fill('[name=negocio]', 'El Molino Ruso');
   await pg.fill('[name=negocio_ciudad]', 'San Luis Potosí');
   await pg.fill('[name=nombre]', 'Gael Ramírez');
