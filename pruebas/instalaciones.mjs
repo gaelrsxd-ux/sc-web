@@ -52,13 +52,13 @@ ok(/cliente-.*-grande\.webp$/.test(grande), 'amplía la versión grande: ' + gra
 await pg.keyboard.press('Escape');
 await pg.waitForTimeout(500);
 
-/* ---- y la galería del producto sigue con SUS tres ---- */
+/* ---- y la galería del producto sigue con las SUYAS (4, con la vista explotada) ---- */
 await pg.locator('#t-productos').click();     // vive en otra pestaña: hay que abrirla
 await pg.waitForTimeout(400);
 await pg.locator('.prod-fig .prod-abre').first().click();
 await pg.waitForTimeout(600);
 const cuenta2 = await pg.locator('#visor-cuenta').textContent();
-ok(/\b3\b/.test(cuenta2), 'la galería del producto sigue teniendo 3 (dice «' + cuenta2.trim() + '»)');
+ok(/\b4\b/.test(cuenta2), 'la galería del producto tiene sus 4 —con la vista explotada— (dice «' + cuenta2.trim() + '»)');
 const pie2 = await pg.locator('#visor-pie').textContent();
 ok(/frente/i.test(pie2), 'y sigue abriendo por la foto correcta: «' + pie2.trim() + '»');
 await pg.keyboard.press('Escape');

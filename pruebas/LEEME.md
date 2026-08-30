@@ -19,7 +19,7 @@ node pruebas/servicio.mjs
 node pruebas/instalaciones.mjs
 ```
 
-Ciento veintiocho comprobaciones en la primera, la mayoría con JavaScript y un
+Ciento treinta comprobaciones en la primera, la mayoría con JavaScript y un
 bloque final sin él; ciento ochenta y dos en la segunda y dieciocho en la
 tercera.
 

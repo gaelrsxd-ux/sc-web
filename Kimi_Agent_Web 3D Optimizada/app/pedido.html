@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=d943bd39">
-<link rel="stylesheet" href="assets/pedido.css?v=6f48126f">
+<link rel="stylesheet" href="assets/pedido.css?v=5cb6238c">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -46,6 +46,18 @@
   </div>
   <noscript><p class="ped-ayuda" style="margin-top:10px">El total es el de la cantidad
     que elijas en la lista de aquí abajo.</p></noscript>
+
+  <!-- La única imagen del pedido, y va plegada a propósito: responde «¿por qué
+       vale $399?» enseñando lo que lleva dentro, sin ocupar ni un pixel hasta
+       que alguien la toca. <details> abre y cierra sin JavaScript. -->
+  <details class="sv-mas ped-capas">
+    <summary>De qu&#233; est&#225; hecha tu placa</summary>
+    <img src="assets/producto-capas-900.webp"
+         srcset="assets/producto-capas-480.webp 480w, assets/producto-capas-900.webp 900w"
+         sizes="(max-width:640px) 92vw, 560px" width="900" height="1125"
+         loading="lazy" decoding="async"
+         alt="Vista explotada de la placa: el frente impreso, el n&#250;cleo r&#237;gido de PVC, el chip NFC con su antena, la capa adhesiva y el soporte trasero en negro mate.">
+  </details>
 
   <!-- ⚠ EL IMPORTE NO VIAJA EN ESTE FORMULARIO, Y NO ES UN OLVIDO.
        Lo único que se manda es `paquete`; el precio lo pone el Worker desde su

@@ -140,6 +140,18 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok((await pg.locator('[data-ped-tot]').textContent()).trim() === '$949', 'y su importe');
   ok((await pg.locator('.tag').textContent()).includes('Paso 1 de 4'), 'arranca en el paso 1 de 4');
 
+  /* La vista explotada del producto vive plegada bajo el encabezado: existe,
+     no ocupa nada hasta que se toca, y al abrirla enseña la foto de las capas. */
+  const capas = pg.locator('.ped-capas');
+  ok(await capas.count() === 1 && !(await capas.evaluate(d => d.open)),
+     'la vista explotada está en el pedido y arranca plegada');
+  await capas.locator('summary').click();
+  await pg.waitForTimeout(150);
+  ok(await capas.locator('img[src*="producto-capas"]').isVisible(),
+     'y al abrirla se ve la foto de las capas');
+  await capas.locator('summary').click();
+  await pg.waitForTimeout(100);
+
   /* El «−» y el «+» NO están aquí: viven en la ficha del producto, que es
      donde se ve lo que se compra. A esta pantalla se llega con la cantidad ya
      puesta en `?n=` y el desplegable es para corregirla, no para recorrerla de
