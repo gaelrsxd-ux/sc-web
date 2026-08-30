@@ -191,7 +191,7 @@ const SERVICIOS = [
       'Publicamos tus primeros avisos y novedades con foto',
       'Revisamos qué tienen puesto los negocios como el tuyo',
       'Revisamos si tu negocio sale repetido y lo reportamos',
-      'Te mandamos tu cartel con QR de reseñas, listo para imprimir',
+      'Te mandamos tu cartel de papel con QR, listo para imprimir',
       'Te entregamos un reporte con capturas y te explicamos cómo mantenerla',
     ],
     /* De quién hereda la lista. La tarjeta de este paquete enseña ADEMÁS los
@@ -217,6 +217,25 @@ const SERVICIOS = [
   },
 ];
 
+/* ═══════════ LAS PLACAS DENTRO DEL PAQUETE ═══════════
+
+   El titular lo pidió con estas palabras: «que elija una, dos placas de
+   reseñas y configurar tu perfil de Google». Y tiene lógica de negocio, no
+   sólo de venta: el perfil es DONDE caen las reseñas y la placa es LO QUE
+   HACE que las dejen — por separado, cada mitad se queda coja.
+
+   `precio` es lo que cuesta CADA placa dentro del paquete. Es una decisión
+   comercial del titular y se cambia tocando este número y regenerando; la
+   guarda de más abajo impide que suba tanto que el «descuento» sea mentira.
+
+   `max` está en 2 y no es tacañería: es lo que el titular dijo («una, dos
+   placas») y además donde el ahorro frente a la escalera de sueltas se
+   sostiene — la de 2 sueltas vale $649, así que 2 aquí ahorran $149; la de
+   3 vale $799 y 3 aquí ahorrarían $49, que anunciado como ahorro da
+   vergüenza. Quien quiera más placas ya tiene su camino: la ficha del
+   producto y el WhatsApp de mayoreo. */
+const PLACA_EN_PAQUETE = { precio: 250, max: 2 };
+
 /* El plazo de entrega (1 a 7 días hábiles desde que nos dan acceso) y las 24
    horas de cancelación estuvieron aquí como constantes. No generaban nada: los
    dos números están escritos a mano en terminos.html, en servicio.html y en
@@ -236,7 +255,17 @@ const SERVICIOS = [
        manda los nueve, el Worker recorta a ocho (`.slice(0, 8)`) y acaba
        cobrando el paquete DE CONTADO — o, si el recorte no casa con nada,
        responde «Ese paquete no existe» y la venta se cae. */
-    for (const id of s.anticipo ? [s.id, s.id + 'a'] : [s.id]) {
+    /* Los ids que DE VERDAD se publican son más que los dos de siempre: cada
+       combinación con placas es una fila propia del catálogo —el importe nunca
+       puede salir del navegador— y su id se construye pegando el número al
+       final: gp-t2, gp-ta2. Todos pasan por la misma guarda de 8 caracteres. */
+    const publicados = [s.id];
+    if (s.anticipo) publicados.push(s.id + 'a');
+    for (let n = 1; n <= PLACA_EN_PAQUETE.max; n++) {
+      publicados.push(s.id + n);
+      if (s.anticipo) publicados.push(s.id + 'a' + n);
+    }
+    for (const id of publicados) {
       if (!/^[a-z0-9-]{1,8}$/.test(id))
         throw new Error(`servicio «${s.nombre}»: el id «${id}» no cabe en los 8 caracteres que lee el Worker`);
       if (vistos.has(id)) throw new Error(`servicio: el id «${id}» está repetido`);
@@ -488,6 +517,46 @@ const miles = n => n.toLocaleString('en-US');
 
 const gratis = p => p.envio === 0;
 const total  = p => p.precio + p.envio;
+
+/* La escalera de placas sueltas contra la que se anuncia el ahorro del
+   paquete. Sale de la MISMA tabla que vende las sueltas: si mañana sube la de
+   una placa, el ahorro anunciado cambia solo, sin que nadie lo recuerde. */
+const escaleraPlacas = () => Array.from({ length: PLACA_EN_PAQUETE.max },
+  (_, i) => {
+    const fila = PAQUETES.find(p => p.piezas === i + 1);
+    if (!fila) throw new Error(`placas en paquete: no hay fila de ${i + 1} placa(s) en la escalera`);
+    return total(fila);
+  });
+
+/* ⚠ EL «TE AHORRAS $X» NO PUEDE SER MENTIRA NI PUEDE SER RIDÍCULO. Si el
+   precio del paquete sube por encima de la escalera, el descuento anunciado
+   se vuelve un recargo; y un ahorro de veinte pesos anunciado en grande hace
+   más daño que no anunciar nada. Las dos cosas revientan aquí, en generación,
+   no en la cara de un cliente. */
+{
+  const { precio, max } = PLACA_EN_PAQUETE;
+  if (!Number.isInteger(precio) || precio <= 0)
+    throw new Error(`placas en paquete: el precio ${precio} no es un entero positivo`);
+  if (!Number.isInteger(max) || max < 1 || max > 3)
+    throw new Error(`placas en paquete: max=${max} — entre 1 y 3, y con 3 revisa antes el ahorro`);
+  /* ⚠ EL PÁRRAFO DEL COMBO EN LOS TÉRMINOS ESTÁ ESCRITO A MANO, y es el
+     documento legal: si el titular sube el precio aquí y regenera, toda la web
+     cobra lo nuevo mientras los términos prometen lo viejo — y un comprador
+     puede exigir el precio de los términos. Esta guarda revienta la generación
+     antes de que esa contradicción exista. */
+  const terminos = fs.readFileSync(
+    path.join(path.dirname(HTML), 'terminos.html'), 'utf8');
+  if (!terminos.includes(`$${precio} MXN`) || !terminos.includes(`hasta ${max} placas`))
+    throw new Error('placas en paquete: terminos.html no dice el precio ' +
+      `($${precio} MXN) o el tope (hasta ${max} placas) de esta tabla — ` +
+      'actualiza el párrafo «Placas de reseñas dentro del paquete»');
+  escaleraPlacas().forEach((suelta, i) => {
+    const n = i + 1, dentro = precio * n;
+    if (suelta - dentro < 40)
+      throw new Error(`placas en paquete: ${n} a $${precio} c/u ahorran $${suelta - dentro} ` +
+        `frente a $${suelta} sueltas — eso no es un descuento que se pueda anunciar`);
+  });
+}
 const piezas = p => p.piezas === 1 ? '1 pieza' : `${p.piezas} piezas`;
 const placas = p => p.piezas === 1 ? '1 placa' : `${p.piezas} placas`;
 
@@ -619,8 +688,15 @@ function bloqueServicio() {
        Y hay dos textos porque hay dos verdades. Con ficha propia el anticipo no
        existe —no hay entrega que retener— y el script cambia la frase entera en
        vez de dejar una que se contradice con las opciones de debajo. */
+    /* El importe del anticipo lleva su gancho: con placas en el paquete, lo
+       que se deja HOY crece (anticipo + placas) y esta frase no puede quedarse
+       diciendo $750 mientras el radio de abajo dice $1,000 — el titular pidió
+       expresamente «no te contradigas en ninguna parte». El resto NO cambia:
+       las placas se pagan hoy, no se deben. Sin JavaScript no hay placas y la
+       cifra escrita es la verdad completa. */
     const comoNo = s.anticipo
-      ? `P&#225;galo <b>de contado</b>, o deja <b>${pesos(s.anticipo)} de anticipo</b> `
+      ? `P&#225;galo <b>de contado</b>, o deja <b data-sv-frase-ant data-base="${s.anticipo}">`
+        + `${pesos(s.anticipo)} de anticipo</b> `
         + `y los ${pesos(resto)} restantes cuando te entreguemos el acceso.`
       : 'Un solo pago.';
     /* En castellano llano. Decía «el trabajo se hace sobre una cuenta que ya
@@ -637,14 +713,23 @@ function bloqueServicio() {
        `Number('$1,490')` daba NaN y el comprador leía «$NaN» en el resumen de
        lo que acababa de pagar. `data-resto` es lo que faltará por cobrar, para
        que esa misma página pueda decirlo en vez de dejarlo a la imaginación. */
+    /* `data-id` ES EL ID SIN PLACAS Y `value` EL QUE VIAJA. Con placas, el
+       script recompone value = id + número (gp-ta → gp-ta2): así el importe
+       sigue saliendo del catálogo del Worker, nunca del navegador. Y si el
+       Worker desplegado fuera uno viejo sin los combos, la venta falla EN VOZ
+       ALTA con «Ese paquete no existe» en vez de cobrar el paquete sin placas
+       — cobrar de menos en silencio es el peor de los dos fallos.
+
+       `data-base` en el <b>: el rótulo «Pagar $750 de anticipo» tiene que
+       crecer con las placas o diría un importe y el botón otro. */
     const opcion = (id, importe, titulo, pie, anticipo) =>
       '          <label class="ped-op">\n' +
-      `            <input type="radio" name="paquete" value="${id}" required\n` +
+      `            <input type="radio" name="paquete" value="${id}" data-id="${id}" required\n` +
       `                   data-tot="${pesos(importe)}" data-num="${importe}"` +
       (anticipo ? ` data-resto="${s.precio - s.anticipo}"` : '') + '\n' +
       `                   data-que="${ent(corto + ' · ' + (anticipo ? 'anticipo' : 'de contado'))}"` +
       (anticipo ? ' data-anticipo="1"' : '') + '>\n' +
-      `            <b>${ent(titulo)}</b>\n` +
+      `            <b data-sv-op data-base="${importe}">${ent(titulo)}</b>\n` +
       `            <small>${pie}</small>\n` +
       '          </label>';
 
@@ -721,8 +806,59 @@ function bloqueServicio() {
       '        <div class="sv-pagos">\n' +
       ops.join('\n') + '\n        </div>\n      </div>';
   };
-  return '<!-- servicio:opciones -->\n' + SERVICIOS.map(bloque).join('\n') +
-         '\n      <!-- /servicio:opciones -->';
+  /* ⚠ UN SOLO BLOQUE DE PLACAS PARA LOS DOS PAQUETES, fuera de las tarjetas.
+     Dentro de cada tarjeta habría DOS contadores que sincronizar —dos fuentes
+     para el mismo número— y además volvería a engordar la tarjeta, que el
+     titular pidió expresamente no saturar. Aquí abajo aparece cuando hay un
+     paquete abierto, igual que el bloque de los datos, y la cuenta sobrevive
+     al cambio de paquete: quien decidió dos placas no las re-decide por
+     cambiar de «Todo hecho» a «Lo esencial».
+
+     Nace `hidden` porque SIN JavaScript no funciona: sin script nadie puede
+     recomponer el id que viaja al cobro, y un contador que se ve pero no suma
+     cobraría el paquete sin placas a quien cree que las pidió. Sin script se
+     compra el servicio a secas — se pierde el extra, nunca la venta. */
+  const placas = () => {
+    const { precio, max } = PLACA_EN_PAQUETE;
+    return '      <div class="sv-extra" data-sv-placas hidden\n' +
+      `           data-precio="${precio}" data-max="${max}" data-esc="${escaleraPlacas().join(',')}"\n` +
+      `           data-umbral="${CUOTAS_DESDE}">\n` +
+      `        <p class="sv-extra-t">${ent('¿Le añades tus placas de reseñas?')}</p>\n` +
+      /* ⚠ NI «EN EL PAQUETE … INCLUIDOS» NI CONFUNDIBLE CON EL CARTEL. La
+         primera versión decía «$250 cada una en el paquete, con envío o
+         instalación incluidos»: leída en diagonal —que es como lee quien
+         compra— las palabras que quedan son «placas… paquete… incluidos», y
+         alguien pagaba el paquete convencido de que las placas venían de
+         regalo. Y diez líneas arriba «Todo hecho» ya regala un cartel de papel
+         con QR: sin distinguirlos, placa y cartel parecen lo mismo. */
+      `        <p class="sv-extra-p">${ent('A diferencia del cartel de papel, la placa es ' +
+        'la pieza rígida de tu mostrador: la tocan con el teléfono y les abre tu reseña. ' +
+        `Añádelas por $${miles(precio)} cada una — el envío o la instalación van por nuestra cuenta.`)}</p>\n` +
+      '        <div class="sv-cant" role="group" aria-label="' + ent('Cuántas placas') + '">\n' +
+      `          <button type="button" class="sv-pm" data-sv-placa="-1" aria-label="${ent('Quitar una placa')}">&#8722;</button>\n` +
+      /* Dos mitades dentro de la región viva: la visible («2 placas», de ancho
+         fijo) y una sólo para el lector de pantalla con la consecuencia en
+         DINERO. Sin ella, quien no ve la pantalla oía «2 placas» y nada más:
+         los $500 que acababa de sumar al pago de hoy no se anunciaban nunca. */
+      '          <span class="sv-pn" data-sv-placa-n aria-live="polite">' +
+      '<span data-sv-placa-vis>Sin placas</span>' +
+      '<span class="sr" data-sv-placa-sr></span></span>\n' +
+      `          <button type="button" class="sv-pm" data-sv-placa="1" aria-label="${ent('Añadir una placa')}">+</button>\n` +
+      '        </div>\n' +
+      '        <p class="sv-extra-a" data-sv-ahorro hidden></p>\n' +
+      '      </div>\n' +
+      /* Va FUERA del div (que nace hidden y sin script nadie destapa): dentro,
+         un noscript escondido no dice nada. La portada promete el combo en
+         marcado estático, así que sin script alguien llega buscándolo — y se
+         le da el canal que sí funciona sin script. */
+      '      <noscript><p class="sv-extra-p">' +
+      `${ent('¿Placas de reseñas con tu paquete? ')}` +
+      '<a href="https://wa.me/524423697248?text=Hola.%20Quiero%20un%20paquete%20de%20Google%20con%20placas%20de%20rese%C3%B1as." ' +
+      'target="_blank" rel="noopener noreferrer">' +
+      `${ent('Escríbenos por WhatsApp')}</a>${ent(' y te lo cobramos junto.')}</p></noscript>`;
+  };
+  return '<!-- servicio:opciones -->\n' + SERVICIOS.map(bloque).join('\n') + '\n' +
+         placas() + '\n      <!-- /servicio:opciones -->';
 }
 
 const BLOQUES_SERVICIO = [
@@ -913,8 +1049,15 @@ function paquetesJson() {
       /* Dos filas por servicio: el de contado y el del anticipo. Son dos
          paquetes distintos para el Worker porque son dos importes distintos, y
          el importe NUNCA puede salir de lo que mande el navegador. */
+      /* Las mensualidades siguen la misma regla que las placas sueltas: dos
+         cuotas desde CUOTAS_DESDE, que las financia el banco del comprador y
+         al vendedor le cuestan cero. Nunca sobre un anticipo: un anticipo a
+         plazos es un absurdo que además liaría el «resto». Hoy sólo cruzan el
+         umbral los combos de «Todo hecho» — un ticket más alto que a la vez se
+         vuelve más fácil de decir que sí. */
       const fila = (id, base, total, resto) => ({
-        id, tipo: 'servicio', piezas: 1, base, total, envio: 0, cuotas: 1,
+        id, tipo: 'servicio', piezas: 1, base, total, envio: 0,
+        cuotas: (!resto && total >= CUOTAS_DESDE) ? 2 : 1,
         ...(resto ? { resto } : {}),
         ...(s.visita ? { visita: true } : {}),
       });
@@ -928,6 +1071,21 @@ function paquetesJson() {
          el mismo canal que el cobro. */
       if (s.anticipo) filas.push(
         fila(s.id + 'a', s.nombre + ' · anticipo', s.anticipo, s.precio - s.anticipo));
+      /* Y una fila por cada número de placas, contado y anticipo. Son filas
+         de verdad y no un recargo que calcule el Worker: el importe NUNCA
+         puede salir de una suma hecha en dos sitios distintos, y menos aún de
+         lo que mande el navegador. ⚠ CON ANTICIPO, LAS PLACAS SE PAGAN HOY:
+         el `total` de gp-ta2 es anticipo + placas y el `resto` queda igual —
+         una placa es un objeto que se entrega, no un trabajo que retener. */
+      for (let n = 1; n <= PLACA_EN_PAQUETE.max; n++) {
+        const extra = n * PLACA_EN_PAQUETE.precio;
+        const apellido = ` + ${n} placa${n > 1 ? 's' : ''} de reseñas`;
+        filas.push({ ...fila(s.id + n, s.nombre + apellido, s.precio + extra), placas: n });
+        if (s.anticipo) filas.push({
+          ...fila(s.id + 'a' + n, s.nombre + ' · anticipo' + apellido,
+                  s.anticipo + extra, s.precio - s.anticipo),
+          placas: n });
+      }
       return filas;
     })),
   }, null, 2) + '\n';

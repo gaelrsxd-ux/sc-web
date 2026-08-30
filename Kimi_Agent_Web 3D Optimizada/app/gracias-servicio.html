@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=d943bd39">
-<link rel="stylesheet" href="assets/pedido.css?v=a824bc63">
+<link rel="stylesheet" href="assets/pedido.css?v=388a262e">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -149,6 +149,12 @@
          primero de los dos pagos hay que hacerlo AHORA. Decirle que lo único
          pendiente es el resto es la forma de que no pague el anticipo. */
       ['Falta por pagar',(!pendiente&&d._resto)?pesos(d._resto)+' cuando te entreguemos el acceso':''],
+      /* Las placas del combo: qué sigue con ellas, no sólo que existen. El
+         nombre del paquete ya las cuenta; esta fila dice lo que el comprador
+         quiere saber al terminar de pagar: que no tiene que hacer nada y que
+         la entrega se acuerda con nosotros. */
+      ['Placas de reseñas',d._placas
+        ?d._placas+' — te escribimos para acordar la entrega o la instalación':''],
       ['Negocio',[d.negocio,d.negocio_ciudad].filter(Boolean).join(', ')],
       ['Ficha',propio?'Ya existe — nos das acceso':'No existe — la creamos nosotros'],
       ['Enlace',d.ficha],
@@ -175,6 +181,7 @@
     const l=['Hola. Acabo de contratar la configuración de mi Google desde la web.'];
     if(d._t)l.push('Paquete: '+d._t);
     if(!pendiente&&d._resto)l.push('Falta por pagar: '+pesos(d._resto));
+    if(d._placas)l.push('Placas: '+d._placas+' — acordar entrega o instalación');
     if(d.negocio)l.push('Negocio: '+d.negocio+(d.negocio_ciudad?', '+d.negocio_ciudad:''));
     l.push(propio?'Ya tengo ficha en Google':'Todavía no aparezco en Google');
     if(d.ficha)l.push('Mi ficha: '+d.ficha);

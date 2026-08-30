@@ -198,6 +198,32 @@ main{max-width:560px}
 /* Cuando se pulsa «Elige cómo lo pagas», la vista salta hasta estas dos
    opciones. Un salto sin nada que mirar al llegar se lee como que la página se
    movió sola, así que al llegar parpadean una vez. */
+/* ── LAS PLACAS DEL PAQUETE ──
+   Un bloque, no una tarjeta: si pareciera un tercer paquete competiría con los
+   dos de arriba, y es un extra. El contador copia las medidas del de la
+   portada —46 px por botón, por debajo el pulgar falla— pero vive en esta hoja
+   porque aquella es CSS de index.html y esta página no la carga. */
+.sv-extra{margin-top:16px;padding:18px 20px;border:1px solid var(--line-soft);
+  background:rgba(200,169,106,.04)}
+.sv-extra[hidden]{display:none}
+.sv-extra-t{font-size:15px;font-weight:500;color:var(--ink)}
+.sv-extra-p{margin-top:6px;font-size:13px;line-height:1.65;color:var(--muted)}
+.sv-cant{display:inline-flex;align-items:center;margin-top:12px;border:1px solid var(--line)}
+.sv-pm{width:46px;height:46px;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;color:var(--bronze-hi);background:none;border:0;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.sv-pm:active:not(:disabled){background:var(--bronze);color:var(--on-bronze)}
+@media (hover:hover){.sv-pm:hover:not(:disabled){background:var(--bronze);color:var(--on-bronze)}}
+.sv-pm:disabled{color:var(--dim);opacity:.4;cursor:default}
+.sv-pm:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:-3px}
+/* Ancho fijo y cifras tabulares: pasar de «Sin placas» a «2 placas» no puede
+   empujar los botones bajo el dedo que los está pulsando. */
+.sv-pn{min-width:92px;text-align:center;font-size:14px;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.sv-extra-a{margin-top:10px;font-size:12.5px;line-height:1.6;color:var(--bronze-hi)}
+.sv-extra-a[hidden]{display:none}
+
 .sv-pagos.pide{animation:svPide 1.6s ease-out}
 @keyframes svPide{
   0%,100%{box-shadow:none}

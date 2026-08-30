@@ -1744,6 +1744,11 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    puede pagar lo básico no sabía que existe algo más, y quien busca lo completo
    no sabía si le alcanza. */
 .svc-desde{margin-top:16px;font-size:12.5px;color:var(--muted)}
+/* La línea del combo: existe, y nada más. Más pequeña que el precio y sin
+   cifra propia — la cifra del descuento vive donde se decide, en servicio.html,
+   para que no haya dos números que mantener iguales. */
+.svc-combo{margin-top:9px;font-size:12.5px;color:var(--muted)}
+.svc-combo b{color:var(--bronze-hi);font-weight:500}
 [data-svc-desde]{display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:4px 9px}
 [data-svc-desde] b{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink)}
 [data-svc-desde] i{font-style:normal;font-size:11px;letter-spacing:.4px;color:var(--muted)}
@@ -2740,7 +2745,11 @@ html.js .pc-alt{display:none}
                mismo trabajo, y ponerles precio fijo sería cobrar de más a unos
                o de menos a otros. Este no: es una lista concreta, se entrega y
                se ve. ⚠ La cifra la escribe tools/precios.mjs. -->
+          <!-- La única mención del combo fuera de servicio.html, y es UNA línea:
+               el titular pidió expresamente no repetir servicios por secciones.
+               Aquí sólo se avisa de que existe; armarlo se arma allí. -->
           <p class="svc-desde"><span data-svc-desde><b>$1,490</b> <i>Lo esencial</i><em>o</em><b>$2,300</b> <i>Todo hecho</i></span></p>
+          <p class="svc-combo">Y le puedes a&#241;adir tus <b>placas de rese&#241;as</b> con descuento.</p>
           <a href="servicio.html" class="svc-btn"><span class="dia"></span>Ver los dos paquetes</a>
         </article>
         <article class="svc" id="svc-atencion">

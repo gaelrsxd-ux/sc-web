@@ -293,7 +293,8 @@ function resumen(p, d) {
   /* UN SERVICIO NO SE PREPARA, SE TRABAJA, así que su resumen responde otras
      preguntas: ¿sobre qué ficha?, ¿la creamos nosotros o ya existe? —de eso
      depende si el anticipo era legítimo—, y ¿por dónde le escribo. No lleva
-     dirección de envío porque no hay nada que enviar, y no lleva «1 pza»
+     dirección de envío porque no viaja en el pedido —las placas de un combo se
+     entregan acordándolo por WhatsApp, dicen los términos— y no lleva «1 pza»
      porque no se cuenta por piezas.
      Sale por su propia rama y no por condicionales metidos en la de abajo: son
      dos resúmenes distintos, y mezclarlos era pedir que uno de los dos acabase
@@ -331,6 +332,15 @@ function resumen(p, d) {
        leyendo la ciudad en mitad de una línea. */
     if (p.visita && !CIUDADES_VISITA.test(d.negocio_ciudad || ''))
       l.push('SIN VISITA: fuera de SLP/Soledad, fotos del cliente');
+    /* LAS PLACAS DEL COMBO, EN SU PROPIA LÍNEA. Ya van en el concepto del
+       cobro (p.base), pero el concepto y este resumen son campos distintos del
+       aviso, y quien prepara el trabajo lee ÉSTE. Sin la línea, un combo de
+       Monterrey se preparaba sin caer en que hay dos placas que fabricar y
+       hacer llegar — y la dirección no viaja en el pedido a propósito: se
+       acuerda después por WhatsApp, como dicen los términos. */
+    if (Number(p.placas) > 0)
+      l.push('CON ' + p.placas + ' PLACA' + (Number(p.placas) > 1 ? 'S' : '') +
+             ' DE RESEÑAS: acordar entrega, o instalarlas en la visita');
     if (d.negocio) l.push(d.negocio + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
     /* Tres estados, no dos: «no lo dijo» no puede imprimirse como «la creamos
        nosotros», que es una instrucción de trabajo y no un dato. */
