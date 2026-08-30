@@ -180,6 +180,20 @@ main{max-width:560px}
    esta hoja para resaltar la tarjeta marcada. Se turnan por lo que hay marcado
    ARRIBA, en la pregunta que decide — que nace respondida, así que siempre hay
    exactamente una visible. */
+/* ⚠ CON EL PAQUETE ABIERTO, LA FRASE DEL PAGO SOBRA: sus dos formas de pago
+   están a la vista con el importe en el título — la misma información sin
+   párrafo. En la comparación vuelve, porque ahí los pagos están guardados y la
+   frase es lo único que avisa de que el anticipo existe. Sin JavaScript nunca
+   hay .abierto y las frases se ven siempre, que es lo que toca: ahí las cuatro
+   opciones están desplegadas de golpe y la frase las ordena. */
+/* `!important` a conciencia: las reglas de abajo que turnan las dos frases
+   cuelgan de `#sv-form:has(...)` y su id gana a cualquier combinación sensata
+   de clases — replicar ese selector aquí sería fabricar uno peor para
+   empatarlo. Este es EL estado que manda sobre los dos turnos. */
+.sv-plan.abierto .sv-como{display:none!important}
+/* Y la tarjeta apagada ya dice «No disponible con tu ficha» en su rótulo: su
+   letra pequeña explicaba lo mismo con más palabras, dos veces en pantalla. */
+.ped-op.apagada small{display:none}
 .sv-como-no,.sv-como-si{display:none}
 #sv-form:has(input[name="ficha_tiene"][value="no"]:checked) .sv-como-no{display:block}
 #sv-form:has(input[name="ficha_tiene"][value="si"]:checked) .sv-como-si{display:block}

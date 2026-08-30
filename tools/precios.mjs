@@ -831,9 +831,9 @@ function bloqueServicio() {
          alguien pagaba el paquete convencido de que las placas venían de
          regalo. Y diez líneas arriba «Todo hecho» ya regala un cartel de papel
          con QR: sin distinguirlos, placa y cartel parecen lo mismo. */
-      `        <p class="sv-extra-p">${ent('A diferencia del cartel de papel, la placa es ' +
-        'la pieza rígida de tu mostrador: la tocan con el teléfono y les abre tu reseña. ' +
-        `Añádelas por $${miles(precio)} cada una — el envío o la instalación van por nuestra cuenta.`)}</p>\n` +
+      `        <p class="sv-extra-p">${ent('La tocan con el teléfono y les abre tu reseña ' +
+        '— es la placa rígida del mostrador, no el cartel de papel. ' +
+        `$${miles(precio)} cada una, con envío o instalación.`)}</p>\n` +
       '        <div class="sv-cant" role="group" aria-label="' + ent('Cuántas placas') + '">\n' +
       `          <button type="button" class="sv-pm" data-sv-placa="-1" aria-label="${ent('Quitar una placa')}">&#8722;</button>\n` +
       /* Dos mitades dentro de la región viva: la visible («2 placas», de ancho
