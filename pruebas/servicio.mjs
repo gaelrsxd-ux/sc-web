@@ -451,6 +451,175 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(!(await pg.locator('[data-sv-vuelta]').isVisible()),
      'sin nada elegido no hay nada que deshacer, así que no hay botón de volver');
 
+  /* ── LAS PLACAS DENTRO DEL PAQUETE ──
+     «Que elija una, dos placas de reseñas y configurar tu perfil de Google»,
+     pidió el titular. La regla de fondo es una sola: TODO importe a la vista
+     —cifra grande, rótulo de cada radio, frase del anticipo, botón de pagar—
+     crece con las placas por la MISMA suma, y el id que viaja al cobro se
+     recompone (gp-ta → gp-ta2) para que el importe siga saliendo del catálogo
+     del Worker. Aquí se mide cada una de esas caras por separado: si una se
+     descuelga, el comprador ve un número y paga otro. */
+  ok(!(await pg.locator('[data-sv-placas]').isVisible()),
+     'sin paquete abierto, el bloque de placas no existe: no compite con la decisión');
+
+  await tocaPlan(pg, 'gp-t');
+  await hasta(() => pg.locator('[data-sv-placas]').isVisible(),
+              'al abrir un paquete aparece el bloque de placas');
+  ok((await pg.locator('[data-sv-placa-vis]').textContent()).trim() === 'Sin placas',
+     'y nace en cero: nadie compra placas sin haberlas pedido');
+  ok(await pg.locator('[data-sv-placa="-1"]').isDisabled(),
+     'con cero, el «−» está apagado y se ve');
+
+  /* Los 350 ms en que el contador no escucha: son la guarda contra el segundo
+     toque del impaciente, que tras el reflow caería sobre el «+». La prueba
+     espera a que la ventana pase — y de paso comprueba que existe. */
+  const mas = pg.locator('[data-sv-placa="1"]');
+  await mas.focus();
+  await mas.click();
+  ok((await pg.locator('[data-sv-placa-vis]').textContent()).trim() === 'Sin placas',
+     'un toque DENTRO de la ventana de asentamiento no suma: era el doble toque del impaciente');
+  await pg.waitForTimeout(420);
+  await mas.click();
+  await mas.click();
+  await hasta(() => pg.locator('[data-sv-placa-vis]').textContent().then(t => /2 placas/.test(t)),
+              'dos toques al «+» son dos placas');
+  ok(await mas.isDisabled(), 'y en el tope el «+» se apaga: el tope es el del generador');
+  /* El foco no puede morir con el botón: apagado el «+» que lo tenía, pasa al
+     «−» — sin esto, el siguiente Tab arrancaba desde el principio de la página
+     en mitad del cobro. */
+  ok(await pg.evaluate(() => document.activeElement &&
+       document.activeElement.dataset && document.activeElement.dataset.svPlaca === '-1'),
+     'y el foco pasa al «−» en vez de perderse en el body');
+  /* La mitad del rótulo que sólo oye el lector de pantalla lleva el DINERO:
+     «2 placas» a secas dejaba a quien no ve la pantalla sin saber que el pago
+     de hoy acaba de subir $500. */
+  ok(/\+\$500 hoy, ahorras \$149/.test(await pg.locator('[data-sv-placa-sr]').textContent()),
+     'el lector de pantalla oye el dinero: ' +
+     JSON.stringify(await pg.locator('[data-sv-placa-sr]').textContent()));
+  ok(await pg.evaluate(() => { try { return sessionStorage.getItem('syc_placas') === '2'; }
+       catch (_) { return false; } }),
+     'y la cuenta queda guardada para la vuelta desde el cobro sin bfcache');
+  /* «Un solo pago y listo» dejaría de ser verdad: gp-t2 son $2,800, cruza el
+     umbral de las dos mensualidades y Mercado Pago las va a ofrecer. */
+  ok(/2 mensualidades/i.test(await pg.$eval('input[data-id="gp-t"]',
+       i => i.closest('.ped-op').querySelector('small').textContent)),
+     'el pie del contado anuncia las 2 mensualidades que el combo acaba de ganar');
+
+  /* El ahorro anunciado se recalcula AQUÍ con los números que el generador
+     dejó escritos en el propio bloque —la escalera de sueltas—, no copiando la
+     cifra del texto: si el texto mintiera, esto lo cazaría. */
+  const caja = await pg.$eval('[data-sv-placas]', e =>
+    ({ precio: Number(e.dataset.precio), esc: e.dataset.esc.split(',').map(Number) }));
+  const ahorro = (await pg.locator('[data-sv-ahorro]').textContent()).trim();
+  const esperado = caja.esc[1] - 2 * caja.precio;
+  ok(new RegExp('ahorras \\$' + esperado + '(\\D|$)').test(ahorro),
+     `el ahorro anunciado es el de la escalera de sueltas ($${esperado}): «${ahorro}»`);
+  ok(/se pagan hoy/i.test(ahorro) && /anticipo/i.test(ahorro),
+     'y avisa de que las placas se pagan hoy también con anticipo');
+
+  /* Cada cara del dinero, con dos placas puestas. */
+  ok(await pg.$eval('input[data-id="gp-t"]', i => i.value) === 'gp-t2',
+     'el id del contado se recompone: gp-t2');
+  ok(await pg.$eval('input[data-id="gp-ta"]', i => i.value) === 'gp-ta2',
+     'y el del anticipo: gp-ta2');
+  ok(/pagar \$2,800 de contado/i.test(
+       await pg.$eval('input[data-id="gp-t"]', i => i.closest('.ped-op').querySelector('b').textContent)),
+     'el rótulo del contado crece: $2,300 + 2 placas = $2,800');
+  ok(/pagar \$1,650 de anticipo/i.test(
+       await pg.$eval('input[data-id="gp-ta"]', i => i.closest('.ped-op').querySelector('b').textContent)),
+     'y el del anticipo: $1,150 + $500 de placas hoy = $1,650');
+  /* La frase de arriba de la tarjeta no puede quedarse en el importe viejo
+     mientras el radio dice el nuevo: «no te contradigas en ninguna parte». */
+  ok((await pg.$eval('.sv-plan[data-plan="gp-t"] [data-sv-frase-ant]', e => e.textContent)) ===
+     '$1,650 de anticipo',
+     'la frase del anticipo dice el mismo importe que el radio');
+
+  await pg.locator('.ped-op:has(input[data-id="gp-ta"])').click();
+  await hasta(() => pg.locator('[data-sv-tot]').textContent().then(t => t.trim() === '$1,650'),
+              'la cifra grande cobra con placas: $1,650');
+  ok(/\+ 2 placas/.test(await pg.locator('[data-sv-que]').textContent()),
+     'y el resumen de arriba las nombra');
+  ok((await pg.locator('#sv-form button[type=submit]').textContent()).trim() === 'Pagar $1,650',
+     'el botón dice exactamente lo que va a cobrar');
+
+  /* Cambiar de paquete no borra la decisión de las placas — Y NO LAS ESCONDE.
+     Escondidas, las tarjetas de la comparación decían $1,490 y $2,300 mientras
+     sus frases del anticipo ya sumaban $500 de unas placas que nada en
+     pantalla nombraba: cifras infladas sin explicación a la vista. */
+  await pg.locator('[data-sv-cambiar]').click();
+  await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2, 'vuelven los dos');
+  ok(await pg.locator('[data-sv-placas]').isVisible(),
+     'con placas elegidas, el bloque sigue a la vista en la comparación: las cifras se explican');
+  ok(/2 placas/.test(await pg.locator('[data-sv-placa-vis]').textContent()),
+     'diciendo cuántas son');
+  await tocaPlan(pg, 'gp-e');
+  await hasta(() => pg.locator('[data-sv-placa-vis]').textContent().then(t => /2 placas/.test(t)),
+              'las dos placas siguen elegidas en el otro paquete');
+  ok(await pg.$eval('input[data-id="gp-e"]', i => i.value) === 'gp-e2',
+     'y sus ids también se recomponen: gp-e2');
+  ok(/un solo pago y listo/i.test(await pg.$eval('input[data-id="gp-e"]',
+       i => i.closest('.ped-op').querySelector('small').textContent)),
+     'y gp-e2 ($1,990) queda bajo el umbral: su pie sigue diciendo un solo pago');
+
+  /* Y quitarlas deja todo EXACTAMENTE como era: ids limpios, sin rastro. */
+  await pg.waitForTimeout(420);
+  const menos = pg.locator('[data-sv-placa="-1"]');
+  await menos.click(); await menos.click();
+  await hasta(() => pg.$eval('input[data-id="gp-e"]', i => i.value === 'gp-e'),
+              'en cero, los ids vuelven a ser los de siempre');
+  ok(!(await pg.locator('[data-sv-ahorro]').isVisible()),
+     'y la línea del ahorro se va: sin placas no hay nada que anunciar');
+
+  /* EL POST DEL COMBO Y LO QUE QUEDA GUARDADO PARA LA VUELTA. Se arma otra
+     vez de cero —dos placas, anticipo de «Todo hecho»— y se paga. El POST se
+     lee del interceptor; el sessionStorage, DESPUÉS de volver al origen: la
+     pestaña se quedó en la página interceptada del cobro, que es otro origen
+     con otro almacén — leído ahí, `syc_pedido` sale null aunque esté escrito. */
+  await pg.locator('[data-sv-cambiar]').click();
+  await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2, 'los dos otra vez');
+  await tocaPlan(pg, 'gp-t');
+  await pg.waitForTimeout(420);
+  await mas.click(); await mas.click();
+  await hasta(() => pg.$eval('input[data-id="gp-ta"]', i => i.value === 'gp-ta2'),
+              'dos placas puestas de nuevo');
+  await pg.locator('.ped-op:has(input[data-id="gp-ta"])').click();
+  for (const [k, v] of Object.entries({
+    negocio: 'Kabuki', negocio_ciudad: 'San Luis Potosí', nombre: 'Gael',
+    tel: '4443697248', correo: 'gael@ejemplo.com',
+  })) await pg.fill('[name=' + k + ']', v);
+  enviado = null;
+  await pg.locator('#sv-form button[type=submit]').click();
+  await hasta(() => !!enviado, 'el combo llega al cobro');
+  const qc = new URLSearchParams(enviado || '');
+  ok(qc.get('paquete') === 'gp-ta2',
+     'viaja el id del combo, no el importe: el precio lo pone la fila gp-ta2 del Worker');
+
+  await pg.goto(BASE + '/servicio.html');
+  await lista(pg);
+  const gc = JSON.parse(await pg.evaluate(() => sessionStorage.getItem('syc_pedido')) || 'null');
+  ok(gc && gc._tot === 1650, 'lo guardado para la vuelta suma las placas: ' + (gc && gc._tot));
+  ok(gc && gc._resto === 1150,
+     'y el resto NO crece con ellas: se pagan hoy, no se deben (' + (gc && gc._resto) + ')');
+  ok(gc && gc._placas === 2 && /\+ 2 placas/.test(gc._t),
+     'y la página de gracias sabrá nombrarlas: ' + (gc && gc._t));
+
+  /* La página de gracias, con el combo REAL que acaba de guardarse: la fila de
+     las placas dice qué sigue con ellas —que es lo que el comprador quiere
+     saber al terminar de pagar— y el WhatsApp redactado las lleva. */
+  await pg.goto(BASE + '/gracias-servicio.html');
+  await graciasLista(pg);
+  const resumenCombo = await pg.locator('[data-gr-resumen]').innerText();
+  ok(/placas de reseñas/i.test(resumenCombo) && /2 — te escribimos/i.test(resumenCombo),
+     'la página de gracias dice qué sigue con las placas: acordar la entrega');
+  const waCombo = decodeURIComponent(await pg.locator('[data-gr-wa]').getAttribute('href'));
+  ok(/Placas: 2/.test(waCombo), 'y el WhatsApp redactado las lleva: «Placas: 2 — acordar entrega»');
+
+  /* Y de vuelta a la pantalla de compra, recién cargada, que es lo que las
+     comprobaciones siguientes esperan encontrar. */
+  await pg.goto(BASE + '/servicio.html');
+  await lista(pg);
+
+
   await tocaPlan(pg, 'gp-t');
   await hasta(() => pg.locator('.sv-plan[data-plan="gp-t"] .sv-pagos').isVisible(),
               'las formas de pago del paquete elegido aparecen');
@@ -875,6 +1044,25 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
      'cada una lleva su importe escrito, no calculado por un script');
   ok((await pg.locator('[data-sv-tot]').textContent()).trim() === '',
      'y la cifra grande queda vacía en vez de mentir');
+
+  /* ⚠ SIN SCRIPT, LAS PLACAS NO EXISTEN — y es la única opción honrada. El
+     contador vive de recomponer el id que viaja al cobro; sin script nadie lo
+     recompone, y un contador visible que no suma cobraría el paquete sin
+     placas a quien cree que las pidió. Escondido, se pierde el extra y nunca
+     la venta. Los ids, limpios: lo que se marca es lo que se cobra. */
+  ok(!(await pg.locator('[data-sv-placas]').isVisible()),
+     'sin JS el bloque de placas NO se ve: un contador que no suma cobraría de menos');
+  ok(await pg.$$eval('input[name="paquete"]', is =>
+       is.every(i => i.value === i.dataset.id)),
+     'y los cuatro ids van limpios, sin placas fantasma');
+  /* La portada promete el combo en marcado estático —se lee también sin
+     script—, así que aquí no puede haber un silencio: el <noscript> da el
+     canal que sí funciona, el WhatsApp. */
+  ok(await pg.locator('noscript + *, .sv-extra-p:visible').first().isVisible().catch(() => false) ||
+     /placas de reseñas con tu paquete/i.test(await pg.locator('main').innerText()),
+     'y el noscript ofrece las placas por WhatsApp: la promesa de la portada no muere en silencio');
+  ok(await pg.locator('a[href*="wa.me"][href*="placas"]').count() >= 1,
+     'con su enlace ya redactado');
 
   /* ⚠ LA FRASE TIENE QUE CAMBIAR SIN SCRIPT. Antes era un solo <p> que el
      script reescribía, así que sin JavaScript sólo existía una de las dos

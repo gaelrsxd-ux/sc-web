@@ -301,6 +301,48 @@ const TABLA = {
       "resto": 740
     },
     {
+      "id": "gp-e1",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial + 1 placa de reseñas",
+      "total": 1740,
+      "envio": 0,
+      "cuotas": 1,
+      "placas": 1
+    },
+    {
+      "id": "gp-ea1",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial · anticipo + 1 placa de reseñas",
+      "total": 1000,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 740,
+      "placas": 1
+    },
+    {
+      "id": "gp-e2",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial + 2 placas de reseñas",
+      "total": 1990,
+      "envio": 0,
+      "cuotas": 1,
+      "placas": 2
+    },
+    {
+      "id": "gp-ea2",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial · anticipo + 2 placas de reseñas",
+      "total": 1250,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 740,
+      "placas": 2
+    },
+    {
       "id": "gp-t",
       "tipo": "servicio",
       "piezas": 1,
@@ -320,6 +362,52 @@ const TABLA = {
       "cuotas": 1,
       "resto": 1150,
       "visita": true
+    },
+    {
+      "id": "gp-t1",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho + 1 placa de reseñas",
+      "total": 2550,
+      "envio": 0,
+      "cuotas": 2,
+      "visita": true,
+      "placas": 1
+    },
+    {
+      "id": "gp-ta1",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho · anticipo + 1 placa de reseñas",
+      "total": 1400,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 1150,
+      "visita": true,
+      "placas": 1
+    },
+    {
+      "id": "gp-t2",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho + 2 placas de reseñas",
+      "total": 2800,
+      "envio": 0,
+      "cuotas": 2,
+      "visita": true,
+      "placas": 2
+    },
+    {
+      "id": "gp-ta2",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho · anticipo + 2 placas de reseñas",
+      "total": 1650,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 1150,
+      "visita": true,
+      "placas": 2
     }
   ]
 };
@@ -570,7 +658,8 @@ function resumen(p, d) {
   /* UN SERVICIO NO SE PREPARA, SE TRABAJA, así que su resumen responde otras
      preguntas: ¿sobre qué ficha?, ¿la creamos nosotros o ya existe? —de eso
      depende si el anticipo era legítimo—, y ¿por dónde le escribo. No lleva
-     dirección de envío porque no hay nada que enviar, y no lleva «1 pza»
+     dirección de envío porque no viaja en el pedido —las placas de un combo se
+     entregan acordándolo por WhatsApp, dicen los términos— y no lleva «1 pza»
      porque no se cuenta por piezas.
      Sale por su propia rama y no por condicionales metidos en la de abajo: son
      dos resúmenes distintos, y mezclarlos era pedir que uno de los dos acabase
@@ -608,6 +697,15 @@ function resumen(p, d) {
        leyendo la ciudad en mitad de una línea. */
     if (p.visita && !CIUDADES_VISITA.test(d.negocio_ciudad || ''))
       l.push('SIN VISITA: fuera de SLP/Soledad, fotos del cliente');
+    /* LAS PLACAS DEL COMBO, EN SU PROPIA LÍNEA. Ya van en el concepto del
+       cobro (p.base), pero el concepto y este resumen son campos distintos del
+       aviso, y quien prepara el trabajo lee ÉSTE. Sin la línea, un combo de
+       Monterrey se preparaba sin caer en que hay dos placas que fabricar y
+       hacer llegar — y la dirección no viaja en el pedido a propósito: se
+       acuerda después por WhatsApp, como dicen los términos. */
+    if (Number(p.placas) > 0)
+      l.push('CON ' + p.placas + ' PLACA' + (Number(p.placas) > 1 ? 'S' : '') +
+             ' DE RESEÑAS: acordar entrega, o instalarlas en la visita');
     if (d.negocio) l.push(d.negocio + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
     /* Tres estados, no dos: «no lo dijo» no puede imprimirse como «la creamos
        nosotros», que es una instrucción de trabajo y no un dato. */

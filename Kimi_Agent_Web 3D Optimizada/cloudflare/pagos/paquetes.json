@@ -252,6 +252,48 @@
       "resto": 740
     },
     {
+      "id": "gp-e1",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial + 1 placa de reseñas",
+      "total": 1740,
+      "envio": 0,
+      "cuotas": 1,
+      "placas": 1
+    },
+    {
+      "id": "gp-ea1",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial · anticipo + 1 placa de reseñas",
+      "total": 1000,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 740,
+      "placas": 1
+    },
+    {
+      "id": "gp-e2",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial + 2 placas de reseñas",
+      "total": 1990,
+      "envio": 0,
+      "cuotas": 1,
+      "placas": 2
+    },
+    {
+      "id": "gp-ea2",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Lo esencial · anticipo + 2 placas de reseñas",
+      "total": 1250,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 740,
+      "placas": 2
+    },
+    {
       "id": "gp-t",
       "tipo": "servicio",
       "piezas": 1,
@@ -271,6 +313,52 @@
       "cuotas": 1,
       "resto": 1150,
       "visita": true
+    },
+    {
+      "id": "gp-t1",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho + 1 placa de reseñas",
+      "total": 2550,
+      "envio": 0,
+      "cuotas": 2,
+      "visita": true,
+      "placas": 1
+    },
+    {
+      "id": "gp-ta1",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho · anticipo + 1 placa de reseñas",
+      "total": 1400,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 1150,
+      "visita": true,
+      "placas": 1
+    },
+    {
+      "id": "gp-t2",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho + 2 placas de reseñas",
+      "total": 2800,
+      "envio": 0,
+      "cuotas": 2,
+      "visita": true,
+      "placas": 2
+    },
+    {
+      "id": "gp-ta2",
+      "tipo": "servicio",
+      "piezas": 1,
+      "base": "Perfil de Google · Todo hecho · anticipo + 2 placas de reseñas",
+      "total": 1650,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 1150,
+      "visita": true,
+      "placas": 2
     }
   ]
 }

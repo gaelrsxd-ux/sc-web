@@ -175,7 +175,14 @@ test('los servicios están en el catálogo, con su anticipo por debajo del conta
   assert.ok(serv.length >= 2, 'hay servicios en el catálogo');
   for (const s of serv) {
     assert.equal(s.envio, 0, s.id + ': un servicio no puede llevar envío');
-    assert.equal(s.cuotas, 1, s.id + ': los servicios van a un pago');
+    /* Antes aquí decía «los servicios van a un pago», y dejó de ser verdad el
+       día que los combos con placas cruzaron el umbral de las dos cuotas. La
+       regla de verdad son dos: un servicio sigue el MISMO umbral que las
+       placas sueltas, y un ANTICIPO no va a plazos nunca — un anticipo en
+       mensualidades es un absurdo que además liaría el resto. */
+    if (Number(s.resto) > 0) assert.equal(s.cuotas, 1, s.id + ': un anticipo nunca va a plazos');
+    else assert.equal(s.cuotas, s.total >= 2500 ? 2 : 1,
+      s.id + ': el servicio sigue el mismo umbral de cuotas que el resto del catálogo');
   }
   /* El anticipo tiene que ser MENOR que su contado. Al revés —o iguales— no es
      un anticipo: es cobrar de más por pagar a plazos. */
@@ -879,4 +886,66 @@ test('la tabla del Worker no está vacía ni trae importes absurdos', () => {
     assert.ok(p.base.length > 0);
     assert.ok(p.cuotas === 1 || p.cuotas === 2, 'cuotas sólo puede ser 1 o 2 en ' + p.id);
   }
+});
+
+/* ═══════════════════ LAS PLACAS DENTRO DEL PAQUETE ════════════════════════
+   Cada combinación paquete × forma de pago × placas es una FILA propia del
+   catálogo (gp-t2, gp-ta1…), no un recargo que calcule nadie: el importe nunca
+   puede salir de una suma hecha en dos sitios, y menos del navegador. Estas
+   pruebas fijan la aritmética de esas filas contra sus filas base — la regla,
+   no la lista, para que aguanten el día que cambie el precio de la placa. */
+
+test('cada fila con placas vale su fila base más las placas, y no debe ni un peso más', () => {
+  const combos = TABLA.paquetes.filter(p => p.placas > 0);
+  assert.ok(combos.length >= 4, 'el catálogo trae los combos de placas');
+  for (const p of combos) {
+    const idBase = p.id.slice(0, -String(p.placas).length);
+    const base = TABLA.paquetes.find(x => x.id === idBase);
+    assert.ok(base, `el combo ${p.id} tiene su fila base ${idBase}`);
+    const porPlaca = (p.total - base.total) / p.placas;
+    assert.ok(Number.isInteger(porPlaca) && porPlaca > 0,
+      `las placas de ${p.id} cuestan un entero positivo (${porPlaca})`);
+    /* ⚠ EL RESTO NO CRECE CON LAS PLACAS: se pagan hoy, no se deben. Un combo
+       de anticipo que sumara las placas al resto se las cobraría DOS veces. */
+    assert.equal(p.resto, base.resto,
+      `el resto de ${p.id} es el de su base: las placas no se deben, se pagaron`);
+    assert.ok(/placa/i.test(p.base), `el concepto de ${p.id} nombra las placas`);
+  }
+});
+
+test('un combo con placas se cobra por su fila, de punta a punta', async () => {
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  const combo = TABLA.paquetes.find(p => p.placas === 2 && !p.resto);
+  /* El navegador intenta mentir con un total propio; manda ignorarse. */
+  await worker.fetch(post({ paquete: combo.id, total: '1', ficha_tiene: 'no' }), ENV);
+  assert.equal(llamadas.length, 1);
+  assert.equal(llamadas[0].cuerpo.items[0].unit_price, combo.total,
+    'cobra el total del combo desde la tabla: ' + combo.total);
+});
+
+test('el anticipo con placas sigue vetado si la ficha ya existe', async () => {
+  montaCaches();
+  montaFetch(okMP);
+  const combo = TABLA.paquetes.find(p => p.placas > 0 && Number(p.resto) > 0);
+  const corte = await worker.fetch(
+    post({ paquete: combo.id, ficha_tiene: 'si', negocio: 'El Molino Ruso' }), ENV);
+  assert.equal(corte.status, 409,
+    'las placas no le abren la puerta trasera a un anticipo que no aplica');
+});
+
+test('el resumen del vendedor nombra las placas del combo, no sólo el concepto', async () => {
+  /* El concepto del cobro (p.base) ya las dice, pero concepto y resumen son
+     campos DISTINTOS del aviso, y quien prepara el trabajo lee el resumen: sin
+     esta línea, un combo de Monterrey se preparaba sin caer en que hay dos
+     placas que fabricar y hacer llegar. */
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  const combo = TABLA.paquetes.find(p => p.placas === 2 && !p.resto);
+  await worker.fetch(post({ paquete: combo.id, ficha_tiene: 'no',
+    negocio: 'Kabuki', negocio_ciudad: 'Monterrey' }), ENV);
+  assert.match(llamadas[0].cuerpo.additional_info, /CON 2 PLACAS DE RESEÑAS/,
+    'el aviso de la venta dice las placas en su propia línea');
+  assert.match(llamadas[0].cuerpo.additional_info, /acordar entrega|instalarlas/,
+    'y recuerda que la entrega se acuerda: la dirección no viaja en el pedido');
 });
