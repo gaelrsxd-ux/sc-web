@@ -45,7 +45,7 @@ app/
     ├── hero-bg.webp        (hero: skyline nocturno 4K)
     ├── bg-servicios.webp · bg-proyectos.webp · bg-contacto.webp
     ├── producto-resenas-*.webp   (la placa: frontal, perfil y trasera)
-    └── hero-og.jpg         (solo para Open Graph / redes sociales)
+    └── og-placa.jpg        (solo para Open Graph / redes sociales)
 ```
 
 Fuera de `app/` viven las cosas que no se publican:
@@ -144,7 +144,7 @@ puede enseñar un precio y el cobro salir por otro.
 ## 7. SEO (ya incluido)
 
 - Title, meta description, keywords, canonical, robots
-- Open Graph + Twitter Cards (con hero-og.jpg)
+- Open Graph + Twitter Cards (con og-placa.jpg)
 - JSON-LD Schema.org `Organization` con los 3 servicios en `makesOffer`
 - HTML semántico, un solo h1, alt/aria en imágenes
 
