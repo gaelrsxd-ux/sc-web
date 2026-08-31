@@ -39,7 +39,7 @@ web-sc-solutions.zip
     ├── bg-servicios.webp   (fondo servicios: circuito macro 4K)
     ├── bg-proyectos.webp   (fondo proyectos: planos/drafting 4K)
     ├── bg-contacto.webp    (fondo contacto: escritorio cálido 4K)
-    └── hero-og.jpg         (solo para Open Graph / redes sociales)
+    └── og-placa.jpg        (solo para Open Graph / redes sociales)
 ```
 
 **Para verla:** descomprime y abre `index.html` en el navegador. No requiere
@@ -116,7 +116,7 @@ servidor, build, ni dependencias. El JS es 100% vanilla (sin librerías).
 ## 7. SEO (ya incluido)
 
 - Title, meta description, keywords, canonical, robots
-- Open Graph + Twitter Cards (con hero-og.jpg)
+- Open Graph + Twitter Cards (con og-placa.jpg)
 - JSON-LD Schema.org `Organization` con los 3 servicios en `makesOffer`
 - HTML semántico, un solo h1, alt/aria en imágenes
 
