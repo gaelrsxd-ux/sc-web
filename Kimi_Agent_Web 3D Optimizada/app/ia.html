@@ -134,7 +134,7 @@
     <p class="sr" role="status" data-sv-aviso></p>
     <fieldset class="ped-f" data-sv-datos role="group" aria-label="Los datos de tu negocio">
       <legend>Tu negocio</legend>
-      <p class="ped-ayuda">Con esto lo entrenamos; la informaci&#243;n con la que contesta te la pedimos por WhatsApp.</p>
+      <p class="ped-ayuda">Con esto lo entrenamos; la informaci&#243;n con la que contesta y el n&#250;mero en el que va a contestar te los pedimos por WhatsApp.</p>
 
       <label class="ped-campo"><span>Nombre del negocio</span>
         <input type="text" name="negocio" maxlength="70" required
@@ -142,9 +142,9 @@
       <label class="ped-campo"><span>A qu&#233; se dedica</span>
         <input type="text" name="giro" maxlength="60" required
                placeholder="Taquer&#237;a, consultorio dental, ferreter&#237;a&#8230;"></label>
-      <label class="ped-campo"><span>El WhatsApp que va a contestar <span class="opc">(si es distinto del tuyo)</span></span>
-        <input type="tel" name="wa_negocio" maxlength="15" inputmode="tel"
-               pattern="[0-9\s\(\)\+\-]{10,20}" placeholder="444 123 4567"></label>
+      <!-- El WhatsApp en el que va a contestar NO se pide aquí: casi siempre es
+           el mismo con el que se contrata, y pedido dos veces en la misma
+           pantalla parecía un error. Se pregunta por WhatsApp con el resto. -->
 
       <p class="ped-paso">C&#243;mo te avisamos</p>
       <label class="ped-campo"><span>Tu nombre</span>

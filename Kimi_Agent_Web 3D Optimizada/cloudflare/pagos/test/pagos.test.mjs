@@ -1007,12 +1007,12 @@ test('web, IA y automatización vuelven a gracias-paquete.html; Google sigue en 
   assert.equal(llamadas[0].cuerpo.back_urls.success, ORIGEN + '/gracias-servicio.html');
 });
 
-test('el resumen de cada familia lleva lo suyo: giro y dominio, WhatsApp del negocio, tarea', async () => {
+test('el resumen de cada familia lleva lo suyo: giro y dominio, giro, tarea y herramientas', async () => {
   const casos = {
     web:  { campos: { negocio: 'Kabuki', giro: 'Sushi', dominio: 'kabuki.mx', nombre: 'Gael', tel: '444 123 4567' },
             espera: ['Kabuki', 'Giro: Sushi', 'Dominio/página: kabuki.mx', 'Contacto: Gael', 'Tel 4441234567'] },
-    ia:   { campos: { negocio: 'Kabuki', giro: 'Sushi', wa_negocio: '(444) 987-6543' },
-            espera: ['Giro: Sushi', 'WA del negocio: 4449876543'] },
+    ia:   { campos: { negocio: 'Kabuki', giro: 'Sushi' },
+            espera: ['Kabuki', 'Giro: Sushi'] },
     auto: { campos: { negocio: 'Kabuki', tarea: 'Pasar pedidos a un Excel', herramientas: 'WhatsApp, Excel' },
             espera: ['Usa: WhatsApp, Excel', 'Tarea: Pasar pedidos a un Excel'] },
   };
@@ -1041,13 +1041,12 @@ test('la tarea va al FINAL del resumen: si algún día algo se recorta, no es el
 });
 
 test('con TODOS los campos de cada familia al máximo, el resumen entra entero en 600', async () => {
-  const propios = { web: ['giro', 'dominio'], ia: ['giro', 'wa_negocio'], auto: ['tarea', 'herramientas'] };
+  const propios = { web: ['giro', 'dominio'], ia: ['giro'], auto: ['tarea', 'herramientas'] };
   for (const [f, extra] of Object.entries(propios)) {
     const a = porFamilia(f).find(x => Number(x.resto) > 0);
     const campos = {};
     for (const k of ['negocio', 'nombre', ...extra]) campos[k] = 'x'.repeat(CAMPOS[k]);
     campos.tel = '9'.repeat(CAMPOS.tel);
-    if (extra.includes('wa_negocio')) campos.wa_negocio = '8'.repeat(CAMPOS.wa_negocio);
     montaCaches();
     const llamadas = montaFetch(okMP);
     await worker.fetch(post({ paquete: a.id, ...campos }), ENV);
