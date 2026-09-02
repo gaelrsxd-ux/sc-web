@@ -655,25 +655,13 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .scroll-cue i{display:block;width:1px;height:42px;background:linear-gradient(180deg,var(--bronze),transparent);animation:drop 2.1s ease-in-out infinite}
 @keyframes drop{0%{transform:scaleY(0);transform-origin:top}55%{transform:scaleY(1);transform-origin:top}56%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* ---------- BAIT: mejor proyecto ---------- */
-/* El padding-top era 0 mientras el manifiesto iba justo encima y cerraba con
-   el suyo. Retirados aquél y la sección que le seguía, sin esta línea el
-   señuelo quedaría pegado al final de Proyectos, que ahora es lo que tiene
-   justo encima. Vuelve al valor de cualquier otra sección, y con más motivo
-   desde que la sección es sólo el botón: sin texto que lo anuncie, el aire de
-   alrededor es lo único que lo separa de lo anterior. */
-.bait{position:relative;overflow:hidden;text-align:center;padding-bottom:clamp(30px,3.6vw,54px)}
-.bait .wrap{position:relative;z-index:1}
-/* Aquí vivían .bait .q y su ajuste de interlínea, para los dos renglones que
-   precedían al botón. Retirados con ellos: la sección es ya sólo la llamada. */
-.bait-btn{position:relative;display:inline-flex}
-.bait-btn .btn{padding:20px 46px;font-size:12px;gap:14px}
-.bait-btn .arr{display:inline-block;animation:bob 1.6s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(5px)}}
-/* anillos pulsantes: puro transform/opacity, GPU */
-.bait-btn::before,.bait-btn::after{content:"";position:absolute;inset:0;border:1px solid var(--bronze);pointer-events:none;animation:ringp 2.2s cubic-bezier(.2,.6,.3,1) infinite}
-.bait-btn::after{animation-delay:1.1s}
-@keyframes ringp{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.28);opacity:0}}
+/* Aquí vivía el SEÑUELO: un botón «Nuestro mejor proyecto» con anillos
+   pulsantes, entre los casos y la banda viva. Se va con ellos —el superlativo
+   pedía haber visto varios proyectos— y porque su enlace llevaba a #contacto,
+   igual que el «Quiero automatizarlo» de la calculadora, que ahora es lo que
+   tiene justo encima: dos llamadas idénticas seguidas se anulan entre sí.
+   Con él se van .bait, .bait-btn y las animaciones bob y ringp; ringp-s, la de
+   los botones de servicio, es otra y se queda. */
 
 /* ---------- SERVICIOS ---------- */
 /* Las secciones ya no llevan su propia foto: solo el velo que hace legible el
@@ -820,104 +808,13 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .viva p b{color:var(--bronze-hi);font-weight:500}
 @media(max-width:560px){.viva{padding:16px 20px}.viva p{letter-spacing:2.4px;font-size:9.5px}}
 
-/* ---------- RESEÑAS · CASOS ----------
-   La sección heredó el nombre de las reseñas que había debajo y también su
-   lenguaje: cabecera centrada, rombo que respira al fondo y fichas sin panel
-   propio, con dos escuadras opuestas en lugar de un recuadro cerrado. El panel
-   opaco de antes tapaba la foto del descenso justo en el tramo donde la escena
-   cambia; sin él, el fondo se ve a través de los cuatro casos. */
-#proyectos{overflow:hidden}
-/* El rombo enorme y lentísimo era el motivo de las reseñas y se queda con la
-   sección que las sustituye: es lo que hace que el bloque respire sin pintar
-   una sola caja más. */
-#proyectos::after{content:"";position:absolute;right:-7vw;top:50%;
-  width:clamp(300px,34vw,540px);height:clamp(300px,34vw,540px);
-  border:1px solid rgba(200,169,106,.085);pointer-events:none;z-index:0;
-  will-change:transform;animation:rombRespira 34s ease-in-out infinite alternate}
-@keyframes rombRespira{
-  from{transform:translateY(-50%) rotate(45deg) scale(.97)}
-  to{transform:translateY(-50%) rotate(51deg) scale(1.03)}
-}
-#proyectos .wrap{position:relative;z-index:1}
-/* Cabecera centrada. Va en su propia caja y no en el .wrap entero, porque
-   centrar el contenedor arrastraría también el texto de las cuatro fichas. */
-.sec-cab{text-align:center}
-.sec-cab .sec-tag{justify-content:center}
-/* El ancla heredada de la sección retirada: no ocupa nada y sólo existe para
-   que un enlace a #resenas siga aterrizando aquí. */
-.ancla{display:block;height:0;overflow:hidden}
-
-.works{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(18px,2.4vw,30px);margin-top:clamp(32px,3.6vw,50px)}
-/* En móvil pasa a baraja deslizable. Encaja especialmente bien aquí: cada caso
-   tiene su resultado tapado, así que deslizar y destapar se vuelve un gesto
-   encadenado en vez de cuatro bloques que hay que atravesar. */
-/* Sin borde y casi sin fondo: el velo del descenso ya oscurece la foto lo
-   suficiente, así que basta una veladura mínima para sostener el texto de 15 px
-   sin llegar a tapar la escena. Al pasar por encima se cierra un poco más, que
-   es lo que sustituye al antiguo cambio de color del borde. */
-.work{border:none;position:relative;overflow:hidden;
-  padding:clamp(30px,3.4vw,48px) clamp(28px,3.2vw,46px);
-  background:linear-gradient(165deg,rgba(var(--panel-rgb),.34),rgba(var(--bg-rgb),.12));
-  transition:transform .5s cubic-bezier(.2,.7,.2,1),background .5s ease}
-.work:hover{transform:translateY(-7px);
-  background:linear-gradient(165deg,rgba(var(--panel-rgb),.52),rgba(var(--bg-rgb),.24))}
-/* Escuadras de acta: el mismo trazo que enmarcaba las reseñas. Un recuadro
-   completo encajona y además vuelve a dibujar una caja sobre la foto; la
-   escuadra sugiere el documento y deja pasar el fondo por los cuatro lados.
-   Crecen al pasar por encima: sin borde ni panel, es la única señal de relieve
-   que le queda a la ficha. */
-.work::before,.work::after{content:"";position:absolute;pointer-events:none;z-index:1;
-  width:clamp(22px,2.4vw,36px);height:clamp(22px,2.4vw,36px);
-  border:1px solid var(--bronze);opacity:.5;
-  transition:opacity .5s ease,width .55s cubic-bezier(.2,.7,.2,1),height .55s cubic-bezier(.2,.7,.2,1)}
-.work::before{top:0;left:0;border-right:none;border-bottom:none}
-.work::after{bottom:0;right:0;border-left:none;border-top:none}
-.work:hover::before,.work:hover::after{opacity:1;
-  width:clamp(30px,3.4vw,52px);height:clamp(30px,3.4vw,52px)}
-.work>*{position:relative;z-index:2}
-.work .ghost{position:absolute;top:6px;right:22px;font-family:var(--serif);font-style:italic;font-size:clamp(60px,7vw,96px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(200,169,106,.22)}
-.work .cat{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--bronze)}
-.work h3{font-size:clamp(26px,2.8vw,36px);margin:16px 0 4px}
-.work h3 em{font-style:italic;color:var(--bronze-hi);font-weight:500}
-.work p{color:var(--muted);font-size:15px;line-height:1.8;margin-top:14px;max-width:540px}
-/* El resultado llega tapado. Un caso que enseña la cifra de entrada se lee de
-   un vistazo y se olvida igual de rápido; obligando a destaparlo, el visitante
-   deja de mirar la página y empieza a usarla. La cifra sigue en el HTML —sólo
-   está desenfocada por CSS— así que Google la lee igual que antes. */
-/* La regla que separa el caso de su resultado deja de cruzar la ficha entera:
-   es el mismo filete corto que firmaba las reseñas. Una línea a todo lo ancho
-   volvía a dibujar el borde que se acaba de quitar. */
-.work .res{position:relative;margin-top:26px;padding-top:20px}
-.work .res::before{content:"";position:absolute;top:0;left:0;width:52px;height:1px;
-  background:var(--line);transition:width .55s cubic-bezier(.2,.7,.2,1)}
-.work:hover .res::before{width:88px}
-.work .res-dato{display:flex;align-items:baseline;gap:14px;
-  filter:blur(9px);opacity:.26;transform:translateY(6px);
-  transition:filter .8s cubic-bezier(.2,.7,.2,1),opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
-.work .res.abierto .res-dato{filter:none;opacity:1;transform:none}
-.work .res b{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(22px,2.2vw,30px);color:var(--bronze-hi)}
-.work .res span{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
-.work .res-tapa{position:absolute;left:0;right:0;top:20px;bottom:0;display:flex;align-items:center;gap:11px;
-  background:none;border:none;padding:0;font-family:var(--sans);font-size:9.5px;letter-spacing:3.4px;
-  text-transform:uppercase;font-weight:500;color:var(--bronze);cursor:pointer;text-align:left;
-  transition:opacity .5s ease,color .35s,letter-spacing .35s}
-.work .res-tapa .dia{width:7px;height:7px;transition:transform .55s cubic-bezier(.2,.7,.2,1)}
-/* El rótulo mide 26 px de alto y eso es media diana para un pulgar. El área
-   pulsable se estira diez píxeles por arriba y por abajo con un pseudo-elemento
-   en vez de con min-height: así llega a los 46 px cómodos sin desplazar el
-   texto respecto a la cifra que está tapando. */
-.work .res-tapa::after{content:"";position:absolute;left:0;right:0;top:-10px;bottom:-10px}
-/* En táctil no hay hover que invite, así que el rombo respira solo hasta que
-   se toca. En escritorio se queda quieto y reacciona al puntero. */
-@media(hover:none){.work .res-tapa .dia{animation:tapaLate 2.6s ease-in-out infinite}}
-@keyframes tapaLate{0%,100%{transform:rotate(45deg) scale(1);opacity:.7}50%{transform:rotate(45deg) scale(1.4);opacity:1}}
-.work:hover .res-tapa{color:var(--bronze-hi);letter-spacing:4.4px}
-.work:hover .res-tapa .dia{transform:rotate(225deg)}
-.work .res-tapa:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
-.work .res.abierto .res-tapa{opacity:0;pointer-events:none}
-
-/* La banda de firmantes y sus estilos se retiraron con los nombres de negocio
-   inventados que desfilaban en ella. */
+/* Aquí vivían los estilos de LO QUE CONSTRUIMOS: #proyectos con su rombo que
+   respiraba al fondo, la cabecera centrada, el ancla heredada de las reseñas y
+   las cuatro fichas .work con sus escuadras y su resultado tapado. Se van con
+   la sección: describía cuatro TIPOS de proyecto que no eran encargos reales,
+   y la página ya enseña trabajo de verdad —las tres instalaciones con foto— en
+   la pestaña de clientes. Con ella se van .works, .work, .res, .res-tapa,
+   .sec-cab, .ancla y las animaciones rombRespira y tapaLate. */
 
 /* ---------- CONTACTO ---------- */
 .contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,6vw,84px);margin-top:clamp(32px,3.6vw,50px);align-items:start}
@@ -1141,12 +1038,12 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    transparente centrado: no se mueve ni un píxel del diseño.
    Sólo con puntero grueso. Con ratón, una zona sensible mayor de lo que se ve
    produce clics que el visitante no se explica.
-   Cada selector usa el pseudo-elemento que tenía libre: ::before en .res-tapa
-   y ::after en el resto, porque los contrarios ya llevan anillos y subrayados. */
+   Cada selector usa el pseudo-elemento que tenía libre: ::before en .c-enl y
+   ::after en el resto, porque los contrarios ya llevan anillos y subrayados. */
 @media(pointer:coarse){
-  .btn,.svc-btn,.res-tapa,
+  .btn,.svc-btn,
   .tema,#costo-cta,.c-enl,.form-nota a,.faq .faq-r a{position:relative}
-  .btn::after,.svc-btn::after,.res-tapa::before,
+  .btn::after,.svc-btn::after,
   .tema::after,#costo-cta::after,.c-enl::before,
   .form-nota a::after,.faq .faq-r a::after{
     content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
@@ -1519,10 +1416,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv,.w,.zoomsec{opacity:1!important;transform:none!important}
-  /* Sin movimiento el tapado no tiene gracia y sólo estorba: los resultados de
-     los casos se muestran puestos desde el principio. */
-  .work .res-dato{filter:none;opacity:1;transform:none}
-  .work .res-tapa{display:none}
 }
 
 /* ==================================================================
@@ -1576,11 +1469,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
      33 a 36 caracteres, que ya se lee de corrido. */
   .baraja>*{flex:0 0 84vw;scroll-snap-align:start;
     border:1px solid var(--line-soft);padding:clamp(21px,5.8vw,26px)}
-  /* Los casos no llevan contorno en ninguna medida: su marca son las dos
-     escuadras, y un recuadro alrededor las convertiría en adorno. El relleno
-     sube un poco para que las escuadras no rocen el texto. */
-  .baraja>.work{border:none;padding:clamp(26px,6.4vw,32px) clamp(21px,5.8vw,26px)}
-
   /* Las fichas nacen con la animación de entrada de la página, que las mantiene
      invisibles hasta asomar por el viewport. En una baraja horizontal las que
      esperan a la derecha nunca asoman, así que se quedarían en blanco: se
@@ -1602,13 +1490,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .svc.centro::after{transform:scaleX(1)}
   .svc.centro h3{color:var(--bronze-hi)}
   .svc.centro .go{color:var(--bronze);transform:translate(4px,-4px)}
-  /* La ficha centrada enciende sus escuadras: es el equivalente exacto del
-     hover de escritorio, ahora que no hay borde que cambiar de color. */
-  .work.centro{background:linear-gradient(165deg,rgba(var(--panel-rgb),.52),rgba(var(--bg-rgb),.24))}
-  .work.centro::before,.work.centro::after{opacity:1}
-
-  /* Índice de posición: numeral y subrayado que se llena, el mismo en las tres
-     barajas, para que la web siga sonando a una sola cosa. */
+  /* Índice de posición: numeral y subrayado que se llena. Lo comparten todas
+     las barajas —hoy la de servicios— para que la web siga sonando a una sola
+     cosa el día que vuelva a haber más de una. */
   .bar-idx{display:flex;gap:clamp(16px,5.5vw,30px);justify-content:center;
     margin-top:clamp(20px,5vw,28px)}
   .bar-b{position:relative;background:none;border:none;padding:0 0 9px;cursor:pointer;
@@ -1635,10 +1519,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   @page{margin:16mm 14mm}
   /* El lienzo de fondo, los rieles y todo lo que sólo sirve en pantalla */
   #descenso,#avance,.rail,nav,.oro-aviso,.pres-idx,
-  .bait-btn,.costo input[type=range],#visor,
+  .costo input[type=range],#visor,
   .aud-form,.aud-rival,.aud-cta,.svc-btn,
   .frame button,.ts-caja,.can-alt,
-  .res-tapa,.bar-idx,.met{display:none!important}
+  .bar-idx,.met{display:none!important}
   html,body{background:#fff!important;color:#14161A!important}
   body{overflow:visible!important}
   *,*::before,*::after{animation:none!important;transition:none!important;
@@ -1646,7 +1530,6 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   /* Todo lo que en pantalla se descubre al desplazar llega ya descubierto:
      en papel no hay scroll que lo dispare y saldría media hoja en blanco. */
   .rv,.w,.zoomsec,.met{opacity:1!important;transform:none!important;visibility:visible!important}
-  .work .res-dato{filter:none!important;opacity:1!important;transform:none!important}
   section{padding:10mm 0!important;break-inside:auto}
   .wrap{max-width:none!important;padding:0!important}
   h1,h2,h3,h4{color:#14161A!important;break-after:avoid}
@@ -1656,14 +1539,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   em,b,strong{color:#7A5C1E!important}
   .sec-tag,.sec-tag .n{color:#7A5C1E!important}
   /* Las fichas dejan de flotar sobre una foto y pasan a ser bloques con marco */
-  .svc,.work,.frame,.aud-out,.costo,.puente,.faq details{
+  .svc,.frame,.aud-out,.costo,.puente,.faq details{
     background:#fff!important;border:1px solid #C9C4B8!important;break-inside:avoid;
     padding:6mm!important}
-  .work::before,.work::after,.svc::after,.frame::before,.aud-out::before,
-  .costo::before,#proyectos::after{display:none!important}
-  .svc-grid,.works{gap:4mm!important;background:none!important;border:none!important}
+  .svc::after,.frame::before,.aud-out::before,
+  .costo::before{display:none!important}
+  .svc-grid{gap:4mm!important;background:none!important;border:none!important}
   .svc li{color:#7A5C1E!important;border-color:#C9C4B8!important}
-  .work .ghost{color:transparent!important;-webkit-text-stroke:1px #D8D3C6!important}
   /* Las respuestas plegadas se imprimen abiertas: en papel nadie puede pulsar */
   .faq details>*{display:block!important}
   .faq summary{list-style:none;color:#14161A!important}
@@ -2450,19 +2332,9 @@ html.js .pc-alt{display:none}
     content:"\25C6";margin:0 8px;font-size:5.5px;color:var(--line);
     vertical-align:middle;letter-spacing:0}
 }
-/* ============ TRES ARREGLOS DE MOVIL, MEDIDOS EN UN 390 ============ */
+/* ============ EL DIAGNOSTICO EN MOVIL, MEDIDO EN UN 390 ============ */
 @media(max-width:560px){
-  /* 1 · EL RESULTADO DE CADA CASO, APILADO. En una columna de 250 px, el dato
-     y su rotulo peleaban por el mismo renglon: la frase en cursiva partida en
-     dos y el rotulo en mayusculas partido en otras dos, uno al lado del otro.
-     Apilados se leen de un vistazo, que es justo lo que se acaba de destapar. */
-  .work .res-dato{flex-direction:column;align-items:flex-start;gap:7px}
-  /* Y tapado se ve MENOS tapado: con desenfoque de 9 y opacidad .26 en una
-     pantalla pequena no se intuia nada debajo, y el hueco parecia un error de
-     maquetacion en vez de una promesa. */
-  .work .res-dato{filter:blur(6px);opacity:.4}
-
-  /* 2 · EL DIAGNOSTICO, EN DOS PISOS. En una sola fila el campo se quedaba en
+  /* EN DOS PISOS. En una sola fila el campo se quedaba en
      nada y «Analizar» era un rotulo suelto de 9 px sin caja: la accion mas
      importante de la seccion parecia texto de relleno. Ahora el campo ocupa el
      ancho entero y el boton es un boton, con el rombo de la casa y 48 px de
@@ -2514,7 +2386,6 @@ html.js .pc-alt{display:none}
        La regla, para que no vuelva a pasar: el ancla de una escena tiene que
        ser algo que SIEMPRE este en el documento y siempre tenga altura. -->
   <div class="esc" data-src="assets/bg-servicios.webp" data-ancla="#soluciones"></div>
-  <div class="esc" data-src="assets/bg-proyectos.webp" data-ancla="#proyectos"></div>
   <div class="esc" data-src="assets/bg-contacto.webp"  data-ancla="#contacto"></div>
   <!-- Velo ÚNICO de toda la página. Antes cada sección pintaba el suyo, y por
        muy encadenados que estuviesen los valores siempre quedaba el borde
@@ -2561,11 +2432,10 @@ html.js .pc-alt{display:none}
       <a href="#svc-tareas">Ahorrar trabajo</a>
     </div>
 
-    <a class="men-l" href="#proyectos"><span class="men-n">04</span>Nuestros trabajos
       <small>Lo que hemos construido</small></a>
-    <a class="men-l" href="#diagnostico"><span class="men-n">05</span>Revisa tu p&#225;gina
+    <a class="men-l" href="#diagnostico"><span class="men-n">04</span>Revisa tu p&#225;gina
       <small>Te decimos gratis qu&#233; le falta</small></a>
-    <a class="men-l" href="#contacto"><span class="men-n">06</span>Habla con nosotros
+    <a class="men-l" href="#contacto"><span class="men-n">05</span>Habla con nosotros
       <small>WhatsApp, correo y formulario</small></a>
   </nav>
 </div>
@@ -2582,9 +2452,8 @@ html.js .pc-alt{display:none}
 <nav class="rail l" id="riel" aria-label="Índice del recorrido">
   <div class="idxr">
     <a href="#soluciones"  data-sec="soluciones">01<b>Soluciones</b></a>
-    <a href="#proyectos"   data-sec="proyectos">02<b>Trabajos</b></a>
-    <a href="#diagnostico" data-sec="diagnostico">03<b>Tu página</b></a>
-    <a href="#contacto"    data-sec="contacto">04<b>Contacto</b></a>
+    <a href="#diagnostico" data-sec="diagnostico">02<b>Tu página</b></a>
+    <a href="#contacto"    data-sec="contacto">03<b>Contacto</b></a>
     <span class="sello" aria-hidden="true"></span>
   </div>
 </nav>
@@ -2620,7 +2489,6 @@ html.js .pc-alt{display:none}
     <li><a href="#productos">La placa</a></li>
     <li><a href="#servicios">Servicios</a></li>
     <li><a href="#clientes">Clientes</a></li>
-    <li><a href="#proyectos">Trabajos</a></li>
     <li><a href="#diagnostico">Revisa tu página</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
@@ -2969,114 +2837,37 @@ html.js .pc-alt{display:none}
   </div>
 </section>
 
-<!-- Aquí iba la banda de cifras. Retirada por decisión de Santiago: ninguna de
-     las cuatro se podía acreditar. Se va la sección entera y no queda hueco: la
-     banda viva del diagnóstico y los proyectos quedan seguidos, que era como
-     estaba antes de que existieran las cifras. -->
+<!-- ══════════ LO QUE HUBO AQUÍ, Y POR QUÉ YA NO ESTÁ ══════════
+     Entre la calculadora y la banda viva vivieron cinco bloques. Se retiraron
+     en momentos distintos y por el mismo motivo de fondo: ninguno ayudaba a
+     decidir, y todos metían scroll entre el argumento y la acción. Se anotan
+     juntos —y no cada uno donde estuvo— porque cinco lápidas seguidas son, en
+     sí mismas, el desorden que se estaba quitando.
 
-<!-- ============ LO QUE CONSTRUIMOS ============
-     Esta sección se ha llamado "Reseñas" y "Casos" y presentaba cuatro
-     negocios con nombre propio y una cifra de resultado cada uno. Ninguno era
-     un cliente y ninguna cifra se podía acreditar: eran ejemplos de catálogo
-     escritos como si fueran historias reales.
-     El reencuadre lo autorizó Santiago. Las tarjetas se quedan —el diseño, la
-     baraja y el mecanismo de destapar son buenos—, pero dicen otra cosa: cada
-     una describe un TIPO DE PROYECTO y las capacidades que lleva dentro. Sin
-     nombres de empresa, sin porcentajes y sin resultados atribuidos a nadie.
-     Lo que se enseña al destapar ya no es un logro: es qué incluye.
-     Los anclas #resenas y #proyectos se conservan para que los enlaces ya
-     publicados sigan aterrizando aquí en vez de morir en el aire. -->
-<span id="resenas" class="ancla" aria-hidden="true"></span>
-<section id="proyectos">
-  <div class="wrap">
-    <div class="sec-cab">
-      <span class="sec-tag"><span class="n">02 —</span> Trabajos</span>
-      <h2 class="title" data-split>Lo que <em>construimos</em></h2>
-    </div>
-    <div class="works baraja" data-baraja="caso">
-      <article class="work rv"><span class="ghost">01</span>
-        <span class="cat">E-commerce</span>
-        <h3>Tienda <em>en línea</em></h3>
-        <p>Catálogo, checkout en un clic y recuperación automática de carritos abandonados por WhatsApp.</p>
-        <div class="res">
-          <div class="res-dato" id="res-1"><b>Checkout en un clic</b><span>Carritos recuperados solos</span></div>
-          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-1">
-            <span class="dia" aria-hidden="true"></span>Ver qué incluye</button>
-        </div>
-      </article>
-      <article class="work rv"><span class="ghost">02</span>
-        <span class="cat">Automatización IA</span>
-        <h3>Operación <em>logística</em></h3>
-        <p>Cotizaciones, rastreo de envíos y facturación encadenados: lo que ocupa a un equipo entero pasa a ocurrir solo.</p>
-        <div class="res">
-          <div class="res-dato" id="res-2"><b>Cotiza, rastrea, factura</b><span>Sin intervención manual</span></div>
-          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-2">
-            <span class="dia" aria-hidden="true"></span>Ver qué incluye</button>
-        </div>
-      </article>
-      <article class="work rv"><span class="ghost">03</span>
-        <span class="cat">Aplicación privada</span>
-        <h3>Clínica <em>veterinaria</em></h3>
-        <p>Agenda, historial de pacientes, recordatorios automáticos de cita y métricas separadas por sucursal.</p>
-        <div class="res">
-          <div class="res-dato" id="res-3"><b>Agenda y recordatorios</b><span>Varias sedes, un panel</span></div>
-          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-3">
-            <span class="dia" aria-hidden="true"></span>Ver qué incluye</button>
-        </div>
-      </article>
-      <article class="work rv"><span class="ghost">04</span>
-        <span class="cat">Web + SEO</span>
-        <h3>Despacho <em>legal</em></h3>
-        <p>Web editorial con blog, datos estructurados y las señales que mira la búsqueda local de una ciudad.</p>
-        <div class="res">
-          <div class="res-dato" id="res-4"><b>Blog y datos estructurados</b><span>Listo para búsqueda local</span></div>
-          <button class="res-tapa" type="button" aria-expanded="false" aria-controls="res-4">
-            <span class="dia" aria-hidden="true"></span>Ver qué incluye</button>
-        </div>
-      </article>
-    </div>
+     · LA BANDA DE CIFRAS (40+ proyectos, 98% satisfechos…). Ninguna se podía
+       acreditar.
+     · LO QUE CONSTRUIMOS (02): cuatro fichas —tienda en línea, operación
+       logística, clínica veterinaria y despacho legal— que describían TIPOS de
+       proyecto, con su resultado tapado y destapable. No eran encargos reales,
+       y la página ya enseña trabajo que sí lo es: las tres instalaciones con
+       foto de la pestaña «Clientes», con negocio, plaza y permiso. Se llevó
+       .works, .work, .res-tapa, .sec-cab, .ancla, las animaciones rombRespira
+       y tapaLate, la escena de fondo bg-proyectos y los anclas #resenas y
+       #proyectos —un enlace viejo a cualquiera de ellos aterriza arriba, que
+       en una página de una sola página es donde está todo—.
+     · SOBRE NOSOTROS (04): los dos cofundadores y cuatro certificados. Contaba
+       quiénes somos antes de que nadie lo preguntara. Se llevó .member, .team,
+       .creds, .cred, los dos nodos Person del JSON-LD y su tramo del riel.
+     · EL MANIFIESTO: una cita a pantalla completa que no añadía nada al hero.
+     · EL SEÑUELO: el botón «Nuestro mejor proyecto». El superlativo pedía haber
+       visto varios proyectos, y su enlace iba a #contacto igual que el «Quiero
+       automatizarlo» de la calculadora, que ahora tiene justo encima: dos
+       llamadas idénticas seguidas se anulan entre sí. Se llevó .bait, .bait-btn
+       y las animaciones bob y ringp (ringp-s, la de los botones de servicio, es
+       otra y se queda).
 
-  </div>
-
-  <!-- Aquí corría una banda de "firmantes" con los cuatro nombres de negocio de
-       las tarjetas. No eran clientes: eran nombres inventados desfilando como
-       cartera. Una banda de logotipos o de firmas sólo significa una cosa, y no
-       hay forma de reencuadrarla para que signifique otra, así que se retira
-       entera en vez de maquillarla. Vuelve el día que haya clientes reales que
-       hayan dado su permiso. -->
-</section>
-
-<!-- Aquí vivía SOBRE NOSOTROS (04): «¿Quién construye tu proyecto?», con las
-     dos fichas de los cofundadores y la antesala de cuatro certificados.
-     Se retira entera. La página contaba quiénes somos antes de que nadie lo
-     preguntara, y entre los casos y el diagnóstico metía dos pantallas de
-     scroll que no ayudaban a decidir. Quien quiera saber con quién trata lo
-     pregunta por WhatsApp, que está a un toque desde cualquier punto.
-     Con ella se van: las fichas .member, la baraja .team, el bloque .creds y
-     los cuatro sellos .cred con su visor, los dos nodos Person del JSON-LD con
-     sus credenciales, el tramo del riel y las cuatro imágenes de certificados.
-     Los tramos siguientes suben un número: Diagnóstico 05 -> 04 y Contacto
-     06 -> 05. -->
-
-<!-- Aquí vivía el MANIFIESTO: una cita a pantalla completa ("Mientras tú lees
-     esto, alguien está cerrando tus clientes") con su firma. Se retira porque
-     no aportaba información que no estuviera ya en el hero, y entre los casos y
-     el señuelo metía una pantalla entera de scroll sin dato nuevo.
-     El señuelo no lo echa de menos: su "…pero si tuviéramos que elegir uno"
-     depende de haber visto varios proyectos, y Proyectos sigue estando arriba. -->
-
-<!-- ============ BAIT: MEJOR PROYECTO ============ -->
-<section class="bait">
-  <div class="wrap">
-    <!-- Aquí iban dos renglones ("Todos nuestros trabajos salen con el mismo
-         nivel… …pero si tuviéramos que elegir uno, sería este."). Se retiran:
-         el botón dice ya lo mismo con tres palabras, y la frase presumía del
-         estándar justo debajo de los cuatro casos que acaban de demostrarlo. -->
-    <span class="bait-btn rv">
-      <a href="#contacto" class="btn solid"><span class="dia"></span>Nuestro mejor proyecto<span class="dia"></span></a>
-    </span>
-  </div>
-</section>
+     La numeración quedó en tres tramos: Soluciones 01, Tu página 02 y Contacto
+     03, y así se escriben en la sección, en el riel y en el menú. -->
 
 <section style="padding-top:0;padding-bottom:0">
   <!-- Banda viva: rota datos comprobables de este mismo sitio. Si el visitante
@@ -3097,7 +2888,7 @@ html.js .pc-alt{display:none}
      leer otro dominio (CORS); el endpoint se configura en AUDITOR abajo. -->
 <section id="diagnostico">
   <div class="wrap">
-    <span class="sec-tag rv"><span class="n">03 —</span> Tu página</span>
+    <span class="sec-tag rv"><span class="n">02 —</span> Tu página</span>
     <h2 class="title" data-split>Te decimos qué le falta a <em>tu página</em></h2>
     <div class="aud-grid">
       <div class="rv">
@@ -3129,7 +2920,7 @@ html.js .pc-alt{display:none}
 <!-- ============ CONTACTO ============ -->
 <section id="contacto">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">04 —</span> Contacto</span>
+    <span class="sec-tag"><span class="n">03 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
       <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
@@ -3375,7 +3166,6 @@ html.js .pc-alt{display:none}
     <a href="#productos">La placa</a>
     <a href="#servicios">Servicios</a>
     <a href="#clientes">Clientes</a>
-    <a href="#proyectos">Trabajos</a>
     <a href="#diagnostico">Revisa tu página</a>
     <a href="#contacto">Contacto</a>
   </div>
@@ -3407,10 +3197,13 @@ html.js .pc-alt{display:none}
    la pestaña: su única consecuencia es el sello del riel, que hasta ahora se
    regalaba por el mero hecho de llegar abajo desplazando.
    Va lo primero del script porque lo consultan módulos que se declaran mucho
-   más abajo, y quien avisa —los casos, las credenciales, el diagnóstico— es
-   siempre distinto de quien escucha. */
+   más abajo, y quien avisa —la calculadora, el diagnóstico— es siempre
+   distinto de quien escucha.
+   ⚠ SI SE RETIRA UNA HERRAMIENTA, HAY QUE MIRAR AQUÍ. El sello del riel pide
+   dos marcas de las que haya en esta lista; con una sola, nunca se alcanza y
+   se queda en contorno para siempre. Pasó al retirar los casos. */
 const EXP=(()=>{
-  const hecho={casos:false,diag:false};
+  const hecho={costo:false,diag:false};
   const oyentes=[];
   const cuenta=()=>Object.keys(hecho).filter(k=>hecho[k]).length;
   return {
@@ -4986,29 +4779,8 @@ function haceQue(ms){
   addEventListener('scroll',()=>{if(tarjeta)caja=tarjeta.getBoundingClientRect();},{passive:true});
 })();
 
-/* ---------- CASOS: DESTAPAR EL RESULTADO ----------
-   La cifra está en el HTML desde el principio —sólo desenfocada por CSS—, así
-   que Google la indexa igual y quien use lector de pantalla la oye sin tener
-   que pulsar nada: el botón anuncia con aria-expanded qué está haciendo. */
-(()=>{
-  const tapas=[...document.querySelectorAll('.work .res-tapa')];
-  if(!tapas.length)return;
-  let abiertos=0;
-  tapas.forEach(b=>{
-    b.addEventListener('click',()=>{
-      const res=b.closest('.res');
-      if(!res||res.classList.contains('abierto'))return;
-      res.classList.add('abierto');
-      b.setAttribute('aria-expanded','true');
-      abiertos++;
-      /* Destapar las cuatro era el gesto completo y sigue sonando, pero ya no
-         aparece nada debajo: el bloque que salia ahi repetia la llamada del
-         final de la pagina y hacia crecer la seccion justo cuando el visitante
-         acababa de terminarla. */
-      if(abiertos===tapas.length)EXP.marca('casos');
-    });
-  });
-})();
+/* Aquí vivía CASOS: DESTAPAR EL RESULTADO, el botón que quitaba el desenfoque
+   de la cifra de cada ficha. Se fue con la sección. */
 
 /* ---------- HUEVO DE PASCUA ----------
    Dos capas: una nota en consola para quien abra las herramientas y el modo oro
@@ -5655,6 +5427,10 @@ if(DIAG.lee())EXP.marca('diag');
   }
   h.addEventListener('input',pinta);
   c.addEventListener('input',pinta);
+  /* Mover un deslizador es USAR la página, y es una de las dos cosas que el
+     sello del riel cuenta. Se marca una sola vez; EXP ignora las repeticiones. */
+  h.addEventListener('input',()=>EXP.marca('costo'),{once:true});
+  c.addEventListener('input',()=>EXP.marca('costo'),{once:true});
   pinta();
   /* Al volver atrás, o al recargar, el navegador restaura la posición de los
      deslizadores DESPUÉS de ejecutar el script: sin volver a pintar aquí, la
@@ -5704,7 +5480,7 @@ if(DIAG.lee())EXP.marca('diag');
        fuera al crearse y el modo presentacion se la saltaba entera en una
        reunion. Y el coste entra tambien: en una reunion es la parada que
        cierra el argumento, no un adorno. Quien anada una seccion, aqui. */
-    ...['servicios','productos','coste','proyectos','diagnostico','contacto']
+    ...['servicios','productos','coste','diagnostico','contacto']
       .map(i=>document.getElementById(i))].filter(Boolean);
   if(paradas.length<2)return;
   const total=document.getElementById('pres-t'),
