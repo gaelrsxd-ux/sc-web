@@ -82,7 +82,7 @@ document.documentElement.classList.add('js');
    "offers":{
     "@type":"Offer",
     "url":"https://sycsolutions.company/#productos",
-    "price":"578",
+    "price":"399",
     "priceCurrency":"MXN",
     "availability":"https://schema.org/InStock",
     "itemCondition":"https://schema.org/NewCondition",
@@ -2684,7 +2684,7 @@ html.js .pc-alt{display:none}
                 <span class="pc-w" data-pc-w>placa</span>
                 <button class="pc-b" type="button" data-pc="1" aria-label="A&#241;adir una placa">+</button>
               </div>
-              <p class="pc-precio" aria-live="polite"><span class="cifra" data-pc-total>$578</span><span class="u">MXN</span></p>
+              <p class="pc-precio" aria-live="polite"><span class="cifra" data-pc-total>$399</span><span class="u">MXN</span></p>
             </div>
             <p class="pc-detalle" data-pc-detalle>$399 + $179 de env&#237;o</p>
             <p class="pc-gratis" data-pc-gratis hidden></p>
@@ -5648,7 +5648,12 @@ if(DIAG.lee())EXP.marca('diag');
        mueve el cursor al final, y con un campo de dos dígitos eso se nota. */
     if(campo.value!==String(n))campo.value=String(n);
     palabra.textContent=n===1?'placa':'placas';
-    total.textContent=pesos(t.tot);
+    /* La cifra grande es la PLACA, no el total: el envío depende de a dónde va
+       —$179 por paquetería, $0 si la llevamos en mano— y aquí todavía no hay
+       dirección que lo decida. Lo que impide que eso sea media verdad es la
+       línea de debajo, que nombra las dos partes; si alguna vez se quita, hay
+       que volver a sumar aquí. */
+    total.textContent=pesos(t.tot-t.e);
     detalle.textContent=t.d;
     /* El aviso del envío gratis sólo mientras NO se ha llegado al tramo: a
        partir de ahí la línea de arriba ya dice «Envío gratis» y repetirlo es

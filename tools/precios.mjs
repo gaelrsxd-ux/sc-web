@@ -669,8 +669,13 @@ const escaleraPlacas = () => Array.from({ length: PLACA_EN_PAQUETE.max },
      cobra lo nuevo mientras los términos prometen lo viejo — y un comprador
      puede exigir el precio de los términos. Esta guarda revienta la generación
      antes de que esa contradicción exista. */
+  /* Se leen los términos con los espacios APLANADOS: en el HTML las frases van
+     partidas por saltos de línea y sangría, y sin esto una guarda fallaría por
+     dónde cayó el corte —«no incluye el\n    envío»— en vez de por lo que dice
+     el documento. Una guarda que se dispara al reflujar un párrafo no protege
+     nada; enseña a desactivarla. */
   const terminos = fs.readFileSync(
-    path.join(path.dirname(HTML), 'terminos.html'), 'utf8');
+    path.join(path.dirname(HTML), 'terminos.html'), 'utf8').replace(/\s+/g, ' ');
   if (!terminos.includes(`$${precio} MXN`) || !terminos.includes(`hasta ${max} placas`))
     throw new Error('placas en paquete: terminos.html no dice el precio ' +
       `($${precio} MXN) o el tope (hasta ${max} placas) de esta tabla — ` +
@@ -697,6 +702,13 @@ const escaleraPlacas = () => Array.from({ length: PLACA_EN_PAQUETE.max },
         throw new Error(`envío: terminos.html no dice cuánto cuesta ($${miles(uno.envio)} MXN)`);
       if (desde !== null && !terminos.includes(`a partir de ${desde === 2 ? 'dos' : desde}`))
         throw new Error(`envío: terminos.html no dice desde cuántas placas es gratis (${desde})`);
+      /* Y lo más importante de todo, porque es lo que separa un envío bien
+         anunciado de una sorpresa en la caja: el contrato tiene que decir que
+         la cifra grande NO lo lleva dentro. Mientras el precio anunciado era el
+         total, callarlo daba igual; desde que son dos cifras, quien sólo lee la
+         grande tiene derecho a que el documento le diga que falta una. */
+      if (!terminos.includes('no incluye el envío'))
+        throw new Error('envío: terminos.html no dice que el precio anunciado NO lo lleva dentro');
     } else if (!terminos.includes('envío está incluido')) {
       throw new Error('envío: está a cero en la tabla y terminos.html no dice que va incluido');
     }
@@ -751,16 +763,24 @@ function tablaContador() {
 
 /* La línea chica bajo la cifra.
 
-   ⚠ LA CIFRA GRANDE ES EL TOTAL CON ENVÍO, porque es EXACTAMENTE lo que va a
-   cobrar el botón de al lado. Mientras el botón abría WhatsApp tenía sentido
-   enseñar $429 y el envío aparte —eran dos conceptos y una conversación por
-   delante para aclararlos—; con un cobro real detrás, enseñar una cifra y
-   cobrar otra es la sorpresa clásica del carrito, y la que hace abandonar.
+   ⚠ LA CIFRA GRANDE ES EL PRECIO DEL PRODUCTO, SIN ENVÍO, y esta línea es la
+   que impide que eso sea una trampa: va pegada debajo, dice «$399 + $179 de
+   envío» y nombra las dos partes antes de que nadie toque un botón.
 
-   Por eso esta línea DESGLOSA en vez de sumar: dice de dónde sale el total, y
-   a cómo queda la pieza cuando se llevan varias, que es lo que hace subir el
-   contador. Con una sola placa el precio por pieza es el propio precio, así que
-   repetirlo sobraría. */
+   El envío no cabe en la cifra grande porque NO SE SABE todavía. Vale $179 por
+   paquetería y $0 si el código postal es de la ciudad —ahí la llevamos nosotros
+   en mano—, así que hasta que no hay dirección no existe un total honesto: el
+   $578 que salía antes era simplemente el peor de los dos casos anunciado como
+   si fuera el único. Se resuelve donde se resuelve de verdad, al escribir el
+   código postal, y hasta entonces la portada dice lo que sí sabe.
+
+   Lo que NO puede pasar es que el envío aparezca por sorpresa al final. Por eso
+   esta línea existe, por eso la cabecera de pedido.html avisa de que falta, y
+   por eso ese aviso se genera aquí y no se escribe a mano en cada sitio.
+
+   Además dice a cómo queda la pieza cuando se llevan varias, que es lo que hace
+   subir el contador. Con una sola placa el precio por pieza es el propio
+   precio, así que repetirlo sobraría. */
 /* El precio por pieza, con céntimos y sin ceros de adorno: $237.25, $167.35,
    $207. Redondeado a peso entero, 23 placas (3849/23 = 167.35) y 24 placas
    (3999/24 = 166.63) enseñaban las DOS «$167»: subir la cantidad cobraba 150
@@ -1053,8 +1073,13 @@ const PAGINAS_SERVICIO = Object.entries(FAMILIAS).map(([familia, f]) => ({
 }));
 
 function bloquePedido() {
+  /* El precio SIN envío, igual que la ficha de la portada: este desplegable
+     elige producto, no destino. Poner aquí el total con envío lo dejaría
+     contradiciendo a la cabecera de arriba en cuanto el código postal decide
+     que la entrega es en mano, y dos cifras distintas en la misma pantalla se
+     leen como un error aunque las dos sean ciertas. */
   const ops = PAQUETES.map(p =>
-    `<option value="${p.piezas}">${placas(p)} &#8212; $${miles(total(p))}</option>`).join('');
+    `<option value="${p.piezas}">${placas(p)} &#8212; $${miles(p.precio)}</option>`).join('');
   /* AQUÍ NO VAN EL «−» NI EL «+»: van en la portada, que es donde se ve el
      producto y donde nace la pregunta de cuántas quiero. Estuvieron aquí un
      rato y sobraban — a esta pantalla se llega con la cantidad ya elegida y
@@ -1089,9 +1114,15 @@ function avisoGratis(p) {
    desfase que no ve nadie desde dentro, porque en la página se lee bien.
 
    Estaba escrito a mano y se quedó en 429 al bajar la entrada a 399. Se genera
-   para que no pueda volver a pasar. */
+   para que no pueda volver a pasar.
+
+   Va SIN envío, igual que la cifra grande de la ficha. Las dos tienen que decir
+   lo mismo: si el buscador anuncia $578 y quien entra lee $399, el que se
+   equivocó parece el buscador, y Google penaliza justamente ese desfase. El
+   envío es un dato de destino y su sitio en el esquema es `shippingDetails`,
+   no `price`. */
 function precioEsquema() {
-  return '"price":"' + total(PAQUETES[0]) + '"';
+  return '"price":"' + PAQUETES[0].precio + '"';
 }
 
 /* LA FICHA CORTA DE LA PORTADA — CON SU CONTADOR.
@@ -1144,7 +1175,7 @@ function bloqueCompra() {
     ent('Añadir una placa') + '">+</button>\n' +
     '              </div>\n' +
     '              <p class="pc-precio" aria-live="polite">' +
-    '<span class="cifra" data-pc-total>$' + miles(total(una)) + '</span>' +
+    '<span class="cifra" data-pc-total>$' + miles(una.precio) + '</span>' +
     '<span class="u">MXN</span></p>\n' +
     '            </div>\n' +
     '            <p class="pc-detalle" data-pc-detalle>' + ent(detalle(una)) + '</p>\n' +
