@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contratado — S&amp;C Solutions</title>
+<meta name="description" content="Tu paquete quedó registrado.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/legal.css?v=d943bd39">
+<link rel="stylesheet" href="assets/pedido.css?v=0de90c95">
+</head>
+<body>
+<div class="halo" aria-hidden="true"></div>
+
+<header class="barra">
+  <a class="marca" href="/">
+    <img src="assets/logo.svg" alt="">
+    <b>S&amp;C <em>Solutions</em></b>
+  </a>
+  <a class="volver" href="/">← Volver al inicio</a>
+</header>
+
+<main>
+  <!-- ══════════ POR QUÉ ESTA PÁGINA EXISTE ══════════
+       Es la vuelta desde Mercado Pago de los tres paquetes que no son de
+       Google: el sitio web, el agente de WhatsApp y la automatización. Google
+       tiene la suya (gracias-servicio.html) porque su siguiente paso depende
+       de una pregunta —si la ficha ya existe— que aquí no se hace.
+
+       Aquí la rama la decide el Worker (back_urls, cloudflare/pagos/pagos.js).
+       Y como sin JavaScript no hay forma de saber cuál de los tres se acaba de
+       contratar, LOS TRES PASOS ESTÁN ESCRITOS EN EL MARCADO: quien no ejecute
+       scripts lee los tres y reconoce el suyo. Con script, se deja sólo uno.
+
+       ⚠ ESTA PÁGINA NO CONFIRMA NINGÚN COBRO POR SÍ SOLA. Es una dirección
+       pública: cualquiera puede escribirla sin haber pagado. Lo que confirma
+       un pago es el aviso de Mercado Pago, y por eso el texto habla de lo que
+       pasa ahora, sin afirmar que el dinero llegó. -->
+  <div class="gr-marca" aria-hidden="true">✓</div>
+  <h1 class="gr-t" data-gr-t>Listo, <em>ya casi</em></h1>
+
+  <p class="gr-p" data-gr-p>Ya lo tenemos. En cuanto Mercado Pago confirme el pago
+    te escribimos por WhatsApp para arrancar. El siguiente paso depende de lo que
+    contrataste:</p>
+
+  <!-- Los tres, en el marcado. El script esconde los dos que no son. -->
+  <div class="gr-paso">
+    <p data-gr-fam="web"><b>Sitio web completo:</b> te escribimos para pedirte tu
+      logo, tus fotos y la informaci&#243;n de tu negocio. Queda listo en
+      <b>15 d&#237;as h&#225;biles</b> desde que tengamos el material.</p>
+    <p data-gr-fam="ia"><b>Agente de WhatsApp con IA:</b> te escribimos para
+      pedirte la informaci&#243;n con la que va a contestar &#8212;horarios, precios,
+      ubicaci&#243;n y las preguntas que m&#225;s te hacen&#8212;. Queda funcionando en
+      <b>10 d&#237;as h&#225;biles</b>.</p>
+    <p data-gr-fam="auto"><b>Automatizaci&#243;n:</b> te escribimos para agendar la
+      llamada de 30 minutos en la que vemos la tarea contigo. Queda corriendo en
+      <b>10 d&#237;as h&#225;biles</b> desde la llamada.</p>
+  </div>
+
+  <!-- El resumen sólo aparece si esta pestaña es la misma en la que se contrató:
+       los datos viven en sessionStorage, no en la dirección, para que un pedido
+       con nombre y teléfono no acabe en el historial del navegador. -->
+  <dl class="ped-resumen" data-gr-resumen hidden style="margin-top:30px"></dl>
+
+  <a class="gr-wa" data-gr-wa
+     href="https://wa.me/524423697248?text=Hola.%20Acabo%20de%20contratar%20un%20paquete%20desde%20la%20web."
+     target="_blank" rel="noopener noreferrer">Escr&#237;benos por WhatsApp</a>
+
+  <p class="ped-pie">As&#237; lo tenemos por escrito y puedes preguntarnos
+    cualquier cosa por el mismo sitio.</p>
+
+  <p class="ped-pie" style="margin-top:26px">
+    <a href="/#servicios">Volver a los servicios</a> &#183;
+    <a href="terminos.html#servicios" data-gr-terminos>T&#233;rminos</a> &#183;
+    <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
+</main>
+
+<script>
+/* ------------------------------------------------------------------------
+   EL PEDIDO, DE VUELTA
+
+   La página de cobro guardó lo que el visitante escribió justo antes de salir
+   hacia Mercado Pago, con `_fam` diciendo cuál de las tres familias es. Aquí
+   se recupera para tres cosas: dejar UN solo paso de los tres, enseñar el
+   resumen —para que vea que no se perdió nada— y dejar el WhatsApp escrito.
+
+   Todo esto es opcional por diseño. Sin JavaScript, sin sessionStorage o
+   abierto en otra pestaña, el marcado de arriba ya dice los tres pasos y el
+   botón de WhatsApp sigue funcionando con un mensaje genérico.
+   --------------------------------------------------------------------- */
+(()=>{
+  const wa=document.querySelector('[data-gr-wa]');
+  const caja=document.querySelector('[data-gr-resumen]');
+  const titulo=document.querySelector('[data-gr-t]');
+  const parrafo=document.querySelector('[data-gr-p]');
+  const terminos=document.querySelector('[data-gr-terminos]');
+
+  /* Un pago en efectivo o por transferencia vuelve aquí SIN estar cobrado
+     todavía. Decirle «ya casi está» a quien tiene un recibo sin pagar en la
+     mano es la forma de que nadie lo pague nunca. */
+  const pendiente=new URLSearchParams(location.search).get('estado')==='pendiente';
+  if(pendiente){
+    if(titulo)titulo.innerHTML='Tu pago est&#225; <em>pendiente</em>';
+    if(parrafo)parrafo.textContent='Mercado Pago nos avisará en cuanto se complete. '+
+      'Si elegiste pagar en efectivo o por transferencia, tienes que terminar el pago '+
+      'con las instrucciones que te dieron; hasta entonces no empezamos. Después, '+
+      'el siguiente paso es éste:';
+  }
+
+  let d=null;
+  try{
+    const bruto=sessionStorage.getItem('syc_pedido');
+    if(bruto)d=JSON.parse(bruto);
+  }catch(_){}
+  if(!d||typeof d!=='object')return;
+
+  /* Con qué palabras se promete el resto del anticipo en cada familia. Son las
+     mismas que escribió tools/precios.mjs en la página de cobro. */
+  const ENTREGA={web:'cuando te entreguemos el sitio terminado',
+                 ia:'cuando el agente quede funcionando',
+                 auto:'cuando la automatización quede corriendo'};
+  const NOMBRE={web:'un sitio web',ia:'un agente de WhatsApp',auto:'una automatización'};
+  const ANCLA={web:'sitio-web',ia:'agente-ia',auto:'automatizacion'};
+  const fam=ENTREGA[d._fam]?d._fam:'';
+
+  /* Con la familia delante se deja UN paso y se quitan los otros dos. Sin ella
+     —un pedido viejo, o uno escrito a mano— se quedan los tres, que es la
+     página sin script y sigue siendo cierta. */
+  if(fam){
+    for(const p of document.querySelectorAll('[data-gr-fam]'))p.hidden=p.dataset.grFam!==fam;
+    if(!pendiente&&parrafo)parrafo.textContent='Ya lo tenemos. En cuanto Mercado Pago '+
+      'confirme el pago te escribimos por WhatsApp para arrancar:';
+    if(terminos)terminos.href='terminos.html#'+ANCLA[fam];
+  }
+
+  const pesos=n=>'$'+Number(n||0).toLocaleString('en-US');
+  if(caja){
+    const partes=[
+      ['Paquete',(d._t||'')+(d._tot?' — '+pesos(d._tot):'')],
+      /* ⚠ CON EL PAGO PENDIENTE ESTA FILA MIENTE, y por eso no se pinta: quien
+         tiene un recibo de efectivo sin pagar no debe «el resto», debe el
+         anticipo entero, y hay que hacerlo AHORA. */
+      ['Falta por pagar',(!pendiente&&d._resto)
+        ?pesos(d._resto)+' '+(ENTREGA[fam]||'al entregarte el trabajo'):''],
+      ['Negocio',d.negocio],
+      ['A qué se dedica',d.giro],
+      ['Dominio o página actual',d.dominio],
+      ['WhatsApp del negocio',d.wa_negocio],
+      ['La tarea',d.tarea],
+      ['Lo que usas hoy',d.herramientas],
+      ['Contacto',d.nombre],
+      ['Teléfono',d.tel],
+      ['Correo',d.correo],
+    ];
+    let hay=false;
+    for(const [k,v] of partes){
+      if(!v)continue;
+      hay=true;
+      const fila=document.createElement('div');
+      const dt=document.createElement('dt'),dd=document.createElement('dd');
+      dt.textContent=k;
+      /* textContent y nunca innerHTML: esto es texto del visitante. */
+      dd.textContent=v;
+      fila.append(dt,dd);
+      caja.append(fila);
+    }
+    if(hay)caja.hidden=false;
+  }
+
+  if(wa){
+    const l=['Hola. Acabo de contratar '+(NOMBRE[fam]||'un paquete')+' desde la web.'];
+    if(d._t)l.push('Paquete: '+d._t);
+    if(!pendiente&&d._resto)l.push('Falta por pagar: '+pesos(d._resto));
+    if(d.negocio)l.push('Negocio: '+d.negocio);
+    if(d.giro)l.push('Se dedica a: '+d.giro);
+    if(d.dominio)l.push('Dominio o página: '+d.dominio);
+    if(d.wa_negocio)l.push('WhatsApp del negocio: '+d.wa_negocio);
+    if(d.tarea)l.push('La tarea: '+d.tarea);
+    if(d.herramientas)l.push('Uso hoy: '+d.herramientas);
+    if(d.nombre)l.push('Soy: '+d.nombre);
+    if(d.correo)l.push('Correo: '+d.correo);
+    wa.href='https://wa.me/524423697248?text='+encodeURIComponent(l.join('\n'));
+  }
+})();
+</script>
+</body>
+</html>

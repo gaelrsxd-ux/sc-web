@@ -99,7 +99,12 @@ test('cada paquete pide las cuotas que dice la tabla, y ninguna más', async () 
      barato salga con cuotas o que uno caro se quede sin ellas. */
   const UMBRAL = 2500;
   for (const p of TABLA.paquetes) {
-    assert.equal(p.cuotas, p.total >= UMBRAL ? 2 : 1,
+    /* Con UNA excepción: un anticipo nunca va a plazos, cueste lo que cueste.
+       Mientras los únicos anticipos fueron los de Google (750 y 1,150) la
+       regla del umbral bastaba sola; el del sitio web (3,100) la cruza y sigue
+       siendo un anticipo. */
+    const esperado = Number(p.resto) > 0 ? 1 : (p.total >= UMBRAL ? 2 : 1);
+    assert.equal(p.cuotas, esperado,
       'cuotas del paquete ' + p.id + ' (' + p.total + ' MXN)');
   }
   assert.ok(TABLA.paquetes.some(p => p.cuotas === 2), 'alguno tiene que llevarlas');
@@ -948,4 +953,117 @@ test('el resumen del vendedor nombra las placas del combo, no sólo el concepto'
     'el aviso de la venta dice las placas en su propia línea');
   assert.match(llamadas[0].cuerpo.additional_info, /acordar entrega|instalarlas/,
     'y recuerda que la entrega se acuerda: la dirección no viaja en el pedido');
+});
+
+/* ═══════════ LOS OTROS TRES SERVICIOS: WEB, AGENTE DE IA Y AUTOMATIZACIÓN ═══════════
+   Llegaron con `familia` en la fila. Lo que hay que sostener es que el Worker
+   los cobra igual que a todo —importe de la tabla, anticipo por debajo del
+   contado— y que NO les aplica lo que es sólo de Google: la pregunta de la
+   ficha, su marca de REVISAR y su página de gracias. */
+
+const FAMILIAS_NUEVAS = ['web', 'ia', 'auto'];
+const porFamilia = f => TABLA.paquetes.filter(p => p.familia === f);
+
+test('las tres familias nuevas están en el catálogo: un contado y un anticipo cada una', () => {
+  for (const f of FAMILIAS_NUEVAS) {
+    const filas = porFamilia(f);
+    assert.equal(filas.length, 2, f + ': un contado y un anticipo, y sin combos de placas');
+    const contado = filas.find(p => !p.resto), anticipo = filas.find(p => Number(p.resto) > 0);
+    assert.ok(contado && anticipo, f + ': falta el contado o el anticipo');
+    assert.equal(anticipo.total + anticipo.resto, contado.total, f + ': anticipo + resto = contado');
+    assert.ok(anticipo.total >= contado.total / 2, f + ': el anticipo es al menos la mitad');
+    assert.equal(anticipo.cuotas, 1, f + ': un anticipo nunca va a plazos');
+    assert.ok(filas.every(p => p.placas === undefined), f + ': las placas sólo se añaden en Google');
+    assert.ok(filas.every(p => p.tipo === 'servicio' && p.envio === 0), f + ': es un servicio, sin envío');
+  }
+});
+
+test('un anticipo de web, IA o automatización NO se marca REVISAR: ahí no hay ficha que declarar', async () => {
+  for (const f of FAMILIAS_NUEVAS) {
+    const a = porFamilia(f).find(p => Number(p.resto) > 0);
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    const r = await worker.fetch(post({ paquete: a.id, negocio: 'Kabuki' }), ENV);
+    assert.equal(r.status, 303, f + ': el anticipo cobra');
+    const info = llamadas[0].cuerpo.additional_info;
+    assert.ok(!/REVISAR/.test(info), f + ': sin REVISAR — ' + info);
+    assert.ok(!/ficha/i.test(info), f + ': sin la línea de la ficha — ' + info);
+    assert.ok(info.includes('ANTICIPO: faltan $' + a.resto.toLocaleString('en-US')),
+      f + ': dice lo que falta — ' + info);
+  }
+});
+
+test('web, IA y automatización vuelven a gracias-paquete.html; Google sigue en la suya', async () => {
+  for (const f of FAMILIAS_NUEVAS) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: porFamilia(f)[0].id }), ENV);
+    assert.equal(llamadas[0].cuerpo.back_urls.success, ORIGEN + '/gracias-paquete.html', f);
+    assert.equal(llamadas[0].cuerpo.back_urls.pending, ORIGEN + '/gracias-paquete.html?estado=pendiente', f);
+  }
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: 'gp-e' }), ENV);
+  assert.equal(llamadas[0].cuerpo.back_urls.success, ORIGEN + '/gracias-servicio.html');
+});
+
+test('el resumen de cada familia lleva lo suyo: giro y dominio, WhatsApp del negocio, tarea', async () => {
+  const casos = {
+    web:  { campos: { negocio: 'Kabuki', giro: 'Sushi', dominio: 'kabuki.mx', nombre: 'Gael', tel: '444 123 4567' },
+            espera: ['Kabuki', 'Giro: Sushi', 'Dominio/página: kabuki.mx', 'Contacto: Gael', 'Tel 4441234567'] },
+    ia:   { campos: { negocio: 'Kabuki', giro: 'Sushi', wa_negocio: '(444) 987-6543' },
+            espera: ['Giro: Sushi', 'WA del negocio: 4449876543'] },
+    auto: { campos: { negocio: 'Kabuki', tarea: 'Pasar pedidos a un Excel', herramientas: 'WhatsApp, Excel' },
+            espera: ['Usa: WhatsApp, Excel', 'Tarea: Pasar pedidos a un Excel'] },
+  };
+  for (const [f, c] of Object.entries(casos)) {
+    const p = porFamilia(f).find(x => !x.resto);
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: p.id, ...c.campos }), ENV);
+    const info = llamadas[0].cuerpo.additional_info;
+    for (const e of c.espera) assert.ok(info.includes(e), f + ': falta «' + e + '» en: ' + info);
+    assert.ok(!/ficha/i.test(info), f + ': no habla de la ficha de Google');
+    /* Y la copia campo a campo, que es la que se puede buscar después. */
+    for (const k of Object.keys(c.campos)) assert.ok(llamadas[0].cuerpo.metadata[k], f + ': metadata.' + k);
+  }
+});
+
+test('la tarea va al FINAL del resumen: si algún día algo se recorta, no es el teléfono', async () => {
+  const p = porFamilia('auto').find(x => !x.resto);
+  montaCaches();
+  const llamadas = montaFetch(okMP);
+  await worker.fetch(post({ paquete: p.id, negocio: 'Kabuki', tarea: 'x'.repeat(300), tel: '4441234567' }), ENV);
+  const info = llamadas[0].cuerpo.additional_info;
+  assert.ok(info.indexOf('Tel 4441234567') < info.indexOf('Tarea:'), info);
+  assert.ok(new RegExp('Tarea: x{' + CAMPOS.tarea + '}$').test(info),
+    'la tarea se recorta a su tope y cierra el resumen: «' + info.slice(-30) + '»');
+});
+
+test('con TODOS los campos de cada familia al máximo, el resumen entra entero en 600', async () => {
+  const propios = { web: ['giro', 'dominio'], ia: ['giro', 'wa_negocio'], auto: ['tarea', 'herramientas'] };
+  for (const [f, extra] of Object.entries(propios)) {
+    const a = porFamilia(f).find(x => Number(x.resto) > 0);
+    const campos = {};
+    for (const k of ['negocio', 'nombre', ...extra]) campos[k] = 'x'.repeat(CAMPOS[k]);
+    campos.tel = '9'.repeat(CAMPOS.tel);
+    if (extra.includes('wa_negocio')) campos.wa_negocio = '8'.repeat(CAMPOS.wa_negocio);
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: a.id, ...campos }), ENV);
+    const info = llamadas[0].cuerpo.additional_info;
+    assert.ok(info.length <= 600, f + ': ' + info.length);
+    /* Lo que de verdad importa: el ÚLTIMO campo llegó completo. */
+    const ultimo = extra.includes('tarea') ? 'Tarea: ' + 'x'.repeat(CAMPOS.tarea) : 'Tel ' + '9'.repeat(CAMPOS.tel);
+    assert.ok(info.endsWith(ultimo), f + ': el final del resumen es «' + info.slice(-30) + '»');
+  }
+});
+
+test('el anticipo con ficha propia sigue parándose en Google, y sólo en Google', async () => {
+  montaCaches();
+  montaFetch(okMP);
+  const r = await worker.fetch(post({ paquete: 'web-ca', ficha_tiene: 'si' }), ENV);
+  assert.equal(r.status, 303, 'en la web no hay ficha que declarar: cobra aunque el campo venga puesto a mano');
+  const g = await worker.fetch(post({ paquete: 'gp-ea', ficha_tiene: 'si' }), ENV);
+  assert.equal(g.status, 409, 'en Google la contradicción explícita se sigue parando');
 });

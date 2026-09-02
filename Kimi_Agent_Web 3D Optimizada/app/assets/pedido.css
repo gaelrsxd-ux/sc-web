@@ -199,6 +199,9 @@ main{max-width:560px}
    letra pequeña explicaba lo mismo con más palabras, dos veces en pantalla. */
 .ped-op.apagada small{display:none}
 .sv-como-no,.sv-como-si{display:none}
+/* Las familias sin pregunta previa —web, IA, automatización— tienen una sola
+   verdad y un solo párrafo, que no depende de ningún radio para verse. */
+.sv-como-sola{display:block}
 #sv-form:has(input[name="ficha_tiene"][value="no"]:checked) .sv-como-no{display:block}
 #sv-form:has(input[name="ficha_tiene"][value="si"]:checked) .sv-como-si{display:block}
 

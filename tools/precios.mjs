@@ -95,9 +95,34 @@ const COBRO_EN_LINEA = 'https://pagos.sycsolutions.company/ir';
    qué, así que el segundo pago es un enlace de Mercado Pago por WhatsApp. El
    número vive aquí para que la web pueda DECIRLO sin que nadie lo escriba a
    mano en dos sitios. */
+/* ═══ LAS FAMILIAS ═══
+   Cada servicio pertenece a una, y la familia decide TRES cosas que antes
+   estaban escritas a mano para el único caso que existía: en qué página se
+   cobra, a qué página de gracias vuelve el comprador, y con qué palabras se
+   promete el resto del anticipo («cuando te entreguemos el acceso» sólo tiene
+   sentido en Google). `pregunta` marca a la única familia cuya forma de pago
+   depende de una pregunta previa —la ficha—: en las demás el anticipo existe
+   siempre, porque son proyectos de días y la entrega sí se puede retener. */
+const FAMILIAS = {
+  google: { pagina: 'servicio.html',       gracias: 'gracias-servicio.html', pregunta: true,
+            entrega: 'el acceso' },
+  web:    { pagina: 'web.html',            gracias: 'gracias-paquete.html',
+            entrega: 'tu sitio terminado' },
+  ia:     { pagina: 'ia.html',             gracias: 'gracias-paquete.html',
+            entrega: 'el agente funcionando' },
+  auto:   { pagina: 'automatizacion.html', gracias: 'gracias-paquete.html',
+            entrega: 'la automatización corriendo' },
+};
+
 const SERVICIOS = [
   {
     id: 'gp-e',
+    familia: 'google',
+    /* Las placas de reseñas se pueden añadir SÓLO a los paquetes de Google:
+       el perfil es donde caen las reseñas y la placa lo que hace que las
+       dejen. En una web o una automatización no cuentan la misma historia, y
+       el titular pidió expresamente no saturar. */
+    placas: true,
     /* DOS NOMBRES A PROPÓSITO. El largo es el que viaja al cobro y el que
        aparece en el estado de cuenta del comprador, donde «Lo esencial» a secas
        no dice de qué. El corto es el de la página, donde la cabecera ya dice
@@ -141,6 +166,8 @@ const SERVICIOS = [
   },
   {
     id: 'gp-t',
+    familia: 'google',
+    placas: true,
     nombre: 'Perfil de Google · Todo hecho',
     corto: 'Todo hecho',
     precio: 2300,
@@ -215,6 +242,84 @@ const SERVICIOS = [
     visita: true,
     destaca: true,
   },
+
+  /* ═══ LOS OTROS TRES SERVICIOS, CON PAQUETE CERRADO ═══
+     Hasta aquí «una web para una taquería y una para una clínica no son el
+     mismo trabajo» y los tres se cotizaban por WhatsApp. Lo que cambia no es
+     esa verdad, es la oferta: lo que se vende en línea es un ALCANCE CERRADO
+     —tantas páginas, tantos días, tantas rondas de cambios— que se entrega
+     igual a todo el mundo, y lo que se salga de ahí se sigue cotizando aparte,
+     y se dice en la propia tarjeta. Los tres precios los puso el titular; el
+     anticipo es la mitad redondeada al peso hacia arriba, porque el catálogo
+     no acepta centavos. */
+  {
+    id: 'web-c',
+    familia: 'web',
+    nombre: 'Sitio web completo',
+    corto: 'Sitio web completo',
+    precio: 6199,
+    anticipo: 3100,
+    resumen: 'Tu sitio web listo y en línea: hecho para vender, con tu dominio, y viéndose bien en el celular',
+    incluye: [
+      'Hasta 5 páginas: inicio, servicios o productos, quiénes son, galería y contacto',
+      'Diseño a medida que se ve bien en celular, tablet y computadora',
+      'Botón de WhatsApp, formulario de contacto y mapa de cómo llegar',
+      'Tu dominio .com y el hospedaje del primer año, incluidos',
+      'Lo damos de alta en Google para que te encuentren',
+      'Dos rondas de cambios antes de publicarlo',
+      'Te explicamos cómo cambiar textos y fotos tú mismo',
+      'Listo en 15 días hábiles desde que nos mandes tu material',
+    ],
+    nota: 'Tú pones el logo, las fotos y la información de tu negocio; los textos los '
+        + 'escribimos nosotros con lo que nos cuentes. Después del primer año, el dominio '
+        + 'y el hospedaje se renuevan aparte.',
+  },
+  {
+    id: 'ia-w',
+    familia: 'ia',
+    nombre: 'Agente de WhatsApp con IA',
+    corto: 'Agente de WhatsApp',
+    precio: 4459,
+    anticipo: 2230,
+    /* ⚠ LA MENSUALIDAD ES PARTE DEL PRECIO Y SE DICE ANTES DE PAGAR. Un agente
+       cuesta dinero cada mes mientras contesta, y venderlo como un pago único
+       es una devolución garantizada al segundo mes. El número vive aquí y la
+       tarjeta lo escribe sola desde este campo, para que el precio de la
+       página y el de los términos —que tienen una guarda— no puedan separarse.
+       NO la cobra esta web: es un enlace de suscripción del panel de Mercado
+       Pago que se manda por WhatsApp al terminar el primer mes. */
+    mensual: 990,
+    resumen: 'Un agente que contesta tu WhatsApp las 24 horas con la información de tu negocio, y agenda citas o toma pedidos',
+    incluye: [
+      'Contesta al momento, de día y de noche, también en fin de semana',
+      'Responde con tu información: horarios, precios, ubicación y lo que más te preguntan',
+      'Agenda citas o toma pedidos y te los pasa por WhatsApp',
+      'Cuando no sabe algo, te avisa y te pasa la conversación',
+      'Lo entrenamos con tu negocio y lo probamos contigo antes de encenderlo',
+      'Primer mes de funcionamiento incluido',
+      'Funcionando en 10 días hábiles desde que nos mandes tu información',
+    ],
+  },
+  {
+    id: 'au-1',
+    familia: 'auto',
+    nombre: 'Una automatización concreta',
+    corto: 'Una automatización',
+    precio: 3749,
+    anticipo: 1875,
+    resumen: 'Elegimos una tarea que hoy haces a mano y la dejamos corriendo sola, conectando lo que ya usas',
+    incluye: [
+      'Una llamada de 30 minutos para ver la tarea contigo y elegir la que más tiempo te quita',
+      'La dejamos corriendo sola: pasar pedidos a una hoja, mandar recordatorios, armar el reporte semanal',
+      'Conectamos hasta 3 herramientas de las que ya usas: WhatsApp, Excel, Google Sheets, correo, tu agenda',
+      'La probamos contigo con datos reales antes de darla por buena',
+      'Te dejamos un documento corto de cómo funciona y qué hacer si se detiene',
+      'Corriendo en 10 días hábiles desde la llamada',
+    ],
+    nota: 'Es una automatización, no un sistema entero: si la tarea necesita más de 3 '
+        + 'herramientas o programar algo a medida, te lo decimos en la llamada y lo '
+        + 'cotizamos aparte antes de empezar.',
+  },
 ];
 
 /* ═══════════ LAS PLACAS DENTRO DEL PAQUETE ═══════════
@@ -261,10 +366,16 @@ const PLACA_EN_PAQUETE = { precio: 250, max: 2 };
        final: gp-t2, gp-ta2. Todos pasan por la misma guarda de 8 caracteres. */
     const publicados = [s.id];
     if (s.anticipo) publicados.push(s.id + 'a');
-    for (let n = 1; n <= PLACA_EN_PAQUETE.max; n++) {
+    if (s.placas) for (let n = 1; n <= PLACA_EN_PAQUETE.max; n++) {
       publicados.push(s.id + n);
       if (s.anticipo) publicados.push(s.id + 'a' + n);
     }
+    /* Una familia que no existe no tiene página donde cobrarse: el generador
+       escribiría el paquete en ninguna parte y la portada lo anunciaría. */
+    if (!FAMILIAS[s.familia])
+      throw new Error(`servicio «${s.nombre}»: la familia «${s.familia}» no está en FAMILIAS`);
+    if (s.mensual !== undefined && (!Number.isInteger(s.mensual) || s.mensual <= 0))
+      throw new Error(`servicio «${s.nombre}»: la mensualidad ${s.mensual} no es un entero positivo`);
     for (const id of publicados) {
       if (!/^[a-z0-9-]{1,8}$/.test(id))
         throw new Error(`servicio «${s.nombre}»: el id «${id}» no cabe en los 8 caracteres que lee el Worker`);
@@ -556,6 +667,17 @@ const escaleraPlacas = () => Array.from({ length: PLACA_EN_PAQUETE.max },
       throw new Error(`placas en paquete: ${n} a $${precio} c/u ahorran $${suelta - dentro} ` +
         `frente a $${suelta} sueltas — eso no es un descuento que se pueda anunciar`);
   });
+  /* Y LO MISMO PARA CADA SERVICIO: su precio tiene que estar escrito en los
+     términos tal cual se cobra —«$6,199 MXN»— y, si lleva mensualidad, también
+     ella. Un paquete que la web vende y los términos no nombran es un contrato
+     sin precio; uno que nombran con otra cifra, un contrato con el precio
+     equivocado. */
+  for (const s of SERVICIOS) {
+    if (!terminos.includes(`$${miles(s.precio)} MXN`))
+      throw new Error(`servicio «${s.nombre}»: terminos.html no dice su precio ($${miles(s.precio)} MXN)`);
+    if (s.mensual && !terminos.includes(`$${miles(s.mensual)} MXN al mes`))
+      throw new Error(`servicio «${s.nombre}»: terminos.html no dice su mensualidad ($${miles(s.mensual)} MXN al mes)`);
+  }
 }
 const piezas = p => p.piezas === 1 ? '1 pieza' : `${p.piezas} piezas`;
 const placas = p => p.piezas === 1 ? '1 placa' : `${p.piezas} placas`;
@@ -649,7 +771,6 @@ function detalle(p) {
    listas de precios mantenidas por separado divergen, y el día que diverjan la
    ficha diría un precio, el pedido otro y el cobro un tercero. */
 const PEDIDO = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'pedido.html');
-const SERVICIO = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'servicio.html');
 
 /* Las cuatro opciones de compra de servicio.html. Se generan por el mismo
    motivo que todo lo demás: el precio que se lee en pantalla y el que cobra el
@@ -657,8 +778,12 @@ const SERVICIO = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'servici
 
    El `value` de cada radio es el id que el Worker busca en su catálogo. Que
    coincidan no es convención ni suerte: los dos los escribe este archivo. */
-function bloqueServicio() {
+function bloqueServicio(familia) {
   const pesos = n => '$' + miles(n);
+  const fam = FAMILIAS[familia];
+  if (!fam) throw new Error(`bloqueServicio: familia «${familia}» desconocida`);
+  const propios = SERVICIOS.filter(s => s.familia === familia);
+  if (!propios.length) throw new Error(`bloqueServicio: la familia «${familia}» no tiene paquetes`);
   /* El paquete del que éste hereda su lista, si es que hereda de alguno. Se
      busca por id y no se copia a mano: así, el día que a «Lo esencial» se le
      añada una línea, aparece sola en la tarjeta del caro. */
@@ -697,7 +822,7 @@ function bloqueServicio() {
     const comoNo = s.anticipo
       ? `P&#225;galo <b>de contado</b>, o deja <b data-sv-frase-ant data-base="${s.anticipo}">`
         + `${pesos(s.anticipo)} de anticipo</b> `
-        + `y los ${pesos(resto)} restantes cuando te entreguemos el acceso.`
+        + `y los ${pesos(resto)} restantes cuando te entreguemos ${ent(fam.entrega)}.`
       : 'Un solo pago.';
     /* En castellano llano. Decía «el trabajo se hace sobre una cuenta que ya
        controlas y no hay entrega que reservar», que es exacto y no lo entiende
@@ -735,10 +860,22 @@ function bloqueServicio() {
 
     const ops = [opcion(s.id, s.precio, `Pagar ${pesos(s.precio)} de contado`,
                         'Un solo pago y listo.', false)];
+    /* La condición del anticipo sólo existe donde hay una pregunta que la
+       decide (Google). En las demás familias el anticipo está siempre, y una
+       coletilla que dijera «sólo si…» sin que nada la sostenga es ruido. */
     if (s.anticipo) ops.push(opcion(s.id + 'a', s.anticipo,
       `Pagar ${pesos(s.anticipo)} de anticipo`,
-      `Y ${pesos(resto)} cuando te entreguemos el acceso. ` + ent('Sólo si creamos la cuenta nosotros.'),
+      `Y ${pesos(resto)} cuando te entreguemos ${ent(fam.entrega)}.` +
+      (fam.pregunta ? ' ' + ent('Sólo si creamos la cuenta nosotros.') : ''),
       true));
+    /* La mensualidad, escrita desde el número y no a mano: la tarjeta y los
+       términos no pueden decir dos cifras distintas para el mismo mes. */
+    const nota = [
+      s.mensual ? `A partir del segundo mes cuesta ${pesos(s.mensual)} al mes: es lo que `
+        + 'cuesta mantenerlo contestando. Se cobra aparte, con un enlace de Mercado Pago, '
+        + 'y lo puedes dar de baja cuando quieras.' : '',
+      s.nota || '',
+    ].filter(Boolean).join(' ');
 
     /* ⚠ DOS PAQUETES A LA VISTA, NO CUATRO OPCIONES. Con las cuatro formas de
        pago desplegadas a la vez la pantalla pide dos decisiones al mismo tiempo
@@ -762,7 +899,7 @@ function bloqueServicio() {
       `<span class="sr">Elegir ${ent(corto)}, ${pesos(s.precio)}</span></button>\n` +
       `        <p class="sv-nom">${ent(corto)}<span>${pesos(s.precio)}</span></p>\n` +
       `        <p class="sv-que">${ent(s.resumen)}.</p>\n` +
-      (s.nota ? `        <p class="sv-nota">${ent(s.nota)}</p>\n` : '') +
+      (nota ? `        <p class="sv-nota">${ent(nota)}</p>\n` : '') +
       /* ⚠ QUÉ INCLUYE, AQUÍ MISMO Y PLEGADO. Antes esto sólo vivía en la página
          de términos, mezclado con plazos y cancelación: había que salir, leer un
          texto legal entero y volver. Un <details> nativo lo abre y lo cierra sin
@@ -794,8 +931,13 @@ function bloqueServicio() {
          Son dos y no tres porque la pregunta de arriba nace respondida: no hay
          estado «sin contestar» que cubrir, y un párrafo que no puede verse
          nunca es peor que no tenerlo — parece que sostiene algo. */
-      `        <p class="sv-como sv-como-no">${comoNo}</p>\n` +
-      `        <p class="sv-como sv-como-si">${comoSi}</p>\n` +
+      /* Sin pregunta previa hay UNA verdad y no dos: un solo párrafo, con su
+         propia clase, porque las otras dos las enciende el CSS a partir del
+         radio de la ficha y sin ese radio se quedarían las dos apagadas. */
+      (fam.pregunta
+        ? `        <p class="sv-como sv-como-no">${comoNo}</p>\n` +
+          `        <p class="sv-como sv-como-si">${comoSi}</p>\n`
+        : `        <p class="sv-como sv-como-sola">${comoNo}</p>\n`) +
       /* La pista de que esto se toca, al FINAL: es lo último que se lee antes
          de decidir, y arriba competía con el precio. Sin ella, una tarjeta que
          reacciona al pulsarla no se distingue de un cuadro de texto que no hace
@@ -857,15 +999,24 @@ function bloqueServicio() {
       'target="_blank" rel="noopener noreferrer">' +
       `${ent('Escríbenos por WhatsApp')}</a>${ent(' y te lo cobramos junto.')}</p></noscript>`;
   };
-  return '<!-- servicio:opciones -->\n' + SERVICIOS.map(bloque).join('\n') + '\n' +
-         placas() + '\n      <!-- /servicio:opciones -->';
+  /* El bloque de placas sólo en la familia que las admite; en las demás no hay
+     contador que enseñar ni WhatsApp de combo que ofrecer. */
+  return '<!-- servicio:opciones -->\n' + propios.map(bloque).join('\n') + '\n' +
+         (propios.some(s => s.placas) ? placas() + '\n' : '') +
+         '      <!-- /servicio:opciones -->';
 }
 
-const BLOQUES_SERVICIO = [
-  { nombre: 'opciones del servicio',
-    re: /<!-- servicio:opciones -->[\s\S]*?<!-- \/servicio:opciones -->/,
-    pinta: bloqueServicio },
-];
+/* Una página de cobro por familia, cada una con su propio bloque de opciones.
+   Las cuatro comparten esqueleto y script; lo que cambia es qué paquetes
+   caben dentro, y eso lo decide la familia. */
+const PAGINAS_SERVICIO = Object.entries(FAMILIAS).map(([familia, f]) => ({
+  familia,
+  archivo: f.pagina,
+  ruta: path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', f.pagina),
+  bloques: [{ nombre: `opciones de ${f.pagina}`,
+              re: /<!-- servicio:opciones -->[\s\S]*?<!-- \/servicio:opciones -->/,
+              pinta: () => bloqueServicio(familia) }],
+}));
 
 function bloquePedido() {
   const ops = PAQUETES.map(p =>
@@ -1055,8 +1206,11 @@ function paquetesJson() {
          plazos es un absurdo que además liaría el «resto». Hoy sólo cruzan el
          umbral los combos de «Todo hecho» — un ticket más alto que a la vez se
          vuelve más fácil de decir que sí. */
+      /* `familia` viaja en la fila para que el Worker sepa a qué página de
+         gracias devolver al comprador y qué preguntas hacerse en el resumen
+         de la venta: la de la ficha de Google no tiene sentido en una web. */
       const fila = (id, base, total, resto) => ({
-        id, tipo: 'servicio', piezas: 1, base, total, envio: 0,
+        id, tipo: 'servicio', familia: s.familia, piezas: 1, base, total, envio: 0,
         cuotas: (!resto && total >= CUOTAS_DESDE) ? 2 : 1,
         ...(resto ? { resto } : {}),
         ...(s.visita ? { visita: true } : {}),
@@ -1077,7 +1231,7 @@ function paquetesJson() {
          lo que mande el navegador. ⚠ CON ANTICIPO, LAS PLACAS SE PAGAN HOY:
          el `total` de gp-ta2 es anticipo + placas y el `resto` queda igual —
          una placa es un objeto que se entrega, no un trabajo que retener. */
-      for (let n = 1; n <= PLACA_EN_PAQUETE.max; n++) {
+      if (s.placas) for (let n = 1; n <= PLACA_EN_PAQUETE.max; n++) {
         const extra = n * PLACA_EN_PAQUETE.precio;
         const apellido = ` + ${n} placa${n > 1 ? 's' : ''} de reseñas`;
         filas.push({ ...fila(s.id + n, s.nombre + apellido, s.precio + extra), placas: n });
@@ -1098,17 +1252,18 @@ function paquetesJson() {
    misma tabla que el catálogo del Worker por el motivo de siempre: una cifra
    escrita a mano en la portada y otra en el cobro divergen el día que suba el
    precio, y nadie lo ve desde dentro porque las dos se leen bien por separado. */
-function desdeServicio() {
+function desdeServicio(familia) {
   /* ⚠ LOS DOS PRECIOS, NO UN «desde». «Desde $1,490» esconde el paquete de
      arriba justo donde se decide si vale la pena entrar: quien sólo puede pagar
      lo básico no sabe que existe algo más, y quien busca lo completo no sabe si
      su presupuesto alcanza. Enseñando los dos, la tarjeta responde la pregunta
      entera —cuánto cuesta y cuántas opciones hay— sin un toque de más.
      Salen ordenados de menor a mayor y de la misma tabla que el cobro. */
-  const orden = [...SERVICIOS].sort((a, b) => a.precio - b.precio);
+  const orden = SERVICIOS.filter(s => s.familia === familia).sort((a, b) => a.precio - b.precio);
+  if (!orden.length) throw new Error(`desdeServicio: la familia «${familia}» no tiene paquetes`);
   const cifras = orden.map(x =>
     `<b>$${miles(x.precio)}</b> <i>${ent(x.corto || x.nombre)}</i>`).join('<em>o</em>');
-  return `<span data-svc-desde>${cifras}</span>`;
+  return `<span data-svc-desde="${familia}">${cifras}</span>`;
 }
 
 const BLOQUES = [
@@ -1119,7 +1274,14 @@ const BLOQUES = [
      segunda pasada del generador decía «esperaba 1 coincidencia y hay 0». Un
      patrón que describe el CONTENIDO se rompe al cambiar el contenido; éste
      describe sólo sus extremos, que es lo que este archivo controla. */
-  { nombre: 'desde del servicio', re: /<span data-svc-desde>[\s\S]*?<\/span>/, pinta: desdeServicio },
+  /* Una tarjeta por familia en la portada, cada una con su cifra. El atributo
+     lleva el nombre de la familia para que cada patrón encuentre la suya y
+     sólo la suya. */
+  ...Object.keys(FAMILIAS).map(f => ({
+    nombre: `precio de «${f}» en la portada`,
+    re: new RegExp(`<span data-svc-desde="${f}">[\\s\\S]*?</span>`),
+    pinta: () => desdeServicio(f),
+  })),
   /* ⚠ CON MARCAS Y NO CON UN `</a>` FINAL. El patrón anterior terminaba en el
      cierre del enlace, y al cambiar el marcado —el contador acaba en su tabla
      de datos, no en un enlace— dejó de encontrar su final y en la segunda pasada
@@ -1191,16 +1353,23 @@ if (COBRO_EN_LINEA && !pedidoOriginal.includes(`action="${COBRO_EN_LINEA}"`)) {
   process.exit(1);
 }
 
-/* servicio.html: las mismas cuatro opciones que el Worker tiene en su catálogo.
-   Si se separan, la página enseña un precio y el cobro sale por otro — que es
-   exactamente el fallo que este archivo entero existe para impedir. */
-const servicioOriginal = fs.readFileSync(SERVICIO, 'utf8');
-const servicioGenerado = aplica(servicioOriginal, BLOQUES_SERVICIO);
-if (COBRO_EN_LINEA && !servicioOriginal.includes(`action="${COBRO_EN_LINEA}"`)) {
-  console.error(`\n  servicio.html no manda el formulario a ${COBRO_EN_LINEA}.`);
-  console.error('  Con la dirección mal, el botón de pagar no lleva a ninguna parte.\n');
-  process.exit(1);
-}
+/* Las páginas de cobro de los servicios, una por familia: las mismas opciones
+   que el Worker tiene en su catálogo. Si se separan, la página enseña un
+   precio y el cobro sale por otro — que es exactamente el fallo que este
+   archivo entero existe para impedir. */
+const paginasServicio = PAGINAS_SERVICIO.map(pg => {
+  if (!fs.existsSync(pg.ruta)) {
+    console.error(`\n  Falta app/${pg.archivo}: la familia «${pg.familia}» no tiene dónde cobrarse.\n`);
+    process.exit(1);
+  }
+  const original = fs.readFileSync(pg.ruta, 'utf8');
+  if (COBRO_EN_LINEA && !original.includes(`action="${COBRO_EN_LINEA}"`)) {
+    console.error(`\n  ${pg.archivo} no manda el formulario a ${COBRO_EN_LINEA}.`);
+    console.error('  Con la dirección mal, el botón de pagar no lleva a ninguna parte.\n');
+    process.exit(1);
+  }
+  return { ...pg, original, generado: aplica(original, pg.bloques) };
+});
 
 const pegarEsperado = paraPegar();
 const pegarActual = fs.existsSync(JS_PEGAR) ? fs.readFileSync(JS_PEGAR, 'utf8') : null;
@@ -1224,8 +1393,8 @@ if (args.includes('--check')) {
     console.error('  Arréglalo con:  node tools/precios.mjs\n');
     process.exit(1);
   }
-  if (servicioOriginal !== servicioGenerado) {
-    console.error('\n  Los paquetes de app/servicio.html no coinciden con la tabla.');
+  for (const pg of paginasServicio) if (pg.original !== pg.generado) {
+    console.error(`\n  Los paquetes de app/${pg.archivo} no coinciden con la tabla.`);
     console.error('  La página enseñaría un precio y el cobro sería otro.');
     console.error('  Arréglalo con:  node tools/precios.mjs\n');
     process.exit(1);
@@ -1256,9 +1425,9 @@ if (pedidoOriginal !== pedidoGenerado) {
   console.log('Reescritas las cantidades de app/pedido.html.');
 }
 
-if (servicioOriginal !== servicioGenerado) {
-  fs.writeFileSync(SERVICIO, servicioGenerado);
-  console.log('Reescritos los paquetes de app/servicio.html.');
+for (const pg of paginasServicio) if (pg.original !== pg.generado) {
+  fs.writeFileSync(pg.ruta, pg.generado);
+  console.log(`Reescritos los paquetes de app/${pg.archivo}.`);
 }
 
 if (original === generado) {

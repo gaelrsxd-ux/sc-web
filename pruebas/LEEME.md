@@ -1,30 +1,33 @@
 # Pruebas de navegador
 
-Tres suites, una por cada cosa que puede romperse sola.
+Cuatro suites, una por cada cosa que puede romperse sola.
 
 Por esta web entra dinero por **dos caminos distintos**, y no comparten casi
-nada: uno vende un objeto que se envía, el otro un trabajo que se hace sobre la
-ficha de Google del cliente.
+nada: uno vende un objeto que se envía, el otro un trabajo que se entrega. El
+segundo tiene cuatro páginas de cobro —Google, sitio web, agente de IA y
+automatización— con el mismo esqueleto y el mismo script (`assets/servicio.js`).
 
 | | |
 |---|---|
 | `compra.mjs` | la placa: ficha → `pedido.html` → lo que se le manda al Worker → `gracias.html` |
-| `servicio.mjs` | el perfil de Google: `servicio.html` → el cobro → `gracias-servicio.html` |
-| `instalaciones.mjs` | las fotos de clientes de la ficha |
+| `servicio.mjs` | el perfil de Google: `servicio.html` → el cobro → `gracias-servicio.html`. Es la que prueba el MECANISMO del checkout, que las otras tres páginas comparten |
+| `paquetes.mjs` | el sitio web, el agente de IA y la automatización: `web.html`, `ia.html`, `automatizacion.html` → el cobro → `gracias-paquete.html`, y que la portada y los términos digan el mismo precio |
+| `instalaciones.mjs` | las fotos de clientes de la ficha y el visor |
 
 ```sh
 node servidor.js 8099 &
 node pruebas/compra.mjs
 node pruebas/servicio.mjs
+node pruebas/paquetes.mjs
 node pruebas/instalaciones.mjs
 ```
 
 Ciento treinta comprobaciones en la primera, la mayoría con JavaScript y un
-bloque final sin él; ciento ochenta y dos en la segunda y treinta y una en la
-tercera.
+bloque final sin él; ciento ochenta y dos en la segunda, ciento veintiuna en la
+tercera y treinta y una en la cuarta.
 
-⚠ **El único `force: true` de las tres suites está en el bloque sin JavaScript
-de `compra.mjs`, y no es pereza.** Antes de pulsar, Playwright espera a que el
+⚠ **Los `force: true` de estas suites están sólo en los bloques sin JavaScript
+—de `compra.mjs` y de `paquetes.mjs`—, y no es pereza.** Antes de pulsar, Playwright espera a que el
 elemento deje de moverse, y lo mide comparando su posición en dos fotogramas
 seguidos (`requestAnimationFrame`). Con el JavaScript apagado el navegador no
 ejecuta esas llamadas, y en una página quieta —`pedido.html` no tiene ninguna
