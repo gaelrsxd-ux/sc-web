@@ -129,12 +129,26 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pg.locator('[data-pc-n]').blur();
   await cuando(() => document.querySelector('[data-pc-n]').value === '1');
 
+  /* Los datos estructurados de la portada, leídos ANTES de irnos de ella. */
+  const esquema = (await pg.locator('script[type="application/ld+json"]').allTextContents()).join(' ');
+
   /* ---- de la ficha al pedido ---- */
   await pg.locator('[data-pc-ir]').click();
   await pg.waitForURL('**/pedido.html?n=1');
   const tramos = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas;
-  ok(desdePortada === '$' + tramos[0].tot.toLocaleString('en-US'),
-     'la cifra «desde» de la portada (' + desdePortada + ') es el precio de 1 placa de la tabla');
+  /* ⚠ LA CIFRA GRANDE ES LA PLACA, NO EL TOTAL. El envío no se puede sumar en
+     la portada porque todavía no se sabe: son $179 por paquetería y $0 si la
+     llevamos en mano, y anunciar el peor de los dos como si fuera el único
+     inflaba el precio de entrada para media clientela. Lo que sí es obligatorio
+     es que la línea de debajo nombre las dos partes, y eso se comprueba aquí
+     mismo: sin ella la cifra grande sería una verdad a medias. */
+  ok(desdePortada === '$' + (tramos[0].tot - tramos[0].e).toLocaleString('en-US'),
+     'la cifra «desde» de la portada (' + desdePortada + ') es la placa sola, sin envío');
+  /* Y los datos estructurados dicen ESA cifra, no otra: si el buscador anuncia
+     un precio y la página enseña otro, el que parece equivocado es el buscador
+     —y Google penaliza justo ese desfase—. */
+  ok(esquema.includes('"price":"' + (tramos[0].tot - tramos[0].e) + '"'),
+     'el precio de los datos estructurados es el mismo que la cifra grande');
 
   await pg.selectOption('#ped-cant', '4');
   await pg.waitForTimeout(250);
@@ -163,13 +177,17 @@ const navegador = await chromium.launch({ executablePath: CHROME });
 
   /* Los 25 tramos, donde ahora se eligen. Antes se recorrían en la portada a
      base de 24 toques al «+»; aquí se comprueba lo mismo sobre el desplegable
-     que de verdad decide lo que se cobra. */
+     que de verdad decide lo que se cobra.
+
+     Sin dirección todavía, lo que enseña la cabecera es la placa sin envío
+     —igual que la portada—; el envío entra unos pasos más abajo y tiene su
+     propio bloque de comprobaciones. */
   let descuadres = 0;
   for (const t of tramos) {
     await pg.selectOption('#ped-cant', String(t.n));
     await pg.waitForTimeout(25);
     const visto = (await pg.locator('[data-ped-tot]').first().textContent()).trim();
-    if (visto !== '$' + t.tot.toLocaleString('en-US')) descuadres++;
+    if (visto !== '$' + (t.tot - t.e).toLocaleString('en-US')) descuadres++;
   }
   ok(descuadres === 0, 'los ' + tramos.length + ' tramos enseñan el importe de la tabla en el pedido');
   await pg.selectOption('#ped-cant', '4');
@@ -584,8 +602,45 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   const precioSuelta = pesos(suelta.tot);         // por paquetería: lleva el envío
   const precioEnMano = pesos(suelta.tot - suelta.e);   // en mano: sin él
 
+  /* ---- EL ENVÍO NO SE SUMA HASTA QUE HAY DIRECCIÓN ----
+     Es la mitad frágil de esta decisión. La portada anuncia la placa sola, así
+     que esta pantalla tiene que abrir con la MISMA cifra: subir al total nada
+     más entrar sería cambiar el precio entre una pantalla y la siguiente sin
+     que nadie haya escrito nada. Y como el envío falta, la cabecera lo tiene
+     que DECIR mientras falta: sin ese aviso esto es la sorpresa del carrito. */
+  await pg.goto(BASE + '/pedido.html?n=1');
+  ok((await pg.locator('[data-ped-tot]').textContent()).trim() === precioEnMano,
+     'al entrar sin dirección la cabecera dice ' + precioEnMano + ', la placa sola');
+  const pendiente = (await pg.locator('[data-ped-que]').textContent()).trim();
+  ok(pendiente.includes(pesos(suelta.e)) && /envío/i.test(pendiente),
+     'y avisa de que el envío falta, con su cifra: «' + pendiente + '»');
+  ok((await pg.locator('[data-ped-pagar]').textContent()).includes(precioEnMano),
+     'y el botón de pagar dice esa misma cifra, no otra');
+  /* Un código postal a medias NO cobra envío: sería cobrarlo por no haber
+     terminado de escribir. Y no puede colarse hasta el cobro, porque el campo
+     exige cinco dígitos para dejar pasar de paso. Hay que llegar hasta él: el
+     bloque de la dirección no existe todavía en el paso uno, que es justo lo
+     que hace honesto al aviso de arriba. */
+  await pg.locator('.ped-op:has([value=blanco])').click();
+  await pg.locator('[data-paso="1"] [data-sigue]').click();
+  await pg.fill('[name=cp]', '780');
+  await pg.waitForTimeout(150);
+  ok((await pg.locator('[data-ped-tot]').textContent()).trim() === precioEnMano,
+     'con el código postal a medias sigue sin sumarse');
+  ok(await pg.locator('[name=cp]').evaluate(c => !c.checkValidity()),
+     'y ese código postal a medias no deja avanzar, así que nunca se cobra de menos');
+
+  /* Con la cantidad que ya lleva envío gratis, la cabecera no puede prometer
+     ningún envío pendiente: no hay ninguno. */
+  await pg.goto(BASE + '/pedido.html?n=2');
+  ok(!/\$\d/.test((await pg.locator('[data-ped-que]').textContent()).trim()),
+     'con dos placas la cabecera no anuncia ningún envío por sumar');
+
   let e = await pideCon('79000');
-  ok(e.cabecera === precioSuelta, 'con código de Ciudad Valles la cabecera dice ' + precioSuelta);
+  ok(e.cabecera === precioSuelta,
+     'al escribir un código de Ciudad Valles el envío SÍ se suma: ' + precioSuelta);
+  ok((await pg.locator('[data-ped-que]').textContent()).includes('incluye ' + pesos(suelta.e)),
+     'y la cabecera pasa de «al poner tu dirección» a «incluye» el envío');
   ok(!e.aviso, 'y no aparece el aviso de entrega en mano');
 
   e = await pideCon(CP_LOCAL);
