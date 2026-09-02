@@ -526,19 +526,22 @@ test('el pago vuelve a gracias.html, que es donde está el WhatsApp del pedido',
 const RANGOS = (TABLA.entregaLocal && TABLA.entregaLocal.rangos) || [];
 const CP_LOCAL = RANGOS.length ? String(RANGOS[0].desde).padStart(5, '0') : null;
 
-/* ⚠ EL ENVÍO SE ENCIENDE A PROPÓSITO PARA PROBARLO.
-   Hoy la tabla lleva el envío DENTRO del precio y no se cobra aparte, así que
-   no hay nada que descontar y todas estas comprobaciones pasarían por vacías:
-   verdes sin haber ejercido una sola línea del descuento. Eso es exactamente lo
-   que ya avisó una revisión —«las pruebas del descuento están todas saltadas en
-   la configuración que se despliega»— y es peor que no tenerlas, porque dan
-   confianza sin darla.
+/* ⚠ EL ENVÍO SE ENCIENDE A PROPÓSITO PARA PROBARLO, Y SIGUE HACIENDO FALTA.
+   La tabla de hoy cobra envío en UNA fila —la placa suelta— y lo regala en las
+   veinticuatro restantes. Esa fila basta para ejercer el descuento sobre el
+   catálogo que se despliega, y la prueba de aquí abajo lo hace sin trucar nada.
 
-   Que el envío se cobre o no es una DECISIÓN COMERCIAL y puede cambiar mañana.
-   El mecanismo que lo descuenta a quien vive en la ciudad tiene que estar
-   probado en los dos casos, así que aquí se enciende sobre la tabla de verdad,
-   se ejerce, y se apaga. Node cachea el módulo JSON y devuelve el mismo objeto,
-   de modo que lo que se toca es justo lo que lee el Worker. */
+   Pero que el envío se cobre o no es una DECISIÓN COMERCIAL y puede cambiar
+   mañana: si vuelve a ir dentro del precio en todas las filas, estas
+   comprobaciones pasarían por vacías —verdes sin haber ejercido una sola línea
+   del descuento—, que es exactamente lo que avisó una revisión en su día y es
+   peor que no tenerlas, porque dan confianza sin darla. Por eso el mecanismo se
+   prueba ADEMÁS sobre un envío encendido a mano: así queda cubierto sea cual
+   sea la tabla del día. Node cachea el módulo JSON y devuelve el mismo objeto,
+   de modo que lo que se toca es justo lo que lee el Worker, y se apaga al salir.
+
+   El importe de prueba es distinto del real —$79 frente a $179— a propósito: si
+   coincidieran, una prueba que dejara de encenderlo seguiría pasando. */
 const ENVIO_PRUEBA = 79;
 
 async function conEnvio(id, cuerpo, envio = ENVIO_PRUEBA) {
@@ -552,19 +555,39 @@ async function conEnvio(id, cuerpo, envio = ENVIO_PRUEBA) {
   }
 }
 
-test('con el envío DENTRO del precio, hoy no se descuenta nada a nadie', async () => {
-  /* El estado actual del catálogo, comprobado tal cual está: se cobra lo mismo
-     desde la ciudad que desde Ciudad Valles, y el concepto dice «envío gratis».
-     Si algún día vuelve a haber un envío que cobrar, esta prueba lo dirá. */
-  assert.ok(TABLA.paquetes.every(p => p.envio === 0),
-    'esta prueba describe el catálogo con el envío incluido; si alguno lo cobra, actualízala');
-  for (const cp of [CP_LOCAL, '79000', ''].filter(v => v !== null)) {
+test('el catálogo REAL cobra el envío de la placa suelta, y lo perdona a quien vive aquí', async () => {
+  /* Esto no enciende nada: ejerce el descuento sobre la tabla tal cual se
+     despliega. Es la prueba que faltaba mientras el envío iba dentro del precio
+     en todas las filas, porque entonces no había ningún cobro real que perdonar
+     y el camino del descuento sólo se recorría trucado. */
+  const uno = TABLA.paquetes.find(p => p.id === '1');
+  assert.ok(uno.envio > 0,
+    'la placa suelta ya no cobra envío; si es a propósito, esta prueba describe otra tabla');
+
+  const casos = [
+    ['79000',  uno.total,             uno.base + ' · incluye $' + uno.envio + ' de envío'],
+    ['',       uno.total,             uno.base + ' · incluye $' + uno.envio + ' de envío'],
+    [CP_LOCAL, uno.total - uno.envio, uno.base + ' · sin cobro de envío, entrega en mano'],
+  ].filter(c => c[0] !== null);
+  for (const [cp, importe, titulo] of casos) {
     montaCaches();
     const llamadas = montaFetch(okMP);
     await worker.fetch(post({ paquete: '1', cp }), ENV);
-    const uno = TABLA.paquetes.find(p => p.id === '1');
-    assert.equal(llamadas[0].cuerpo.items[0].unit_price, uno.total, 'cp=«' + cp + '»');
-    assert.match(llamadas[0].cuerpo.items[0].title, /· envío gratis/);
+    assert.equal(llamadas[0].cuerpo.items[0].unit_price, importe,
+      'cp=«' + cp + '» tenía que cobrar ' + importe);
+    assert.equal(llamadas[0].cuerpo.items[0].title, titulo,
+      'y el concepto tiene que DECIRLO: un importe menor sin explicación parece un error');
+  }
+
+  /* Y el de dos placas, que ya no paga envío, NO puede bajar por el mismo
+     código postal: sería descontar dos veces el envío que ya iba regalado. */
+  const dos = TABLA.paquetes.find(p => p.id === '2');
+  if (CP_LOCAL) {
+    montaCaches();
+    const llamadas = montaFetch(okMP);
+    await worker.fetch(post({ paquete: '2', cp: CP_LOCAL }), ENV);
+    assert.equal(llamadas[0].cuerpo.items[0].unit_price, dos.total,
+      'dos placas cuestan lo mismo dentro y fuera de la zona');
   }
 });
 

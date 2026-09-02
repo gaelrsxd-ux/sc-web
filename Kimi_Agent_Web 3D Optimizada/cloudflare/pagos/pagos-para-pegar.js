@@ -85,8 +85,8 @@ const TABLA = {
       "id": "1",
       "piezas": 1,
       "base": "Placa reseñas Google · 1 pieza",
-      "total": 399,
-      "envio": 0,
+      "total": 578,
+      "envio": 179,
       "cuotas": 1
     },
     {

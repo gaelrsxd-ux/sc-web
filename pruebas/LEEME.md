@@ -22,7 +22,7 @@ node pruebas/paquetes.mjs
 node pruebas/instalaciones.mjs
 ```
 
-Ciento treinta y tres comprobaciones en la primera, la mayoría con JavaScript y un
+Ciento cuarenta y una comprobaciones en la primera, la mayoría con JavaScript y un
 bloque final sin él; ciento ochenta y dos en la segunda, ciento cuarenta y uno en la
 tercera y treinta y una en la cuarta.
 
@@ -80,8 +80,8 @@ formulario, esa prueba se pone en rojo.
 | **La vuelta** | `gracias.html` recupera el pedido y arma el WhatsApp; con `?estado=pendiente` **no** da el pago por hecho |
 | **«En blanco»** | salta el paso del negocio **y le quita el `required`** — un campo obligatorio dentro de un bloque escondido bloquea el envío sin decir dónde está el problema |
 | **El zoom del doble toque** | la trampa se mudó del «+» del contador a las tres pestañas, que es lo que ahora se toca rápido: llevan `touch-action:manipulation`, un `:active` que sustituye al resaltado retirado y el `:hover` dentro de `@media (hover:hover)` para que no se quede pegado en iOS. El pellizco para ampliar sigue permitido en toda la página |
-| **El empujón al envío gratis** | hoy NO sale en ninguna cantidad, porque el envío va dentro del precio y no hay umbral que empujar. El mecanismo sigue escrito y se enciende solo el día que vuelva a cobrarse |
-| **La entrega en mano** | con el envío incluido ya no descuenta nada: el importe es el mismo desde la ciudad y desde Ciudad Valles. Lo que cambia es el aviso y la cabecera, que dicen «entrega en mano» — y el aviso **no** promete dinero. Al formulario no se le añade ninguna bandera de «soy local»: eso lo decide el servidor |
+| **El empujón al envío gratis** | sale **exactamente** en las cantidades que pagan envío —hoy sólo la placa suelta— y en ninguna más: en una que ya lo tiene gratis estaría ofreciendo lo que esa persona ya tiene. Dice la cifra que se ahorra, y el desglose de esas filas cuadra: la cifra grande es la suma de las dos chicas |
+| **La entrega en mano** | descuenta el envío de verdad, y **sólo** donde hay envío que descontar: con una placa la cabecera baja de $578 a $399 al teclear un código postal de casa, y con dos —que ya lo tenían gratis— no se mueve, que sería descontarlo dos veces. El aviso dice el ahorro cuando lo hay y se calla cuando no. Al formulario no se le añade ninguna bandera de «soy local»: eso lo decide el servidor |
 | **El contador, sin JavaScript** | nace escondido y lo enciende el script. Sin él, el «+» no sumaría, el campo aceptaría un número que nadie leería y el precio de al lado seguiría diciendo el de una placa: **tres controles mintiendo a la vez**. Escondido, la ficha dice lo que siempre dijo —una placa, su precio y el botón— y la cantidad se elige un toque después, en el `<select>` del pedido |
 | **Sin JavaScript** | los tres paneles de Soluciones se ven a la vez —el `hidden` lo pone el script, no el marcado—, la cifra grande del pedido queda **vacía** en vez de mentir, las 25 cantidades siguen enteras en su `<select>`, los cuatro bloques del pedido salen a la vez y el formulario se envía entero |
 

@@ -513,11 +513,35 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pg.waitForTimeout(400);
   ok(await visible('productos'), 'entrar por #productos abre la pestaña del producto');
 
-  /* El aviso del envío gratis: hoy no hay umbral que empujar porque el envío va
-     dentro del precio. La tabla vive ahora en pedido.html. */
-  await pg.goto(BASE + '/pedido.html');
-  const conAviso = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas.filter(f => f.g);
-  ok(conAviso.length === 0, 'la tabla no trae ningún aviso de envío pendiente de enseñar');
+  /* ---- EL EMPUJÓN AL ENVÍO GRATIS ----
+     Vuelve a haber umbral: la placa suelta paga envío y de dos en adelante no.
+     El aviso tiene que salir EXACTAMENTE en las filas que lo pagan: en una que
+     no lo paga estaría ofreciendo un ahorro que esa persona ya tiene, y faltar
+     en una que sí lo paga se calla el único empujón que sube la cantidad. */
+  const FILAS = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas;
+  const conAviso = FILAS.filter(f => f.g);
+  const pagan = FILAS.filter(f => f.e > 0);
+  ok(conAviso.length === pagan.length && conAviso.every(f => f.e > 0),
+     'el empujón sale en las ' + pagan.length + ' filas que pagan envío y en ninguna más');
+  for (const f of conAviso)
+    ok(f.g.includes('$' + f.e),
+       'y dice la cifra que se ahorra (' + f.n + ': «' + f.g + '»)');
+  /* Y el desglose de esas filas CUADRA: la cifra grande es la suma de las dos
+     chicas. Es la resta que el comprador hace de cabeza, y si no sale, la web
+     parece que redondea a su favor. */
+  for (const f of pagan)
+    ok(f.d.includes('$' + (f.tot - f.e).toLocaleString('en-US')) && f.d.includes('$' + f.e),
+       'y el desglose de ' + f.n + ' enseña de dónde sale el total: «' + f.d + '» = $' + f.tot);
+
+  /* En la ficha se ve de verdad: con una placa el empujón está a la vista y con
+     dos desaparece, porque ahí arriba ya dice «Envío gratis» y repetirlo es
+     ruido. Sin esto la fila podría traer el texto y no enseñarlo nunca. */
+  const emp = pg.locator('[data-pc-gratis]');
+  ok(await emp.isVisible() && (await emp.textContent()).includes('$' + FILAS[0].e),
+     'en la ficha, con 1 placa el empujón se ve y dice los $' + FILAS[0].e);
+  await pg.locator('[data-pc="1"]').click();
+  ok(await cuando(() => document.querySelector('[data-pc-gratis]').hidden),
+     'y con 2 placas desaparece solo');
 
   /* ---- LA ENTREGA EN MANO ----
      Es lo único de esta web donde un dato del comprador mueve el importe, así
@@ -544,32 +568,54 @@ const navegador = await chromium.launch({ executablePath: CHROME });
     };
   }
 
-  /* ⚠ CON EL ENVÍO DENTRO DEL PRECIO, LA ENTREGA EN MANO YA NO DESCUENTA NADA.
-     Lo que cambia para quien vive en la ciudad no es el importe sino CÓMO le
-     llega: en persona y con la instalación hecha, en vez de por paquetería. El
-     mecanismo del descuento sigue probado, pero en las pruebas del Worker,
-     donde se le puede encender un envío de mentira; aquí se comprueba lo que la
-     página promete hoy. */
+  /* ⚠ LA ENTREGA EN MANO VUELVE A MOVER EL IMPORTE, y sólo en la placa suelta:
+     es la única cantidad que paga envío. Quien vive aquí no paga paquetería
+     porque la llevamos nosotros, así que la cifra baja de $578 a $399 en
+     cuanto teclea su código postal. De dos en adelante el envío ya era gratis
+     para todo México y no hay nada que descontar: ahí lo que cambia no es el
+     importe sino CÓMO le llega —en persona y con la instalación hecha—.
+
+     Las dos mitades tienen que decir lo mismo: lo que la página enseña y lo
+     que cobra el Worker con esta misma lista de rangos. Si discreparan, la web
+     diría un precio y el cobro sería otro, que es el fallo que todo este
+     montaje existe para impedir. */
   const suelta = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas[0];
-  const precioSuelta = '$' + suelta.tot.toLocaleString('en-US');
+  const pesos = n => '$' + n.toLocaleString('en-US');
+  const precioSuelta = pesos(suelta.tot);         // por paquetería: lleva el envío
+  const precioEnMano = pesos(suelta.tot - suelta.e);   // en mano: sin él
 
   let e = await pideCon('79000');
   ok(e.cabecera === precioSuelta, 'con código de Ciudad Valles la cabecera dice ' + precioSuelta);
   ok(!e.aviso, 'y no aparece el aviso de entrega en mano');
 
   e = await pideCon(CP_LOCAL);
-  ok(e.cabecera === precioSuelta, 'con código de la ciudad cuesta lo MISMO: el envío ya iba incluido');
-  ok(e.aviso, 'pero sí aparece el aviso de que se entrega en persona');
+  ok(e.cabecera === precioEnMano,
+     'con código de la ciudad baja a ' + precioEnMano + ': el envío deja de cobrarse');
+  ok(e.aviso, 'y aparece el aviso de que se entrega en persona');
   const textoAviso = (await pg.locator('[data-ped-local]').textContent()).trim();
-  ok(!/\$\d/.test(textoAviso) && /instalamos|persona|mano/i.test(textoAviso),
-     'y ese aviso NO promete dinero, promete la entrega: «' + textoAviso + '»');
+  ok(textoAviso.includes(pesos(suelta.e)) && /instalamos|persona|mano/i.test(textoAviso),
+     'ese aviso dice las dos cosas —la entrega y el ahorro—: «' + textoAviso + '»');
+  ok(await pg.locator('[data-ped-gratis]').isHidden(),
+     'y el empujón de «lleva 2 y no pagas envío» se calla: aquí ya no lo paga');
   ok((await pg.locator('[data-ped-que]').textContent()).includes('entrega en mano'),
      'la cabecera dice «entrega en mano» en vez del texto de envío');
 
+  /* Con dos placas el envío ya era gratis, así que el código postal de casa no
+     puede mover el importe: si lo moviera, estaríamos descontando dos veces el
+     mismo envío. */
+  const dos = JSON.parse(await pg.locator('#pc-tabla').textContent()).filas[1];
+  const e2 = await pideCon(CP_LOCAL, '2');
+  ok(e2.cabecera === pesos(dos.tot),
+     'con dos placas el mismo código postal NO descuenta nada: ' + pesos(dos.tot));
+  ok(e2.aviso, 'pero el aviso de la entrega en persona sigue saliendo');
+  ok(!/\$\d/.test((await pg.locator('[data-ped-local]').textContent()).trim()),
+     'y ahí el aviso no promete ningún ahorro, porque no lo hay');
+
+  e = await pideCon(CP_LOCAL);
   await pg.locator('[data-paso="3"] [data-sigue]').click();
   const resLocal = await pg.locator('[data-ped-resumen]').innerText();
-  ok(resLocal.includes(precioSuelta), 'el resumen del paso 4 dice el mismo importe');
-  ok((await pg.locator('[data-ped-pagar]').textContent()).includes(precioSuelta), 'y el botón también');
+  ok(resLocal.includes(precioEnMano), 'el resumen del paso 4 dice el mismo importe');
+  ok((await pg.locator('[data-ped-pagar]').textContent()).includes(precioEnMano), 'y el botón también');
   await pg.locator('[data-ped-pagar]').click();
   await pg.waitForTimeout(700);
   const cl = Object.fromEntries(new URLSearchParams(enviado || ''));
@@ -579,7 +625,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
 
   await pg.goto(BASE + '/gracias.html');
   const grLocal = await pg.locator('[data-gr-resumen]').innerText();
-  ok(grLocal.includes(precioSuelta), 'gracias.html declara el importe que se cobró');
+  ok(grLocal.includes(precioEnMano), 'gracias.html declara el importe que se cobró');
   const waLocal = decodeURIComponent((await pg.locator('[data-gr-wa]').getAttribute('href')).split('text=')[1]);
   ok(!/\$\d/.test(waLocal), 'y el WhatsApp no declara ningún importe propio');
 

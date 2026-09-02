@@ -422,17 +422,18 @@ const PLACA_EN_PAQUETE = { precio: 250, max: 2 };
 
 const CUOTAS_DESDE = 2500;
 
-/* ⚠ EL ENVÍO ESTÁ EN CERO EN TODAS LAS FILAS, Y ES UNA DECISIÓN, NO UN OLVIDO.
-   Se cobraba aparte —79, 69 y 59 pesos en los tres primeros paquetes— y el
-   resultado era que una placa suelta salía en $508 mientras la competencia
-   anunciaba $399 con el envío dentro. La comparación se perdía justo en el
-   número más mirado del catálogo. Ahora el envío va dentro del precio: la cifra
-   que se ve es la que se paga, en México entero.
+/* ⚠ EL ENVÍO SE COBRA SÓLO EN EL PEDIDO DE UNA PLACA, Y ES UNA DECISIÓN.
+   Estuvo cobrándose —79, 69 y 59 pesos en los tres primeros paquetes—, luego
+   en cero en todas las filas, y ahora vuelve en una sola: $179 en la de una
+   pieza y gratis a partir de dos. Lo que se compra con ese número es el salto
+   a dos: quien lleva una paga el envío entero, quien lleva dos no paga
+   ninguno, y la diferencia la ve escrita en la propia ficha.
 
-   La columna `envio` se queda —no se borra— porque es el mecanismo. El día que
-   haya que volver a cobrarlo basta con poner números aquí: el Worker, el
-   contador, el aviso de «lleva 4 y no pagas envío» y el descuento por entrega
-   en mano siguen escritos para ello y se encienden solos.
+   Y no hizo falta tocar nada más que la columna: el Worker, el contador, el
+   aviso de «lleva 2 y no pagas envío», el desglose «$399 + $179 de envío» y el
+   descuento por entrega en mano estaban escritos para esto desde el día que se
+   puso a cero, y se han encendido solos. Lo único que NO se enciende solo es el
+   texto legal, y de eso se ocupa una guarda más abajo.
 
    Los paquetes, en el orden en que se enseñan. `precio` es el TOTAL del
    paquete en pesos, no el precio por unidad.
@@ -454,7 +455,7 @@ const CUOTAS_DESDE = 2500;
    Si en algún escalón sube, comprar más sale peor por unidad y la lista
    pierde el sentido. `node tools/precios.mjs --tabla` la imprime entera. */
 const PAQUETES = [
-  { piezas:  1, precio:  399, envio:  0 },
+  { piezas:  1, precio:  399, envio:  179 },
   { piezas:  2, precio:  649, envio:  0 },
   { piezas:  3, precio:  799, envio:  0 },
   { piezas:  4, precio:  949, envio:  0, destaca: true },
@@ -685,6 +686,21 @@ const escaleraPlacas = () => Array.from({ length: PLACA_EN_PAQUETE.max },
      ella. Un paquete que la web vende y los términos no nombran es un contrato
      sin precio; uno que nombran con otra cifra, un contrato con el precio
      equivocado. */
+  /* ⚠ EL ENVÍO DE LOS TÉRMINOS TIENE QUE SER EL DE ESTA TABLA. Es el documento
+     que obliga: si el titular cambia el importe aquí y regenera, toda la web
+     cobra lo nuevo mientras el contrato sigue prometiendo lo viejo — y quien
+     compre puede exigir lo que dicen los términos. */
+  {
+    const uno = PAQUETES[0], desde = desdeGratis();
+    if (uno.envio > 0) {
+      if (!terminos.includes(`$${miles(uno.envio)} MXN`))
+        throw new Error(`envío: terminos.html no dice cuánto cuesta ($${miles(uno.envio)} MXN)`);
+      if (desde !== null && !terminos.includes(`a partir de ${desde === 2 ? 'dos' : desde}`))
+        throw new Error(`envío: terminos.html no dice desde cuántas placas es gratis (${desde})`);
+    } else if (!terminos.includes('envío está incluido')) {
+      throw new Error('envío: está a cero en la tabla y terminos.html no dice que va incluido');
+    }
+  }
   for (const s of SERVICIOS) {
     if (!terminos.includes(`$${miles(s.precio)} MXN`))
       throw new Error(`servicio «${s.nombre}»: terminos.html no dice su precio ($${miles(s.precio)} MXN)`);
@@ -723,7 +739,7 @@ function tablaContador() {
        Es el mismo texto que lleva el título del cobro en Mercado Pago, así que
        lo que el comprador lee en la web y lo que ve en el checkout coinciden
        palabra por palabra. */
-    s: gratis(p) ? 'envío gratis' : 'envío incluido',
+    s: gratis(p) ? 'envío gratis' : `+ $${p.envio} de envío`,
     g: avisoGratis(p),
   }));
   /* `local` viaja para que pedido.html pueda AVISAR de que no se cobrará el
