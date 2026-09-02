@@ -95,18 +95,18 @@ document.documentElement.classList.add('js');
    "@id":"https://sycsolutions.company/#faq",
    "isPartOf":{"@id":"https://sycsolutions.company/#web"},
    "mainEntity":[
-    {"@type":"Question","name":"¿Trabajan solo con negocios de México?",
-     "acceptedAnswer":{"@type":"Answer","text":"No, trabajamos con negocios de toda Latinoamérica. El proceso es remoto de principio a fin y el resultado no cambia sin importar dónde estés. Nuestra base está en San Luis Potosí, México: si tu negocio está por la zona y prefieres cerrar los detalles en persona, ahí sí podemos reunirnos cara a cara."}},
-    {"@type":"Question","name":"¿Cómo es el proceso de trabajo y el pago?",
-     "acceptedAnswer":{"@type":"Answer","text":"Empezamos con una videollamada para entender tu negocio y lo que necesitas. Con eso armamos un plan y te presentamos opciones concretas para elegir. Al arrancar se cubre el 50% del proyecto, y a partir de ahí trabajamos por entregas: vas viendo avances por partes, y en cada una puedes pedir que se modifique, agregue o quite algo antes de seguir. Cuando el proyecto está terminado y aprobado, se liquida el 50% restante y se entrega por completo."}},
-    {"@type":"Question","name":"¿Cuánto tardan en responderme?",
-     "acceptedAnswer":{"@type":"Answer","text":"Menos de 24 horas. Atendemos de lunes a viernes de 9:00 a 23:00, y sábados y domingos de 10:00 a 22:00. Fuera de ese horario también solemos responder: tu mensaje entra igual."}},
     {"@type":"Question","name":"¿Qué hacen exactamente?",
-     "acceptedAnswer":{"@type":"Answer","text":"Tres cosas: sitios web premium, agentes de IA que atienden a tus clientes y automatización de procesos."}},
-    {"@type":"Question","name":"¿Cuánto cuesta el diagnóstico de mi web?",
-     "acceptedAnswer":{"@type":"Answer","text":"Nada, y no hace falta registrarse. Analizamos únicamente la página pública que nos indiques: no la guardamos en ninguna base de datos, no la asociamos contigo y no la compartimos; el informe se conserva hasta una hora en una memoria temporal para no repetir el análisis. Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a tu negocio."}},
-    {"@type":"Question","name":"No sé qué necesito exactamente. ¿Puedo escribir igual?",
-     "acceptedAnswer":{"@type":"Answer","text":"Sí, es lo más habitual. En el formulario tienes la opción «No lo sé aún — asesórenme», y también puedes escribirnos por WhatsApp o por correo. Dinos qué hace tu negocio y qué te gustaría conseguir; no hace falta que traigas el encargo definido. Te decimos qué haríamos y por dónde empezaríamos."}}
+     "acceptedAnswer":{"@type":"Answer","text":"Cinco cosas, todas con su precio a la vista: la placa de reseñas para tu mostrador, tu perfil de Google, tu sitio web, un agente que contesta tu WhatsApp y automatizar una tarea que hoy haces a mano. Cada una tiene su página con lo que incluye."}},
+    {"@type":"Question","name":"¿Cómo se paga?",
+     "acceptedAnswer":{"@type":"Answer","text":"Desde la web, con Mercado Pago: tarjeta, efectivo o transferencia. De contado, o dejando la mitad y el resto cuando te entregamos el trabajo. Desde $2,500 de contado, tu tarjeta te deja partirlo en 2 mensualidades."}},
+    {"@type":"Question","name":"¿Cuánto tardan en entregar?",
+     "acceptedAnswer":{"@type":"Answer","text":"Tu perfil de Google, de 1 a 7 días hábiles. El agente de WhatsApp o una automatización, 10. Tu sitio web, 15. El plazo empieza cuando tenemos tu material, no cuando pagas. La entrega de las placas la acordamos contigo."}},
+    {"@type":"Question","name":"¿Trabajan solo en San Luis Potosí?",
+     "acceptedAnswer":{"@type":"Answer","text":"No. Todo el trabajo es a distancia y funciona igual en cualquier parte de México; la placa te llega con el envío incluido. En San Luis Potosí y Soledad, además, vamos en persona: te instalamos la placa y tomamos las fotos de tu perfil."}},
+    {"@type":"Question","name":"¿Cuánto cuesta revisar mi página?",
+     "acceptedAnswer":{"@type":"Answer","text":"Nada, y sin registrarte. Analizamos sólo la página que nos digas —no la guardamos ni la compartimos— y te damos una nota con los fallos concretos."}},
+    {"@type":"Question","name":"No sé qué necesito. ¿Puedo escribir igual?",
+     "acceptedAnswer":{"@type":"Answer","text":"Sí, es lo más habitual. Escríbenos por WhatsApp o marca «No lo sé aún — asesórenme» en el formulario, y dinos qué hace tu negocio. Contestamos en menos de 24 horas."}}
    ]
   },
   {
@@ -1009,15 +1009,25 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    tramos ni el índice del riel, y las objeciones se resuelven justo donde se
    decide escribir. <details> nativo: abre sin JS, se navega con teclado y los
    buscadores leen la respuesta aunque esté plegada. */
-.faq{margin:clamp(44px,5vw,72px) 0 0;border-top:1px solid var(--line-soft)}
+.faq{margin:clamp(44px,5vw,72px) 0 0;border-top:1px solid var(--line-soft);counter-reset:faq}
 .faq-k{padding:clamp(20px,2.2vw,28px) 0 4px;font-size:9px;letter-spacing:4px;
   text-transform:uppercase;color:var(--dim)}
-.faq details{border-bottom:1px solid var(--line-soft)}
+.faq details{border-bottom:1px solid var(--line-soft);counter-increment:faq}
 .faq summary{list-style:none;cursor:pointer;position:relative;
   padding:clamp(14px,1.7vw,19px) 38px clamp(14px,1.7vw,19px) 0;
   font-family:var(--serif);font-size:clamp(16px,1.8vw,20px);color:var(--ink);
   transition:color .3s}
 .faq summary::-webkit-details-marker{display:none}
+/* El número, en bronce y con cifra fija: alinea las seis preguntas por su
+   primera letra en vez de dejarlas colgando de anchos distintos. */
+.faq summary{display:flex;align-items:baseline;gap:14px}
+.faq summary::before{content:counter(faq,decimal-leading-zero);flex:none;
+  font-family:var(--sans);font-size:9.5px;letter-spacing:2px;color:var(--bronze);
+  font-variant-numeric:tabular-nums}
+/* La respuesta arranca bajo la primera letra de su pregunta, no bajo el número:
+   la sangría es lo que dice que pertenece a ella. */
+.faq .faq-r{padding-left:29px}
+@media(max-width:520px){.faq summary{gap:10px}.faq .faq-r{padding-left:0}}
 .faq summary:hover,.faq details[open] summary{color:var(--bronze-hi)}
 .faq summary:focus-visible{outline:1px solid var(--bronze);outline-offset:3px}
 /* Cheurón: gira al abrir. Sólo transform, sin reflujo. */
@@ -1088,12 +1098,24 @@ footer .legal a:hover{color:var(--bronze)}
    recorta; el tamaño de letra no baja para no perder legibilidad. */
 @media(max-width:520px){
   footer .motto{letter-spacing:3.4px}
-  footer .fl{gap:14px 18px}
-  footer .legal{gap:8px 14px}
+  /* ⚠ UNA COLUMNA, Y NO DOS. Se probaron dos y quedó peor: «Clientes» al lado
+     de «Revisa tu página» son anchos que no se parecen en nada, así que cada
+     fila se centraba en un sitio distinto y el bloque seguía leyéndose como un
+     descuadre. En columna hay un solo eje, todo cae sobre él, y el pie se lee
+     como una lista y no como restos. Cuesta alto —y el pie es justo donde
+     sobra— a cambio de que no haya una sola línea rota por donde cupo. */
+  footer .fl,footer .legal{display:grid;grid-template-columns:1fr;gap:14px;
+    justify-items:center}
   footer .legal a{letter-spacing:1.6px}
-  .met{gap:6px 16px}
+  /* Las tres cifras, cada una en su renglón: con el resto del pie ya en un
+     solo eje, la última fila partida en dos era lo único que quedaba torcido. */
+  .met{flex-direction:column;gap:7px}
   .met span{letter-spacing:2px}
-  footer small{letter-spacing:1.2px}
+  /* Y el aviso de copyright cabe entero en un renglón: con el interletrado del
+     pie partía «reservados» a la línea siguiente ella sola, que es la clase de
+     viuda que hace parecer roto un bloque que no lo está. Baja medio punto de
+     cuerpo y casi todo el interletrado, que aquí no adornaba nada. */
+  footer small{font-size:9px;letter-spacing:.4px}
 }
 
 /* ---------- TEMA ----------
@@ -3099,59 +3121,53 @@ html.js .pc-alt{display:none}
          ocupan 266 px, y puestas antes obligaban a rodearlas para llegar a la
          única acción de la página. Quien ya decidió escribe sin estorbo; quien
          duda las encuentra justo al pasar de largo, que es cuando pregunta.
-         Cada respuesta sale de un dato ya publicado en esta misma página
-         —horario, base, plazo de respuesta, condiciones del diagnóstico—. No
-         hay precios, plazos de entrega ni garantías porque nadie los ha
-         fijado: inventarlos sería prometer algo que después habría que
-         sostener. -->
+         Cada respuesta sale de un dato ya publicado en otra parte de la web
+         —el precio del catálogo, el plazo de los términos, el horario del
+         contacto— y cabe en dos renglones. Ninguna inventa nada: el día que
+         una cifra cambie en tools/precios.mjs o en terminos.html, hay que
+         mirar aquí. -->
     <div class="faq rv" id="faq">
       <p class="faq-k">Antes de escribir</p>
       <details>
-        <summary>¿Trabajan solo con negocios de México?</summary>
-        <p class="faq-r">No, trabajamos con negocios de toda Latinoamérica. El proceso
-          es remoto de principio a fin y el resultado no cambia sin importar dónde
-          estés. Nuestra base está en <b>San Luis Potosí, México</b>: si tu negocio
-          está por la zona y prefieres cerrar los detalles en persona, ahí sí podemos
-          reunirnos cara a cara.</p>
-      </details>
-      <details>
-        <summary>¿Cómo es el proceso de trabajo y el pago?</summary>
-        <p class="faq-r">Empezamos con una videollamada para entender tu negocio y lo
-          que necesitas. Con eso armamos un plan y te presentamos opciones concretas
-          para elegir. Al arrancar se cubre el <b>50%</b> del proyecto, y a partir de
-          ahí trabajamos por entregas: vas viendo avances por partes, y en cada una
-          puedes pedir que se modifique, agregue o quite algo antes de seguir. Cuando
-          el proyecto está terminado y aprobado, se liquida el <b>50%</b> restante y se
-          entrega por completo.</p>
-      </details>
-      <details>
-        <summary>¿Cuánto tardan en responderme?</summary>
-        <p class="faq-r">Menos de 24 horas. Atendemos de lunes a viernes de 9:00 a
-          23:00, y sábados y domingos de 10:00 a 22:00. Fuera de ese horario también
-          solemos responder: tu mensaje entra igual.</p>
-      </details>
-      <details>
         <summary>¿Qué hacen exactamente?</summary>
-        <p class="faq-r">Tres cosas: sitios web premium, agentes de IA que atienden
-          a tus clientes y automatización de procesos. Puedes verlas con detalle en
-          <a href="#servicios">lo que dominamos</a>.</p>
+        <p class="faq-r">Cinco cosas, todas con su precio a la vista: la <b>placa de
+          reseñas</b> para tu mostrador, tu <b>perfil de Google</b>, tu <b>sitio
+          web</b>, un <b>agente que contesta tu WhatsApp</b> y <b>automatizar una
+          tarea</b> que hoy haces a mano. Cada una tiene su página con lo que
+          incluye: <a href="#servicios">lo que hacemos</a>.</p>
       </details>
       <details>
-        <summary>¿Cuánto cuesta el diagnóstico de mi web?</summary>
-        <p class="faq-r">Nada, y no hace falta registrarse. Analizamos únicamente la
-          página pública que nos indiques: no la guardamos en ninguna base de datos,
-          no la asociamos contigo y no la compartimos; el informe se conserva hasta una
-          hora en una memoria temporal para no repetir el análisis.
-          Te devolvemos la nota junto a los fallos concretos y qué le cuesta cada uno a
-          tu negocio. Puedes <a href="#diagnostico">probarlo ahora mismo</a>.</p>
+        <summary>¿Cómo se paga?</summary>
+        <p class="faq-r">Desde la web, con <b>Mercado Pago</b>: tarjeta, efectivo o
+          transferencia. De <b>contado</b>, o dejando la <b>mitad</b> y el resto
+          cuando te entregamos el trabajo. Desde $2,500 de contado, tu tarjeta te
+          deja partirlo en <b>2 mensualidades</b>.</p>
       </details>
       <details>
-        <summary>No sé qué necesito exactamente. ¿Puedo escribir igual?</summary>
-        <p class="faq-r">Sí, es lo más habitual. En el formulario tienes la opción
-          «No lo sé aún — asesórenme», y también puedes escribirnos por WhatsApp o
-          por correo. Dinos qué hace tu negocio y qué te gustaría conseguir; no hace
-          falta que traigas el encargo definido. Te decimos qué haríamos y por dónde
-          empezaríamos.</p>
+        <summary>¿Cuánto tardan en entregar?</summary>
+        <p class="faq-r">Tu perfil de Google, <b>de 1 a 7 días hábiles</b>. El agente
+          de WhatsApp o una automatización, <b>10</b>. Tu sitio web, <b>15</b>. El
+          plazo empieza cuando tenemos tu material, no cuando pagas. La entrega de
+          las placas la acordamos contigo.</p>
+      </details>
+      <details>
+        <summary>¿Trabajan solo en San Luis Potosí?</summary>
+        <p class="faq-r">No. Todo el trabajo es a distancia y funciona igual en
+          cualquier parte de <b>México</b>; la placa te llega con el envío incluido.
+          En <b>San Luis Potosí y Soledad</b>, además, vamos en persona: te
+          instalamos la placa y tomamos las fotos de tu perfil.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto cuesta revisar mi página?</summary>
+        <p class="faq-r">Nada, y sin registrarte. Analizamos sólo la página que nos
+          digas —no la guardamos ni la compartimos— y te damos una nota con los
+          fallos concretos. <a href="#diagnostico">Pruébalo ahora</a>.</p>
+      </details>
+      <details>
+        <summary>No sé qué necesito. ¿Puedo escribir igual?</summary>
+        <p class="faq-r">Sí, es lo más habitual. Escríbenos por WhatsApp o marca
+          «No lo sé aún — asesórenme» en el formulario, y dinos qué hace tu negocio.
+          Contestamos en <b>menos de 24 horas</b>.</p>
       </details>
     </div>
   </div>
