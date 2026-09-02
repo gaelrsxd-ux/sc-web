@@ -117,6 +117,14 @@
       /* La pista dice «toca para elegir»: mientras el paquete está abierto ya
          se tocó, y repetirlo sobra. */
       if(pista)pista.hidden=suyo;
+      /* «VER QUÉ INCLUYE» SE CIERRA SOLO AL ELEGIR. La lista sirve para
+         comparar; en cuanto se toca la tarjeta, comparar se acabó, y una lista
+         de ocho puntos abierta entre el título y las formas de pago las
+         empujaba fuera de la pantalla: quien acababa de elegir veía la misma
+         lista de antes y no sabía si había pasado algo. El titular lo pidió
+         con estas palabras: «que se cierre ese "qué incluye" y se vea como que
+         lo seleccionó». Se puede volver a abrir con un toque, como siempre. */
+      if(suyo)for(const d of p.querySelectorAll('details.sv-mas'))d.open=false;
       if(pagos)pagos.hidden=!suyo;
       /* Al cerrar un paquete se le quita la marca: si no, quedaría elegida una
          forma de pago de un paquete que ya no está en pantalla, y el botón de
