@@ -426,12 +426,25 @@ main{max-width:560px}
    quien se equivoca de paquete y no ve cómo deshacerlo cierra la pestaña. */
 .sv-vuelta{display:flex;align-items:center;justify-content:space-between;gap:12px;
   margin-top:14px}
-.sv-vuelta button{-webkit-appearance:none;appearance:none;
-  border:none;background:none;padding:8px 0;cursor:pointer;
-  font-family:var(--sans);font-size:11px;letter-spacing:2.2px;text-transform:uppercase;
-  color:var(--muted);touch-action:manipulation;transition:color .3s}
-.sv-vuelta button:hover,.sv-vuelta button:focus-visible{color:var(--bronze-hi)}
+/* Con borde y en bronce, como el «regresar» de la barra: un texto gris fino se
+   pierde justo cuando alguien quiere deshacer, y el que no ve cómo volver
+   cierra la pestaña. */
+.sv-vuelta button{-webkit-appearance:none;appearance:none;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;padding:10px 14px;
+  border:1px solid var(--line);background:rgba(200,169,106,.07);
+  font-family:var(--sans);font-size:10.5px;letter-spacing:2.4px;text-transform:uppercase;
+  color:var(--bronze-hi);touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:border-color .3s,background-color .3s}
+.sv-vuelta button:hover,.sv-vuelta button:focus-visible{border-color:var(--bronze);background:rgba(200,169,106,.13)}
+.sv-vuelta button:active{background:var(--bronze);color:#0A0B0E;transition-duration:0s}
 .sv-vuelta[hidden]{display:none}
+/* Y OTRA VEZ ABAJO, JUNTO A «PAGAR». Quien llega al final del formulario está
+   dos pantallas por debajo del botón de arriba; si ahí se arrepiente del
+   paquete, el camino de vuelta tiene que estar donde está su dedo. Va debajo
+   del de pagar, a lo ancho, y el script lo enciende y apaga con el de arriba. */
+.ped-botones{flex-wrap:wrap}
+.ped-botones .sv-atras{flex:1 0 100%;order:2}
+.ped-botones .sv-atras[hidden]{display:none}
 
 .sv-pagos[hidden]{display:none}
 .sv-pagos{margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}

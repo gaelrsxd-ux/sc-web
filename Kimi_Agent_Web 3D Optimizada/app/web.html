@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/legal.css?v=d943bd39">
-<link rel="stylesheet" href="assets/pedido.css?v=9f6bba40">
+<link rel="stylesheet" href="assets/legal.css?v=f51d3a4f">
+<link rel="stylesheet" href="assets/pedido.css?v=1bc63a37">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -162,6 +162,11 @@
 
       <div class="ped-botones">
         <button type="submit" class="ped-btn fuerte">Pagar</button>
+        <!-- El mismo «cambiar de paquete» de arriba, aquí abajo: quien llega al
+             final está dos pantallas por debajo del otro. Nace escondido como
+             él —sin JavaScript no hay paquete que cerrar— y el script lo
+             enciende y apaga con el de arriba. -->
+        <button type="button" class="ped-btn sv-atras" data-sv-cambiar data-sv-vuelta hidden>&#8592; Cambiar de paquete</button>
       </div>
 
       <p class="ped-pie">Te llevamos a <b>Mercado Pago</b>. Puedes pagar con tarjeta,
@@ -174,6 +179,6 @@
 
 <!-- El script del checkout, compartido con web.html, ia.html y
      automatizacion.html: ver la cabecera de assets/servicio.js. -->
-<script src="assets/servicio.js?v=f8e7ec87"></script>
+<script src="assets/servicio.js?v=085aea56"></script>
 </body>
 </html>
