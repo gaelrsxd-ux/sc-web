@@ -284,6 +284,7 @@ const TABLA = {
     {
       "id": "gp-e",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Lo esencial",
       "total": 1490,
@@ -293,6 +294,7 @@ const TABLA = {
     {
       "id": "gp-ea",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Lo esencial · anticipo",
       "total": 750,
@@ -303,6 +305,7 @@ const TABLA = {
     {
       "id": "gp-e1",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Lo esencial + 1 placa de reseñas",
       "total": 1740,
@@ -313,6 +316,7 @@ const TABLA = {
     {
       "id": "gp-ea1",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Lo esencial · anticipo + 1 placa de reseñas",
       "total": 1000,
@@ -324,6 +328,7 @@ const TABLA = {
     {
       "id": "gp-e2",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Lo esencial + 2 placas de reseñas",
       "total": 1990,
@@ -334,6 +339,7 @@ const TABLA = {
     {
       "id": "gp-ea2",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Lo esencial · anticipo + 2 placas de reseñas",
       "total": 1250,
@@ -345,6 +351,7 @@ const TABLA = {
     {
       "id": "gp-t",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Todo hecho",
       "total": 2300,
@@ -355,6 +362,7 @@ const TABLA = {
     {
       "id": "gp-ta",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Todo hecho · anticipo",
       "total": 1150,
@@ -366,6 +374,7 @@ const TABLA = {
     {
       "id": "gp-t1",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Todo hecho + 1 placa de reseñas",
       "total": 2550,
@@ -377,6 +386,7 @@ const TABLA = {
     {
       "id": "gp-ta1",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Todo hecho · anticipo + 1 placa de reseñas",
       "total": 1400,
@@ -389,6 +399,7 @@ const TABLA = {
     {
       "id": "gp-t2",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Todo hecho + 2 placas de reseñas",
       "total": 2800,
@@ -400,6 +411,7 @@ const TABLA = {
     {
       "id": "gp-ta2",
       "tipo": "servicio",
+      "familia": "google",
       "piezas": 1,
       "base": "Perfil de Google · Todo hecho · anticipo + 2 placas de reseñas",
       "total": 1650,
@@ -408,6 +420,69 @@ const TABLA = {
       "resto": 1150,
       "visita": true,
       "placas": 2
+    },
+    {
+      "id": "web-c",
+      "tipo": "servicio",
+      "familia": "web",
+      "piezas": 1,
+      "base": "Sitio web completo",
+      "total": 6199,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "web-ca",
+      "tipo": "servicio",
+      "familia": "web",
+      "piezas": 1,
+      "base": "Sitio web completo · anticipo",
+      "total": 3100,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 3099
+    },
+    {
+      "id": "ia-w",
+      "tipo": "servicio",
+      "familia": "ia",
+      "piezas": 1,
+      "base": "Agente de WhatsApp con IA",
+      "total": 4459,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "ia-wa",
+      "tipo": "servicio",
+      "familia": "ia",
+      "piezas": 1,
+      "base": "Agente de WhatsApp con IA · anticipo",
+      "total": 2230,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 2229
+    },
+    {
+      "id": "au-1",
+      "tipo": "servicio",
+      "familia": "auto",
+      "piezas": 1,
+      "base": "Una automatización concreta",
+      "total": 3749,
+      "envio": 0,
+      "cuotas": 2
+    },
+    {
+      "id": "au-1a",
+      "tipo": "servicio",
+      "familia": "auto",
+      "piezas": 1,
+      "base": "Una automatización concreta · anticipo",
+      "total": 1875,
+      "envio": 0,
+      "cuotas": 1,
+      "resto": 1874
     }
   ]
 };
@@ -451,6 +526,11 @@ const esServicio = p => p && p.tipo === 'servicio';
    título por si la tabla desplegada es anterior a la columna `resto`. */
 const esAnticipo = p => esServicio(p) &&
   (Number(p.resto) > 0 || /anticipo/i.test(p.base || ''));
+/* La familia del servicio decide dos cosas: a qué página de gracias vuelve el
+   comprador y qué preguntas se hace el resumen de la venta —la de la ficha de
+   Google no tiene sentido en una web—. Una fila SIN familia es de una tabla
+   anterior a que existieran, y entonces sólo había Google. */
+const esGoogle = p => esServicio(p) && (!p.familia || p.familia === 'google');
 
 /* Donde sí vamos a tomar las fotos. Fuera de aquí, «Todo hecho» se entrega
    igual salvo la visita, y eso hay que decirlo en el aviso de la venta. */
@@ -581,6 +661,15 @@ export const CAMPOS = {
      nunca coinciden en la misma cadena. Hay una prueba por rama. */
   ficha_tiene:     2,   /* «si» | «no» */
   ficha:         120,
+  /* De los otros tres servicios —web, agente de IA, automatización—. Cada
+     página manda sólo los suyos, así que tampoco se suman entre sí; hay una
+     prueba de presupuesto por familia. `tarea` es el único campo largo del
+     catálogo entero y va al final del resumen a propósito. */
+  giro:           60,
+  dominio:        80,
+  wa_negocio:     15,
+  tarea:         200,
+  herramientas:   80,
 };
 
 /* ⚠ LOS TOPES DE ARRIBA TIENEN UN PRESUPUESTO Y NO SON LIBRES. Casi todos ellos
@@ -620,6 +709,9 @@ function leePedido(form) {
   const d = {};
   for (const [campo, max] of Object.entries(CAMPOS)) d[campo] = limpia(form.get(campo), max);
   d.tel = String(form.get('tel') || '').replace(/\D/g, '').slice(0, 15);
+  /* El WhatsApp del negocio, en el que contestará el agente: sólo dígitos, como
+     el teléfono de contacto y por lo mismo. */
+  d.wa_negocio = String(form.get('wa_negocio') || '').replace(/\D/g, '').slice(0, 15);
   /* ⚠ DESDE EL VALOR CRUDO, y el orden importa. Antes esto era
      `d.cp.replace(...)` sobre lo que ya había pasado por `limpia(v, 5)`, que
      recorta a cinco CARACTERES antes de quitar los no-dígitos: «78 000» se
@@ -686,7 +778,10 @@ function resumen(p, d) {
        información, y quien manda el formulario a mano es justamente quien puede
        omitir el campo. */
     const anticipo = esAnticipo(p);
-    if (anticipo && d.ficha_tiene !== 'no') l.push('REVISAR: anticipo sin ficha declarada por crear');
+    const google = esGoogle(p);
+    /* Sólo en Google: en las otras familias el anticipo existe siempre —la
+       entrega sí se puede retener— y no hay ficha que declarar. */
+    if (google && anticipo && d.ficha_tiene !== 'no') l.push('REVISAR: anticipo sin ficha declarada por crear');
     /* CUÁNTO FALTA POR COBRAR, por el mismo canal que el cobro. Ese número sólo
        existía en el sessionStorage del navegador del comprador —quien lo
        cambiase desde las herramientas del navegador le enseñaba al vendedor lo
@@ -707,14 +802,26 @@ function resumen(p, d) {
       l.push('CON ' + p.placas + ' PLACA' + (Number(p.placas) > 1 ? 'S' : '') +
              ' DE RESEÑAS: acordar entrega, o instalarlas en la visita');
     if (d.negocio) l.push(d.negocio + (d.negocio_ciudad ? ', ' + d.negocio_ciudad : ''));
-    /* Tres estados, no dos: «no lo dijo» no puede imprimirse como «la creamos
-       nosotros», que es una instrucción de trabajo y no un dato. */
-    l.push(d.ficha_tiene === 'si' ? 'YA TIENE ficha'
-         : d.ficha_tiene === 'no' ? 'SIN ficha: la creamos'
-         : 'NO DIJO si tiene ficha');
-    if (d.ficha) l.push('Ficha: ' + d.ficha);
+    if (google) {
+      /* Tres estados, no dos: «no lo dijo» no puede imprimirse como «la creamos
+         nosotros», que es una instrucción de trabajo y no un dato. */
+      l.push(d.ficha_tiene === 'si' ? 'YA TIENE ficha'
+           : d.ficha_tiene === 'no' ? 'SIN ficha: la creamos'
+           : 'NO DIJO si tiene ficha');
+      if (d.ficha) l.push('Ficha: ' + d.ficha);
+    }
+    /* Lo propio de la web, del agente y de la automatización. Cada uno viaja
+       sólo desde su página, así que aquí basta con imprimir lo que venga. */
+    if (d.giro) l.push('Giro: ' + d.giro);
+    if (d.dominio) l.push('Dominio/página: ' + d.dominio);
+    if (d.wa_negocio) l.push('WA del negocio: ' + d.wa_negocio);
+    if (d.herramientas) l.push('Usa: ' + d.herramientas);
     if (d.nombre) l.push('Contacto: ' + d.nombre);
     if (d.tel) l.push('Tel ' + d.tel);
+    /* La tarea va la ÚLTIMA a propósito: es el único campo largo, y si algún
+       día el recorte de 600 mordiera, que muerda el final de la tarea y no el
+       teléfono con el que hay que llamar para preguntarla. */
+    if (d.tarea) l.push('Tarea: ' + d.tarea);
     return l.join(' | ').slice(0, 600);
   }
 
@@ -916,7 +1023,12 @@ async function creaPreferencia(p, env, origen, pedido) {
          entrega. Pagaba y se quedaba esperando algo que dependía de él.
          Aquí `esServicio(p)` ya lo sabe, así que se manda a una página cuyo
          texto es cierto desde el marcado, sin depender de ningún script. */
-      const pagina = esServicio(p) ? '/gracias-servicio.html' : '/gracias.html';
+      const pagina = !esServicio(p) ? '/gracias.html'
+        : esGoogle(p) ? '/gracias-servicio.html'
+        /* Web, agente y automatización comparten página de gracias: los tres
+           pasos siguientes están escritos en su marcado y el script deja el
+           que toca. */
+        : '/gracias-paquete.html';
       return {
         success: origen + pagina,
         pending: origen + pagina + '?estado=pendiente',
@@ -1063,7 +1175,7 @@ export default {
        'si' o 'no': quien no respondió sigue pasando y sale marcado con REVISAR,
        porque ahí falta información, no sobra. Y no es un error seco: la página
        ofrece el WhatsApp para terminar la compra por el otro camino. */
-    if (esAnticipo(p) && pedido.ficha_tiene === 'si') {
+    if (esGoogle(p) && esAnticipo(p) && pedido.ficha_tiene === 'si') {
       console.log('anticipo-con-ficha-propia', id.slice(0, 8));
       return pagina(
         'El anticipo sólo se puede dejar cuando la cuenta de Google la creamos nosotros. ' +

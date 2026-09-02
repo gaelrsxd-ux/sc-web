@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu sitio web — S&amp;C Solutions</title>
+<meta name="description" content="Elige c&#243;mo lo pagas, dinos de qu&#233; negocio es y lo dejamos en l&#237;nea.">
+<!-- noindex igual que pedido.html: es un paso de un proceso, no una página que
+     nadie deba encontrar suelta en un buscador. -->
+<meta name="robots" content="noindex, follow">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/legal.css?v=d943bd39">
+<link rel="stylesheet" href="assets/pedido.css?v=0de90c95">
+</head>
+<body>
+<div class="halo" aria-hidden="true"></div>
+
+<header class="barra">
+  <a class="marca" href="/">
+    <img src="assets/logo.svg" alt="">
+    <b>S&amp;C <em>Solutions</em></b>
+  </a>
+  <a class="volver" href="/#servicios">&#8592; Seguir viendo</a>
+</header>
+
+<main>
+  <!-- La página no tenía encabezado de nivel 1: la cifra grande y el `tag` son
+       decorativos, así que quien navega por encabezados —o quien llega desde el
+       índice de un lector de pantalla— aterrizaba en un formulario sin saber de
+       qué era. No se ve, porque el diseño ya lo dice con la cabecera del
+       producto y meterlo dos veces sería ruido para todos los demás. -->
+  <h1 class="sr">Contratar tu sitio web completo</h1>
+  <!-- El rótulo dice EN QUÉ PASO SE ESTÁ, como en la página de pedido. Sin él,
+       una pantalla que va descubriendo bloques no dice cuánto falta, y no saber
+       cuánto falta es el motivo por el que se abandona un cobro. Nace con el
+       nombre de la pantalla: sin JavaScript no hay pasos que contar porque se
+       ve todo a la vez, y entonces el rótulo tiene que decir algo cierto. -->
+  <p class="tag" data-sv-paso>Tu sitio web</p>
+
+  <!-- ⚠ LA CIFRA NACE VACÍA, por lo mismo que en pedido.html: depende de la
+       opción elegida y sólo la puede escribir el script. Con un número puesto
+       en el HTML, quien tenga el JavaScript bloqueado elegiría «Todo hecho» y
+       la tipografía más grande de la página seguiría diciendo otra cosa. Vacía,
+       el único precio en pantalla es el de la opción marcada. -->
+  <div class="ped-prod">
+    <p class="ped-que">Sitio web completo<b data-sv-que>Elige tu paquete abajo</b></p>
+    <p class="ped-tot" data-sv-tot></p>
+  </div>
+
+  <!-- ⚠ AQUÍ TAMPOCO VIAJA NINGÚN IMPORTE. Lo único que se manda es `paquete`,
+       y el precio lo pone el Worker desde su propia tabla. Añadir un campo con
+       el precio rompería lo único que impide que alguien abra las herramientas
+       del navegador y pague un peso. Ver cloudflare/pagos/pagos.js.
+
+       Es un <form> normal con method="post": sin JavaScript se ven los tres
+       bloques a la vez y se envía de una sola vez. -->
+  <form id="sv-form" method="post" action="https://pagos.sycsolutions.company/ir" data-sv-familia="web">
+
+
+    <!-- ══════════ PASO 2 · EL PAQUETE Y SU FORMA DE PAGO ══════════
+         DOS paquetes, y dentro de cada uno sus formas de pago. No cuatro
+         opciones sueltas: en una lista plana de cuatro, el visitante compara
+         importes en vez de comparar paquetes, y «$750» al lado de «$1,490»
+         parece un descuento cuando es un anticipo.
+
+         Los radios siguen llamándose `paquete` y su valor sigue siendo el id
+         exacto del catálogo del Worker: agrupar es cosa del CSS, no del
+         formulario, así que esto se envía igual con el script caído. -->
+    <fieldset class="ped-f">
+      <legend>Elige tu paquete</legend>
+      <!-- Una frase, no un inventario: el detalle vive en «ver qué incluye» de
+           cada tarjeta, y repetirlo aquí era leer lo mismo dos veces. Con un
+           paquete ABIERTO este párrafo ya no orienta nada —se eligió— y el
+           script lo esconde; sin JavaScript se ve siempre. -->
+      <p class="ped-ayuda" data-sv-intro>Un solo paquete, con todo lo que un negocio necesita para estar en internet.</p>
+
+      <!-- LA SALIDA. Un cobro sin marcha atrás es un cobro que se abandona:
+           quien se equivoca de paquete y no ve cómo deshacerlo cierra la
+           pestaña, no vuelve a empezar. Nace escondido y lo enseña el script
+           cuando hay un paquete abierto — sin JavaScript no hay nada que
+           deshacer porque los dos paquetes están siempre a la vista. -->
+      <p class="sv-vuelta" data-sv-vuelta hidden>
+        <button type="button" data-sv-cambiar>&#8592; Cambiar de paquete</button>
+      </p>
+
+      <!-- servicio:opciones -->
+      <div class="sv-plan" role="group" aria-label="Sitio web completo, $6,199" data-plan="web-c">
+        <button type="button" class="sv-elige" data-elige="web-c" hidden><span class="sr">Elegir Sitio web completo, $6,199</span></button>
+        <p class="sv-nom">Sitio web completo<span>$6,199</span></p>
+        <p class="sv-que">Tu sitio web listo y en l&#237;nea: hecho para vender, con tu dominio, y vi&#233;ndose bien en el celular.</p>
+        <p class="sv-nota">T&#250; pones el logo, las fotos y la informaci&#243;n de tu negocio; los textos los escribimos nosotros con lo que nos cuentes. Despu&#233;s del primer a&#241;o, el dominio y el hospedaje se renuevan aparte.</p>
+        <details class="sv-mas">
+          <summary>Ver qu&#233; incluye</summary>
+          <ul><li>Hasta 5 p&#225;ginas: inicio, servicios o productos, qui&#233;nes son, galer&#237;a y contacto</li><li>Dise&#241;o a medida que se ve bien en celular, tablet y computadora</li><li>Bot&#243;n de WhatsApp, formulario de contacto y mapa de c&#243;mo llegar</li><li>Tu dominio .com y el hospedaje del primer a&#241;o, incluidos</li><li>Lo damos de alta en Google para que te encuentren</li><li>Dos rondas de cambios antes de publicarlo</li><li>Te explicamos c&#243;mo cambiar textos y fotos t&#250; mismo</li><li>Listo en 15 d&#237;as h&#225;biles desde que nos mandes tu material</li></ul>
+        </details>
+        <p class="sv-como sv-como-sola">P&#225;galo <b>de contado</b>, o deja <b data-sv-frase-ant data-base="3100">$3,100 de anticipo</b> y los $3,099 restantes cuando te entreguemos tu sitio terminado.</p>
+        <p class="sv-pista" data-sv-pista hidden>Toca para elegir este paquete</p>
+        <div class="sv-pagos">
+          <label class="ped-op">
+            <input type="radio" name="paquete" value="web-c" data-id="web-c" required
+                   data-tot="$6,199" data-num="6199"
+                   data-que="Sitio web completo &#183; de contado">
+            <b data-sv-op data-base="6199">Pagar $6,199 de contado</b>
+            <small>Un solo pago y listo.</small>
+          </label>
+          <label class="ped-op">
+            <input type="radio" name="paquete" value="web-ca" data-id="web-ca" required
+                   data-tot="$3,100" data-num="3100" data-resto="3099"
+                   data-que="Sitio web completo &#183; anticipo" data-anticipo="1">
+            <b data-sv-op data-base="3100">Pagar $3,100 de anticipo</b>
+            <small>Y $3,099 cuando te entreguemos tu sitio terminado.</small>
+          </label>
+        </div>
+      </div>
+      <!-- /servicio:opciones -->
+
+      <p class="ped-mas"><a href="terminos.html#sitio-web">Plazos y cancelaci&#243;n</a></p>
+    </fieldset>
+
+    <!-- ══════════ PASO 3 · LOS DATOS ══════════
+         Aparece cuando ya hay paquete elegido. Sin JavaScript se ve desde el
+         principio: esconderlo en el marcado dejaría el formulario sin la mitad
+         de sus campos para quien no ejecute scripts, y un formulario de cobro
+         al que le faltan campos no es un inconveniente, es una venta perdida. -->
+    <!-- Este bloque APARECE al elegir paquete, y una aparición silenciosa no
+         existe para quien no ve la pantalla: el foco se queda donde estaba y
+         nada avisa de que hay tres campos nuevos entre él y el botón de pagar.
+         El aviso va en una región viva —no se roba el foco, que en mitad de una
+         elección es peor que el silencio— y el bloque se marca como región con
+         nombre para poder saltar a él. -->
+    <p class="sr" role="status" data-sv-aviso></p>
+    <fieldset class="ped-f" data-sv-datos role="group" aria-label="Los datos de tu negocio">
+      <legend>Tu negocio</legend>
+      <p class="ped-ayuda">Con esto empezamos a armarlo; el logo y las fotos te los pedimos por WhatsApp.</p>
+
+      <label class="ped-campo"><span>Nombre del negocio</span>
+        <input type="text" name="negocio" maxlength="70" required
+               autocomplete="organization" placeholder="Kabuki"></label>
+      <label class="ped-campo"><span>A qu&#233; se dedica</span>
+        <input type="text" name="giro" maxlength="60" required
+               placeholder="Taquer&#237;a, consultorio dental, ferreter&#237;a&#8230;"></label>
+      <label class="ped-campo"><span>Tu dominio o tu p&#225;gina actual <span class="opc">(si ya tienes)</span></span>
+        <input type="text" name="dominio" maxlength="80" autocomplete="url"
+               placeholder="minegocio.com"></label>
+
+      <p class="ped-paso">C&#243;mo te avisamos</p>
+      <label class="ped-campo"><span>Tu nombre</span>
+        <input type="text" name="nombre" maxlength="70" required autocomplete="name"></label>
+      <!-- El mismo patrón que en pedido.html, con los escapes puestos: los
+           navegadores compilan `pattern` con la bandera `v`, que prohíbe ( ) + -
+           sin escapar dentro de una clase. Sin escapar lanza un SyntaxError, se
+           salta la validación entera del campo y acepta «hola» como teléfono. -->
+      <label class="ped-campo"><span>WhatsApp</span>
+        <input type="tel" name="tel" maxlength="15" required inputmode="tel"
+               autocomplete="tel" pattern="[0-9\s\(\)\+\-]{10,20}"
+               placeholder="444 123 4567"></label>
+      <label class="ped-campo"><span>Correo</span>
+        <input type="email" name="correo" maxlength="100" required autocomplete="email"></label>
+
+      <div class="ped-botones">
+        <button type="submit" class="ped-btn fuerte">Pagar</button>
+      </div>
+
+      <p class="ped-pie">Te llevamos a <b>Mercado Pago</b>. Puedes pagar con tarjeta,
+        en efectivo o por transferencia.<br>
+        Nosotros no vemos ni guardamos los datos de tu tarjeta.<br>
+        <a href="terminos.html#sitio-web">T&#233;rminos</a> &#183; <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
+    </fieldset>
+  </form>
+</main>
+
+<!-- El script del checkout, compartido con web.html, ia.html y
+     automatizacion.html: ver la cabecera de assets/servicio.js. -->
+<script src="assets/servicio.js?v=f1b38c19"></script>
+</body>
+</html>

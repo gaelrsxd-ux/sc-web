@@ -59,6 +59,11 @@ const huella = ruta =>
    parte de la consulta se descarta entera y se vuelve a escribir: así una
    huella vieja no se acumula con la nueva. */
 const ENLACE = /(<link[^>]*rel="stylesheet"[^>]*href=")assets\/([\w.-]+\.css)(\?[^"]*)?(")/g;
+/* Y lo mismo con los scripts propios. El del checkout de los servicios vive en
+   assets/servicio.js porque lo comparten cuatro páginas, y sin huella le pasaría
+   lo que les pasaba a las hojas: HTML nuevo con script viejo en el teléfono, y
+   un formulario de cobro que se comporta como el de la semana pasada. */
+const SCRIPT = /(<script[^>]*src=")assets\/([\w.-]+\.js)(\?[^"]*)?(")/g;
 
 const paginas = fs.readdirSync(APP).filter(f => f.endsWith('.html'));
 const problemas = [];
@@ -68,36 +73,37 @@ for (const pagina of paginas) {
   const ruta = path.join(APP, pagina);
   const antes = fs.readFileSync(ruta, 'utf8');
 
-  const despues = antes.replace(ENLACE, (todo, ini, css, _vieja, fin) => {
-    const hoja = path.join(APP, 'assets', css);
-    /* Un enlace a una hoja que no existe se deja como está y se avisa: es un
+  const sella = (todo, ini, archivo, _vieja, fin) => {
+    const ruta = path.join(APP, 'assets', archivo);
+    /* Un enlace a un archivo que no existe se deja como está y se avisa: es un
        fallo de otra clase —un 404 en producción— y taparlo con una huella
        inventada sólo lo escondería. */
-    if (!fs.existsSync(hoja)) {
-      problemas.push(`${pagina}: enlaza assets/${css}, que no existe`);
+    if (!fs.existsSync(ruta)) {
+      problemas.push(`${pagina}: enlaza assets/${archivo}, que no existe`);
       return todo;
     }
     enlaces++;
-    return `${ini}assets/${css}?v=${huella(hoja)}${fin}`;
-  });
+    return `${ini}assets/${archivo}?v=${huella(ruta)}${fin}`;
+  };
+  const despues = antes.replace(ENLACE, sella).replace(SCRIPT, sella);
 
   if (despues === antes) continue;
   tocados++;
   if (comprobar) {
-    problemas.push(`${pagina}: la huella de alguna hoja de estilo no coincide con su contenido`);
+    problemas.push(`${pagina}: la huella de alguna hoja de estilo o script no coincide con su contenido`);
   } else {
     fs.writeFileSync(ruta, despues);
   }
 }
 
 if (problemas.length) {
-  console.error('Huellas de las hojas de estilo:\n  ' + problemas.join('\n  '));
+  console.error('Huellas de las hojas de estilo y scripts:\n  ' + problemas.join('\n  '));
   console.error('\nSe arregla con:  node tools/assets.mjs');
   process.exit(1);
 }
 
 console.log(comprobar
-  ? `OK: los ${enlaces} enlaces a hojas de estilo llevan la huella de su contenido.`
+  ? `OK: los ${enlaces} enlaces a hojas de estilo y scripts llevan la huella de su contenido.`
   : (tocados
       ? `Huella puesta en ${enlaces} enlace(s) de ${tocados} página(s).`
       : `Sin cambios: los ${enlaces} enlaces ya llevan la huella de su contenido.`));

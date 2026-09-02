@@ -52,15 +52,22 @@ Fuera de `app/` viven las cosas que no se publican:
 
 ```
 tools/precios.mjs       ← LA TABLA DE PRECIOS. Única fuente: reescribe la ficha
-                          de producto, pedido.html, los paquetes de Google de
-                          servicio.html y la tabla del Worker.
+                          de producto, pedido.html, las cuatro páginas de cobro
+                          de los servicios (servicio.html, web.html, ia.html,
+                          automatizacion.html), los precios de la portada y la
+                          tabla del Worker. Y revienta si terminos.html no dice
+                          cada precio.
 tools/assets.mjs        ← pone la huella del contenido en el enlace de cada
-                          hoja de estilo, para que no se sirva CSS viejo
+                          hoja de estilo y script propio, para que no se sirva
+                          una versión vieja
 tools/csp-hashes.mjs    ← recalcula las huellas de la CSP tras tocar un script
 tools/cp.mjs            ← convierte el catálogo de SEPOMEX en las colonias por
                           código postal y la lista de ciudades del formulario
 cloudflare/pagos/       ← el Worker que cobra (Checkout Pro de Mercado Pago)
-pruebas/compra.mjs      ← la compra de punta a punta en un navegador
+pruebas/compra.mjs      ← la compra de la placa, de punta a punta, en un navegador
+pruebas/servicio.mjs    ← el cobro del perfil de Google (con placas dentro)
+pruebas/paquetes.mjs    ← el cobro del sitio web, el agente de IA y la automatización
+pruebas/instalaciones.mjs ← las fotos de clientes y el visor
 servidor.js             ← servidor local para verla con sus cabeceras
 ```
 
@@ -105,9 +112,9 @@ puede enseñar un precio y el cobro salir por otro.
    con "&" gigante en contorno
 5. **Bait** — "…pero si tuviéramos que elegir uno, sería este." + botón
    "◆ Nuestro mejor proyecto ◆" con anillos pulsantes → lleva a #contacto
-6. **Servicios (01)** — grid 2×2, fondo circuito, cada tarjeta con botón
-   "Solicitar" que lleva al formulario y **pre-selecciona el servicio**
-   en el `<select>` (data-service → options)
+6. **Servicios (01)** — grid 2×2, fondo circuito, cada tarjeta con su precio
+   (lo escribe tools/precios.mjs) y un botón que lleva a su página de cobro:
+   servicio.html, web.html, ia.html, automatizacion.html
 7. **Cifras** — 4 contadores animados (40+, 98%, 1200+, 24/7)
 8. **Proyectos (02)** — 4 casos con número fantasma, categoría, resultado
 9. **Reseñas (03)** — carrusel de 3 testimonios + rayos art-deco + comilla
@@ -127,7 +134,6 @@ puede enseñar un precio y el cobro salir por otro.
 - Anillos pulsantes en botones (keyframes `ringp`/`ringp-s`, solo
   transform/opacity)
 - Carrusel de reseñas con autoplay
-- Pre-selección del servicio desde botones "Solicitar"
 
 ## 6. Reglas de rendimiento (INNEGOCIABLES — ya optimizada)
 
@@ -251,8 +257,9 @@ Qué cambió y qué NO:
 - **Sin JavaScript los tres paneles se ven**, uno debajo de otro. El `hidden` lo
   pone el script, no el marcado: así un script caído no esconde dos tercios del
   catálogo y un buscador encuentra el contenido entero.
-- **Los cuatro «Solicitar» no se tocaron**: siguen siendo enlaces de WhatsApp
-  con el mensaje escrito en el `href`, uno por servicio.
+- **Los cuatro «Solicitar» ya no existen**: cada tarjeta lleva precio y un
+  botón a su página de cobro. El WhatsApp sigue en «Hablemos», para lo que no
+  quepa en un paquete.
 - Lo que sí se acortó es el **copy** de cada servicio: de dos frases a una. Es
   la única pérdida de contenido del cambio y está anotada como riesgo de SEO.
 

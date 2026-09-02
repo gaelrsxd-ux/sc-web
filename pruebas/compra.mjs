@@ -84,7 +84,9 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      'la ficha del producto tiene su «−» y su «+»');
   /* ⚠ LOS DOS PRECIOS DEL PERFIL DE GOOGLE, no un «desde». Enseñar sólo el
      barato escondía la mitad del catálogo justo donde se decide si entrar. */
-  const dosPrecios = (await pg.locator('[data-svc-desde]').innerText()).replace(/\s+/g, ' ');
+  /* Por familia: desde que las cuatro tarjetas llevan precio hay cuatro de
+     estos, y el de Google es el único que enseña dos cifras. */
+  const dosPrecios = (await pg.locator('[data-svc-desde="google"]').innerText()).replace(/\s+/g, ' ');
   ok(/\$1,490/.test(dosPrecios) && /\$2,300/.test(dosPrecios),
      'la tarjeta del perfil de Google enseña los DOS precios: ' + dosPrecios);
   ok(!/desde/i.test(dosPrecios), 'y ya no dice «desde», que escondía el de arriba');

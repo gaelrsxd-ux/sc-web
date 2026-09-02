@@ -1770,14 +1770,14 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .sol-panel:focus-visible{outline:1px solid var(--bronze);outline-offset:6px}
 
 /* Las fichas de servicio, en corto. Antes cada una gastaba un parrafo de dos
-   frases; ahora una linea. Lo que NO cambia es el boton: sigue siendo el mismo
-   enlace de WhatsApp con el mensaje escrito en el href, uno por servicio. */
+   frases; ahora una linea. El boton lleva a la pagina de cobro de cada paquete;
+   el WhatsApp sigue en «Hablemos», para lo que no quepa en un paquete. */
 .sol-panel .svc{padding:20px 22px}
 .sol-panel .svc p{margin-top:8px;font-size:13.5px;line-height:1.65}
 .sol-panel .svc ul{margin-top:14px}
 .sol-panel .svc .svc-btn{margin-top:18px}
-/* La línea del precio del único servicio que lo tiene. Va entre las etiquetas y
-   el botón, que es donde la busca el ojo antes de decidir si pulsa. */
+/* La línea del precio de cada servicio. Va entre las etiquetas y el botón, que
+   es donde la busca el ojo antes de decidir si pulsa. */
 /* LOS DOS PRECIOS DEL PERFIL DE GOOGLE, no un «desde». Enseñar sólo el barato
    escondía la mitad del catálogo justo donde se decide si entrar: quien sólo
    puede pagar lo básico no sabía que existe algo más, y quien busca lo completo
@@ -2832,7 +2832,9 @@ html.js .pc-alt{display:none}
           <h3>Diseño Web Profesional</h3>
           <p>Sin p&#225;gina web <b>pierdes al cliente que te busca</b>, y se lo lleva la competencia.</p>
           <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20sitio%20web%20premium%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Diseño Web Profesional"><span class="dia"></span>Solicitar</a>
+          <!-- ⚠ La cifra la escribe tools/precios.mjs desde la tabla, como la de Google. -->
+          <p class="svc-desde"><span data-svc-desde="web"><b>$6,199</b> <i>Sitio web completo</i></span></p>
+          <a href="web.html" class="svc-btn"><span class="dia"></span>Ver el paquete</a>
         </article>
         <article class="svc" id="svc-google">
           <span class="go">&#8599;</span>
@@ -2840,16 +2842,17 @@ html.js .pc-alt{display:none}
           <h3>Perfil de tu Negocio en Google</h3>
           <p>Si sales mal en Google o en Maps, <b>la gente se va al negocio de al lado</b>.</p>
           <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
-          <!-- EL ÚNICO SERVICIO CON PRECIO CERRADO, y por eso el único con
-               botón de compra en vez de «Solicitar». Los otros tres se cotizan:
-               una página web para una taquería y una para una clínica no son el
-               mismo trabajo, y ponerles precio fijo sería cobrar de más a unos
-               o de menos a otros. Este no: es una lista concreta, se entrega y
-               se ve. ⚠ La cifra la escribe tools/precios.mjs. -->
+          <!-- LAS CUATRO TARJETAS LLEVAN PRECIO Y BOTÓN DE COMPRA. Ésta fue la
+               única durante un tiempo —«los otros tres se cotizan: una web para
+               una taquería y una para una clínica no son el mismo trabajo»—
+               hasta que a cada uno se le cerró un alcance concreto que se
+               entrega igual a todos. Lo que se salga de ese alcance se sigue
+               cotizando, y lo dice su propia página. ⚠ Las cifras las escribe
+               tools/precios.mjs. -->
           <!-- La única mención del combo fuera de servicio.html, y es UNA línea:
                el titular pidió expresamente no repetir servicios por secciones.
                Aquí sólo se avisa de que existe; armarlo se arma allí. -->
-          <p class="svc-desde"><span data-svc-desde><b>$1,490</b> <i>Lo esencial</i><em>o</em><b>$2,300</b> <i>Todo hecho</i></span></p>
+          <p class="svc-desde"><span data-svc-desde="google"><b>$1,490</b> <i>Lo esencial</i><em>o</em><b>$2,300</b> <i>Todo hecho</i></span></p>
           <p class="svc-combo">Y le puedes a&#241;adir tus <b>placas de rese&#241;as</b> con descuento.</p>
           <a href="servicio.html" class="svc-btn"><span class="dia"></span>Ver los dos paquetes</a>
         </article>
@@ -2859,7 +2862,9 @@ html.js .pc-alt{display:none}
           <h3>Atención al Cliente con IA</h3>
           <p>Cada mensaje sin contestar <b>es un cliente que pierdes</b> y que gana tu competencia.</p>
           <ul><li>Atención 24/7</li><li>Citas automáticas</li><li>Respuesta inmediata</li></ul>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20un%20agente%20de%20IA%20para%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Atención al Cliente con IA"><span class="dia"></span>Solicitar</a>
+          <!-- ⚠ La cifra la escribe tools/precios.mjs desde la tabla, como la de Google. -->
+          <p class="svc-desde"><span data-svc-desde="ia"><b>$4,459</b> <i>Agente de WhatsApp</i></span></p>
+          <a href="ia.html" class="svc-btn"><span class="dia"></span>Ver el paquete</a>
         </article>
         <article class="svc" id="svc-tareas">
           <span class="go">&#8599;</span>
@@ -2867,7 +2872,9 @@ html.js .pc-alt{display:none}
           <h3>Automatización de Procesos</h3>
           <p>Hacer todo a mano <b>te cuesta horas y dinero</b> cada semana, para siempre.</p>
           <ul><li>Tareas automáticas</li><li>Reportes automáticos</li><li>Ahorra horas de trabajo</li></ul>
-          <a href="https://wa.me/524423697248?text=Hola.%20Vengo%20de%20la%20web%20y%20me%20interesa%20automatizar%20procesos%20en%20mi%20negocio." class="svc-btn" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp sobre Automatización de Procesos"><span class="dia"></span>Solicitar</a>
+          <!-- ⚠ La cifra la escribe tools/precios.mjs desde la tabla, como la de Google. -->
+          <p class="svc-desde"><span data-svc-desde="auto"><b>$3,749</b> <i>Una automatizaci&#243;n</i></span></p>
+          <a href="automatizacion.html" class="svc-btn"><span class="dia"></span>Ver el paquete</a>
         </article>
       </div>
     </div>
