@@ -139,6 +139,29 @@ for (const F of FAMILIAS) {
   ok((await pg.locator('button[type="submit"]').textContent()).trim() === 'Pagar $' + miles(anticipo.total),
      'y el botón dice lo mismo');
 
+  /* ---- EL «REGRESAR» SE VE SIEMPRE ----
+     Dos salidas: el enlace de la barra fija, que es un botón con borde y no un
+     texto gris, y «cambiar de paquete», que además de arriba está junto a
+     «Pagar», donde acaba el dedo. Las dos nacen escondidas con el paquete
+     cerrado y se encienden juntas al abrirlo. El titular lo pidió con estas
+     palabras: «los que lo tenemos en la cara a veces no nos damos cuenta». */
+  const volver = await pg.$eval('.barra .volver', a => {
+    const c = getComputedStyle(a); return { borde: c.borderTopStyle, ancho: parseFloat(c.borderTopWidth) };
+  });
+  ok(volver.borde === 'solid' && volver.ancho >= 1, 'el «seguir viendo» de la barra es un botón con borde, no un texto');
+  ok(await pg.locator('[data-sv-vuelta]').count() === 2, 'hay dos «cambiar de paquete»: arriba y junto a «Pagar»');
+  ok(await pg.locator('[data-sv-vuelta]:visible').count() === 2, 'y con el paquete abierto se ven los dos');
+  await pg.locator('.ped-botones [data-sv-cambiar]').click();
+  ok(await hasta(() => pg.$$eval('[data-sv-vuelta]', vs => vs.every(v => v.hidden)), 'los dos «cambiar» se apagan'),
+     'el de abajo cierra el paquete y apaga los dos');
+  ok(await pg.$eval('[data-sv-datos]', e => e.hidden), 'y los datos se esconden con él');
+  /* Se reabre y se vuelve a marcar el anticipo, que es lo que el envío de
+     abajo necesita. */
+  await tocaPlan(pg);
+  await hasta(() => pg.locator('.ped-op:has(input[data-anticipo])').isVisible(), 'el paquete reabierto');
+  await pg.locator('.ped-op:has(input[data-anticipo])').click();
+  await hasta(() => pg.$eval('[data-sv-datos]', e => !e.hidden), 'los datos de vuelta');
+
   /* ---- los campos de esta familia ---- */
   for (const n of F.propios)
     ok(await pg.locator(`[name="${n}"]`).count() === 1, `pide «${n}», que es de esta familia`);

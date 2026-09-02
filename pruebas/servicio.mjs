@@ -65,7 +65,7 @@ const elige = async (pg, valor) => {
          que volver atrás primero, que es exactamente lo que hace quien se
          equivoca de paquete. */
       if (!(await abrir.isVisible())) {
-        const atras = pg.locator('[data-sv-cambiar]');
+        const atras = pg.locator('[data-sv-cambiar]').first();
         if (await atras.isVisible()) await atras.click();
         await abrir.waitFor({ state: 'visible', timeout: 4000 });
       }
@@ -446,9 +446,9 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
   ok(/pagar \$1,490/i.test(await botonPago.textContent()),
      'y el botón pasa a decir lo que va a cobrar: «' +
      (await botonPago.textContent()).trim() + '»');
-  await pg.locator('[data-sv-cambiar]').click();
+  await pg.locator('[data-sv-cambiar]').first().click();
   await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2, 'vuelven los dos');
-  ok(!(await pg.locator('[data-sv-vuelta]').isVisible()),
+  ok(!(await pg.locator('[data-sv-vuelta]').first().isVisible()),
      'sin nada elegido no hay nada que deshacer, así que no hay botón de volver');
 
   /* ── SÓLO LO NECESARIO EN CADA MOMENTO ──
@@ -472,7 +472,7 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
      'y la frase del pago también: los dos radios ya lo dicen con su importe');
   ok(await pg.locator('.sv-plan[data-plan="gp-e"] .sv-pagos').isVisible(),
      'porque las formas de pago están a la vista, que es quien la sustituye');
-  await pg.locator('[data-sv-cambiar]').click();
+  await pg.locator('[data-sv-cambiar]').first().click();
   await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2,
               'y al volver a comparar, vuelven párrafo y frases');
   ok(await pg.locator('[data-sv-intro]').isVisible(), 'el párrafo');
@@ -573,7 +573,7 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
      Escondidas, las tarjetas de la comparación decían $1,490 y $2,300 mientras
      sus frases del anticipo ya sumaban $500 de unas placas que nada en
      pantalla nombraba: cifras infladas sin explicación a la vista. */
-  await pg.locator('[data-sv-cambiar]').click();
+  await pg.locator('[data-sv-cambiar]').first().click();
   await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2, 'vuelven los dos');
   ok(await pg.locator('[data-sv-placas]').isVisible(),
      'con placas elegidas, el bloque sigue a la vista en la comparación: las cifras se explican');
@@ -602,7 +602,7 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
      lee del interceptor; el sessionStorage, DESPUÉS de volver al origen: la
      pestaña se quedó en la página interceptada del cobro, que es otro origen
      con otro almacén — leído ahí, `syc_pedido` sale null aunque esté escrito. */
-  await pg.locator('[data-sv-cambiar]').click();
+  await pg.locator('[data-sv-cambiar]').first().click();
   await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2, 'los dos otra vez');
   await tocaPlan(pg, 'gp-t');
   await pg.waitForTimeout(420);
@@ -659,9 +659,9 @@ const frases = pg => pg.$$eval('.sv-plan .sv-como',
 
   /* LA SALIDA. Un cobro sin marcha atrás es un cobro que se abandona: quien se
      equivoca de paquete y no ve cómo deshacerlo cierra la pestaña. */
-  ok(await pg.locator('[data-sv-cambiar]').isVisible(),
+  ok(await pg.locator('[data-sv-cambiar]').first().isVisible(),
      'y aparece el botón para cambiar de paquete');
-  await pg.locator('[data-sv-cambiar]').click();
+  await pg.locator('[data-sv-cambiar]').first().click();
   await hasta(async () => await pg.locator('.sv-plan:visible').count() === 2,
               'vuelven los dos paquetes');
   ok(await pg.locator('.sv-plan:visible').count() === 2, 'volver deja los dos paquetes otra vez');

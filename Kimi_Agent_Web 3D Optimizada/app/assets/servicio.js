@@ -54,7 +54,9 @@
   const ops=[...form.querySelectorAll('input[name="paquete"]')];
   if(!ops.length)return;
   const planes=[...form.querySelectorAll('.sv-plan')];
-  const vuelta=form.querySelector('[data-sv-vuelta]');
+  /* Dos salidas para volver, arriba y junto a «Pagar»: se encienden y apagan
+     juntas, así que aquí son una lista. */
+  const vueltas=[...form.querySelectorAll('[data-sv-vuelta]')];
   const intro=form.querySelector('[data-sv-intro]');
   const cambiar=form.querySelector('[data-sv-cambiar]');
   const pagar=form.querySelector('button[type="submit"]');
@@ -121,7 +123,7 @@
          pagar cobraría algo que el visitante no ve. */
       if(!suyo)for(const o of p.querySelectorAll('input[name="paquete"]'))o.checked=false;
     }
-    if(vuelta)vuelta.hidden=!id;
+    for(const v of vueltas)v.hidden=!id;
     /* El párrafo de la comparación se va con ella: con un paquete abierto ya
        no orienta, estorba entre el rótulo y la tarjeta. */
     if(intro)intro.hidden=!!id;
