@@ -667,7 +667,6 @@ export const CAMPOS = {
      catálogo entero y va al final del resumen a propósito. */
   giro:           60,
   dominio:        80,
-  wa_negocio:     15,
   tarea:         200,
   herramientas:   80,
 };
@@ -709,9 +708,6 @@ function leePedido(form) {
   const d = {};
   for (const [campo, max] of Object.entries(CAMPOS)) d[campo] = limpia(form.get(campo), max);
   d.tel = String(form.get('tel') || '').replace(/\D/g, '').slice(0, 15);
-  /* El WhatsApp del negocio, en el que contestará el agente: sólo dígitos, como
-     el teléfono de contacto y por lo mismo. */
-  d.wa_negocio = String(form.get('wa_negocio') || '').replace(/\D/g, '').slice(0, 15);
   /* ⚠ DESDE EL VALOR CRUDO, y el orden importa. Antes esto era
      `d.cp.replace(...)` sobre lo que ya había pasado por `limpia(v, 5)`, que
      recorta a cinco CARACTERES antes de quitar los no-dígitos: «78 000» se
@@ -814,7 +810,6 @@ function resumen(p, d) {
        sólo desde su página, así que aquí basta con imprimir lo que venga. */
     if (d.giro) l.push('Giro: ' + d.giro);
     if (d.dominio) l.push('Dominio/página: ' + d.dominio);
-    if (d.wa_negocio) l.push('WA del negocio: ' + d.wa_negocio);
     if (d.herramientas) l.push('Usa: ' + d.herramientas);
     if (d.nombre) l.push('Contacto: ' + d.nombre);
     if (d.tel) l.push('Tel ' + d.tel);
