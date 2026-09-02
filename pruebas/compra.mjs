@@ -406,7 +406,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
     href: a.getAttribute('href'),
     titulo: a.childNodes[1].textContent.trim(),
     pie: (a.querySelector('small') || {}).textContent || '' })));
-  ok(destinos.length === 7, 'lleva los siete destinos de la página');
+  ok(destinos.length === 6, 'lleva los seis destinos de la página');
 
   /* ⚠ INICIO EL PRIMERO. Faltaba: desde el menú no había forma de volver
      arriba, y «arriba» es la portada con la foto grande — lo único que alguien
@@ -414,6 +414,16 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      llevaba ahí, pero un logotipo no se lee como un botón de volver. */
   ok(destinos[0].href === '#top' && /inicio/i.test(destinos[0].titulo),
      'y el primero es Inicio, que lleva a la portada');
+
+  /* ⚠ NINGÚN ENLACE INTERNO APUNTA AL VACÍO. Al retirar una sección quedan
+     enlaces huérfanos en el menú, el riel, la barra y el pie: se pulsan, no
+     pasa nada y desde dentro no se nota, porque un ancla que no existe no da
+     ningún error. Se comprueban TODOS los «#…» de la página de una vez. */
+  const rotos = await m.$$eval('a[href^="#"]', as => as
+    .map(a => a.getAttribute('href'))
+    .filter(h => h.length > 1 && !document.getElementById(h.slice(1))));
+  ok(rotos.length === 0, 'ningún enlace interno apunta a una sección que no existe' +
+     (rotos.length ? ': ' + [...new Set(rotos)].join(', ') : ''));
 
   /* ⚠ LLEGAR DESDE EL MENÚ NO PUEDE PINTAR UN RECUADRO. Los paneles llevaban
      `tabindex="0"`, así que al navegar a «#servicios» el navegador enfocaba el

@@ -43,7 +43,7 @@ app/
     ├── legal.css           (hoja de las páginas legales y del pedido)
     ├── pedido.css          (lo que el pedido añade sobre legal.css)
     ├── hero-bg.webp        (hero: skyline nocturno 4K)
-    ├── bg-servicios.webp · bg-proyectos.webp · bg-contacto.webp
+    ├── bg-servicios.webp · bg-contacto.webp
     ├── producto-resenas-*.webp   (la placa: frontal, perfil y trasera)
     └── og-placa.jpg        (solo para Open Graph / redes sociales)
 ```
@@ -103,25 +103,25 @@ puede enseñar un precio y el cobro salir por otro.
 
 ## 4. Estructura de secciones (en orden)
 
-1. **Preloader** — logo + línea de carga bronce + eslogan
-2. **Navbar fija** — logo, links, botón "Hablemos"
-3. **Hero** — foto 4K con overlay, titular centrado en 2 líneas:
+⚠ Esta lista se quedó vieja tres veces seguidas mientras la página adelgazaba.
+Se reescribe con lo que HAY, y lo que se fue está en el comentario largo de
+index.html, entre la calculadora y la banda viva.
+
+1. **Navbar fija** — logo, links, tema, botón "Hablemos". El menú de móvil
+   numera los seis destinos (00 Inicio → 05 Habla con nosotros)
+2. **Hero** — foto 4K con overlay, titular centrado en 2 líneas:
    "Tu competencia / *ya nos llamó.*", subtítulo, 2 CTAs, parallax sutil
-4. **Manifiesto** — "Mientras tú lees esto, alguien está cerrando tus
-   clientes. *Nosotros construimos el sistema para que sea al revés.*"
-   con "&" gigante en contorno
-5. **Bait** — "…pero si tuviéramos que elegir uno, sería este." + botón
-   "◆ Nuestro mejor proyecto ◆" con anillos pulsantes → lleva a #contacto
-6. **Servicios (01)** — grid 2×2, fondo circuito, cada tarjeta con su precio
-   (lo escribe tools/precios.mjs) y un botón que lleva a su página de cobro:
-   servicio.html, web.html, ia.html, automatizacion.html
-7. **Cifras** — 4 contadores animados (40+, 98%, 1200+, 24/7)
-8. **Proyectos (02)** — 4 casos con número fantasma, categoría, resultado
-9. **Reseñas (03)** — carrusel de 3 testimonios + rayos art-deco + comilla
-   gigante en contorno
-10. **Contacto (04)** — datos + formulario (nombre, email, select servicio,
-    mensaje). Fondo escritorio, formulario casi sólido para legibilidad
-11. **Footer** — marca tipográfica, eslogan, links
+3. **Soluciones (01)** — tres pestañas en el mismo hueco: **La placa**
+   (ficha del producto con su precio y el visor de fotos), **Servicios**
+   (rejilla 2×2, cada tarjeta con su precio —lo escribe tools/precios.mjs— y
+   un botón a su página de cobro: servicio.html, web.html, ia.html,
+   automatizacion.html) y **Clientes** (las tres instalaciones con foto)
+4. **Calculadora del trabajo manual** (`#coste`) — dos deslizadores y una
+   multiplicación que el visitante puede rehacer, con su llamada al contacto
+5. **Banda viva** — datos comprobables de este mismo sitio
+6. **Tu página (02)** — el diagnóstico gratuito, que lo hace un Worker
+7. **Contacto (03)** — datos + formulario. Fondo escritorio
+8. **Footer** — marca tipográfica, eslogan, links
 
 ## 5. Efectos implementados (mantenerlos)
 
@@ -158,7 +158,8 @@ puede enseñar un precio y el cobro salir por otro.
 
 - **Email:** `hola@sycsolutions.company` (placeholder) → el real
 - **WhatsApp:** `+52 000 000 0000` → el real
-- **Proyectos y reseñas:** son de ejemplo → casos reales con sus resultados
+- **Trabajos de ejemplo:** ya no hay. La sección que los enseñaba se retiró
+  (septiembre de 2026); lo que se enseña son las instalaciones reales
 - **Formulario:** actualmente solo muestra confirmación visual
   (preventDefault). Para producción conectar a: endpoint propio,
   Formspree, EmailJS, o webhook (n8n/Zapier) según el stack que elijan
@@ -244,7 +245,8 @@ Qué cambió y qué NO:
   `#productos` está dentro del JSON-LD de la cabecera. El script abre la pestaña
   que toque al llegar por uno de ellos.
 - **El recorrido pasó de cinco tramos a cuatro**: 01 Soluciones, 02 Proyectos,
-  03 Diagnóstico, 04 Contacto.
+  03 Diagnóstico, 04 Contacto. (Y a tres al retirarse Proyectos: 01 Soluciones,
+  02 Tu página, 03 Contacto — que es el estado de hoy.)
 - **El contador de cantidad se fue de la portada.** Vivía en la ficha con las 25
   cantidades y su tabla JSON, y duplicaba lo que `pedido.html` ya hacía: un
   `<select>` de 25 opciones y el WhatsApp de «más de 25». No se perdió ninguna
@@ -274,7 +276,7 @@ tinta #0A0B0E, marfil #F4F1EA, acento único bronce champán #C8A96A usado con
 moderación. Tipografía: Cormorant Garamond para titulares enormes con
 itálicas de acento + Inter para etiquetas. Mucho aire, hairlines, secciones
 numeradas, watermarks tipográficos gigantes. Fotos 4K oscuras con overlay
-90%+: skyline nocturno (hero), circuito (servicios), planos (proyectos),
+90%+: skyline nocturno (hero), circuito (servicios),
 escritorio (contacto) — narrativa: ambición → tecnología → ejecución →
 conversación. Efectos: zoom por sección, revelado palabra por palabra,
 parallax sutil, contadores, anillos pulsantes en CTAs. Reglas: nada de
