@@ -415,6 +415,22 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(destinos[0].href === '#top' && /inicio/i.test(destinos[0].titulo),
      'y el primero es Inicio, que lleva a la portada');
 
+  /* ⚠ EL ESQUEMA DE PREGUNTAS DICE LO MISMO QUE LA PÁGINA. La cabecera lleva
+     un FAQPage con las seis preguntas y sus respuestas, y es lo que Google
+     puede enseñar en su resultado. Si alguien reescribe una respuesta visible
+     y no toca el JSON —o al revés— el buscador anuncia algo que la página ya
+     no dice, y desde dentro se ve todo bien. Se comparan las preguntas una a
+     una, en orden. */
+  const faq = await m.evaluate(() => {
+    const d = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+    const pag = (d['@graph'] || []).find(x => x['@type'] === 'FAQPage');
+    return { esquema: (pag ? pag.mainEntity : []).map(q => q.name),
+             visibles: [...document.querySelectorAll('#faq summary')].map(x => x.textContent.trim()) };
+  });
+  ok(faq.visibles.length >= 4, 'la página lleva sus preguntas frecuentes (' + faq.visibles.length + ')');
+  ok(faq.esquema.join('|') === faq.visibles.join('|'),
+     'y el esquema de la cabecera dice exactamente las mismas, en el mismo orden');
+
   /* ⚠ NINGÚN ENLACE INTERNO APUNTA AL VACÍO. Al retirar una sección quedan
      enlaces huérfanos en el menú, el riel, la barra y el pie: se pulsan, no
      pasa nada y desde dentro no se nota, porque un ancla que no existe no da
