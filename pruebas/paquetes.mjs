@@ -126,8 +126,14 @@ for (const F of FAMILIAS) {
      y innerText devuelve lo pintado («PASO 1 DE 3»), no lo escrito. */
   const rotulo = () => pg.locator('[data-sv-paso]').textContent();
   ok(/Paso 1 de 3/.test(await rotulo()), 'arranca en el paso 1 de 3');
+  /* ---- «ver qué incluye» abierto, y luego se elige: la lista se cierra sola ----
+     Comparar se acabó al tocar la tarjeta, y una lista de ocho puntos abierta
+     entre el título y las formas de pago las empujaba fuera de la pantalla. */
+  await pg.locator('.sv-mas summary').click();
+  ok(await hasta(() => pg.$eval('.sv-mas', d => d.open), 'la lista se abre'), 'la lista de «qué incluye» se abre para comparar');
   await tocaPlan(pg);
   await hasta(() => pg.locator('.sv-pagos').isVisible(), 'las formas de pago aparecen');
+  ok(await pg.$eval('.sv-mas', d => !d.open), 'y al elegir el paquete se cierra sola');
   ok(/Paso 2 de 3/.test(await rotulo()), 'con el paquete abierto, paso 2');
   ok(await pg.$eval('input[name="paquete"][data-anticipo]', i => !i.disabled),
      'el anticipo está disponible SIEMPRE: aquí no hay pregunta que lo apague');
