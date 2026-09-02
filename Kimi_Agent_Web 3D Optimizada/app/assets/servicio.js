@@ -43,6 +43,10 @@
   if(!form)return;
   const tot=document.querySelector('[data-sv-tot]');
   const que=document.querySelector('[data-sv-que]');
+  /* Lo que dice la cabecera sin nada elegido lo escribe cada página en su
+     marcado —«Elige tu paquete abajo» donde hay dos, «Elige cómo pagarlo
+     abajo» donde hay uno— y este script sólo lo guarda para devolverlo. */
+  const vacio=que?que.textContent:'';
   const datos=document.querySelector('[data-sv-datos]');
   const ficha=document.querySelector('[data-sv-ficha]');
   const aviso=document.querySelector('[data-sv-aviso]');
@@ -190,7 +194,7 @@
     const sufijo=placas?' + '+placas+' placa'+(placas>1?'s':''):'';
     const importe=m?Number(m.dataset.num)+extraPlacas():0;
     if(tot)tot.textContent=m?'$'+miles(importe):'';
-    if(que)que.textContent=m?(m.dataset.que||'')+sufijo:'Elige tu paquete abajo';
+    if(que)que.textContent=m?(m.dataset.que||'')+sufijo:vacio;
     /* Y EL BOTÓN DICE LO QUE FALTA en vez de prometer un cobro que todavía no
        puede hacer. Un «Pagar» que no paga es la peor versión de este fallo:
        parece que la web está rota. Con la forma de pago marcada lleva su

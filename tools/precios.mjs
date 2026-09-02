@@ -143,7 +143,7 @@ const SERVICIOS = [
        leídos uno al lado del otro dicen que el barato NO se deja funcionando.
        Es falso: los dos se entregan funcionando. La diferencia no es el
        resultado, es CUÁNTO PONE CADA UNO — y eso es lo que dicen ahora. */
-    resumen: 'Tu ficha de Google queda completa y funcionando: tus datos, tus fotos y tu enlace de reseñas',
+    resumen: 'Tu ficha de Google queda *completa y funcionando*: tus datos, tus fotos y *tu enlace de reseñas*',
     /* Lo que incluye, en la propia tarjeta y no en la página de términos. Antes
        había que salir a un texto legal con plazos y cancelación mezclados,
        leerlo entero y volver — y eso es un cliente perdido por pereza. Frases
@@ -155,13 +155,13 @@ const SERVICIOS = [
        dejaron» a quien todavía no aparece en Google—, y la que obliga aquí a que
        la primera diga las tres puertas de entrada en vez de una. */
     incluye: [
-      'Creamos tu ficha de Google, la reclamamos o entramos a la tuya',
-      'Elegimos tu categoría principal y las otras con las que te buscan',
-      'Ponemos el mapa en tu puerta o en la zona que cubres',
-      'Ponemos horarios, teléfono, WhatsApp y sitio web al día',
-      'Escribimos tu descripción con las palabras que la gente busca',
-      'Subimos y acomodamos las fotos que nos mandas',
-      'La cuenta queda a tu nombre, con tu enlace de reseñas',
+      '*Creamos tu ficha de Google*, la reclamamos o entramos a la tuya',
+      'Elegimos *tu categoría principal* y las otras con las que te buscan',
+      'Ponemos *el mapa* en tu puerta o en la zona que cubres',
+      'Ponemos *horarios, teléfono, WhatsApp y sitio web* al día',
+      'Escribimos *tu descripción* con las palabras que la gente busca',
+      'Subimos y acomodamos *las fotos que nos mandas*',
+      '*La cuenta queda a tu nombre*, con tu enlace de reseñas',
     ],
   },
   {
@@ -172,7 +172,7 @@ const SERVICIOS = [
     corto: 'Todo hecho',
     precio: 2300,
     anticipo: 1150,
-    resumen: 'Todo lo de «Lo esencial», y además la dejamos llena: fotos, productos, preguntas y publicaciones',
+    resumen: 'Todo lo de «Lo esencial», y además *la dejamos llena*: fotos, productos, preguntas y publicaciones',
     /* ⚠ NINGUNA DE ESTAS DIEZ LÍNEAS REPITE UNA DE «LO ESENCIAL», y no es
        elegancia: la tarjeta enseña las dos listas, una debajo de otra, y una
        línea repetida se vería dos veces seguidas. Lo que hereda lo pone la
@@ -197,9 +197,9 @@ const SERVICIOS = [
          «sin costo extra» deja pensando si la visita se cobra aparte. Es la
          línea que justifica los $810 de diferencia: no puede depender de que
          alguien haya leído otro renglón. */
-      'Vamos a tu negocio y tomamos hasta 20 fotos, sin costo extra (San Luis Potos\u00ed y Soledad)',
-      'Cargamos hasta 20 productos o servicios con su precio',
-      'Marcamos tus formas de pago, accesibilidad y estacionamiento',
+      '*Vamos a tu negocio y tomamos hasta 20 fotos*, sin costo extra (San Luis Potos\u00ed y Soledad)',
+      'Cargamos *hasta 20 productos o servicios* con su precio',
+      'Marcamos tus *formas de pago, accesibilidad y estacionamiento*',
       /* ⚠ ESTA LÍNEA SÓLO EXISTE SI HAY RESEÑAS QUE CONTESTAR, y la pantalla ya
          sabe si las hay: la primera pregunta del formulario es justo ésa. Decía
          «contestamos las reseñas que tengas, hasta 30», que no es falso —quien
@@ -208,18 +208,18 @@ const SERVICIOS = [
          renglones después se les ofrece contestar reseñas que no existen. Se
          turna con la misma regla de CSS que ya turna el párrafo del anticipo,
          y por tanto también sin JavaScript. */
-      { solo: 'si', texto: 'Contestamos una por una hasta 30 reseñas que ya te dejaron' },
+      { solo: 'si', texto: '*Contestamos una por una hasta 30 reseñas* que ya te dejaron' },
       /* Y ésta va SIN condición y en segundo lugar a propósito: es cierta en
          los dos casos, así que es la que queda cuando la de arriba se apaga —y
          la única que se ve en un navegador tan viejo que no entienda `:has()`,
          donde ninguna de las dos condicionales aparecería. */
-      'Dejamos escritas las respuestas para las reseñas que vayan llegando',
-      'Dejamos puestas las preguntas que más te hacen, con su respuesta',
-      'Publicamos tus primeros avisos y novedades con foto',
-      'Revisamos qué tienen puesto los negocios como el tuyo',
-      'Revisamos si tu negocio sale repetido y lo reportamos',
-      'Te mandamos tu cartel de papel con QR, listo para imprimir',
-      'Te entregamos un reporte con capturas y te explicamos cómo mantenerla',
+      'Dejamos escritas *las respuestas* para las reseñas que vayan llegando',
+      'Dejamos puestas *las preguntas que más te hacen*, con su respuesta',
+      'Publicamos *tus primeros avisos y novedades* con foto',
+      'Revisamos qué tienen puesto *los negocios como el tuyo*',
+      'Revisamos si tu negocio *sale repetido* y lo reportamos',
+      'Te mandamos *tu cartel de papel con QR*, listo para imprimir',
+      'Te entregamos *un reporte con capturas* y te explicamos cómo mantenerla',
     ],
     /* De quién hereda la lista. La tarjeta de este paquete enseña ADEMÁS los
        puntos del otro, sin que haya que abrirlo ni volver atrás: «pon que puedan
@@ -232,9 +232,9 @@ const SERVICIOS = [
        Monterrey pagaba $2,300 leyendo «vamos a tu negocio» y descubría la letra
        pequeña en la página de términos, que es donde nadie mira antes de pagar.
        Va en el mismo bloque que la promesa, no en un enlace. */
-    nota: 'La visita es sólo en San Luis Potosí y Soledad de Graciano Sánchez; ahí las '
+    nota: '*La visita es sólo en San Luis Potosí y Soledad* de Graciano Sánchez; ahí las '
         + 'fotos las tomamos nosotros. Desde otra ciudad hacemos todo lo demás igual y '
-        + 'las fotos nos las mandas tú.',
+        + '*las fotos nos las mandas tú*.',
     /* Y la misma condición, en un dato que pueda leer el Worker. La página ya
        se lo avisa al comprador; el otro extremo —quien prepara el trabajo— no
        se enteraba por ningún lado y tenía que caer en la cuenta leyendo la
@@ -259,20 +259,20 @@ const SERVICIOS = [
     corto: 'Sitio web completo',
     precio: 6199,
     anticipo: 3100,
-    resumen: 'Tu sitio web listo y en línea: hecho para vender, con tu dominio, y viéndose bien en el celular',
+    resumen: 'Tu sitio web *listo y en línea*: hecho para vender, con *tu dominio*, y viéndose bien en el celular',
     incluye: [
-      'Hasta 5 páginas: inicio, servicios o productos, quiénes son, galería y contacto',
-      'Diseño a medida que se ve bien en celular, tablet y computadora',
-      'Botón de WhatsApp, formulario de contacto y mapa de cómo llegar',
-      'Tu dominio .com y el hospedaje del primer año, incluidos',
-      'Lo damos de alta en Google para que te encuentren',
-      'Dos rondas de cambios antes de publicarlo',
-      'Te explicamos cómo cambiar textos y fotos tú mismo',
-      'Listo en 15 días hábiles desde que nos mandes tu material',
+      '*Hasta 5 páginas*: inicio, servicios o productos, quiénes son, galería y contacto',
+      'Diseño a medida que se ve bien en *celular, tablet y computadora*',
+      '*Botón de WhatsApp*, formulario de contacto y mapa de cómo llegar',
+      '*Tu dominio .com y el hospedaje* del primer año, incluidos',
+      'Lo damos de alta en *Google* para que te encuentren',
+      '*Dos rondas de cambios* antes de publicarlo',
+      'Te explicamos cómo *cambiar textos y fotos tú mismo*',
+      '*Listo en 15 días hábiles* desde que nos mandes tu material',
     ],
-    nota: 'Tú pones el logo, las fotos y la información de tu negocio; los textos los '
-        + 'escribimos nosotros con lo que nos cuentes. Después del primer año, el dominio '
-        + 'y el hospedaje se renuevan aparte.',
+    nota: '*Tú pones* el logo, las fotos y la información de tu negocio; *los textos los '
+        + 'escribimos nosotros* con lo que nos cuentes. Después del primer año, el dominio '
+        + 'y el hospedaje *se renuevan aparte*.',
   },
   {
     id: 'ia-w',
@@ -289,15 +289,15 @@ const SERVICIOS = [
        NO la cobra esta web: es un enlace de suscripción del panel de Mercado
        Pago que se manda por WhatsApp al terminar el primer mes. */
     mensual: 990,
-    resumen: 'Un agente que contesta tu WhatsApp las 24 horas con la información de tu negocio, y agenda citas o toma pedidos',
+    resumen: 'Un agente que *contesta tu WhatsApp las 24 horas* con la información de tu negocio, y *agenda citas o toma pedidos*',
     incluye: [
-      'Contesta al momento, de día y de noche, también en fin de semana',
-      'Responde con tu información: horarios, precios, ubicación y lo que más te preguntan',
-      'Agenda citas o toma pedidos y te los pasa por WhatsApp',
-      'Cuando no sabe algo, te avisa y te pasa la conversación',
-      'Lo entrenamos con tu negocio y lo probamos contigo antes de encenderlo',
-      'Primer mes de funcionamiento incluido',
-      'Funcionando en 10 días hábiles desde que nos mandes tu información',
+      'Contesta *al momento*, de día y de noche, también en fin de semana',
+      'Responde con *tu información*: horarios, precios, ubicación y lo que más te preguntan',
+      '*Agenda citas o toma pedidos* y te los pasa por WhatsApp',
+      'Cuando no sabe algo, *te avisa y te pasa la conversación*',
+      'Lo *entrenamos con tu negocio* y lo probamos contigo antes de encenderlo',
+      '*Primer mes* de funcionamiento incluido',
+      '*Funcionando en 10 días hábiles* desde que nos mandes tu información',
     ],
   },
   {
@@ -307,18 +307,18 @@ const SERVICIOS = [
     corto: 'Una automatización',
     precio: 3749,
     anticipo: 1875,
-    resumen: 'Elegimos una tarea que hoy haces a mano y la dejamos corriendo sola, conectando lo que ya usas',
+    resumen: 'Elegimos *una tarea que hoy haces a mano* y la dejamos *corriendo sola*, conectando lo que ya usas',
     incluye: [
-      'Una llamada de 30 minutos para ver la tarea contigo y elegir la que más tiempo te quita',
-      'La dejamos corriendo sola: pasar pedidos a una hoja, mandar recordatorios, armar el reporte semanal',
-      'Conectamos hasta 3 herramientas de las que ya usas: WhatsApp, Excel, Google Sheets, correo, tu agenda',
-      'La probamos contigo con datos reales antes de darla por buena',
-      'Te dejamos un documento corto de cómo funciona y qué hacer si se detiene',
-      'Corriendo en 10 días hábiles desde la llamada',
+      '*Una llamada de 30 minutos* para ver la tarea contigo y elegir la que más tiempo te quita',
+      'La dejamos *corriendo sola*: pasar pedidos a una hoja, mandar recordatorios, armar el reporte semanal',
+      'Conectamos *hasta 3 herramientas* de las que ya usas: WhatsApp, Excel, Google Sheets, correo, tu agenda',
+      'La *probamos contigo* con datos reales antes de darla por buena',
+      'Te dejamos *un documento corto* de cómo funciona y qué hacer si se detiene',
+      '*Corriendo en 10 días hábiles* desde la llamada',
     ],
-    nota: 'Es una automatización, no un sistema entero: si la tarea necesita más de 3 '
-        + 'herramientas o programar algo a medida, te lo decimos en la llamada y lo '
-        + 'cotizamos aparte antes de empezar.',
+    nota: 'Es *una automatización, no un sistema entero*: si la tarea necesita más de 3 '
+        + 'herramientas o programar algo a medida, te lo decimos en la llamada y *lo '
+        + 'cotizamos aparte antes de empezar*.',
   },
 ];
 
@@ -622,6 +622,19 @@ const ENTREGA_LOCAL_NOMBRE = 'San Luis Potosí y Soledad';
    respeta: mezclar UTF-8 crudo con entidades en el mismo archivo funciona pero
    deja un diff sucio cada vez que alguien edita a mano. */
 const ent = t => [...t].map(c => c.charCodeAt(0) > 126 ? `&#${c.charCodeAt(0)};` : c).join('');
+/* LAS PALABRAS CLAVE VAN ENTRE ASTERISCOS EN LA TABLA: *así*. Quien compara
+   paquetes lee en diagonal, y una tarjeta de texto gris uniforme no le deja
+   nada a lo que agarrarse; con dos o tres palabras en bronce por línea —las
+   que dicen QUÉ se lleva— la lista se entiende sin leerla entera. El titular lo
+   pidió con estas palabras: «palabras clave que resalten, con poco pero de
+   calidad». Pocas por línea, o no resaltan.
+   Se convierten en <b> al escribir el HTML. Un asterisco sin pareja revienta
+   la generación: un resalte a medias saldría impreso como asterisco. */
+const resalta = t => {
+  const partes = String(t).split('*');
+  if (partes.length % 2 === 0) throw new Error(`resalte sin cerrar en: «${t}»`);
+  return partes.map((x, i) => i % 2 ? `<b>${ent(x)}</b>` : ent(x)).join('');
+};
 
 /* Miles con coma: $1,899. Es como se enseñan los precios en el sitio. */
 const miles = n => n.toLocaleString('en-US');
@@ -792,8 +805,8 @@ function bloqueServicio(familia) {
      apaga o la enciende el CSS con `:has()`, igual que al párrafo del anticipo:
      sin JavaScript también. */
   const punto = x => typeof x === 'string'
-    ? `<li>${ent(x)}</li>`
-    : `<li class="sv-solo-${x.solo}">${ent(x.texto)}</li>`;
+    ? `<li>${resalta(x)}</li>`
+    : `<li class="sv-solo-${x.solo}">${resalta(x.texto)}</li>`;
   const heredado = s => {
     if (!s.hereda) return null;
     const otro = SERVICIOS.find(x => x.id === s.hereda);
@@ -871,9 +884,9 @@ function bloqueServicio(familia) {
     /* La mensualidad, escrita desde el número y no a mano: la tarjeta y los
        términos no pueden decir dos cifras distintas para el mismo mes. */
     const nota = [
-      s.mensual ? `A partir del segundo mes cuesta ${pesos(s.mensual)} al mes: es lo que `
-        + 'cuesta mantenerlo contestando. Se cobra aparte, con un enlace de Mercado Pago, '
-        + 'y lo puedes dar de baja cuando quieras.' : '',
+      s.mensual ? `A partir del *segundo mes* cuesta *${pesos(s.mensual)} al mes*: es lo que `
+        + 'cuesta mantenerlo contestando. Se cobra *aparte*, con un enlace de Mercado Pago, '
+        + 'y lo puedes *dar de baja cuando quieras*.' : '',
       s.nota || '',
     ].filter(Boolean).join(' ');
 
@@ -898,8 +911,8 @@ function bloqueServicio(familia) {
       `        <button type="button" class="sv-elige" data-elige="${s.id}" hidden>` +
       `<span class="sr">Elegir ${ent(corto)}, ${pesos(s.precio)}</span></button>\n` +
       `        <p class="sv-nom">${ent(corto)}<span>${pesos(s.precio)}</span></p>\n` +
-      `        <p class="sv-que">${ent(s.resumen)}.</p>\n` +
-      (nota ? `        <p class="sv-nota">${ent(nota)}</p>\n` : '') +
+      `        <p class="sv-que">${resalta(s.resumen)}.</p>\n` +
+      (nota ? `        <p class="sv-nota">${resalta(nota)}</p>\n` : '') +
       /* ⚠ QUÉ INCLUYE, AQUÍ MISMO Y PLEGADO. Antes esto sólo vivía en la página
          de términos, mezclado con plazos y cancelación: había que salir, leer un
          texto legal entero y volver. Un <details> nativo lo abre y lo cierra sin
@@ -913,9 +926,14 @@ function bloqueServicio(familia) {
          cansancio. Aquí las dos listas caen seguidas, la propia primero
          —que es la que justifica los $810 de diferencia— y la heredada
          debajo, con su rótulo. */
+      /* El rótulo lleva la CUENTA de puntos: «8 puntos» dice de un vistazo que
+         ahí dentro hay una lista concreta y no dos líneas de relleno, que es
+         justo lo que decide si alguien lo abre. Con herencia se cuentan las
+         dos listas, que es lo que se ve al abrirlo. */
       (s.incluye && s.incluye.length
         ? '        <details class="sv-mas">\n' +
-          `          <summary>${ent('Ver qué incluye')}</summary>\n` +
+          `          <summary>${ent('Ver qué incluye')}<span class="sv-mas-n">` +
+          `${s.incluye.length + (heredado(s) ? heredado(s).incluye.length : 0)} puntos</span></summary>\n` +
           '          <ul>' + s.incluye.map(punto).join('') + '</ul>\n' +
           (heredado(s)
             ? `          <p class="sv-mas-y">${ent('Y todo lo de «' + heredado(s).nombreCorto + '»:')}</p>\n` +
