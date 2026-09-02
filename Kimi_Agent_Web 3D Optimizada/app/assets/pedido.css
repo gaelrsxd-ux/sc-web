@@ -305,10 +305,15 @@ main{max-width:560px}
    clics sólo mira `.sv-elige`, abrirlo no elige nada: son dos gestos distintos
    en el mismo sitio, y cada uno hace lo suyo. */
 .sv-mas{position:relative;z-index:3;margin-top:12px}
-.sv-mas summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;
-  padding:6px 0;font-size:11px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--muted);list-style:none;touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;transition:color .25s}
+/* Un renglón con borde y no un enlace pequeño en gris: era lo que menos se veía
+   de la tarjeta y es lo que contesta «¿y qué me dan?». Ancho completo, en
+   bronce, con la cuenta de puntos a la derecha: se ve, se entiende y se toca. */
+.sv-mas summary{display:flex;align-items:center;gap:10px;cursor:pointer;
+  padding:10px 14px;border:1px solid var(--line);background:rgba(200,169,106,.06);
+  font-size:10.5px;letter-spacing:2.4px;text-transform:uppercase;
+  color:var(--bronze-hi);list-style:none;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;transition:border-color .25s,background-color .25s}
+.sv-mas-n{margin-left:auto;font-size:10px;letter-spacing:1px;text-transform:none;color:var(--muted)}
 .sv-mas summary::-webkit-details-marker{display:none}
 /* El triángulo lo dibujamos nosotros: el del sistema es minúsculo y cambia de
    forma entre navegadores. Gira al abrir, que es lo que dice qué va a pasar. */
@@ -316,7 +321,10 @@ main{max-width:560px}
   border-left:4px solid currentColor;border-top:3.5px solid transparent;
   border-bottom:3.5px solid transparent;transition:transform .25s}
 .sv-mas[open] summary::before{transform:rotate(90deg)}
-.sv-mas summary:hover,.sv-mas summary:focus-visible{color:var(--bronze-hi)}
+.sv-mas summary:hover,.sv-mas summary:focus-visible{border-color:var(--bronze);background:rgba(200,169,106,.1)}
+/* Las palabras clave de cada tarjeta, en bronce: son las que se leen en
+   diagonal, que es como lee quien compara. Las escribe tools/precios.mjs. */
+.sv-que b,.sv-nota b,.sv-mas li b{color:var(--bronze-hi);font-weight:500}
 .sv-mas ul{list-style:none;margin:8px 0 2px;padding:0}
 .sv-mas li{position:relative;padding-left:18px;margin-top:7px;
   font-size:13px;line-height:1.6;color:var(--muted)}
