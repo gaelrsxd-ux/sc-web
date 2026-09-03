@@ -1436,10 +1436,127 @@ const paginasServicio = PAGINAS_SERVICIO.map(pg => {
   return { ...pg, original, generado: aplica(original, pg.bloques) };
 });
 
+/* ---------------------------------------------------------- PARA LAS IAs
+
+   app/llms.txt es una tarjeta de presentación en texto llano para los
+   asistentes que buscan en la web —ChatGPT, Claude, Perplexity, Gemini— y
+   para cualquier robot que prefiera hechos a maquetación. Sigue la convención
+   llms.txt: un H1 con el nombre, una cita con el resumen, secciones cortas.
+
+   ⚠ SE GENERA DESDE AQUÍ Y NO SE ESCRIBE A MANO, por la misma razón que todo
+   lo demás en este archivo: un precio escrito a mano en un archivo que nadie
+   abre es el que se queda viejo. El día que suba un paquete, este texto sube
+   con él y `--check` se queja si alguien lo tocó por su cuenta.
+
+   Lo que dice es SÓLO lo que ya dice la web: los mismos paquetes, las mismas
+   listas de «qué incluye», los mismos plazos y condiciones. Nada que no esté
+   en las tarjetas o en los términos, porque una IA lo va a citar tal cual. */
+const LLMS = path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', 'llms.txt');
+
+function paraLlms() {
+  const pesos = n => '$' + miles(n);
+  /* Los asteriscos son el subrayado de las tarjetas (ver resalta()); aquí no
+     hay negrita que pintar y sólo estorbarían a quien lo lea. */
+  const llano = t => String(t).replace(/\*/g, '');
+  const punto = x => typeof x === 'string'
+    ? llano(x)
+    : `${llano(x.texto)} (sólo si tu ficha de Google ya existe)`;
+  const TITULO = {
+    google: 'Perfil de Empresa en Google (ficha de Google Maps)',
+    web: 'Sitio web',
+    ia: 'Atención al cliente por WhatsApp con IA',
+    auto: 'Automatización de tareas',
+  };
+  const L = [];
+  L.push('# S&C Solutions');
+  L.push('');
+  L.push('> Hacemos sitios web, dejamos funcionando el perfil de Google de tu negocio, '
+    + 'ponemos un agente de WhatsApp con inteligencia artificial y automatizamos tareas '
+    + 'que hoy se hacen a mano. Precio cerrado, pago en línea con Mercado Pago. '
+    + 'Estamos en San Luis Potosí, México, y trabajamos a distancia para todo el país.');
+  L.push('');
+  L.push('- Sitio: https://sycsolutions.company/');
+  L.push('- Ciudad: San Luis Potosí, S.L.P., México');
+  L.push('- Cobertura: todo México a distancia; en ' + ENTREGA_LOCAL_NOMBRE + ' también en persona');
+  L.push('- WhatsApp: +52 442 369 7248');
+  L.push('- Correo: hola@sycsolutions.company');
+  L.push('- Idioma: español');
+  L.push('- Moneda de todos los precios: pesos mexicanos (MXN)');
+  L.push('');
+  L.push('## Servicios y precios');
+  L.push('');
+  for (const familia of Object.keys(FAMILIAS)) {
+    const propios = SERVICIOS.filter(x => x.familia === familia);
+    L.push('### ' + TITULO[familia]);
+    L.push('');
+    for (const sv of propios) {
+      const corto = sv.corto || sv.nombre;
+      let linea = `**${sv.nombre}** — ${pesos(sv.precio)} MXN`;
+      if (sv.mensual) linea += ` y, a partir del segundo mes, ${pesos(sv.mensual)} MXN al mes`;
+      L.push(linea);
+      L.push('');
+      L.push(llano(sv.resumen) + '.');
+      if (sv.anticipo) L.push(`Se puede pagar de contado o con ${pesos(sv.anticipo)} MXN de anticipo `
+        + `y ${pesos(sv.precio - sv.anticipo)} MXN al entregar ${FAMILIAS[familia].entrega}.`);
+      L.push('');
+      L.push('Incluye:');
+      for (const x of sv.incluye || []) L.push('- ' + punto(x));
+      if (sv.hereda) {
+        const otro = SERVICIOS.find(x => x.id === sv.hereda);
+        if (otro) L.push(`- Y todo lo del paquete «${otro.corto || otro.nombre}»`);
+      }
+      if (sv.nota) { L.push(''); L.push('Condición: ' + llano(sv.nota)); }
+      L.push('');
+    }
+  }
+  const uno = PAQUETES[0], desde = desdeGratis();
+  L.push('### Placa de reseñas para Google (NFC + QR)');
+  L.push('');
+  L.push('Una placa rígida para el mostrador: el cliente acerca el teléfono o escanea el '
+    + 'código y le abre directamente la pantalla para dejar reseña en Google. No hay que '
+    + 'instalar nada. Dura de 5 a 10 años.');
+  L.push('');
+  L.push(`- 1 placa: ${pesos(uno.precio)} MXN` + (uno.envio > 0 ? ` más ${pesos(uno.envio)} MXN de envío` : ''));
+  for (const p of PAQUETES.slice(1, 5))
+    L.push(`- ${p.piezas} placas: ${pesos(p.precio)} MXN` + (gratis(p) ? ' con envío gratis' : ''));
+  const ultima = PAQUETES[PAQUETES.length - 1];
+  L.push(`- Hasta ${ultima.piezas} placas en línea (${pesos(ultima.precio)} MXN las ${ultima.piezas}); más de ${ultima.piezas}, por WhatsApp`);
+  if (desde !== null) L.push(`- El envío es gratis a partir de ${desde} placas, a cualquier parte de México`);
+  L.push(`- En ${ENTREGA_LOCAL_NOMBRE} no se cobra envío: se entrega e instala en persona`);
+  L.push(`- Dentro de los paquetes de perfil de Google, cada placa cuesta ${pesos(PLACA_EN_PAQUETE.precio)} MXN (hasta ${PLACA_EN_PAQUETE.max})`);
+  L.push('');
+  L.push('## Cómo se contrata');
+  L.push('');
+  /* Sin lista de métodos: los que aparezcan los decide la cuenta de Mercado
+     Pago en el momento del cobro, y prometer aquí uno que ese día no esté es
+     la clase de frase que una IA repite con toda seguridad. */
+  L.push('- Todo se contrata y se paga en línea, en el sitio, con Mercado Pago.');
+  L.push('- Los precios son cerrados: lo que dice la página es lo que se cobra.');
+  L.push('- Revisión gratuita de tu página web: https://sycsolutions.company/#diagnostico');
+  L.push('- Contacto: https://sycsolutions.company/#contacto');
+  L.push('');
+  L.push('## Páginas');
+  L.push('');
+  L.push('- [Portada](https://sycsolutions.company/): servicios, la placa, clientes, preguntas frecuentes y contacto');
+  L.push('- [Términos y condiciones](https://sycsolutions.company/terminos): alcance, plazos y condiciones de cada paquete');
+  L.push('- [Aviso de privacidad](https://sycsolutions.company/aviso-de-privacidad)');
+  L.push('');
+  return L.join('\n') + '\n';
+}
+
+const llmsEsperado = paraLlms();
+const llmsActual = fs.existsSync(LLMS) ? fs.readFileSync(LLMS, 'utf8') : null;
+
 const pegarEsperado = paraPegar();
 const pegarActual = fs.existsSync(JS_PEGAR) ? fs.readFileSync(JS_PEGAR, 'utf8') : null;
 
 if (args.includes('--check')) {
+  if (llmsActual !== llmsEsperado) {
+    console.error('\n  app/llms.txt no coincide con tools/precios.mjs.');
+    console.error('  Las IAs citarían precios o condiciones que la web ya no dice.');
+    console.error('  Arréglalo con:  node tools/precios.mjs\n');
+    process.exit(1);
+  }
   if (pegarActual !== pegarEsperado) {
     console.error('\n  cloudflare/pagos/pagos-para-pegar.js está desfasado respecto a pagos.js.');
     console.error('  Quien lo pegue en Cloudflare desplegaría una versión vieja del Worker.');
@@ -1478,6 +1595,11 @@ if (jsonActual !== jsonEsperado) {
   fs.mkdirSync(path.dirname(JSON_WORKER), { recursive: true });
   fs.writeFileSync(JSON_WORKER, jsonEsperado);
   console.log('Reescrita la tabla del Worker de cobros (cloudflare/pagos/paquetes.json).');
+}
+
+if (llmsActual !== llmsEsperado) {
+  fs.writeFileSync(LLMS, llmsEsperado);
+  console.log('Reescrita la tarjeta para las IAs (app/llms.txt).');
 }
 
 if (pegarActual !== pegarEsperado) {
