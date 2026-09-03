@@ -105,14 +105,129 @@ const COBRO_EN_LINEA = 'https://pagos.sycsolutions.company/ir';
    siempre, porque son proyectos de días y la entrega sí se puede retener. */
 const FAMILIAS = {
   google: { pagina: 'servicio.html',       gracias: 'gracias-servicio.html', pregunta: true,
-            entrega: 'el acceso' },
+            entrega: 'el acceso', terminos: 'perfil-google',
+            titulo: 'Perfil de Google para tu negocio',
+            plazo: 'El primer día analizamos tu mercado y tu ficha; a partir de ahí, la '
+              + 'entrega es de *1 a 7 días hábiles* —normalmente 2 o 3— desde que nos das '
+              + 'acceso al perfil y el material, no desde el pago.',
+            preguntas: [
+              ['¿Qué es el perfil de Google?',
+               'La ficha de tu negocio que sale en Google y en Google Maps: horarios, teléfono, '
+               + 'fotos, reseñas y cómo llegar. Es lo primero que ve quien te busca, antes que tu '
+               + 'página web.'],
+              ['¿Cuánto cuesta?',
+               '«Lo esencial» cuesta {precio@gp-e} MXN y «Todo hecho» {precio@gp-t} MXN. Los dos '
+               + 'son precio cerrado y se pueden pagar de contado o con la mitad de anticipo y el '
+               + 'resto al entregarte el acceso.'],
+              ['¿Cuál es la diferencia entre los dos paquetes?',
+               '«Lo esencial» deja la ficha completa y funcionando: tus datos, las fotos que nos '
+               + 'mandas y tu enlace de reseñas. «Todo hecho» además la deja llena: vamos a tomar '
+               + 'las fotos, cargamos hasta 20 productos o servicios, contestamos las reseñas que ya '
+               + 'tienes, dejamos puestas preguntas y publicaciones, y te entregamos un reporte.'],
+              ['¿Van a mi negocio?',
+               'Con «Todo hecho», sí: en San Luis Potosí y Soledad de Graciano Sánchez vamos a '
+               + 'tomar hasta 20 fotos sin costo extra. Desde otra ciudad hacemos todo lo demás '
+               + 'igual y las fotos nos las mandas tú.'],
+              ['¿La cuenta queda a mi nombre?',
+               'Sí. Trabajamos sobre tu cuenta o la creamos a tu nombre, y al terminar te '
+               + 'entregamos el acceso. Es tuya.'],
+              ['¿Puedo añadir las placas de reseñas?',
+               'Sí: hasta {placas} placas por {placa} MXN cada una, con envío o instalación '
+               + 'incluidos. Se eligen al contratar, en esta misma página.'],
+            ] },
   web:    { pagina: 'web.html',            gracias: 'gracias-paquete.html',
-            entrega: 'tu sitio terminado' },
+            entrega: 'tu sitio terminado', terminos: 'sitio-web',
+            titulo: 'Página web para tu negocio',
+            plazo: 'Listo en *15 días hábiles* desde que nos mandes tu material completo '
+              + '—logo, fotos e información—, no desde el pago.',
+            preguntas: [
+              ['¿Cuánto cuesta una página web?',
+               '{precio} MXN, precio cerrado. Incluye hasta 5 páginas, el diseño a medida, tu '
+               + 'dominio .com y el hospedaje del primer año. Puedes dejar {anticipo} MXN de '
+               + 'anticipo y pagar los {resto} MXN cuando te la entreguemos.'],
+              ['¿En cuánto tiempo está lista?',
+               'En {plazo} días hábiles desde que nos mandes tu material completo: logo, fotos '
+               + 'y la información de tu negocio. El plazo corre desde el material, no desde el '
+               + 'pago.'],
+              ['¿Qué tengo que poner yo?',
+               'El logo, las fotos y la información del negocio. Los textos los escribimos '
+               + 'nosotros con lo que nos cuentes. Si no tienes logo o fotos, te decimos cómo '
+               + 'conseguirlos.'],
+              ['¿Qué no incluye?',
+               'Tienda en línea con carrito y cobros, más de 5 páginas, reservas o cuentas de '
+               + 'usuario: eso se cotiza aparte, por propuesta, antes de empezar. Después del '
+               + 'primer año, el dominio y el hospedaje se renuevan por tu cuenta.'],
+              ['¿Puedo cambiarla yo después?',
+               'Sí. Al entregarla te explicamos cómo cambiar textos y fotos, y antes de '
+               + 'publicarla hay dos rondas de cambios incluidas.'],
+              ['¿La hacen si no estoy en San Luis Potosí?',
+               'Sí. Todo el trabajo es a distancia, para cualquier parte de México.'],
+            ] },
   ia:     { pagina: 'ia.html',             gracias: 'gracias-paquete.html',
-            entrega: 'el agente funcionando' },
+            entrega: 'el agente funcionando', terminos: 'agente-ia',
+            titulo: 'Agente de WhatsApp con IA para tu negocio',
+            plazo: 'Funcionando en *10 días hábiles* desde que tengamos tu información y el '
+              + 'número; antes de encenderlo lo probamos contigo.',
+            preguntas: [
+              ['¿Qué hace exactamente?',
+               'Contesta el WhatsApp de tu negocio a cualquier hora con tu información —horarios, '
+               + 'precios, ubicación y lo que más te preguntan—, agenda citas o toma pedidos y te '
+               + 'los pasa. Cuando no sabe algo, te avisa y te pasa la conversación.'],
+              ['¿Cuánto cuesta?',
+               '{precio} MXN la puesta en marcha, con el primer mes incluido. A partir del '
+               + 'segundo mes, {mensual} MXN al mes, que es lo que cuesta mantenerlo contestando. '
+               + 'Puedes dejar {anticipo} MXN de anticipo y pagar los {resto} MXN cuando quede '
+               + 'funcionando.'],
+              ['¿Puedo cancelar la mensualidad?',
+               'Sí, cuando quieras: el agente deja de contestar al final del mes pagado. Tu '
+               + 'información no se pierde y se puede volver a encender.'],
+              ['¿Necesito otro número de WhatsApp?',
+               'No. Puede ser el que ya usas para el negocio.'],
+              ['¿En cuánto tiempo funciona?',
+               'En {plazo} días hábiles desde que tengamos tu información y el número. Antes de '
+               + 'encenderlo lo probamos contigo.'],
+              ['¿Reemplaza a una persona?',
+               'No. Contesta con la información que le das; no toma decisiones por ti, y cuando '
+               + 'un caso necesita a alguien, te lo pasa.'],
+            ] },
   auto:   { pagina: 'automatizacion.html', gracias: 'gracias-paquete.html',
-            entrega: 'la automatización corriendo' },
+            entrega: 'la automatización corriendo', terminos: 'automatizacion',
+            titulo: 'Automatización de tareas para tu negocio',
+            plazo: 'Corriendo en *10 días hábiles* desde la llamada, con los accesos a las '
+              + 'herramientas.',
+            preguntas: [
+              ['¿Qué es una automatización?',
+               'Una tarea que hoy haces a mano y que dejamos corriendo sola: pasar los pedidos '
+               + 'de WhatsApp a una hoja, mandar recordatorios de citas, armar el reporte de la '
+               + 'semana. Conectamos hasta 3 herramientas de las que ya usas.'],
+              ['¿Cuánto cuesta?',
+               '{precio} MXN por una automatización, precio cerrado. Puedes dejar {anticipo} MXN '
+               + 'de anticipo y pagar los {resto} MXN cuando quede corriendo.'],
+              ['¿Cómo sé si mi tarea se puede automatizar?',
+               'Con una llamada de 30 minutos, incluida: la vemos contigo y elegimos la que más '
+               + 'tiempo te quita. Si resulta que necesita más de 3 herramientas o programar algo '
+               + 'a medida, te lo decimos ahí mismo y lo cotizamos aparte; si prefieres no seguir, '
+               + 'se te devuelve el pago íntegro.'],
+              ['¿Qué herramientas conectan?',
+               'Las que ya usas: WhatsApp, Excel, Google Sheets, correo, tu agenda. Si alguna '
+               + 'tiene suscripción, esa corre por tu cuenta.'],
+              ['¿En cuánto tiempo está corriendo?',
+               'En {plazo} días hábiles desde la llamada, con los accesos a las herramientas.'],
+              ['¿Y si se detiene?',
+               'Te dejamos un documento corto de cómo funciona y qué hacer si se para.'],
+            ] },
 };
+
+/* ⚠ LAS PREGUNTAS SE ESCRIBEN AQUÍ Y NO EN EL HTML, por una razón: llevan
+   precios y plazos. Un «¿Cuánto cuesta?» escrito a mano en cuatro páginas es
+   cuatro sitios donde un precio se queda viejo el día que cambie la tabla.
+   Aquí van con marcadores —{precio}, {anticipo}, {resto}, {mensual}, {plazo},
+   {placa}, {placas}, y {campo@id} para un paquete concreto—, la generación los
+   rellena, y una guarda revienta si alguien teclea una cifra con «$» a mano.
+
+   `plazo` lleva el número dentro del texto, en asteriscos, y otra guarda exige
+   que la lista de «qué incluye» de la familia diga esos mismos días: son dos
+   sitios que hablan del plazo y no pueden discrepar. */
 
 const SERVICIOS = [
   {
@@ -1060,6 +1175,147 @@ function bloqueServicio(familia) {
          '      <!-- /servicio:opciones -->';
 }
 
+/* ---------------------------------------------- EL CONTENIDO DE CADA PÁGINA
+
+   Las páginas de servicio eran sólo pantallas de cobro, y por eso iban con
+   `noindex`. Pasan a ser también la página que responde a quien pregunta —a
+   Google o a una IA— «cuánto cuesta una página web», «qué hace un agente de
+   WhatsApp». Lo que responde lleva precio y plazo, así que lo genera este
+   archivo: tres bloques por página, entre marcadores, igual que las opciones
+   de cobro. El texto que no lleva cifras —qué es, para quién, cómo funciona—
+   va escrito en cada HTML. */
+const URL_SITIO = 'https://sycsolutions.company/';
+const urlPagina = f => URL_SITIO + f.pagina.replace(/\.html$/, '');
+const llano = t => String(t).replace(/\*/g, '');
+
+/* Rellena los marcadores de una pregunta. `{precio}` mira el primer paquete
+   de la familia; `{precio@gp-t}` uno concreto. Revienta con un marcador que no
+   conozca, para que un dedazo no llegue a la web como «{precoi}». */
+function rellena(texto, familia) {
+  const propios = SERVICIOS.filter(x => x.familia === familia);
+  const campos = (s, campo) => {
+    if (campo === 'precio')   return '$' + miles(s.precio);
+    if (campo === 'anticipo') return '$' + miles(s.anticipo);
+    if (campo === 'resto')    return '$' + miles(s.precio - s.anticipo);
+    if (campo === 'mensual')  return '$' + miles(s.mensual);
+    if (campo === 'nombre')   return s.nombre;
+    if (campo === 'corto')    return s.corto || s.nombre;
+    if (campo === 'plazo') {
+      const pl = FAMILIAS[familia].plazo || '';
+      const m = /(\d+) días hábiles/.exec(pl);
+      if (!m || /\d+ a \d+ días hábiles/.test(pl))
+        throw new Error(`familia «${familia}»: {plazo} pide un solo número y su plazo no lo tiene`);
+      return m[1];
+    }
+    if (campo === 'placa')  return '$' + miles(PLACA_EN_PAQUETE.precio);
+    if (campo === 'placas') return String(PLACA_EN_PAQUETE.max);
+    throw new Error(`familia «${familia}»: marcador desconocido {${campo}}`);
+  };
+  return texto.replace(/\{([a-z]+)(?:@([a-z0-9-]+))?\}/g, (_, campo, id) => {
+    const s = id ? SERVICIOS.find(x => x.id === id) : propios[0];
+    if (!s) throw new Error(`familia «${familia}»: {${campo}@${id}} no es ningún paquete`);
+    const v = campos(s, campo);
+    if (v === '$NaN' || v === 'undefined') throw new Error(`familia «${familia}»: {${campo}} no tiene valor en «${s.nombre}»`);
+    return v;
+  });
+}
+
+/* Guardas del contenido. Corren al cargar, con las demás. */
+for (const [familia, f] of Object.entries(FAMILIAS)) {
+  const propios = SERVICIOS.filter(x => x.familia === familia);
+  if (!f.preguntas || f.preguntas.length < 3)
+    throw new Error(`familia «${familia}»: hacen falta al menos tres preguntas`);
+  for (const [q, r] of f.preguntas) {
+    if (/\$\s?\d/.test(q + r))
+      throw new Error(`familia «${familia}»: «${q}» lleva un precio tecleado a mano; usa {precio}, {anticipo}…`);
+    if (/\b\d+ días hábiles/.test(q + r))
+      throw new Error(`familia «${familia}»: «${q}» lleva un plazo tecleado a mano; usa {plazo}`);
+    rellena(r, familia);   // revienta con un marcador desconocido
+  }
+  /* El plazo de la familia y el de la lista de «qué incluye» tienen que decir
+     los mismos días. Sólo aplica cuando el plazo es un número: el de Google
+     es un intervalo y su lista no lo repite. */
+  const m = /(\d+) días hábiles/.exec(f.plazo || '');
+  const intervalo = /\d+ a \d+ días hábiles/.test(f.plazo || '');
+  if (m && !intervalo) {
+    const lista = propios.flatMap(s => (s.incluye || []).map(x => typeof x === 'string' ? x : x.texto)).join(' ');
+    if (!lista.includes(`${m[1]} días hábiles`))
+      throw new Error(`familia «${familia}»: el plazo dice ${m[1]} días hábiles y la lista de «qué incluye» no`);
+  }
+  if (!f.terminos) throw new Error(`familia «${familia}»: falta la ancla de sus términos`);
+  if (!f.titulo)   throw new Error(`familia «${familia}»: falta el título de su página`);
+}
+
+/* Precio, pago y plazo: la sección que una IA cita entera. */
+function bloqueHechos(familia) {
+  const f = FAMILIAS[familia];
+  const pesos = n => '$' + miles(n);
+  const propios = SERVICIOS.filter(x => x.familia === familia);
+  const parrafos = propios.map(s => {
+    let t = `<b>${ent(s.nombre)}</b> cuesta <b>${pesos(s.precio)} MXN</b>`;
+    if (s.mensual) t += ` y, a partir del segundo mes, <b>${pesos(s.mensual)} MXN al mes</b>`;
+    t += '. ';
+    t += s.anticipo
+      ? `De contado, o ${pesos(s.anticipo)} MXN de anticipo y ${pesos(s.precio - s.anticipo)} MXN al entregarte ${ent(f.entrega)}.`
+      : 'Un solo pago.';
+    return `      <p>${t}</p>`;
+  });
+  return '<!-- servicio:hechos -->\n' +
+    '      <h2 id="precio">Precio, pago y plazo</h2>\n' +
+    parrafos.join('\n') + '\n' +
+    `      <p>${resalta(ent(f.plazo))}</p>\n` +
+    `      <p>Todo se contrata y se paga en esta página, con Mercado Pago. Los plazos, límites y la cancelación están en los <a href="terminos.html#${f.terminos}">términos de este paquete</a>.</p>\n` +
+    '      <!-- /servicio:hechos -->';
+}
+
+/* Las preguntas, y su esquema FAQPage EN EL MISMO BLOQUE: así no pueden decir
+   cosas distintas, que es lo que Google penaliza. */
+function bloquePreguntas(familia) {
+  const f = FAMILIAS[familia];
+  const lista = f.preguntas.map(([q, r]) => [q, rellena(r, familia)]);
+  const html = lista.map(([q, r]) =>
+    '        <details>\n' +
+    `          <summary>${ent(q)}</summary>\n` +
+    `          <p class="faq-r">${ent(r)}</p>\n` +
+    '        </details>').join('\n');
+  const esquema = {
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: lista.map(([q, r]) => ({
+      '@type': 'Question', name: q,
+      acceptedAnswer: { '@type': 'Answer', text: r },
+    })),
+  };
+  return '<!-- servicio:preguntas -->\n' +
+    '      <h2 id="preguntas">Preguntas frecuentes</h2>\n' +
+    '      <div class="faq">\n' + html + '\n      </div>\n' +
+    '      <script type="application/ld+json">' + JSON.stringify(esquema) + '</script>\n' +
+    '      <!-- /servicio:preguntas -->';
+}
+
+/* El servicio y su oferta, para el buscador: nombre, qué es, quién lo da,
+   dónde y a cuánto. El precio sale de la tabla, como todo. */
+function bloqueEsquema(familia) {
+  const f = FAMILIAS[familia];
+  const propios = SERVICIOS.filter(x => x.familia === familia);
+  const nodos = propios.map(s => ({
+    '@type': 'Service',
+    name: s.nombre,
+    description: llano(s.resumen) + '.',
+    serviceType: f.titulo,
+    provider: { '@type': 'Organization', name: 'S&C Solutions', url: URL_SITIO },
+    areaServed: { '@type': 'Country', name: 'México' },
+    url: urlPagina(f),
+    offers: {
+      '@type': 'Offer', price: String(s.precio), priceCurrency: 'MXN',
+      url: urlPagina(f), availability: 'https://schema.org/InStock',
+    },
+  }));
+  return '<!-- servicio:esquema -->\n' +
+    '<script type="application/ld+json">' +
+    JSON.stringify({ '@context': 'https://schema.org', '@graph': nodos }) +
+    '</script>\n<!-- /servicio:esquema -->';
+}
+
 /* Una página de cobro por familia, cada una con su propio bloque de opciones.
    Las cuatro comparten esqueleto y script; lo que cambia es qué paquetes
    caben dentro, y eso lo decide la familia. */
@@ -1067,9 +1323,20 @@ const PAGINAS_SERVICIO = Object.entries(FAMILIAS).map(([familia, f]) => ({
   familia,
   archivo: f.pagina,
   ruta: path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', f.pagina),
-  bloques: [{ nombre: `opciones de ${f.pagina}`,
-              re: /<!-- servicio:opciones -->[\s\S]*?<!-- \/servicio:opciones -->/,
-              pinta: () => bloqueServicio(familia) }],
+  bloques: [
+    { nombre: `opciones de ${f.pagina}`,
+      re: /<!-- servicio:opciones -->[\s\S]*?<!-- \/servicio:opciones -->/,
+      pinta: () => bloqueServicio(familia) },
+    { nombre: `hechos de ${f.pagina}`,
+      re: /<!-- servicio:hechos -->[\s\S]*?<!-- \/servicio:hechos -->/,
+      pinta: () => bloqueHechos(familia) },
+    { nombre: `preguntas de ${f.pagina}`,
+      re: /<!-- servicio:preguntas -->[\s\S]*?<!-- \/servicio:preguntas -->/,
+      pinta: () => bloquePreguntas(familia) },
+    { nombre: `esquema de ${f.pagina}`,
+      re: /<!-- servicio:esquema -->[\s\S]*?<!-- \/servicio:esquema -->/,
+      pinta: () => bloqueEsquema(familia) },
+  ],
 }));
 
 function bloquePedido() {
@@ -1538,6 +1805,8 @@ function paraLlms() {
   L.push('## Páginas');
   L.push('');
   L.push('- [Portada](https://sycsolutions.company/): servicios, la placa, clientes, preguntas frecuentes y contacto');
+  for (const f of Object.values(FAMILIAS))
+    L.push(`- [${f.titulo}](${urlPagina(f)}): qué es, qué incluye, precio, plazo, preguntas frecuentes y contratación`);
   L.push('- [Términos y condiciones](https://sycsolutions.company/terminos): alcance, plazos y condiciones de cada paquete');
   L.push('- [Aviso de privacidad](https://sycsolutions.company/aviso-de-privacidad)');
   L.push('');

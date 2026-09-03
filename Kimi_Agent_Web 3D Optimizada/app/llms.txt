@@ -125,6 +125,10 @@ Una placa rígida para el mostrador: el cliente acerca el teléfono o escanea el
 ## Páginas
 
 - [Portada](https://sycsolutions.company/): servicios, la placa, clientes, preguntas frecuentes y contacto
+- [Perfil de Google para tu negocio](https://sycsolutions.company/servicio): qué es, qué incluye, precio, plazo, preguntas frecuentes y contratación
+- [Página web para tu negocio](https://sycsolutions.company/web): qué es, qué incluye, precio, plazo, preguntas frecuentes y contratación
+- [Agente de WhatsApp con IA para tu negocio](https://sycsolutions.company/ia): qué es, qué incluye, precio, plazo, preguntas frecuentes y contratación
+- [Automatización de tareas para tu negocio](https://sycsolutions.company/automatizacion): qué es, qué incluye, precio, plazo, preguntas frecuentes y contratación
 - [Términos y condiciones](https://sycsolutions.company/terminos): alcance, plazos y condiciones de cada paquete
 - [Aviso de privacidad](https://sycsolutions.company/aviso-de-privacidad)
 

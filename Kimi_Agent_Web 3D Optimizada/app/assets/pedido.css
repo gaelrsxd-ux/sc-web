@@ -534,3 +534,41 @@ main{max-width:560px}
    página sigue diciendo lo importante —que el pago salió bien— y ofrece el
    WhatsApp de siempre, sin datos dentro. */
 [hidden]{display:none!important}
+
+/* ---------- EL CONTENIDO DE LAS PÁGINAS DE SERVICIO ----------
+   Lo que hay debajo del cobro en web.html, ia.html, automatizacion.html y
+   servicio.html: qué es, cómo funciona, precio y plazo, preguntas. La
+   tipografía la pone legal.css —h2, p, listas—; aquí sólo la separación del
+   formulario, la lista numerada y las preguntas, que copian las de la portada
+   para que no parezcan de otra web. Todo bajo .sv-info: los `details` de
+   «ver qué incluye» de las tarjetas tienen su propio estilo y no se tocan. */
+.sv-info{margin-top:clamp(52px,7vw,84px);padding-top:clamp(28px,4vw,44px);
+  border-top:1px solid var(--line-soft)}
+.sv-info h2{margin-top:clamp(36px,4.5vw,52px)}
+.sv-info h2:first-child{margin-top:0}
+.sv-info ol.lista{counter-reset:paso;list-style:none;margin-left:0}
+.sv-info ol.lista li{counter-increment:paso;position:relative;padding-left:34px}
+.sv-info ol.lista li::before{content:counter(paso,decimal-leading-zero);position:absolute;
+  left:0;top:.35em;font-size:9.5px;letter-spacing:2px;color:var(--bronze);
+  font-variant-numeric:tabular-nums}
+.sv-info .faq{margin-top:14px;border-top:1px solid var(--line-soft);counter-reset:faq}
+.sv-info .faq details{border-bottom:1px solid var(--line-soft);counter-increment:faq}
+.sv-info .faq summary{list-style:none;cursor:pointer;position:relative;display:flex;
+  align-items:baseline;gap:14px;padding:clamp(14px,1.7vw,19px) 38px clamp(14px,1.7vw,19px) 0;
+  font-family:var(--serif);font-size:clamp(16px,1.8vw,20px);color:var(--ink);transition:color .3s}
+.sv-info .faq summary::-webkit-details-marker{display:none}
+.sv-info .faq summary::before{content:counter(faq,decimal-leading-zero);flex:none;
+  font-family:var(--sans);font-size:9.5px;letter-spacing:2px;color:var(--bronze);
+  font-variant-numeric:tabular-nums}
+.sv-info .faq summary::after{content:"";position:absolute;right:8px;top:50%;width:8px;height:8px;
+  margin-top:-6px;border-right:1px solid var(--bronze);border-bottom:1px solid var(--bronze);
+  transform:rotate(45deg);transition:transform .35s ease}
+.sv-info .faq details[open] summary::after{transform:rotate(-135deg);margin-top:-2px}
+.sv-info .faq summary:hover,.sv-info .faq details[open] summary{color:var(--bronze-hi)}
+.sv-info .faq summary:focus-visible{outline:1px solid var(--bronze);outline-offset:3px}
+.sv-info .faq .faq-r{margin:0;padding:0 38px clamp(15px,1.8vw,21px) 29px;color:var(--muted);
+  font-size:15px;line-height:1.75}
+@media(max-width:520px){.sv-info .faq summary{gap:10px}.sv-info .faq .faq-r{padding-left:0}}
+.sv-info-cta{margin-top:clamp(28px,4vw,40px)}
+/* El ancla del cobro deja sitio a la barra fija al volver arriba. */
+#sv-form{scroll-margin-top:90px}
