@@ -9,13 +9,19 @@
 
        payment_methods.installments = 1     ← el máximo de cuotas es una
 
-   Nueve de los once paquetes van así. Los dos más caros ofrecen además dos
-   mensualidades, que las financia el banco del comprador y no cuestan nada al
-   vendedor; a partir de tres empezarían los meses sin intereses, que sí los
-   paga el vendedor, y por eso hay un tope duro. Ver TOPE_CUOTAS más abajo.
+   Es lo que lleva por defecto todo el catálogo. Los paquetes caros ofrecen
+   además dos mensualidades, que las financia el banco del comprador y no
+   cuestan nada al vendedor; a partir de tres empezarían los meses sin
+   intereses, que sí los paga el vendedor, y por eso hay un tope duro. Ver
+   TOPE_CUOTAS más abajo.
+
+   Cuántos van con una y cuántos con dos NO se escribe aquí: sale de la columna
+   `cuotas` de la tabla. Este comentario decía «nueve de los once» y envejeció
+   en cuanto el catálogo creció, que es lo que le pasa a todo número copiado a
+   mano.
 
    De regalo, y es la mitad del motivo para tenerlo: se acabó crear enlaces a
-   mano. Un enlace por paquete eran once creaciones en el móvil, y otras once
+   mano. Era un enlace por paquete, tecleado en el móvil, y otra vuelta entera
    cada vez que cambiara un precio. Aquí el cobro se genera al vuelo desde la
    misma tabla que pinta la web.
 
