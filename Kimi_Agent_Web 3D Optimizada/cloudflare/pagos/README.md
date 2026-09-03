@@ -22,7 +22,7 @@ Y como el campo va por paquete, se puede afinar: los dos más caros ofrecen
 el dinero.
 
 Y de paso desaparece el trabajo manual: **ya no hay que crear un enlace por
-paquete**. El cobro se genera al vuelo para los once desde la misma tabla que
+paquete**. El cobro se genera al vuelo para todo el catálogo desde la misma tabla que
 pinta la web.
 
 ## Lo que hay que hacer para encenderlo
@@ -63,7 +63,7 @@ que se podrían crear cobros saltándose el sitio propio.
 curl -sS https://pagos.sycsolutions.company/estado
 ```
 
-Debe responder `{"ok":true,"secreto":true,"paquetes":11}`. `secreto` dice si el
+Debe responder `{"ok":true,"secreto":true,"paquetes":43}`. `secreto` dice si el
 token **existe**, nunca cuál es. Si sale `false`, falta el paso 1.
 
 ### 5 · Encender los botones en la web
@@ -74,7 +74,7 @@ En `tools/precios.mjs`, poner la dirección del Worker:
 const COBRO_EN_LINEA = 'https://pagos.sycsolutions.company/ir';
 ```
 
-y ejecutar `node tools/precios.mjs`. Los once paquetes pasan a botón de pago de
+y ejecutar `node tools/precios.mjs`. Todo el catálogo pasa a botón de pago de
 golpe. Con la constante vacía no se pinta ningún botón: **la web nunca enseña un
 botón de cobro que no cobre**.
 
@@ -212,7 +212,7 @@ Cuarenta pruebas, sin red y sin `wrangler`: se sustituye `fetch` por un doble
 que captura lo que se le habría mandado a Mercado Pago. Cubren el importe del
 servidor, las cuotas de cada paquete contra la tabla, el recorte a dos, la
 caída a pago único con la columna rota o ausente, `default_installments` en 1,
-los once importes contra la tabla, paquete inexistente, falta de secreto,
+todos los importes contra la tabla, paquete inexistente, falta de secreto,
 origen ajeno, método incorrecto, `/estado` sin filtrar el token, el fallo de
 Mercado Pago terminando en WhatsApp y no en un error, la redirección 303 y el
 tope por IP.

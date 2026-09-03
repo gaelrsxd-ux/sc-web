@@ -101,7 +101,7 @@ https://pagos.sycsolutions.company/estado
 Tiene que responder algo así:
 
 ```json
-{"ok":true,"secreto":true,"paquetes":11}
+{"ok":true,"secreto":true,"paquetes":43}
 ```
 
 Qué significa cada cosa:
@@ -110,7 +110,7 @@ Qué significa cada cosa:
 |---|---|
 | `"ok":true` | El programa está vivo. Partes 2 y 4 bien. |
 | `"secreto":true` | La llave está puesta. Parte 3 bien. |
-| `"paquetes":11` | Conoce tus once paquetes con sus precios. |
+| `"paquetes":43` | Conoce tus 43 paquetes con sus precios. |
 
 **Esta comprobación no cobra nada ni gasta nada.** Y fíjate en que dice
 `"secreto":true`, no cuál es la llave: el programa nunca la enseña, ni a ti.
@@ -125,13 +125,19 @@ Qué significa cada cosa:
 
 ---
 
-## Parte 6 · Avísame
+## Parte 6 · La prueba de verdad
 
-Cuando `/estado` te responda con los tres valores bien, dímelo y **enciendo los
-once botones de pago en la web**. Eso lo hago yo, tú no tocas nada más.
+Los botones de pago de la web **ya apuntan al Worker**. Eso vive en el código y
+hay una guarda que lo obliga, así que no queda nada que encender a mano.
 
-Después abriremos un cobro de verdad para **mirar** que ya no aparece ninguna
-mensualidad. No lo doy por hecho hasta verlo en pantalla.
+Lo que falta es mirarlo funcionando. Entra a la web, elige un paquete y pulsa el
+botón de pago. Tiene que abrirse Mercado Pago con:
+
+- **el importe exacto** del paquete que elegiste, y
+- **ninguna mensualidad ofrecida** —o dos como mucho, en los paquetes caros.
+
+Esa pantalla es el motivo entero de haber montado el Worker, así que no lo des
+por hecho sin verla. Puedes cerrar sin pagar: crear el cobro no cobra nada.
 
 ---
 

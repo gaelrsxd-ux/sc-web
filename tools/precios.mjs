@@ -1703,6 +1703,37 @@ const paginasServicio = PAGINAS_SERVICIO.map(pg => {
   return { ...pg, original, generado: aplica(original, pg.bloques) };
 });
 
+/* Las dos guías del Worker enseñan la respuesta de /estado como ejemplo, y ahí
+   dentro va el número de paquetes del catálogo. Ese número se quedó viejo una
+   vez: las guías decían 11 cuando ya eran 43, y el titular vio 43 en su panel y
+   creyó que algo se había roto. Un susto por una cifra copiada a mano.
+
+   Así que se comprueba. No se reescribe sola —el resto de la frase es prosa y
+   la escribe una persona—, pero si el catálogo crece y la guía no se entera,
+   esto revienta y dice dónde. */
+const GUIAS_WORKER = ['README.md', 'INSTALAR-SIN-TERMINAL.md'].map(archivo => ({
+  archivo,
+  ruta: path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'cloudflare', 'pagos', archivo),
+}));
+{
+  const cuantos = JSON.parse(paquetesJson()).paquetes.length;
+  for (const g of GUIAS_WORKER) {
+    const texto = fs.readFileSync(g.ruta, 'utf8');
+    const dicen = [...texto.matchAll(/"paquetes":(\d+)/g)].map(m => Number(m[1]));
+    if (!dicen.length) {
+      console.error(`\n  ${g.archivo} ya no enseña la respuesta de /estado.`);
+      console.error('  Sin ese ejemplo, quien siga la guía no sabe si el Worker quedó bien.\n');
+      process.exit(1);
+    }
+    const malas = dicen.filter(n => n !== cuantos);
+    if (malas.length) {
+      console.error(`\n  ${g.archivo} dice "paquetes":${malas[0]} y el catálogo tiene ${cuantos}.`);
+      console.error('  Cambia esa cifra en la guía; quien la siga va a ver la del catálogo.\n');
+      process.exit(1);
+    }
+  }
+}
+
 /* ---------------------------------------------------------- PARA LAS IAs
 
    app/llms.txt es una tarjeta de presentación en texto llano para los
