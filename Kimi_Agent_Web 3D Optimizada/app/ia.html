@@ -3,17 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tu agente de WhatsApp — S&amp;C Solutions</title>
-<meta name="description" content="Elige c&#243;mo lo pagas, dinos de qu&#233; negocio es y lo dejamos contestando.">
-<!-- noindex igual que pedido.html: es un paso de un proceso, no una página que
-     nadie deba encontrar suelta en un buscador. -->
-<meta name="robots" content="noindex, follow">
+<title>Agente de WhatsApp con IA para tu negocio | S&amp;C Solutions</title>
+<meta name="description" content="Un agente que contesta el WhatsApp de tu negocio las 24 horas con tu información, agenda citas o toma pedidos y te avisa cuando no sabe algo. Precio cerrado.">
+<!-- Era «noindex, follow»: un paso de un proceso que nadie debía encontrar suelto
+     en un buscador. Deja de serlo: ahora esta página también RESPONDE —qué es,
+     para quién, cómo funciona, cuánto cuesta, en cuánto tiempo— y es la que tiene
+     que salir cuando alguien busca o le pregunta a una IA. El cobro sigue arriba;
+     el contenido va debajo, para no estorbar a quien ya viene decidido. -->
+<link rel="canonical" href="https://sycsolutions.company/ia">
+<!-- servicio:esquema -->
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Service","name":"Agente de WhatsApp con IA","description":"Un agente que contesta tu WhatsApp las 24 horas con la información de tu negocio, y agenda citas o toma pedidos.","serviceType":"Agente de WhatsApp con IA para tu negocio","provider":{"@type":"Organization","name":"S&C Solutions","url":"https://sycsolutions.company/"},"areaServed":{"@type":"Country","name":"México"},"url":"https://sycsolutions.company/ia","offers":{"@type":"Offer","price":"4459","priceCurrency":"MXN","url":"https://sycsolutions.company/ia","availability":"https://schema.org/InStock"}}]}</script>
+<!-- /servicio:esquema -->
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=f51d3a4f">
-<link rel="stylesheet" href="assets/pedido.css?v=1bc63a37">
+<link rel="stylesheet" href="assets/pedido.css?v=f1216785">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -32,7 +38,7 @@
        índice de un lector de pantalla— aterrizaba en un formulario sin saber de
        qué era. No se ve, porque el diseño ya lo dice con la cabecera del
        producto y meterlo dos veces sería ruido para todos los demás. -->
-  <h1 class="sr">Contratar tu agente de WhatsApp con IA</h1>
+  <h1 class="sr">Agente de WhatsApp con inteligencia artificial que contesta por tu negocio</h1>
   <!-- El rótulo dice EN QUÉ PASO SE ESTÁ, como en la página de pedido. Sin él,
        una pantalla que va descubriendo bloques no dice cuánto falta, y no saber
        cuánto falta es el motivo por el que se abandona un cobro. Nace con el
@@ -175,6 +181,74 @@
         <a href="terminos.html#agente-ia">T&#233;rminos</a> &#183; <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
     </fieldset>
   </form>
+
+  <!-- ══════════ LO QUE RESPONDE A QUIEN PREGUNTA ══════════
+       Va DESPUÉS del cobro y no antes, por la misma razón que las preguntas de
+       la portada van después del formulario: quien llega desde «Ver el paquete»
+       ya sabe qué es y quiere pagar; quien llega desde un buscador o una IA
+       lee esto de corrido y tiene el paquete un gesto más arriba.
+
+       Tres bloques los genera tools/precios.mjs —precio y plazo, preguntas con
+       su esquema, y el esquema del servicio en la cabecera— porque llevan
+       cifras, y una cifra escrita a mano es la que se queda vieja. Lo que va
+       escrito aquí no lleva ninguna: qué es, para quién, cómo funciona y qué
+       no incluye, con las mismas palabras que la tarjeta y los términos. -->
+  <article class="sv-info" id="info">
+    <h2 id="que-es">Qué es y para quién</h2>
+    <p>Un agente que <b>contesta el WhatsApp de tu negocio</b> de forma automática, a cualquier hora y también en fin de semana, con la información que le des: horarios, precios, ubicación y lo que más te preguntan. <b>Agenda citas o toma pedidos</b> y te los pasa por WhatsApp; cuando no sabe algo, te avisa y te pasa la conversación. Es para el negocio que pierde clientes por mensajes que se quedan sin contestar.</p>
+
+    <h2 id="como-funciona">Cómo funciona</h2>
+    <ol class="lista">
+        <li>Eliges el paquete y pagas aquí, de contado o con anticipo.</li>
+        <li>Nos das el <b>número de WhatsApp</b> del negocio —puede ser el que ya usas— y la información con la que va a contestar.</li>
+        <li>Lo <b>entrenamos con tu negocio</b> y lo probamos contigo antes de encenderlo.</li>
+        <li>Queda funcionando, con el <b>primer mes incluido</b>.</li>
+        <li>A partir del segundo mes, la mensualidad se cobra aparte con un enlace de suscripción de Mercado Pago, y la puedes <b>cancelar cuando quieras</b>.</li>
+    </ol>
+
+    <h2 id="no-incluye">Qué no incluye ni garantiza</h2>
+    <p>Contesta con la información que le das; no toma decisiones por ti ni sustituye a una persona en los casos que la necesiten. No garantizamos ventas ni un número de conversaciones. Conectarlo a otros sistemas del negocio distintos de WhatsApp se cotiza aparte. Sin la mensualidad el agente se apaga; tu información no se pierde y se puede volver a encender.</p>
+
+    <!-- servicio:hechos -->
+      <h2 id="precio">Precio, pago y plazo</h2>
+      <p><b>Agente de WhatsApp con IA</b> cuesta <b>$4,459 MXN</b> y, a partir del segundo mes, <b>$990 MXN al mes</b>. De contado, o $2,230 MXN de anticipo y $2,229 MXN al entregarte el agente funcionando.</p>
+      <p>Funcionando en <b>10 d&#237;as h&#225;biles</b> desde que tengamos tu informaci&#243;n y el n&#250;mero; antes de encenderlo lo probamos contigo.</p>
+      <p>Todo se contrata y se paga en esta página, con Mercado Pago. Los plazos, límites y la cancelación están en los <a href="terminos.html#agente-ia">términos de este paquete</a>.</p>
+      <!-- /servicio:hechos -->
+
+    <!-- servicio:preguntas -->
+      <h2 id="preguntas">Preguntas frecuentes</h2>
+      <div class="faq">
+        <details>
+          <summary>&#191;Qu&#233; hace exactamente?</summary>
+          <p class="faq-r">Contesta el WhatsApp de tu negocio a cualquier hora con tu informaci&#243;n &#8212;horarios, precios, ubicaci&#243;n y lo que m&#225;s te preguntan&#8212;, agenda citas o toma pedidos y te los pasa. Cuando no sabe algo, te avisa y te pasa la conversaci&#243;n.</p>
+        </details>
+        <details>
+          <summary>&#191;Cu&#225;nto cuesta?</summary>
+          <p class="faq-r">$4,459 MXN la puesta en marcha, con el primer mes incluido. A partir del segundo mes, $990 MXN al mes, que es lo que cuesta mantenerlo contestando. Puedes dejar $2,230 MXN de anticipo y pagar los $2,229 MXN cuando quede funcionando.</p>
+        </details>
+        <details>
+          <summary>&#191;Puedo cancelar la mensualidad?</summary>
+          <p class="faq-r">S&#237;, cuando quieras: el agente deja de contestar al final del mes pagado. Tu informaci&#243;n no se pierde y se puede volver a encender.</p>
+        </details>
+        <details>
+          <summary>&#191;Necesito otro n&#250;mero de WhatsApp?</summary>
+          <p class="faq-r">No. Puede ser el que ya usas para el negocio.</p>
+        </details>
+        <details>
+          <summary>&#191;En cu&#225;nto tiempo funciona?</summary>
+          <p class="faq-r">En 10 d&#237;as h&#225;biles desde que tengamos tu informaci&#243;n y el n&#250;mero. Antes de encenderlo lo probamos contigo.</p>
+        </details>
+        <details>
+          <summary>&#191;Reemplaza a una persona?</summary>
+          <p class="faq-r">No. Contesta con la informaci&#243;n que le das; no toma decisiones por ti, y cuando un caso necesita a alguien, te lo pasa.</p>
+        </details>
+      </div>
+      <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué hace exactamente?","acceptedAnswer":{"@type":"Answer","text":"Contesta el WhatsApp de tu negocio a cualquier hora con tu información —horarios, precios, ubicación y lo que más te preguntan—, agenda citas o toma pedidos y te los pasa. Cuando no sabe algo, te avisa y te pasa la conversación."}},{"@type":"Question","name":"¿Cuánto cuesta?","acceptedAnswer":{"@type":"Answer","text":"$4,459 MXN la puesta en marcha, con el primer mes incluido. A partir del segundo mes, $990 MXN al mes, que es lo que cuesta mantenerlo contestando. Puedes dejar $2,230 MXN de anticipo y pagar los $2,229 MXN cuando quede funcionando."}},{"@type":"Question","name":"¿Puedo cancelar la mensualidad?","acceptedAnswer":{"@type":"Answer","text":"Sí, cuando quieras: el agente deja de contestar al final del mes pagado. Tu información no se pierde y se puede volver a encender."}},{"@type":"Question","name":"¿Necesito otro número de WhatsApp?","acceptedAnswer":{"@type":"Answer","text":"No. Puede ser el que ya usas para el negocio."}},{"@type":"Question","name":"¿En cuánto tiempo funciona?","acceptedAnswer":{"@type":"Answer","text":"En 10 días hábiles desde que tengamos tu información y el número. Antes de encenderlo lo probamos contigo."}},{"@type":"Question","name":"¿Reemplaza a una persona?","acceptedAnswer":{"@type":"Answer","text":"No. Contesta con la información que le das; no toma decisiones por ti, y cuando un caso necesita a alguien, te lo pasa."}}]}</script>
+      <!-- /servicio:preguntas -->
+
+    <p class="sv-info-cta"><a class="volver" href="#sv-form">&#8593; Elegir el paquete</a></p>
+  </article>
 </main>
 
 <!-- El script del checkout, compartido con web.html, ia.html y

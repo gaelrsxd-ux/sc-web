@@ -3,17 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tu automatizaci&#243;n — S&amp;C Solutions</title>
-<meta name="description" content="Elige c&#243;mo lo pagas, cu&#233;ntanos la tarea y la dejamos corriendo sola.">
-<!-- noindex igual que pedido.html: es un paso de un proceso, no una página que
-     nadie deba encontrar suelta en un buscador. -->
-<meta name="robots" content="noindex, follow">
+<title>Automatización de tareas para tu negocio | S&amp;C Solutions</title>
+<meta name="description" content="Dejamos corriendo sola una tarea que hoy haces a mano —pedidos a una hoja, recordatorios, el reporte semanal— conectando hasta 3 herramientas que ya usas. Precio cerrado.">
+<!-- Era «noindex, follow»: un paso de un proceso que nadie debía encontrar suelto
+     en un buscador. Deja de serlo: ahora esta página también RESPONDE —qué es,
+     para quién, cómo funciona, cuánto cuesta, en cuánto tiempo— y es la que tiene
+     que salir cuando alguien busca o le pregunta a una IA. El cobro sigue arriba;
+     el contenido va debajo, para no estorbar a quien ya viene decidido. -->
+<link rel="canonical" href="https://sycsolutions.company/automatizacion">
+<!-- servicio:esquema -->
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Service","name":"Una automatización concreta","description":"Elegimos una tarea que hoy haces a mano y la dejamos corriendo sola, conectando lo que ya usas.","serviceType":"Automatización de tareas para tu negocio","provider":{"@type":"Organization","name":"S&C Solutions","url":"https://sycsolutions.company/"},"areaServed":{"@type":"Country","name":"México"},"url":"https://sycsolutions.company/automatizacion","offers":{"@type":"Offer","price":"3749","priceCurrency":"MXN","url":"https://sycsolutions.company/automatizacion","availability":"https://schema.org/InStock"}}]}</script>
+<!-- /servicio:esquema -->
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=f51d3a4f">
-<link rel="stylesheet" href="assets/pedido.css?v=1bc63a37">
+<link rel="stylesheet" href="assets/pedido.css?v=f1216785">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -32,7 +38,7 @@
        índice de un lector de pantalla— aterrizaba en un formulario sin saber de
        qué era. No se ve, porque el diseño ya lo dice con la cabecera del
        producto y meterlo dos veces sería ruido para todos los demás. -->
-  <h1 class="sr">Contratar una automatización concreta</h1>
+  <h1 class="sr">Automatización de una tarea de tu negocio, para que corra sola</h1>
   <!-- El rótulo dice EN QUÉ PASO SE ESTÁ, como en la página de pedido. Sin él,
        una pantalla que va descubriendo bloques no dice cuánto falta, y no saber
        cuánto falta es el motivo por el que se abandona un cobro. Nace con el
@@ -175,6 +181,74 @@
         <a href="terminos.html#automatizacion">T&#233;rminos</a> &#183; <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
     </fieldset>
   </form>
+
+  <!-- ══════════ LO QUE RESPONDE A QUIEN PREGUNTA ══════════
+       Va DESPUÉS del cobro y no antes, por la misma razón que las preguntas de
+       la portada van después del formulario: quien llega desde «Ver el paquete»
+       ya sabe qué es y quiere pagar; quien llega desde un buscador o una IA
+       lee esto de corrido y tiene el paquete un gesto más arriba.
+
+       Tres bloques los genera tools/precios.mjs —precio y plazo, preguntas con
+       su esquema, y el esquema del servicio en la cabecera— porque llevan
+       cifras, y una cifra escrita a mano es la que se queda vieja. Lo que va
+       escrito aquí no lleva ninguna: qué es, para quién, cómo funciona y qué
+       no incluye, con las mismas palabras que la tarjeta y los términos. -->
+  <article class="sv-info" id="info">
+    <h2 id="que-es">Qué es y para quién</h2>
+    <p>Una <b>tarea concreta</b> que hoy haces a mano y que dejamos corriendo sola, conectando hasta <b>tres herramientas</b> de las que ya usas: WhatsApp, Excel, Google Sheets, correo, tu agenda. Pasar los pedidos a una hoja, mandar recordatorios de citas, armar el reporte de la semana. Es para quien pierde horas cada semana en lo mismo.</p>
+
+    <h2 id="como-funciona">Cómo funciona</h2>
+    <ol class="lista">
+        <li>Eliges el paquete y pagas aquí, de contado o con anticipo.</li>
+        <li>Una <b>llamada de 30 minutos</b>: vemos la tarea contigo y elegimos la que más tiempo te quita. Si necesita más de tres herramientas o programar algo a medida, te lo decimos ahí y lo cotizamos aparte; si prefieres no seguir, se te devuelve el pago íntegro.</li>
+        <li>Con los accesos a las herramientas, la dejamos <b>corriendo sola</b>.</li>
+        <li>La <b>probamos contigo</b> con datos reales antes de darla por buena.</li>
+        <li>Te dejamos un <b>documento corto</b> de cómo funciona y qué hacer si se detiene.</li>
+    </ol>
+
+    <h2 id="no-incluye">Qué no incluye</h2>
+    <p>Es una automatización, no un sistema: lo que necesite más de tres herramientas, programación a medida o herramientas de pago que no tengas se cotiza aparte antes de empezar. Las suscripciones de las herramientas que conectemos, si las tienen, corren por tu cuenta.</p>
+
+    <!-- servicio:hechos -->
+      <h2 id="precio">Precio, pago y plazo</h2>
+      <p><b>Una automatizaci&#243;n concreta</b> cuesta <b>$3,749 MXN</b>. De contado, o $1,875 MXN de anticipo y $1,874 MXN al entregarte la automatizaci&#243;n corriendo.</p>
+      <p>Corriendo en <b>10 d&#237;as h&#225;biles</b> desde la llamada, con los accesos a las herramientas.</p>
+      <p>Todo se contrata y se paga en esta página, con Mercado Pago. Los plazos, límites y la cancelación están en los <a href="terminos.html#automatizacion">términos de este paquete</a>.</p>
+      <!-- /servicio:hechos -->
+
+    <!-- servicio:preguntas -->
+      <h2 id="preguntas">Preguntas frecuentes</h2>
+      <div class="faq">
+        <details>
+          <summary>&#191;Qu&#233; es una automatizaci&#243;n?</summary>
+          <p class="faq-r">Una tarea que hoy haces a mano y que dejamos corriendo sola: pasar los pedidos de WhatsApp a una hoja, mandar recordatorios de citas, armar el reporte de la semana. Conectamos hasta 3 herramientas de las que ya usas.</p>
+        </details>
+        <details>
+          <summary>&#191;Cu&#225;nto cuesta?</summary>
+          <p class="faq-r">$3,749 MXN por una automatizaci&#243;n, precio cerrado. Puedes dejar $1,875 MXN de anticipo y pagar los $1,874 MXN cuando quede corriendo.</p>
+        </details>
+        <details>
+          <summary>&#191;C&#243;mo s&#233; si mi tarea se puede automatizar?</summary>
+          <p class="faq-r">Con una llamada de 30 minutos, incluida: la vemos contigo y elegimos la que m&#225;s tiempo te quita. Si resulta que necesita m&#225;s de 3 herramientas o programar algo a medida, te lo decimos ah&#237; mismo y lo cotizamos aparte; si prefieres no seguir, se te devuelve el pago &#237;ntegro.</p>
+        </details>
+        <details>
+          <summary>&#191;Qu&#233; herramientas conectan?</summary>
+          <p class="faq-r">Las que ya usas: WhatsApp, Excel, Google Sheets, correo, tu agenda. Si alguna tiene suscripci&#243;n, esa corre por tu cuenta.</p>
+        </details>
+        <details>
+          <summary>&#191;En cu&#225;nto tiempo est&#225; corriendo?</summary>
+          <p class="faq-r">En 10 d&#237;as h&#225;biles desde la llamada, con los accesos a las herramientas.</p>
+        </details>
+        <details>
+          <summary>&#191;Y si se detiene?</summary>
+          <p class="faq-r">Te dejamos un documento corto de c&#243;mo funciona y qu&#233; hacer si se para.</p>
+        </details>
+      </div>
+      <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es una automatización?","acceptedAnswer":{"@type":"Answer","text":"Una tarea que hoy haces a mano y que dejamos corriendo sola: pasar los pedidos de WhatsApp a una hoja, mandar recordatorios de citas, armar el reporte de la semana. Conectamos hasta 3 herramientas de las que ya usas."}},{"@type":"Question","name":"¿Cuánto cuesta?","acceptedAnswer":{"@type":"Answer","text":"$3,749 MXN por una automatización, precio cerrado. Puedes dejar $1,875 MXN de anticipo y pagar los $1,874 MXN cuando quede corriendo."}},{"@type":"Question","name":"¿Cómo sé si mi tarea se puede automatizar?","acceptedAnswer":{"@type":"Answer","text":"Con una llamada de 30 minutos, incluida: la vemos contigo y elegimos la que más tiempo te quita. Si resulta que necesita más de 3 herramientas o programar algo a medida, te lo decimos ahí mismo y lo cotizamos aparte; si prefieres no seguir, se te devuelve el pago íntegro."}},{"@type":"Question","name":"¿Qué herramientas conectan?","acceptedAnswer":{"@type":"Answer","text":"Las que ya usas: WhatsApp, Excel, Google Sheets, correo, tu agenda. Si alguna tiene suscripción, esa corre por tu cuenta."}},{"@type":"Question","name":"¿En cuánto tiempo está corriendo?","acceptedAnswer":{"@type":"Answer","text":"En 10 días hábiles desde la llamada, con los accesos a las herramientas."}},{"@type":"Question","name":"¿Y si se detiene?","acceptedAnswer":{"@type":"Answer","text":"Te dejamos un documento corto de cómo funciona y qué hacer si se para."}}]}</script>
+      <!-- /servicio:preguntas -->
+
+    <p class="sv-info-cta"><a class="volver" href="#sv-form">&#8593; Elegir el paquete</a></p>
+  </article>
 </main>
 
 <!-- El script del checkout, compartido con web.html, ia.html y

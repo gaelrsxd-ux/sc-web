@@ -13,6 +13,7 @@ automatización— con el mismo esqueleto y el mismo script (`assets/servicio.js
 | `servicio.mjs` | el perfil de Google: `servicio.html` → el cobro → `gracias-servicio.html`. Es la que prueba el MECANISMO del checkout, que las otras tres páginas comparten |
 | `paquetes.mjs` | el sitio web, el agente de IA y la automatización: `web.html`, `ia.html`, `automatizacion.html` → el cobro → `gracias-paquete.html`, y que la portada y los términos digan el mismo precio |
 | `instalaciones.mjs` | las fotos de clientes de la ficha y el visor |
+| `contenido.mjs` | las cuatro páginas de servicio como páginas que **responden**: indexables, con esquema `Service`/`Offer` al precio del catálogo, preguntas visibles iguales a las del esquema `FAQPage`, precio y plazo de la tabla, anclas sanas, y presentes en el sitemap y en `llms.txt` |
 
 ```sh
 node servidor.js 8099 &
@@ -20,11 +21,12 @@ node pruebas/compra.mjs
 node pruebas/servicio.mjs
 node pruebas/paquetes.mjs
 node pruebas/instalaciones.mjs
+node pruebas/contenido.mjs
 ```
 
 Ciento cuarenta y nueve comprobaciones en la primera, la mayoría con JavaScript y un
 bloque final sin él; ciento ochenta y dos en la segunda, ciento cuarenta y uno en la
-tercera y treinta y una en la cuarta.
+tercera, treinta y una en la cuarta y ciento una en la quinta.
 
 ⚠ **Los `force: true` de estas suites están sólo en los bloques sin JavaScript
 —de `compra.mjs` y de `paquetes.mjs`—, y no es pereza.** Antes de pulsar, Playwright espera a que el

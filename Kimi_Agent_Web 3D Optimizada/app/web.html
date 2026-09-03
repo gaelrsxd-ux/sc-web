@@ -3,17 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tu sitio web — S&amp;C Solutions</title>
-<meta name="description" content="Elige c&#243;mo lo pagas, dinos de qu&#233; negocio es y lo dejamos en l&#237;nea.">
-<!-- noindex igual que pedido.html: es un paso de un proceso, no una página que
-     nadie deba encontrar suelta en un buscador. -->
-<meta name="robots" content="noindex, follow">
+<title>Página web para tu negocio en San Luis Potosí | S&amp;C Solutions</title>
+<meta name="description" content="Sitio web de hasta 5 páginas con tu dominio y hospedaje, hecho para vender y que se ve bien en el celular. Precio cerrado. San Luis Potosí y todo México.">
+<!-- Era «noindex, follow»: un paso de un proceso que nadie debía encontrar suelto
+     en un buscador. Deja de serlo: ahora esta página también RESPONDE —qué es,
+     para quién, cómo funciona, cuánto cuesta, en cuánto tiempo— y es la que tiene
+     que salir cuando alguien busca o le pregunta a una IA. El cobro sigue arriba;
+     el contenido va debajo, para no estorbar a quien ya viene decidido. -->
+<link rel="canonical" href="https://sycsolutions.company/web">
+<!-- servicio:esquema -->
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Service","name":"Sitio web completo","description":"Tu sitio web listo y en línea: hecho para vender, con tu dominio, y viéndose bien en el celular.","serviceType":"Página web para tu negocio","provider":{"@type":"Organization","name":"S&C Solutions","url":"https://sycsolutions.company/"},"areaServed":{"@type":"Country","name":"México"},"url":"https://sycsolutions.company/web","offers":{"@type":"Offer","price":"6199","priceCurrency":"MXN","url":"https://sycsolutions.company/web","availability":"https://schema.org/InStock"}}]}</script>
+<!-- /servicio:esquema -->
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=f51d3a4f">
-<link rel="stylesheet" href="assets/pedido.css?v=1bc63a37">
+<link rel="stylesheet" href="assets/pedido.css?v=f1216785">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -32,7 +38,7 @@
        índice de un lector de pantalla— aterrizaba en un formulario sin saber de
        qué era. No se ve, porque el diseño ya lo dice con la cabecera del
        producto y meterlo dos veces sería ruido para todos los demás. -->
-  <h1 class="sr">Contratar tu sitio web completo</h1>
+  <h1 class="sr">Página web para tu negocio: sitio completo, con dominio, hecho para vender</h1>
   <!-- El rótulo dice EN QUÉ PASO SE ESTÁ, como en la página de pedido. Sin él,
        una pantalla que va descubriendo bloques no dice cuánto falta, y no saber
        cuánto falta es el motivo por el que se abandona un cobro. Nace con el
@@ -175,6 +181,74 @@
         <a href="terminos.html#sitio-web">T&#233;rminos</a> &#183; <a href="aviso-de-privacidad.html">Aviso de privacidad</a></p>
     </fieldset>
   </form>
+
+  <!-- ══════════ LO QUE RESPONDE A QUIEN PREGUNTA ══════════
+       Va DESPUÉS del cobro y no antes, por la misma razón que las preguntas de
+       la portada van después del formulario: quien llega desde «Ver el paquete»
+       ya sabe qué es y quiere pagar; quien llega desde un buscador o una IA
+       lee esto de corrido y tiene el paquete un gesto más arriba.
+
+       Tres bloques los genera tools/precios.mjs —precio y plazo, preguntas con
+       su esquema, y el esquema del servicio en la cabecera— porque llevan
+       cifras, y una cifra escrita a mano es la que se queda vieja. Lo que va
+       escrito aquí no lleva ninguna: qué es, para quién, cómo funciona y qué
+       no incluye, con las mismas palabras que la tarjeta y los términos. -->
+  <article class="sv-info" id="info">
+    <h2 id="que-es">Qué es y para quién</h2>
+    <p>Un <b>sitio web completo</b> para el negocio que hoy no tiene página, o tiene una que no vende: hasta <b>cinco páginas</b> —inicio, servicios o productos, quiénes son, galería y contacto—, diseñadas a medida y que se ven bien en celular, tablet y computadora. Lleva <b>botón de WhatsApp</b>, formulario de contacto y mapa de cómo llegar, y lo damos de alta en Google para que te encuentren. Es para quien quiere que el cliente que lo busca lo encuentre a él, y no a la competencia.</p>
+
+    <h2 id="como-funciona">Cómo funciona</h2>
+    <ol class="lista">
+        <li>Eliges el paquete y pagas aquí, de contado o con anticipo.</li>
+        <li>Nos mandas tu material por WhatsApp: el <b>logo</b>, las <b>fotos</b> y la información de tu negocio. Si no tienes logo o fotos, te decimos cómo conseguirlos.</li>
+        <li>Escribimos <b>los textos</b> con lo que nos cuentes y armamos el sitio.</li>
+        <li>Lo revisas: hay <b>dos rondas de cambios</b> antes de publicarlo.</li>
+        <li>Lo publicamos en <b>tu dominio .com</b>, con el hospedaje del primer año incluido, y te explicamos cómo cambiar textos y fotos tú mismo.</li>
+    </ol>
+
+    <h2 id="no-incluye">Qué no incluye</h2>
+    <p>Tienda en línea con carrito y cobros, más de cinco páginas, sistemas de reservas o de usuarios: todo eso se cotiza por propuesta antes de empezar. Hacer el logo o las fotos también se cotiza aparte. Después del primer año, la renovación del dominio y del hospedaje corre por tu cuenta; te avisamos del importe con tiempo.</p>
+
+    <!-- servicio:hechos -->
+      <h2 id="precio">Precio, pago y plazo</h2>
+      <p><b>Sitio web completo</b> cuesta <b>$6,199 MXN</b>. De contado, o $3,100 MXN de anticipo y $3,099 MXN al entregarte tu sitio terminado.</p>
+      <p>Listo en <b>15 d&#237;as h&#225;biles</b> desde que nos mandes tu material completo &#8212;logo, fotos e informaci&#243;n&#8212;, no desde el pago.</p>
+      <p>Todo se contrata y se paga en esta página, con Mercado Pago. Los plazos, límites y la cancelación están en los <a href="terminos.html#sitio-web">términos de este paquete</a>.</p>
+      <!-- /servicio:hechos -->
+
+    <!-- servicio:preguntas -->
+      <h2 id="preguntas">Preguntas frecuentes</h2>
+      <div class="faq">
+        <details>
+          <summary>&#191;Cu&#225;nto cuesta una p&#225;gina web?</summary>
+          <p class="faq-r">$6,199 MXN, precio cerrado. Incluye hasta 5 p&#225;ginas, el dise&#241;o a medida, tu dominio .com y el hospedaje del primer a&#241;o. Puedes dejar $3,100 MXN de anticipo y pagar los $3,099 MXN cuando te la entreguemos.</p>
+        </details>
+        <details>
+          <summary>&#191;En cu&#225;nto tiempo est&#225; lista?</summary>
+          <p class="faq-r">En 15 d&#237;as h&#225;biles desde que nos mandes tu material completo: logo, fotos y la informaci&#243;n de tu negocio. El plazo corre desde el material, no desde el pago.</p>
+        </details>
+        <details>
+          <summary>&#191;Qu&#233; tengo que poner yo?</summary>
+          <p class="faq-r">El logo, las fotos y la informaci&#243;n del negocio. Los textos los escribimos nosotros con lo que nos cuentes. Si no tienes logo o fotos, te decimos c&#243;mo conseguirlos.</p>
+        </details>
+        <details>
+          <summary>&#191;Qu&#233; no incluye?</summary>
+          <p class="faq-r">Tienda en l&#237;nea con carrito y cobros, m&#225;s de 5 p&#225;ginas, reservas o cuentas de usuario: eso se cotiza aparte, por propuesta, antes de empezar. Despu&#233;s del primer a&#241;o, el dominio y el hospedaje se renuevan por tu cuenta.</p>
+        </details>
+        <details>
+          <summary>&#191;Puedo cambiarla yo despu&#233;s?</summary>
+          <p class="faq-r">S&#237;. Al entregarla te explicamos c&#243;mo cambiar textos y fotos, y antes de publicarla hay dos rondas de cambios incluidas.</p>
+        </details>
+        <details>
+          <summary>&#191;La hacen si no estoy en San Luis Potos&#237;?</summary>
+          <p class="faq-r">S&#237;. Todo el trabajo es a distancia, para cualquier parte de M&#233;xico.</p>
+        </details>
+      </div>
+      <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuánto cuesta una página web?","acceptedAnswer":{"@type":"Answer","text":"$6,199 MXN, precio cerrado. Incluye hasta 5 páginas, el diseño a medida, tu dominio .com y el hospedaje del primer año. Puedes dejar $3,100 MXN de anticipo y pagar los $3,099 MXN cuando te la entreguemos."}},{"@type":"Question","name":"¿En cuánto tiempo está lista?","acceptedAnswer":{"@type":"Answer","text":"En 15 días hábiles desde que nos mandes tu material completo: logo, fotos y la información de tu negocio. El plazo corre desde el material, no desde el pago."}},{"@type":"Question","name":"¿Qué tengo que poner yo?","acceptedAnswer":{"@type":"Answer","text":"El logo, las fotos y la información del negocio. Los textos los escribimos nosotros con lo que nos cuentes. Si no tienes logo o fotos, te decimos cómo conseguirlos."}},{"@type":"Question","name":"¿Qué no incluye?","acceptedAnswer":{"@type":"Answer","text":"Tienda en línea con carrito y cobros, más de 5 páginas, reservas o cuentas de usuario: eso se cotiza aparte, por propuesta, antes de empezar. Después del primer año, el dominio y el hospedaje se renuevan por tu cuenta."}},{"@type":"Question","name":"¿Puedo cambiarla yo después?","acceptedAnswer":{"@type":"Answer","text":"Sí. Al entregarla te explicamos cómo cambiar textos y fotos, y antes de publicarla hay dos rondas de cambios incluidas."}},{"@type":"Question","name":"¿La hacen si no estoy en San Luis Potosí?","acceptedAnswer":{"@type":"Answer","text":"Sí. Todo el trabajo es a distancia, para cualquier parte de México."}}]}</script>
+      <!-- /servicio:preguntas -->
+
+    <p class="sv-info-cta"><a class="volver" href="#sv-form">&#8593; Elegir el paquete</a></p>
+  </article>
 </main>
 
 <!-- El script del checkout, compartido con web.html, ia.html y
