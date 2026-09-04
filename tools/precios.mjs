@@ -1598,6 +1598,27 @@ function desdeServicio(familia) {
   return `<span data-svc-desde="${familia}">${cifras}</span>`;
 }
 
+/* EL HERO: una ficha por familia con UNA cifra, «desde», y no las dos. Arriba
+   el espacio es el de un titular y la ficha es un anzuelo que lleva a la
+   tarjeta de abajo —#svc-google y compañía—, donde sí están las dos cifras y
+   se toma la decisión; el razonamiento de desdeServicio sigue valiendo allí.
+   Sale de la misma tabla que el cobro, por el motivo de siempre: una cifra en
+   la portada y otra en el cobro divergen el día que suba el precio. */
+function heroDesde(familia) {
+  const orden = SERVICIOS.filter(s => s.familia === familia).sort((a, b) => a.precio - b.precio);
+  if (!orden.length) throw new Error(`heroDesde: la familia «${familia}» no tiene paquetes`);
+  return `<span data-hero-desde="${familia}">desde <b>$${miles(orden[0].precio)}</b></span>`;
+}
+/* La placa suelta en el hero: el precio de UNA, que es lo que se paga de verdad
+   por una. Un «desde» con el precio por pieza del paquete grande sería un
+   anzuelo de los malos. */
+function heroPlaca() {
+  return `<span data-hero-placa><b>$${miles(PAQUETES[0].precio)}</b></span>`;
+}
+/* Sólo las familias que el hero enseña. «auto» no está arriba a propósito: es
+   la menos autoexplicativa en dos palabras y tiene su tarjeta abajo. */
+const HERO_FAMILIAS = ['google', 'web', 'ia'];
+
 const BLOQUES = [
   { nombre: 'precio del esquema', re: /"price":"\d+"/, pinta: precioEsquema },
   /* ⚠ `[\s\S]*?` Y NO `[^<]*`. El patrón exigía que dentro del <span> no hubiera
@@ -1614,6 +1635,18 @@ const BLOQUES = [
     re: new RegExp(`<span data-svc-desde="${f}">[\\s\\S]*?</span>`),
     pinta: () => desdeServicio(f),
   })),
+  /* Las del hero: marcas propias (data-hero-*) y no las de las tarjetas, porque
+     cada patrón tiene que encontrar UNA coincidencia, y pruebas/paquetes.mjs
+     lee [data-svc-desde="google"] en modo estricto: un segundo span igual
+     rompería las dos cosas a la vez. */
+  ...HERO_FAMILIAS.map(f => ({
+    nombre: `precio de «${f}» en el hero`,
+    re: new RegExp(`<span data-hero-desde="${f}">[\\s\\S]*?</span>`),
+    pinta: () => heroDesde(f),
+  })),
+  { nombre: 'precio de la placa en el hero',
+    re: /<span data-hero-placa>[\s\S]*?<\/span>/,
+    pinta: heroPlaca },
   /* ⚠ CON MARCAS Y NO CON UN `</a>` FINAL. El patrón anterior terminaba en el
      cierre del enlace, y al cambiar el marcado —el contador acaba en su tabla
      de datos, no en un enlace— dejó de encontrar su final y en la segunda pasada

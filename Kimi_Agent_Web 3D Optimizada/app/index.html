@@ -660,16 +660,87 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .hero-inner .sec-tag{justify-content:center;color:var(--bronze-hi);text-shadow:0 1px 10px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.6)}
 .hero-inner .sec-tag::after{content:"";width:42px;height:1px;background:var(--bronze)}
 .hero-inner .sec-tag .n{color:var(--bronze)}
-.hero h1{font-size:clamp(50px,8.4vw,132px);line-height:1.06;margin:26px auto 30px;font-weight:600;text-align:center}
+.hero h1{font-size:clamp(50px,8.4vw,132px);line-height:1.06;margin:26px auto 18px;font-weight:600;text-align:center}
 .hero h1 em{font-style:italic;font-weight:500;color:var(--bronze-hi)}
+/* LA LÍNEA QUE DICE A QUÉ NOS DEDICAMOS. El hero tenía «Diseño — Código — IA»
+   y se quitó; sin ella, un coche, montañas y «tu competencia ya nos llamó» se
+   leen como un taller de detailing —lo dijo un diseñador mirando la portada—.
+   El titular es el gancho; esto es el qué, en sustantivos que no admiten otra
+   lectura, y con «precio cerrado», que es lo que la descripción de Google ya
+   promete y aquí nadie veía.
+   ⚠ NO LLEVA .rv NI data-split. El titular nace en opacity 0 y lo enseña el
+   script; si el script no carga, el titular no se ve. Esta línea es la única
+   del hero que tiene que verse pase lo que pase, porque es la que evita perder
+   al que entra. Su fundido es CSS puro y acaba en 1; con movimiento reducido
+   el bloque global lo apaga y queda el estado base, que también es 1.
+   La sombra es la misma que sostiene el sec-tag sobre la aurora, que es la
+   zona más clara del encuadre y donde el texto claro pierde contraste. */
+.hero-sub{max-width:min(58ch,92vw);margin:0 auto;font-size:clamp(15px,1.55vw,19px);line-height:1.55;
+  color:var(--ink);text-shadow:0 1px 10px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.6);
+  animation:subEntra .9s ease .45s both}
+@keyframes subEntra{from{opacity:0;transform:translateY(.4em)}to{opacity:1;transform:none}}
+/* ⚠ EN TEMA CLARO LA FOTO SE ACLARA CASI HASTA EL BLANCO, y el titular —que
+   sigue a --ink— se lee oscuro sobre ella. La línea y la oferta hacen lo
+   mismo: siguen al tema como el titular, y NO llevan una paleta fijada. Se
+   probó fijarles la oscura dando por hecho que la foto era oscura en todos los
+   temas; en claro dejaba la línea casi invisible. Lo único que cambia de signo
+   en claro es lo que no viene de una variable: la sombra del texto y el fondo
+   translúcido de las fichas, abajo. */
+
+/* LA OFERTA. Cuatro fichas en una fila —dos por dos en el móvil—, cada una con
+   etiqueta, nombre y cifra, y cada una un enlace a su tarjeta. Es lo que hace
+   que quien entra piense «es aquí»: no una promesa, sino qué hay y cuánto es.
+   Sin backdrop-filter a propósito: la página lo evita entera por rendimiento
+   (ver DESCENSO); un fondo translúcido plano basta para despegarlas de la foto.
+   Entra con el mismo fundido CSS que la línea, algo después, y por los mismos
+   motivos: sin script se ve, con movimiento reducido se ve. */
+/* Dos líneas por ficha —nombre y cifra— y no tres: la etiqueta de arriba
+   (RESEÑAS, GOOGLE…) repetía lo que el nombre ya dice, y con ella el hero se
+   sentía «esto es todo». Más pequeñas, con menos fondo y el borde suave: son
+   el índice de lo que hay, no el contenido. */
+.hero-oferta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:860px;margin:26px auto 0;text-align:left;
+  animation:subEntra .9s ease .75s both}
+.hero-oferta{--ficha-bg:rgba(10,11,14,.42);--ficha-bg-hover:rgba(10,11,14,.72)}
+.hero-oferta a{position:relative;display:block;padding:10px 30px 10px 14px;background:var(--ficha-bg);
+  border:1px solid var(--line-soft);color:var(--ink);text-decoration:none;
+  transition:border-color .35s,background .35s,transform .35s}
+.hero-oferta a:hover,.hero-oferta a:focus-visible{border-color:var(--bronze);background:var(--ficha-bg-hover);transform:translateY(-2px)}
+.hero-oferta a:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:3px}
+.hero-oferta a>b{display:block;font-size:13.5px;line-height:1.3;font-weight:500;color:var(--ink)}
+.hero-oferta span{display:block;margin-top:3px;font-size:12px;color:var(--muted)}
+.hero-oferta span b{font-size:12.5px;font-weight:500;color:var(--bronze-hi)}
+/* La flecha de las tarjetas .svc, para que se lea como lo que es: un enlace. */
+.hero-oferta a::after{content:"\2197";position:absolute;top:9px;right:11px;color:var(--dim);font-size:13px;transition:.35s}
+.hero-oferta a:hover::after{color:var(--bronze);transform:translate(3px,-3px)}
+html[data-tema="claro"] .hero-sub{text-shadow:0 1px 10px rgba(255,255,255,.9),0 0 3px rgba(255,255,255,.7)}
+html[data-tema="claro"] .hero-oferta{--ficha-bg:rgba(245,242,233,.62);--ficha-bg-hover:rgba(245,242,233,.88)}
+@media(max-width:759px){
+  .hero-oferta{grid-template-columns:1fr 1fr;gap:6px;margin-top:22px}
+  .hero-oferta a{padding:9px 24px 9px 11px}
+  .hero-oferta a>b{font-size:12.5px}
+  .hero-oferta span{font-size:11.5px}
+  .hero-oferta a::after{top:7px;right:9px;font-size:12px}
+}
 .hero-cta{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
 .hero-foot{position:absolute;bottom:30px;left:0;right:0;z-index:2}
-/* Con "Diseño — Código — IA" fuera sólo queda el aviso de scroll: space-between
-   lo habría mandado a la izquierda al no tener con quién repartirse el hueco. */
-.hero-foot .wrap{display:flex;justify-content:flex-end;align-items:center;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim)}
-.scroll-cue{display:flex;align-items:center;gap:12px}
-.scroll-cue i{display:block;width:1px;height:42px;background:linear-gradient(180deg,var(--bronze),transparent);animation:drop 2.1s ease-in-out infinite}
-@keyframes drop{0%{transform:scaleY(0);transform-origin:top}55%{transform:scaleY(1);transform-origin:top}56%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.hero-foot .wrap{display:flex;justify-content:center}
+/* SIGUE BAJANDO. Un enlace centrado con tres piezas: la orden en mayúsculas
+   pequeñas, qué hay abajo en una línea, y una flecha que respira. Sustituye al
+   «Scroll» de la esquina. Sigue al tema como el titular; la sombra es la de la
+   línea del hero. Entra el último, con el mismo fundido CSS: sin script se ve.
+   ⚠ Sin .rv: es el aviso de que la página continúa, y tiene que verse aunque
+   el script no cargue. */
+.hero-mas{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;color:var(--muted);text-decoration:none;
+  text-shadow:0 1px 10px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.6);animation:subEntra .9s ease 1.05s both}
+.hero-mas .hm-t{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--bronze);font-weight:500;transition:color .35s}
+.hero-mas .hm-q{font-size:12.5px;line-height:1.5;max-width:62ch}
+.hero-mas i{display:block;width:9px;height:9px;margin-top:5px;border-right:1px solid var(--bronze);border-bottom:1px solid var(--bronze);
+  animation:baja 1.7s ease-in-out infinite}
+@keyframes baja{0%,100%{transform:translateY(0) rotate(45deg);opacity:.5}50%{transform:translateY(6px) rotate(45deg);opacity:1}}
+.hero-mas:hover .hm-t,.hero-mas:focus-visible .hm-t{color:var(--bronze-hi)}
+.hero-mas:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:6px}
+html[data-tema="claro"] .hero-mas{text-shadow:0 1px 10px rgba(255,255,255,.9),0 0 3px rgba(255,255,255,.7)}
+@media(max-width:759px){.hero-mas .hm-q{font-size:12px;max-width:34ch}}
 
 /* Aquí vivía el SEÑUELO: un botón «Nuestro mejor proyecto» con anillos
    pulsantes, entre los casos y la banda viva. Se va con ellos —el superlativo
@@ -2559,10 +2630,34 @@ html.js .pc-alt{display:none}
   <div class="wrap hero-inner">
     <span class="sec-tag">S&amp;C Solutions <span class="n">/ Est. 2026</span></span>
     <h1 data-split>Tu competencia<br><em>ya nos llamó.</em></h1>
+    <!-- La línea que dice A QUÉ NOS DEDICAMOS. Sin ella, el coche, las montañas
+         y «tu competencia ya nos llamó» se leen como un taller de detailing.
+         Va sin data-split y sin .rv a propósito: ver el CSS de .hero-sub. -->
+    <p class="hero-sub">Páginas web, perfil de Google y un WhatsApp que contesta solo. Precio&nbsp;cerrado, desde San&nbsp;Luis&nbsp;Potosí.</p>
+    <!-- LA OFERTA, EN CUATRO FICHAS. Nombre, precio y a dónde ir: quien entra
+         buscando una placa, una web o un WhatsApp que conteste lo ve aquí y no
+         tiene que adivinar en qué pestaña está. Cada ficha lleva a su tarjeta
+         de abajo, donde están las dos cifras y se decide; porHash abre la
+         pestaña que toque. ⚠ Las cifras las escribe tools/precios.mjs desde
+         la tabla (marcas data-hero-*): a mano, no. -->
+    <nav class="hero-oferta" aria-label="Lo que hacemos, con su precio">
+      <a href="#productos"><b>Placa NFC para Google</b><span data-hero-placa><b>$399</b></span></a>
+      <a href="#svc-google"><b>Perfil de Google</b><span data-hero-desde="google">desde <b>$1,490</b></span></a>
+      <a href="#svc-web"><b>Página web profesional</b><span data-hero-desde="web">desde <b>$6,199</b></span></a>
+      <a href="#svc-atencion"><b>WhatsApp que contesta solo</b><span data-hero-desde="ia">desde <b>$4,459</b></span></a>
+    </nav>
   </div>
   <div class="hero-foot">
     <div class="wrap">
-      <span class="scroll-cue">Scroll <i></i></span>
+      <!-- El aviso de que hay más. Antes era «Scroll» en 9 px, en gris y en la
+           esquina: con la oferta a la vista, el hero se sentía «esto es todo».
+           Ahora dice QUÉ hay abajo, va centrado y es un enlace a la primera
+           sección. La flecha respira; con movimiento reducido se queda quieta. -->
+      <a class="hero-mas" href="#soluciones">
+        <span class="hm-t">Sigue bajando</span>
+        <span class="hm-q">La placa de cerca, los paquetes completos y negocios que ya la tienen</span>
+        <i aria-hidden="true"></i>
+      </a>
     </div>
   </div>
 </header>
