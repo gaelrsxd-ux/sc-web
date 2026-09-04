@@ -4661,7 +4661,13 @@ function cargaTurnstile(){
     if(!e.isIntersecting)return;
     e.target.classList.add('dentro');
     o.unobserve(e.target);
-  }),{root:tira,threshold:.35});
+  /* ⚠ EL UMBRAL NO ES ARBITRARIO. La segunda foto asoma un 34% de si misma
+     —columnas al 72% del ancho— y es la que anuncia que hay mas: si no se
+     descubre, la tira parece tener una sola foto y un hueco al lado, que es lo
+     contrario de invitar a arrastrar. Con .35 quedaba a un pelo por debajo y
+     salia visible o no segun el redondeo. Con .2 se descubre siempre, y la
+     tercera —que no asoma nada— sigue esperando al gesto. */
+  }),{root:tira,threshold:.2});
   figs.forEach(f=>ob.observe(f));
 })();
 
