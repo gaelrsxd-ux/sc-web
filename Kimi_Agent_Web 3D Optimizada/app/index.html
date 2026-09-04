@@ -1834,6 +1834,20 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .insta-g figure{scroll-snap-align:center}
 }
 
+/* Las fotos entran conforme se desliza la tira, no todas puestas de golpe.
+   ⚠ EL ESTADO OCULTO SOLO EXISTE SI LO ENCIENDE EL SCRIPT (.desliza). Sin
+   JavaScript las cuatro se ven enteras desde el primer momento. La pagina ya
+   tiene .rv, que hace lo contrario —nace en opacity 0 y depende del script
+   para verse—, y por eso index.html sin JS esta en blanco de arriba abajo.
+   Esta seccion no repite ese fallo: lo comprueba pruebas/instalaciones.mjs.
+   ⚠ SE MUEVE EN X Y NUNCA EN Y. Dos motivos, y los dos importan: deslizar es
+   un gesto horizontal, asi que entrar desde la derecha es de donde el dedo las
+   trae; y la prueba comprueba que las cuatro comparten renglon midiendo el top
+   de cada figura, que un translateY movería. */
+.insta-g.desliza figure{opacity:0;transform:translateX(28px);
+  transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+.insta-g.desliza figure.dentro{opacity:1;transform:none}
+
 /* -------------------------------- EL CONTADOR -------------------------------
    Sustituye a la lista de once filas dentro de un <details>. Aquella enseñaba
    el catálogo entero —once cantidades, once precios, once envíos y once
@@ -4616,6 +4630,39 @@ function cargaTurnstile(){
     const items=fotos.map(el=>({src:el.dataset.grande,alt:el.dataset.alt||'',pie:el.dataset.pie||''}));
     fotos.forEach((el,n)=>el.addEventListener('click',()=>abre(items,n)));
   }
+})();
+
+/* ---------- LAS INSTALACIONES ENTRAN AL DESLIZAR ----------
+   En el movil la tira enseña una foto y media: las demas llegan arrastrando, y
+   asoman al entrar en lugar de estar ya puestas esperando.
+
+   El observador lleva root en la PROPIA TIRA, no en la pantalla. Lo que decide
+   si una foto ha llegado no es el desplazamiento de la pagina sino el recuadro
+   de la tira, que es exactamente lo que mueve el dedo. Con el root por defecto
+   —la pantalla— las cuatro contarian como visibles desde el primer momento,
+   porque en vertical ya lo estan, y no se descubriria ninguna al deslizar.
+
+   En escritorio la rejilla no se desplaza y las cuatro caen dentro del root a
+   la vez: se descubren juntas, que es lo correcto porque alli no hay gesto.
+
+   Se descubre UNA SOLA VEZ (unobserve): ir y volver con el dedo no debe hacer
+   parpadear lo que ya se ha visto.
+
+   Con movimiento reducido no se activa nada: sin la clase, el CSS de arriba no
+   existe y las fotos quedan visibles y quietas. */
+(()=>{
+  const tira=document.querySelector('.insta-g');
+  if(!tira||!('IntersectionObserver' in window))return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const figs=[...tira.querySelectorAll('figure')];
+  if(!figs.length)return;
+  tira.classList.add('desliza');
+  const ob=new IntersectionObserver((es,o)=>es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.classList.add('dentro');
+    o.unobserve(e.target);
+  }),{root:tira,threshold:.35});
+  figs.forEach(f=>ob.observe(f));
 })();
 
 /* ---------- AVANCE DE LECTURA E ÍNDICE DEL RECORRIDO ----------

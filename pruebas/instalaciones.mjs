@@ -29,6 +29,15 @@ ok(fallidas.length === 0, 'ninguna petición de foto de cliente falla' + (fallid
 for (const c of cargadas) console.log(`      ${c.src} → ${c.w}x${c.h}`);
 ok(cargadas.every(c => Math.abs(c.w / c.h - 0.75) < 0.01), 'las cuatro tienen la misma proporción 3:4');
 
+/* ⚠ NINGUNA comprobación de arriba mira la opacidad: naturalWidth vale igual
+   en una foto invisible. Desde que las fotos entran al deslizar, un fallo en
+   ese módulo —un root mal puesto, un umbral que no se alcanza— dejaría la
+   sección ENTERA en blanco y todo lo anterior seguiría en verde. En escritorio
+   la rejilla no se desplaza: las cuatro caen dentro del root a la vez y deben
+   acabar visibles todas. */
+const opacEsc = await pg.locator('.insta-g figure').evaluateAll(fs => fs.map(f => getComputedStyle(f).opacity));
+ok(opacEsc.every(x => x === '1'), 'en escritorio las cuatro se descubren juntas (opacidades: ' + opacEsc.join(', ') + ')');
+
 /* ---- los pies dicen el negocio y la plaza ---- */
 const pies = await pg.locator('.insta-g figcaption').allTextContents();
 for (const p of pies) console.log('      pie: ' + p.replace(/\s+/g, ' ').trim());
@@ -110,6 +119,20 @@ ok(desliza, 'la tira se desliza de lado en móvil');
 const filas = await m.locator('.insta-g figure').evaluateAll(fs => [...new Set(fs.map(f => Math.round(f.getBoundingClientRect().top)))].length);
 ok(filas === 1, 'las cuatro van en un solo renglón (renglones: ' + filas + ')');
 
+/* ---- las fotos entran al deslizar, no están todas puestas ----
+   Lo que se pidió: que vayan apareciendo conforme se arrastra a la derecha.
+   La cuarta está fuera de la tira al cargar, así que empieza oculta; al llevar
+   la tira al final tiene que llegar. Si alguien cambia el root del observador a
+   la pantalla, las cuatro contarían como visibles desde el principio —en
+   vertical ya lo están— y esta pareja de líneas se pone roja. */
+const opac4 = () => m.locator('.insta-g figure').nth(3).evaluate(e => getComputedStyle(e).opacity);
+ok(await opac4() === '0', 'la cuarta empieza oculta: no están todas puestas de golpe');
+await m.locator('.insta-g').evaluate(e => e.scrollTo({ left: e.scrollWidth }));
+await m.waitForTimeout(900);
+ok(await opac4() === '1', 'y aparece al deslizar la tira a la derecha');
+await m.locator('.insta-g').evaluate(e => e.scrollTo({ left: 0 }));
+await m.waitForTimeout(500);
+
 /* ---- móvil: tocar una foto abre un diálogo del que se puede SALIR ----
    El teléfono no tiene tecla Escape: si la equis no está en pantalla, el
    visitante se queda encerrado. Es exactamente lo que pasó con los estilos
@@ -156,6 +179,13 @@ await p2.goto(B + '/#clientes', { waitUntil: 'load' });   // sin JS no hay pesta
 await p2.waitForTimeout(900);
 ok(await p2.locator('.insta-g figure').count() === 4,
    'sin JavaScript las cuatro fotos están en el HTML: la sección no la fabrica ningún script');
+/* Y se VEN, que no es lo mismo que estar. El estado oculto de la entrada al
+   deslizar lo enciende el script con .desliza; si alguien lo pasara a la hoja
+   de estilos, sin JavaScript esta sección quedaría en blanco —el fallo que ya
+   tiene .rv en el resto de la página— y esta línea es la que lo impide. */
+const opacSinJs = await p2.locator('.insta-g figure').evaluateAll(fs => fs.map(f => getComputedStyle(f).opacity));
+ok(opacSinJs.every(x => x === '1'),
+   'y se ven enteras: el estado oculto lo enciende el script, no el CSS (opacidades: ' + opacSinJs.join(', ') + ')');
 /* ⚠ isVisible() de Playwright NO mira la opacidad, así que un bloque en
    opacity:0 se lo traga. La página entera nace con .rv{opacity:0} y la
    descubre un IntersectionObserver: sin JavaScript, index.html está en blanco
