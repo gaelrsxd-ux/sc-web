@@ -828,7 +828,7 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    respiraba al fondo, la cabecera centrada, el ancla heredada de las reseñas y
    las cuatro fichas .work con sus escuadras y su resultado tapado. Se van con
    la sección: describía cuatro TIPOS de proyecto que no eran encargos reales,
-   y la página ya enseña trabajo de verdad —las tres instalaciones con foto— en
+   y la página ya enseña trabajo de verdad —las cuatro instalaciones con foto— en
    la pestaña de clientes. Con ella se van .works, .work, .res, .res-tapa,
    .sec-cab, .ancla y las animaciones rombRespira y tapaLate. */
 
@@ -1806,11 +1806,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 .insta h3 em{font-style:italic;color:var(--bronze-hi)}
 .insta-int{margin-top:12px;color:var(--muted);font-size:14px;line-height:1.75;max-width:56ch}
 
-/* Tres retratos en fila. En movil NO se apilan: tres fotos 3:4 una debajo de
-   otra son tres pantallas y media de desplazamiento en mitad de la ficha de
+/* Cuatro retratos en fila. El numero de columnas sigue al de instalaciones:
+   con una mas, se sube aqui y se ajusta el sizes de las fotos. En movil NO se
+   apilan: cuatro fotos 3:4 una debajo de
+   otra son cuatro pantallas y media de desplazamiento en mitad de la ficha de
    compra, justo donde se abandona. Pasan a ser una tira que se arrastra de
    lado, con anclaje para que siempre quede una centrada. Sin JavaScript. */
-.insta-g{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.insta-g{margin-top:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .insta-g figure{margin:0;min-width:0}
 .insta-g .prod-abre{position:relative}
 .insta-g img{width:100%;height:auto;display:block;border:1px solid var(--line-soft);
@@ -1831,6 +1833,20 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   .insta-g::-webkit-scrollbar{display:none}
   .insta-g figure{scroll-snap-align:center}
 }
+
+/* Las fotos entran conforme se desliza la tira, no todas puestas de golpe.
+   ⚠ EL ESTADO OCULTO SOLO EXISTE SI LO ENCIENDE EL SCRIPT (.desliza). Sin
+   JavaScript las cuatro se ven enteras desde el primer momento. La pagina ya
+   tiene .rv, que hace lo contrario —nace en opacity 0 y depende del script
+   para verse—, y por eso index.html sin JS esta en blanco de arriba abajo.
+   Esta seccion no repite ese fallo: lo comprueba pruebas/instalaciones.mjs.
+   ⚠ SE MUEVE EN X Y NUNCA EN Y. Dos motivos, y los dos importan: deslizar es
+   un gesto horizontal, asi que entrar desde la derecha es de donde el dedo las
+   trae; y la prueba comprueba que las cuatro comparten renglon midiendo el top
+   de cada figura, que un translateY movería. */
+.insta-g.desliza figure{opacity:0;transform:translateX(28px);
+  transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+.insta-g.desliza figure.dentro{opacity:1;transform:none}
 
 /* -------------------------------- EL CONTADOR -------------------------------
    Sustituye a la lista de once filas dentro de un <details>. Aquella enseñaba
@@ -2785,7 +2801,7 @@ html.js .pc-alt{display:none}
         aria-label="Ampliar la foto: Kabuki, Plaza Sendero, San Luis Potos&#237;">
         <img src="assets/cliente-kabuki-sendero-900.webp"
         srcset="assets/cliente-kabuki-sendero-480.webp 480w, assets/cliente-kabuki-sendero-900.webp 900w"
-        sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+        sizes="(max-width:720px) 72vw, 24vw" width="900" height="1200"
         loading="lazy" decoding="async" alt="La placa de rese&#241;as sostenida en la mano frente al mostrador de Kabuki en Plaza Sendero: al fondo se ven el r&#243;tulo del local, la carta y las vitrinas de sushi."><span class="prod-lupa">Ampliar</span>
         </button>
         <figcaption><b>Kabuki</b>Plaza Sendero, San Luis Potos&#237;</figcaption>
@@ -2797,7 +2813,7 @@ html.js .pc-alt{display:none}
         aria-label="Ampliar la foto: Kabuki, Villamagna, San Luis Potos&#237;">
         <img src="assets/cliente-kabuki-villamagna-900.webp"
         srcset="assets/cliente-kabuki-villamagna-480.webp 480w, assets/cliente-kabuki-villamagna-900.webp 900w"
-        sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+        sizes="(max-width:720px) 72vw, 24vw" width="900" height="1200"
         loading="lazy" decoding="async" alt="La misma placa frente al local de Kabuki en Villamagna, con el r&#243;tulo rojo de &#171;Delicias japonesas&#187; y el tel&#233;fono de servicio a domicilio detr&#225;s."><span class="prod-lupa">Ampliar</span>
         </button>
         <figcaption><b>Kabuki</b>Villamagna, San Luis Potos&#237;</figcaption>
@@ -2809,10 +2825,22 @@ html.js .pc-alt{display:none}
         aria-label="Ampliar la foto: Tito&#8217;s Snacks &amp; Drinks, Villamagna, San Luis Potos&#237;">
         <img src="assets/cliente-titos-villamagna-900.webp"
         srcset="assets/cliente-titos-villamagna-480.webp 480w, assets/cliente-titos-villamagna-900.webp 900w"
-        sizes="(max-width:720px) 72vw, 30vw" width="900" height="1200"
+        sizes="(max-width:720px) 72vw, 24vw" width="900" height="1200"
         loading="lazy" decoding="async" alt="La placa frente al mostrador de Tito&#8217;s Snacks &amp; Drinks: un local de dulces con la hilera de botes de cristal y el r&#243;tulo del negocio al fondo."><span class="prod-lupa">Ampliar</span>
         </button>
         <figcaption><b>Tito&#8217;s Snacks &amp; Drinks</b>Villamagna, San Luis Potos&#237;</figcaption>
+        </figure>
+        <figure>
+        <button class="prod-abre" type="button" data-galeria="instalaciones"
+        data-grande="assets/cliente-podologico-centro-grande.webp"
+        data-pie="Centro Podol&#243;gico Potosino &#183; Centro, San Luis Potos&#237;" data-alt="Tres tarjetas de rese&#241;as sostenidas en abanico frente al Centro Podol&#243;gico Potosino: cada una lleva el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas y un c&#243;digo QR. Detr&#225;s, la fachada verde del consultorio con su r&#243;tulo iluminado y la huella del logotipo pintada en la pared."
+        aria-label="Ampliar la foto: Centro Podol&#243;gico Potosino, Centro, San Luis Potos&#237;">
+        <img src="assets/cliente-podologico-centro-900.webp"
+        srcset="assets/cliente-podologico-centro-480.webp 480w, assets/cliente-podologico-centro-900.webp 900w"
+        sizes="(max-width:720px) 72vw, 24vw" width="900" height="1200"
+        loading="lazy" decoding="async" alt="Tres tarjetas de rese&#241;as sostenidas en abanico frente al Centro Podol&#243;gico Potosino: cada una lleva el texto &#171;We&#8217;d love your feedback&#187;, el logotipo de Google en sus cuatro colores, cinco estrellas y un c&#243;digo QR. Detr&#225;s, la fachada verde del consultorio con su r&#243;tulo iluminado y la huella del logotipo pintada en la pared."><span class="prod-lupa">Ampliar</span>
+        </button>
+        <figcaption><b>Centro Podol&#243;gico Potosino</b>Centro, San Luis Potos&#237;</figcaption>
         </figure>
         </div>
         <p class="insta-pie">&#191;Quieres que la tuya salga aqu&#237;? El d&#237;a de la entrega
@@ -2876,7 +2904,7 @@ html.js .pc-alt{display:none}
      · LO QUE CONSTRUIMOS (02): cuatro fichas —tienda en línea, operación
        logística, clínica veterinaria y despacho legal— que describían TIPOS de
        proyecto, con su resultado tapado y destapable. No eran encargos reales,
-       y la página ya enseña trabajo que sí lo es: las tres instalaciones con
+       y la página ya enseña trabajo que sí lo es: las cuatro instalaciones con
        foto de la pestaña «Clientes», con negocio, plaza y permiso. Se llevó
        .works, .work, .res-tapa, .sec-cab, .ancla, las animaciones rombRespira
        y tapaLate, la escena de fondo bg-proyectos y los anclas #resenas y
@@ -4602,6 +4630,45 @@ function cargaTurnstile(){
     const items=fotos.map(el=>({src:el.dataset.grande,alt:el.dataset.alt||'',pie:el.dataset.pie||''}));
     fotos.forEach((el,n)=>el.addEventListener('click',()=>abre(items,n)));
   }
+})();
+
+/* ---------- LAS INSTALACIONES ENTRAN AL DESLIZAR ----------
+   En el movil la tira enseña una foto y media: las demas llegan arrastrando, y
+   asoman al entrar en lugar de estar ya puestas esperando.
+
+   El observador lleva root en la PROPIA TIRA, no en la pantalla. Lo que decide
+   si una foto ha llegado no es el desplazamiento de la pagina sino el recuadro
+   de la tira, que es exactamente lo que mueve el dedo. Con el root por defecto
+   —la pantalla— las cuatro contarian como visibles desde el primer momento,
+   porque en vertical ya lo estan, y no se descubriria ninguna al deslizar.
+
+   En escritorio la rejilla no se desplaza y las cuatro caen dentro del root a
+   la vez: se descubren juntas, que es lo correcto porque alli no hay gesto.
+
+   Se descubre UNA SOLA VEZ (unobserve): ir y volver con el dedo no debe hacer
+   parpadear lo que ya se ha visto.
+
+   Con movimiento reducido no se activa nada: sin la clase, el CSS de arriba no
+   existe y las fotos quedan visibles y quietas. */
+(()=>{
+  const tira=document.querySelector('.insta-g');
+  if(!tira||!('IntersectionObserver' in window))return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const figs=[...tira.querySelectorAll('figure')];
+  if(!figs.length)return;
+  tira.classList.add('desliza');
+  const ob=new IntersectionObserver((es,o)=>es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.classList.add('dentro');
+    o.unobserve(e.target);
+  /* ⚠ EL UMBRAL NO ES ARBITRARIO. La segunda foto asoma un 34% de si misma
+     —columnas al 72% del ancho— y es la que anuncia que hay mas: si no se
+     descubre, la tira parece tener una sola foto y un hueco al lado, que es lo
+     contrario de invitar a arrastrar. Con .35 quedaba a un pelo por debajo y
+     salia visible o no segun el redondeo. Con .2 se descubre siempre, y la
+     tercera —que no asoma nada— sigue esperando al gesto. */
+  }),{root:tira,threshold:.2});
+  figs.forEach(f=>ob.observe(f));
 })();
 
 /* ---------- AVANCE DE LECTURA E ÍNDICE DEL RECORRIDO ----------
