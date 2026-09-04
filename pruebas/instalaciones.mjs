@@ -16,23 +16,23 @@ pg.on('response', r => { if (r.status() >= 400 && /cliente-/.test(r.url())) fall
 await pg.goto(B + '/#clientes', { waitUntil: 'networkidle' });
 await pg.waitForTimeout(400);   // #clientes abre su pestaña; el panel entra con una transición corta
 
-/* ---- la sección existe y las tres fotos cargan de verdad ---- */
+/* ---- la sección existe y las cuatro fotos cargan de verdad ---- */
 const figs = pg.locator('.insta-g figure');
-ok(await figs.count() === 3, 'hay tres instalaciones');
+ok(await figs.count() === 4, 'hay cuatro instalaciones');
 await pg.locator('.insta').scrollIntoViewIfNeeded();
 await pg.waitForTimeout(1200);
 
 const cargadas = await pg.locator('.insta-g img').evaluateAll(
   is => is.map(i => ({ ok: i.complete && i.naturalWidth > 0, w: i.naturalWidth, h: i.naturalHeight, src: i.currentSrc.split('/').pop() })));
-ok(cargadas.every(c => c.ok), 'las tres imágenes cargan (no hay 404)');
+ok(cargadas.every(c => c.ok), 'las cuatro imágenes cargan (no hay 404)');
 ok(fallidas.length === 0, 'ninguna petición de foto de cliente falla' + (fallidas.length ? ': ' + fallidas.join(', ') : ''));
 for (const c of cargadas) console.log(`      ${c.src} → ${c.w}x${c.h}`);
-ok(cargadas.every(c => Math.abs(c.w / c.h - 0.75) < 0.01), 'las tres tienen la misma proporción 3:4');
+ok(cargadas.every(c => Math.abs(c.w / c.h - 0.75) < 0.01), 'las cuatro tienen la misma proporción 3:4');
 
 /* ---- los pies dicen el negocio y la plaza ---- */
 const pies = await pg.locator('.insta-g figcaption').allTextContents();
 for (const p of pies) console.log('      pie: ' + p.replace(/\s+/g, ' ').trim());
-ok(pies.length === 3 && pies.every(p => /San Luis Potos/i.test(p)), 'cada pie dice la ciudad');
+ok(pies.length === 4 && pies.every(p => /San Luis Potos/i.test(p)), 'cada pie dice la ciudad');
 
 /* ---- LA QUE JUSTIFICA EL ARCHIVO: no hay testimonios inventados ---- */
 const texto = await pg.locator('.insta').innerText();
@@ -61,7 +61,14 @@ ok(vcaja.op === '1', 'y se ve de verdad, no en opacity 0 (está en ' + vcaja.op 
 ok(Math.round(await pg.evaluate(() => scrollY)) === scrollAntes,
    'abrirlo no arrastra la página al principio');
 const cuenta = await pg.locator('#visor-cuenta').textContent();
-ok(/\b3\b/.test(cuenta), 'el visor cuenta 3 y no 6: la lista está separada de la del producto (dice «' + cuenta.trim() + '»)');
+/* ⚠ La cuenta sola YA NO PRUEBA NADA: desde la cuarta instalación las dos
+   galerías tienen 4, así que un visor que mezclara ambas listas —el fallo que
+   esta línea vigilaba— seguiría diciendo 4 aquí y pasaría. Lo que las separa
+   es el origen de las fotos: la de clientes tira de cliente-*, la del producto
+   de producto-*. Por eso se comprueban las dos cosas, y abajo la del producto
+   se mira igual. */
+ok(/\b4\b/.test(cuenta), 'el visor cuenta las 4 instalaciones (dice «' + cuenta.trim() + '»)');
+ok(!/\b8\b/.test(cuenta), 'y no 8: no se ha tragado también la galería del producto');
 const pie1 = await pg.locator('#visor-pie').textContent();
 ok(/Kabuki/.test(pie1), 'el pie del visor nombra el negocio: «' + pie1.trim() + '»');
 const grande = await pg.locator('#visor-img').getAttribute('src');
@@ -78,6 +85,8 @@ const cuenta2 = await pg.locator('#visor-cuenta').textContent();
 ok(/\b4\b/.test(cuenta2), 'la galería del producto tiene sus 4 —con la vista explotada— (dice «' + cuenta2.trim() + '»)');
 const pie2 = await pg.locator('#visor-pie').textContent();
 ok(/frente/i.test(pie2), 'y sigue abriendo por la foto correcta: «' + pie2.trim() + '»');
+const grande2 = await pg.locator('#visor-img').getAttribute('src');
+ok(/producto-.*\.webp$/.test(grande2), 'y amplía una foto del producto, no la de un cliente: ' + grande2);
 await pg.keyboard.press('Escape');
 await pg.waitForTimeout(400);
 ok(await pg.locator('.prod-mas').isHidden(),
@@ -99,7 +108,7 @@ ok(alturaSeccion < 844 * 1.6, `en móvil la sección ocupa ${Math.round(alturaSe
 const desliza = await m.locator('.insta-g').evaluate(e => e.scrollWidth > e.clientWidth + 40);
 ok(desliza, 'la tira se desliza de lado en móvil');
 const filas = await m.locator('.insta-g figure').evaluateAll(fs => [...new Set(fs.map(f => Math.round(f.getBoundingClientRect().top)))].length);
-ok(filas === 1, 'las tres van en un solo renglón (renglones: ' + filas + ')');
+ok(filas === 1, 'las cuatro van en un solo renglón (renglones: ' + filas + ')');
 
 /* ---- móvil: tocar una foto abre un diálogo del que se puede SALIR ----
    El teléfono no tiene tecla Escape: si la equis no está en pantalla, el
@@ -145,8 +154,8 @@ const sin = await b.newContext({ javaScriptEnabled: false, viewport: { width: 12
 const p2 = await sin.newPage();
 await p2.goto(B + '/#clientes', { waitUntil: 'load' });   // sin JS no hay pestañas: los tres paneles se ven
 await p2.waitForTimeout(900);
-ok(await p2.locator('.insta-g figure').count() === 3,
-   'sin JavaScript las tres fotos están en el HTML: la sección no la fabrica ningún script');
+ok(await p2.locator('.insta-g figure').count() === 4,
+   'sin JavaScript las cuatro fotos están en el HTML: la sección no la fabrica ningún script');
 /* ⚠ isVisible() de Playwright NO mira la opacidad, así que un bloque en
    opacity:0 se lo traga. La página entera nace con .rv{opacity:0} y la
    descubre un IntersectionObserver: sin JavaScript, index.html está en blanco
