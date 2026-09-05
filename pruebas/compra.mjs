@@ -315,7 +315,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pg.waitForTimeout(350);
   ok(await visible('clientes') && !(await visible('productos')),
      'al pulsar «Clientes» cambia el contenido en el MISMO hueco');
-  ok(await pg.locator('#clientes .insta-g figure').count() === 4, 'y trae las cuatro instalaciones');
+  ok(await pg.locator('#clientes .insta-g figure').count() === 5, 'y trae las cinco instalaciones');
   /* Los bloques con .rv nacen en opacity 0 y los enciende un observador al
      entrar en pantalla; dentro de un panel cerrado eso no llega a pasar. Si el
      script no les pone .in al abrir, la galería se abre EN BLANCO. */
@@ -864,7 +864,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(await ve('productos') && await ve('servicios') && await ve('clientes'),
      'sin JS los tres paneles de Soluciones se ven a la vez');
   ok(await pg.locator('#servicios .svc').count() === 4, 'y están los cuatro servicios');
-  ok(await pg.locator('#clientes .insta-g figure').count() === 4, 'y las cuatro instalaciones');
+  ok(await pg.locator('#clientes .insta-g figure').count() === 5, 'y las cinco instalaciones');
   ok((await pg.locator('[data-pc-total]').textContent()).trim() !== '',
      'y el precio de una placa se lee: es HTML, no lo escribe ningún script');
 
