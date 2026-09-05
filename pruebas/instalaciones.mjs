@@ -131,6 +131,40 @@ ok(await opacUlt() === '0', 'la última empieza oculta: no están todas puestas 
 await m.locator('.insta-g').evaluate(e => e.scrollTo({ left: e.scrollWidth }));
 await m.waitForTimeout(900);
 ok(await opacUlt() === '1', 'y aparece al deslizar la tira a la derecha');
+
+/* ---- se sabe que hay otra a la derecha, y cuál ----
+   Lo que se pidió. Antes, con una foto centrada, de la siguiente asomaba un 8%
+   y de la anterior un 19%: dos rendijas parecidas que no decían ni que hubiera
+   más ni hacia dónde. Ahora la tira ancla al principio —de la siguiente se ve
+   el 39%— y además se la NOMBRA.
+   ⚠ NO BASTA CON LEER EL TEXTO. Esta guía estuvo escrita y en display:none, y
+   innerText la devolvía igual: la medición daba verde y en pantalla no había
+   nada. Por eso lo primero que se comprueba es que tenga caja. */
+const guia = m.locator('.insta-guia');
+const cajaGuia = await guia.evaluate(e => { const r = e.getBoundingClientRect();
+  return { alto: Math.round(r.height), display: getComputedStyle(e).display }; });
+ok(cajaGuia.alto > 0, `en el móvil la guía ocupa sitio de verdad (display ${cajaGuia.display}, alto ${cajaGuia.alto}px)`);
+
+const enLa = async i => { await m.locator('.insta-g').evaluate((e, n) => {
+    const f = e.querySelectorAll('figure')[n]; e.scrollLeft = f.offsetLeft - e.offsetLeft - 16; }, i);
+  await m.waitForTimeout(600);
+  return (await guia.innerText()).replace(/\s+/g, ' ').trim(); };
+
+const nombres = await m.locator('.insta-g figcaption b').allTextContents();
+const g1 = await enLa(0);
+ok(/^1 de 5\b/.test(g1) && g1.includes(nombres[1]),
+   'en la 1ª dice cuál sigue, por su nombre: «' + g1 + '»');
+const g3 = await enLa(2);
+ok(/^3 de 5\b/.test(g3) && g3.includes(nombres[3]),
+   'y al arrastrar se actualiza sola: «' + g3 + '»');
+const asoma = await m.locator('.insta-g').evaluate(e => { const caja = e.getBoundingClientRect();
+  const c = e.querySelectorAll('figure')[3].getBoundingClientRect();
+  return Math.round(Math.max(0, Math.min(c.right, caja.right) - Math.max(c.left, caja.left)) / c.width * 100); });
+ok(asoma >= 25, `y de la siguiente asoma un ${asoma}% —antes era un 8%, que no se veía—`);
+const g5 = await enLa(4);
+ok(!/sigue/.test(g5), 'en la última no promete una sexta: «' + g5 + '»');
+await m.locator('.insta-g').evaluate(e => { e.scrollLeft = 0; });
+await m.waitForTimeout(500);
 await m.locator('.insta-g').evaluate(e => e.scrollTo({ left: 0 }));
 await m.waitForTimeout(500);
 
@@ -184,6 +218,9 @@ ok(await p2.locator('.insta-g figure').count() === 5,
    deslizar lo enciende el script con .desliza; si alguien lo pasara a la hoja
    de estilos, sin JavaScript esta sección quedaría en blanco —el fallo que ya
    tiene .rv en el resto de la página— y esta línea es la que lo impide. */
+/* La guía sin JavaScript: el texto de reserva, y con caja. */
+const gSin = await p2.locator('.insta-guia').evaluate(e => ({ alto: Math.round(e.getBoundingClientRect().height), t: e.textContent.replace(/\s+/g,' ').trim() }));
+ok(/Desliza/i.test(gSin.t), 'sin JavaScript la guía dice algo cierto igualmente: «' + gSin.t + '»');
 const opacSinJs = await p2.locator('.insta-g figure').evaluateAll(fs => fs.map(f => getComputedStyle(f).opacity));
 ok(opacSinJs.every(x => x === '1'),
    'y se ven enteras: el estado oculto lo enciende el script, no el CSS (opacidades: ' + opacSinJs.join(', ') + ')');
