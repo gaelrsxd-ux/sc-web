@@ -1894,6 +1894,13 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13px;line-height:1.7}
 .insta-pie b{color:var(--bronze-hi);font-weight:500}
 
+/* Sólo tiene sentido donde la tira se arrastra: en escritorio las cinco están
+   a la vista y no hay ninguna «siguiente». */
+.insta-guia{display:none;margin-top:12px;font-size:12px;letter-spacing:.2px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.insta-guia .ig-f{color:var(--bronze);font-size:13px;
+  display:inline-block;animation:igEmpuja 1.9s ease-in-out infinite}
+@keyframes igEmpuja{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
 @media(max-width:720px){
   .insta-g{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:72%;
     overflow-x:auto;scroll-snap-type:x mandatory;
@@ -1902,7 +1909,15 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
        margenes negativos, para que la tira siga saliendo de borde a borde. */
     padding:6px 16px 10px;margin:22px -16px 0;scrollbar-width:none}
   .insta-g::-webkit-scrollbar{display:none}
-  .insta-g figure{scroll-snap-align:center}
+  /* ⚠ ANCLAJE AL PRINCIPIO Y NO AL CENTRO. Centrada, la foto activa dejaba
+     asomar 21 px de la siguiente y 48 de la anterior: dos rendijas parecidas,
+     uno a cada lado, que no dicen que haya más ni hacia dónde. Anclando al
+     principio, de la siguiente se ven 97 px —el 39% de ella— y de la anterior
+     nada: el borde derecho queda siempre partido por una foto, que es la
+     señal de toda la vida de que la tira continúa. Y las fotos no encogen. */
+  .insta-g figure{scroll-snap-align:start}
+  .insta-g{scroll-padding-left:16px}
+  .insta-guia{display:block}
 }
 
 /* Las fotos entran conforme se desliza la tira, no todas puestas de golpe.
@@ -2950,6 +2965,12 @@ html.js .pc-alt{display:none}
         <figcaption><b>3241 Seminuevos</b>Salvador Nava, San Luis Potos&#237;</figcaption>
         </figure>
         </div>
+        <!-- CUÁL SIGUE. En el móvil, con una foto centrada, de la siguiente se
+             veían 21 px —un 8%— y de la anterior 48: no se sabía ni que había
+             más ni hacia dónde. Esta línea lo dice con nombre y apellido, y el
+             script la va reescribiendo al arrastrar. El texto de aquí es el
+             que se ve sin JavaScript, y es cierto siempre. -->
+        <p class="insta-guia" data-guia>Desliza para ver más <span class="ig-f">&#8594;</span></p>
         <p class="insta-pie">&#191;Quieres que la tuya salga aqu&#237;? El d&#237;a de la entrega
         te tomamos la foto &#8212; y <b>s&#243;lo se publica si nos dices que s&#237;</b>.</p>
         </div>
@@ -4764,6 +4785,48 @@ function cargaTurnstile(){
   const figs=[...tira.querySelectorAll('figure')];
   if(!figs.length)return;
   tira.classList.add('desliza');
+
+/* ---------- CUÁL ES LA SIGUIENTE ----------
+   Lo que se pidió: que al arrastrar se note que hay otra a la derecha. La
+   rendija sola no bastaba, así que además se NOMBRA: «3 de 5 · sigue Centro
+   Podológico Potosino →». Deja de ser «hay algo más» y pasa a ser «hay esto
+   más», que es lo que hace arrastrar otra vez.
+
+   La activa es la foto cuyo centro queda más cerca del centro de la tira. Se
+   mide con getBoundingClientRect y no con offsetLeft: offsetLeft cuenta desde
+   el offsetParent, que aquí no tiene por qué ser la tira, y bastaría con que
+   alguien le pusiera position al contenedor para que la cuenta saliera mal sin
+   avisar.
+
+   El nombre sale del propio pie, no de una lista aparte: una lista repetida se
+   queda vieja el día que entre otra instalación, y nadie lo ve hasta que un
+   cliente lee un nombre que no es.
+
+   El scroll se atiende en passive y se pinta en un requestAnimationFrame por
+   fotograma: arrastrar dispara el evento decenas de veces por segundo y no
+   hace falta recalcular en cada una. */
+(()=>{
+  const guia=document.querySelector('.insta-guia');
+  if(!guia||figs.length<2)return;
+  const nombre=f=>(f.querySelector('figcaption b')||{}).textContent||'';
+  let pedido=false;
+  const pinta=()=>{
+    pedido=false;
+    const caja=tira.getBoundingClientRect(),centro=caja.left+caja.width/2;
+    let i=0,mejor=Infinity;
+    figs.forEach((f,n)=>{
+      const c=f.getBoundingClientRect(),d=Math.abs(c.left+c.width/2-centro);
+      if(d<mejor){mejor=d;i=n;}
+    });
+    const total=figs.length;
+    guia.innerHTML=i<total-1
+      ? `${i+1} de ${total} &#183; sigue ${nombre(figs[i+1])} <span class="ig-f">&#8594;</span>`
+      : `${total} de ${total} &#183; ya las viste todas`;
+  };
+  tira.addEventListener('scroll',()=>{if(!pedido){pedido=true;requestAnimationFrame(pinta);}},{passive:true});
+  pinta();
+})();
+
   const ob=new IntersectionObserver((es,o)=>es.forEach(e=>{
     if(!e.isIntersecting)return;
     e.target.classList.add('dentro');
