@@ -16,18 +16,18 @@ pg.on('response', r => { if (r.status() >= 400 && /cliente-/.test(r.url())) fall
 await pg.goto(B + '/#clientes', { waitUntil: 'networkidle' });
 await pg.waitForTimeout(400);   // #clientes abre su pestaña; el panel entra con una transición corta
 
-/* ---- la sección existe y las cuatro fotos cargan de verdad ---- */
+/* ---- la sección existe y las cinco fotos cargan de verdad ---- */
 const figs = pg.locator('.insta-g figure');
-ok(await figs.count() === 4, 'hay cuatro instalaciones');
+ok(await figs.count() === 5, 'hay cinco instalaciones');
 await pg.locator('.insta').scrollIntoViewIfNeeded();
 await pg.waitForTimeout(1200);
 
 const cargadas = await pg.locator('.insta-g img').evaluateAll(
   is => is.map(i => ({ ok: i.complete && i.naturalWidth > 0, w: i.naturalWidth, h: i.naturalHeight, src: i.currentSrc.split('/').pop() })));
-ok(cargadas.every(c => c.ok), 'las cuatro imágenes cargan (no hay 404)');
+ok(cargadas.every(c => c.ok), 'las cinco imágenes cargan (no hay 404)');
 ok(fallidas.length === 0, 'ninguna petición de foto de cliente falla' + (fallidas.length ? ': ' + fallidas.join(', ') : ''));
 for (const c of cargadas) console.log(`      ${c.src} → ${c.w}x${c.h}`);
-ok(cargadas.every(c => Math.abs(c.w / c.h - 0.75) < 0.01), 'las cuatro tienen la misma proporción 3:4');
+ok(cargadas.every(c => Math.abs(c.w / c.h - 0.75) < 0.01), 'las cinco tienen la misma proporción 3:4');
 
 /* ⚠ NINGUNA comprobación de arriba mira la opacidad: naturalWidth vale igual
    en una foto invisible. Desde que las fotos entran al deslizar, un fallo en
@@ -36,12 +36,12 @@ ok(cargadas.every(c => Math.abs(c.w / c.h - 0.75) < 0.01), 'las cuatro tienen la
    la rejilla no se desplaza: las cuatro caen dentro del root a la vez y deben
    acabar visibles todas. */
 const opacEsc = await pg.locator('.insta-g figure').evaluateAll(fs => fs.map(f => getComputedStyle(f).opacity));
-ok(opacEsc.every(x => x === '1'), 'en escritorio las cuatro se descubren juntas (opacidades: ' + opacEsc.join(', ') + ')');
+ok(opacEsc.every(x => x === '1'), 'en escritorio las cinco se descubren juntas (opacidades: ' + opacEsc.join(', ') + ')');
 
 /* ---- los pies dicen el negocio y la plaza ---- */
 const pies = await pg.locator('.insta-g figcaption').allTextContents();
 for (const p of pies) console.log('      pie: ' + p.replace(/\s+/g, ' ').trim());
-ok(pies.length === 4 && pies.every(p => /San Luis Potos/i.test(p)), 'cada pie dice la ciudad');
+ok(pies.length === 5 && pies.every(p => /San Luis Potos/i.test(p)), 'cada pie dice la ciudad');
 
 /* ---- LA QUE JUSTIFICA EL ARCHIVO: no hay testimonios inventados ---- */
 const texto = await pg.locator('.insta').innerText();
@@ -71,13 +71,14 @@ ok(Math.round(await pg.evaluate(() => scrollY)) === scrollAntes,
    'abrirlo no arrastra la página al principio');
 const cuenta = await pg.locator('#visor-cuenta').textContent();
 /* ⚠ La cuenta sola YA NO PRUEBA NADA: desde la cuarta instalación las dos
-   galerías tienen 4, así que un visor que mezclara ambas listas —el fallo que
-   esta línea vigilaba— seguiría diciendo 4 aquí y pasaría. Lo que las separa
+   galerías tenían 4, así que un visor que mezclara ambas listas —el fallo que
+   esta línea vigilaba— habría seguido diciendo 4 y pasando. Ahora son 5 y 4,
+   pero la cuenta sigue sin ser la garantía: lo es el origen de las fotos. Lo que las separa
    es el origen de las fotos: la de clientes tira de cliente-*, la del producto
    de producto-*. Por eso se comprueban las dos cosas, y abajo la del producto
    se mira igual. */
-ok(/\b4\b/.test(cuenta), 'el visor cuenta las 4 instalaciones (dice «' + cuenta.trim() + '»)');
-ok(!/\b8\b/.test(cuenta), 'y no 8: no se ha tragado también la galería del producto');
+ok(/\b5\b/.test(cuenta), 'el visor cuenta las 5 instalaciones (dice «' + cuenta.trim() + '»)');
+ok(!/\b9\b/.test(cuenta), 'y no 9: no se ha tragado también la galería del producto');
 const pie1 = await pg.locator('#visor-pie').textContent();
 ok(/Kabuki/.test(pie1), 'el pie del visor nombra el negocio: «' + pie1.trim() + '»');
 const grande = await pg.locator('#visor-img').getAttribute('src');
@@ -117,19 +118,19 @@ ok(alturaSeccion < 844 * 1.6, `en móvil la sección ocupa ${Math.round(alturaSe
 const desliza = await m.locator('.insta-g').evaluate(e => e.scrollWidth > e.clientWidth + 40);
 ok(desliza, 'la tira se desliza de lado en móvil');
 const filas = await m.locator('.insta-g figure').evaluateAll(fs => [...new Set(fs.map(f => Math.round(f.getBoundingClientRect().top)))].length);
-ok(filas === 1, 'las cuatro van en un solo renglón (renglones: ' + filas + ')');
+ok(filas === 1, 'las cinco van en un solo renglón (renglones: ' + filas + ')');
 
 /* ---- las fotos entran al deslizar, no están todas puestas ----
    Lo que se pidió: que vayan apareciendo conforme se arrastra a la derecha.
-   La cuarta está fuera de la tira al cargar, así que empieza oculta; al llevar
+   La última está fuera de la tira al cargar, así que empieza oculta; al llevar
    la tira al final tiene que llegar. Si alguien cambia el root del observador a
    la pantalla, las cuatro contarían como visibles desde el principio —en
    vertical ya lo están— y esta pareja de líneas se pone roja. */
-const opac4 = () => m.locator('.insta-g figure').nth(3).evaluate(e => getComputedStyle(e).opacity);
-ok(await opac4() === '0', 'la cuarta empieza oculta: no están todas puestas de golpe');
+const opacUlt = () => m.locator('.insta-g figure').last().evaluate(e => getComputedStyle(e).opacity);
+ok(await opacUlt() === '0', 'la última empieza oculta: no están todas puestas de golpe');
 await m.locator('.insta-g').evaluate(e => e.scrollTo({ left: e.scrollWidth }));
 await m.waitForTimeout(900);
-ok(await opac4() === '1', 'y aparece al deslizar la tira a la derecha');
+ok(await opacUlt() === '1', 'y aparece al deslizar la tira a la derecha');
 await m.locator('.insta-g').evaluate(e => e.scrollTo({ left: 0 }));
 await m.waitForTimeout(500);
 
@@ -177,8 +178,8 @@ const sin = await b.newContext({ javaScriptEnabled: false, viewport: { width: 12
 const p2 = await sin.newPage();
 await p2.goto(B + '/#clientes', { waitUntil: 'load' });   // sin JS no hay pestañas: los tres paneles se ven
 await p2.waitForTimeout(900);
-ok(await p2.locator('.insta-g figure').count() === 4,
-   'sin JavaScript las cuatro fotos están en el HTML: la sección no la fabrica ningún script');
+ok(await p2.locator('.insta-g figure').count() === 5,
+   'sin JavaScript las cinco fotos están en el HTML: la sección no la fabrica ningún script');
 /* Y se VEN, que no es lo mismo que estar. El estado oculto de la entrada al
    deslizar lo enciende el script con .desliza; si alguien lo pasara a la hoja
    de estilos, sin JavaScript esta sección quedaría en blanco —el fallo que ya
