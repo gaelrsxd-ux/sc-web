@@ -49,6 +49,11 @@ document.documentElement.classList.add('js');
 <!-- El grafo enlaza Organization ← founder → Person y las ofertas de servicio.
      Los @id permiten que Google resuelva las referencias entre nodos en vez de
      tratarlos como entidades sueltas: es lo que alimenta el panel de marca. -->
+<!-- ⚠ EL `sameAs` DE LA ORGANIZACIÓN LLEVA LAS REDES DE LA MARCA, Y NO ES
+     ADORNO: hay una empresa chilena que se llama casi igual (SYC Solutions) y
+     que sale antes que nosotros al buscar el nombre. `sameAs` es cómo se le
+     dice a un buscador «este sitio y estas cuentas son la misma empresa», y es
+     lo que le permite no mezclarnos con ella. Cuenta nueva, va también ahí. -->
 <script type="application/ld+json">
 {
  "@context":"https://schema.org",
@@ -74,7 +79,10 @@ document.documentElement.classList.add('js');
     {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"23:00"},
     {"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday","Sunday"],"opens":"10:00","closes":"22:00"}],
    "knowsAbout":["Diseño web","Inteligencia artificial","Automatización de procesos","Análisis de datos","Perfil de Empresa en Google"],
-   "sameAs":[],
+   "sameAs":[
+    "https://www.instagram.com/sycsolutions_mx",
+    "https://www.tiktok.com/@sycsolutions_mx"
+   ],
    "makesOffer":[
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Diseño Web Profesional","serviceType":"Diseño y desarrollo web"}},
     {"@type":"Offer","itemOffered":{"@type":"Service","name":"Perfil de tu Negocio en Google","serviceType":"Gestión de Perfil de Empresa en Google"}},
