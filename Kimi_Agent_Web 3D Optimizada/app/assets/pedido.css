@@ -542,6 +542,34 @@ main{max-width:560px}
 .gr-wa:hover{background:var(--bronze-hi)}
 .gr-wa:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:4px}
 
+/* ---------- LA RESEÑA, Y POR QUÉ VIVE SÓLO AQUÍ ----------
+   Las tres páginas de gracias son las únicas de la web que sólo pisa quien
+   acaba de comprar, y por eso son el único sitio donde este enlace puede
+   estar: las normas de Google prohíben pedir reseñas a quien no ha sido
+   cliente, así que el mismo botón en la portada o en una guía sería pedírsela
+   a cualquiera que pase — y eso es exactamente por lo que Google borra
+   reseñas y penaliza fichas.
+
+   ⚠ Y PIDE PARA DESPUÉS, NO PARA AHORA. Quien lee esto acaba de pagar y no
+   tiene nada en la mano todavía; una reseña escrita en este momento no habla
+   de ningún trabajo. El texto lo dice, y el bloque entero desaparece cuando el
+   pago está pendiente, que es cuando lo único que importa es terminar de pagar.
+
+   En gris y con borde, no en bronce relleno: la acción de esta pantalla es el
+   WhatsApp, y dos botones idénticos compiten entre sí. */
+.gr-resena{margin-top:34px;padding:18px 20px;border:1px solid var(--line-soft)}
+.gr-resena h2{margin:0;font-family:var(--serif);font-size:19px;font-weight:600;
+  line-height:1.25;color:var(--ink)}
+.gr-resena p{margin-top:9px;color:var(--muted);font-size:13.5px;line-height:1.7}
+.gr-resena .gr-rn{margin-top:12px;color:var(--dim);font-size:12.5px;line-height:1.65}
+.gr-rb{display:flex;align-items:center;justify-content:center;
+  margin-top:15px;min-height:48px;padding:13px 22px;
+  border:1px solid var(--bronze);color:var(--bronze-hi);
+  font-size:10.5px;letter-spacing:2.6px;text-transform:uppercase;font-weight:500;
+  text-align:center;text-decoration:none;transition:background-color .3s,color .3s}
+.gr-rb:hover{background:var(--bronze);color:#0A0B0E}
+.gr-rb:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:4px}
+
 /* Sólo aparece cuando el JavaScript encuentra el pedido guardado. Sin él, la
    página sigue diciendo lo importante —que el pago salió bien— y ofrece el
    WhatsApp de siempre, sin datos dentro. */

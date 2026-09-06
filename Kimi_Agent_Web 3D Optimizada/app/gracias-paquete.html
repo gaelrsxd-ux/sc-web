@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/legal.css?v=e2bc28ee">
-<link rel="stylesheet" href="assets/pedido.css?v=d5efaa5e">
+<link rel="stylesheet" href="assets/pedido.css?v=8d57c7dc">
 </head>
 <body>
 <div class="halo" aria-hidden="true"></div>
@@ -76,6 +76,35 @@
   <p class="ped-pie">As&#237; lo tenemos por escrito y puedes preguntarnos
     cualquier cosa por el mismo sitio.</p>
 
+
+  <!-- ══════════ LA RESEÑA, Y POR QUÉ ESTÁ AQUÍ Y NO EN LA PORTADA ══════════
+       Es el enlace corto de la ficha de Google del negocio: abre directamente
+       el cuadro de escribir la reseña, sin buscar nada.
+
+       ⚠ VIVE SÓLO EN LAS TRES PÁGINAS DE GRACIAS, Y ES A PROPÓSITO. Son las
+       únicas de la web a las que se llega después de pagar. Las normas de
+       Google prohíben pedir reseñas a quien no ha sido cliente, así que este
+       mismo botón en la portada o en una guía sería pedírsela a cualquiera que
+       pase — y ésa es la vía rápida a que Google borre las reseñas y castigue
+       la ficha. Hay una prueba en pruebas/compra.mjs que falla si el enlace
+       aparece en una página pública.
+
+       ⚠ Y PIDE PARA DESPUÉS, NO PARA AHORA. Quien lee esto acaba de pagar y
+       todavía no tiene nada en la mano; una reseña escrita en este momento no
+       hablaría de ningún trabajo. Por eso el texto dice cuándo, y por eso el
+       bloque entero se esconde con el pago pendiente: ahí lo único que importa
+       es terminar de pagar. -->
+  <section class="gr-resena" data-gr-resena>
+    <h2>Cuando ya lo tengas funcionando</h2>
+    <p>Si te gusta c&#243;mo qued&#243;, la rese&#241;a en Google es lo que m&#225;s nos ayuda a que
+      otros negocios de aqu&#237; nos encuentren. Se escribe en un minuto y s&#243;lo hace
+      falta tu cuenta de Gmail.</p>
+    <a class="gr-rb" href="https://g.page/r/CZEX5z6-l1aNEBM/review" target="_blank" rel="noopener noreferrer">Dejarnos una rese&#241;a en Google</a>
+    <p class="gr-rn">Sin prisa: mejor cuando ya lo tengas puesto y lo hayas probado.
+      Y escribe lo que de verdad pienses &#8212; si algo no sali&#243; como esperabas,
+      d&#237;noslo antes por WhatsApp y lo arreglamos.</p>
+  </section>
+
   <p class="ped-pie" style="margin-top:26px">
     <a href="/#servicios">Volver a los servicios</a> &#183;
     <a href="terminos.html#servicios" data-gr-terminos>T&#233;rminos</a> &#183;
@@ -112,6 +141,10 @@
       'Si elegiste pagar en efectivo o por transferencia, tienes que terminar el pago '+
       'con las instrucciones que te dieron; hasta entonces no empezamos. Después, '+
       'el siguiente paso es éste:';
+    /* Con el pago sin terminar, pedir una reseña es ruido encima del único
+       mensaje que importa: que hay que ir a pagar. */
+    const resena=document.querySelector('[data-gr-resena]');
+    if(resena)resena.hidden=true;
   }
 
   let d=null;
