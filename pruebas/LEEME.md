@@ -14,6 +14,7 @@ automatización— con el mismo esqueleto y el mismo script (`assets/servicio.js
 | `paquetes.mjs` | el sitio web, el agente de IA y la automatización: `web.html`, `ia.html`, `automatizacion.html` → el cobro → `gracias-paquete.html`, y que la portada y los términos digan el mismo precio |
 | `instalaciones.mjs` | las fotos de clientes de la ficha y el visor |
 | `contenido.mjs` | las cuatro páginas de servicio como páginas que **responden**: indexables, con esquema `Service`/`Offer` al precio del catálogo, preguntas visibles iguales a las del esquema `FAQPage`, precio y plazo de la tabla, anclas sanas, y presentes en el sitemap y en `llms.txt` |
+| `contraste.mjs` | que todo se vea: contraste real de texto, texto de ayuda de los campos y bordes de los controles en un viewport de teléfono, flecha propia en los desplegables y `color-scheme` oscuro declarado (nació de un iPhone donde la flecha nativa era invisible) |
 
 ```sh
 node servidor.js 8099 &
@@ -22,6 +23,7 @@ node pruebas/servicio.mjs
 node pruebas/paquetes.mjs
 node pruebas/instalaciones.mjs
 node pruebas/contenido.mjs
+node pruebas/contraste.mjs
 ```
 
 Ciento cuarenta y nueve comprobaciones en la primera, la mayoría con JavaScript y un

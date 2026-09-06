@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
 <script>
 /* Bloqueante y arriba de todo a propósito: si el tema se aplicara tras el
    primer pintado, el visitante vería un parpadeo del oscuro al claro (o
@@ -136,7 +137,7 @@ document.documentElement.classList.add('js');
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{
+:root{--line-ctl:rgba(200,169,106,.58);
   --bg:#0A0B0E; --bg2:#111318; --panel:#13161C;
   /* Los tres tripletes en canales sueltos: casi todos los paneles traslúcidos
      de la página (nav, tooltips, tarjetas, el velo del lienzo) se escribieron
@@ -1051,9 +1052,14 @@ html[data-tema="claro"] .hero-mas{text-shadow:0 1px 10px rgba(255,255,255,.9),0 
    bloque parezca un documento y no un panel de administración, y es la misma
    línea fina que usa el resto de la página. */
 .frame label{display:block;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;font-weight:500}
-.frame input,.frame textarea,.frame select{width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--ink);font-family:var(--serif);font-size:19px;padding:10px 2px;outline:none;transition:border-color .3s;border-radius:0}
+.frame input,.frame textarea,.frame select{width:100%;background:transparent;border:none;border-bottom:1px solid var(--line-ctl);color:var(--ink);font-family:var(--serif);font-size:19px;padding:10px 2px;outline:none;transition:border-color .3s;border-radius:0}
 .frame select option{background:var(--bg2);font-size:15px}
 .frame input:focus,.frame textarea:focus,.frame select:focus{border-color:var(--bronze-hi)}
+/* Flecha del desplegable dibujada aquí (iOS pinta la nativa en gris oscuro y no se ve). */
+.frame select{-webkit-appearance:none;appearance:none;padding-right:34px;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--bronze) 50%),linear-gradient(135deg,var(--bronze) 50%,transparent 50%);
+  background-position:calc(100% - 13px) 50%,calc(100% - 6px) 50%;background-size:7px 7px,7px 7px;background-repeat:no-repeat}
+.frame input::placeholder,.frame textarea::placeholder{color:var(--muted);opacity:1}
 .frame textarea{resize:vertical;min-height:92px}
 /* Sólo el <button> de enviar, no cualquier .btn dentro del marco: escrito como
    «.frame .btn» esto le quitaba el borde también a los dos enlaces de canal del
@@ -2016,7 +2022,7 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
 }
 /* Deshabilitado en los extremos, y VISIBLEMENTE: un botón que no responde y no
    lo aparenta se lee como una web rota. */
-.pc-b:disabled{color:var(--dim);opacity:.4;cursor:default}
+.pc-b:disabled{color:var(--muted);opacity:.85;cursor:default}
 .pc-b:focus-visible{outline:1px solid var(--bronze-hi);outline-offset:-3px}
 /* ⚠ ESTE CAMPO NO LLEVA touch-action, y es a propósito. Con `manipulation`
    desaparecería el doble toque para SELECCIONAR el número, que es como se
@@ -2482,7 +2488,7 @@ html.js .pc-alt{display:none}
      ancho entero y el boton es un boton, con el rombo de la casa y 48 px de
      alto que no hay que buscar. */
   .aud-form{flex-direction:column;border-bottom:none;gap:14px}
-  .aud-form input{border-bottom:1px solid var(--line);padding:12px 2px 14px;width:100%}
+  .aud-form input{border-bottom:1px solid var(--line-ctl);padding:12px 2px 14px;width:100%}
   .aud-form button{align-self:stretch;min-height:48px;padding:0;
     border:1px solid var(--line);letter-spacing:3.4px;
     display:flex;align-items:center;justify-content:center;gap:11px;
