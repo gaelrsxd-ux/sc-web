@@ -162,3 +162,27 @@ footer small{font-size:9.5px;letter-spacing:2.5px;color:var(--dim)}
 .guia-enl{margin:34px 0 8px;padding-top:20px;border-top:1px solid var(--line-soft);
   font-size:14.5px;color:var(--muted);line-height:1.7}
 .guia-enl a{color:var(--bronze-hi)}
+.guia-cta{margin:30px 0;padding:24px;border:1px solid var(--bronze);background:var(--panel)}
+.guia-cta .gc-t{font-family:var(--serif);font-size:clamp(22px,3vw,28px);color:var(--ink);line-height:1.2}
+.guia-cta .gc-p{margin-top:8px;color:var(--muted);font-size:15px;line-height:1.7}
+.guia-cta .gc-wa{display:inline-flex;align-items:center;gap:10px;margin-top:16px;padding:14px 28px;
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:500;
+  background:var(--bronze);color:#0A0B0E;text-decoration:none;transition:background .35s}
+.guia-cta .gc-wa::before{content:"";width:9px;height:9px;border-radius:50%;background:#0A0B0E;opacity:.55}
+.guia-cta .gc-wa:hover{background:var(--bronze-hi)}
+.otras .ot-todas{border-color:var(--bronze);color:var(--bronze-hi)}
+.indice-guias h2{font-size:clamp(20px,2.4vw,25px);margin:34px 0 12px}
+.indice-guias ul{list-style:none;display:grid;gap:10px}
+.indice-guias a{display:block;padding:14px 16px;border:1px solid var(--line-soft);color:var(--ink);
+  text-decoration:none;font-size:15px;line-height:1.5;transition:border-color .35s,background .35s}
+.indice-guias a:hover{border-color:var(--bronze);background:var(--bg2)}
+.indice-guias a small{display:block;margin-top:3px;font-size:13px;color:var(--muted)}
+.preguntas{margin-top:40px}
+.preguntas h2{font-size:clamp(20px,2.4vw,25px);margin-bottom:10px}
+.preguntas details{border-top:1px solid var(--line-soft);padding:14px 0}
+.preguntas details:last-child{border-bottom:1px solid var(--line-soft)}
+.preguntas summary{cursor:pointer;font-weight:500;color:var(--ink);font-size:15.5px;line-height:1.5;list-style:none;position:relative;padding-right:28px}
+.preguntas summary::-webkit-details-marker{display:none}
+.preguntas summary::after{content:"+";position:absolute;right:2px;top:0;color:var(--bronze);font-size:20px;line-height:1.2}
+.preguntas details[open] summary::after{content:"\\2212"}
+.preguntas p{margin-top:10px;color:var(--muted);font-size:14.5px;line-height:1.7}
