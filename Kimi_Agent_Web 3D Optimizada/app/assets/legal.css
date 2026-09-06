@@ -118,3 +118,47 @@ footer .fl a:hover{color:var(--bronze)}
 footer small{font-size:9.5px;letter-spacing:2.5px;color:var(--dim)}
 
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* ---------- GUÍAS ----------
+   Las páginas que responden una pregunta. Comparten esta hoja con las legales
+   porque son lo mismo: documento largo, lectura seguida, sin animación. Sólo
+   añaden el recuadro del precio, la respuesta destacada de arriba y la lista
+   de fuentes del final. */
+.respuesta{margin:26px 0 8px;padding:20px 22px;border-left:2px solid var(--bronze);
+  background:var(--bg2);font-size:clamp(16px,2vw,19px);line-height:1.7;color:var(--ink)}
+.respuesta b{color:var(--bronze-hi);font-weight:500}
+.guia-precio{margin:30px 0;padding:22px 24px;border:1px solid var(--line);background:var(--bg2)}
+.guia-precio .gp-que{font-size:10px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--bronze);font-weight:500}
+.guia-precio .gp-cifra{font-family:var(--serif);font-size:clamp(34px,5vw,46px);
+  line-height:1.1;color:var(--ink);margin-top:10px}
+.guia-precio .gp-cifra span{font-family:var(--sans);font-size:13px;color:var(--muted);
+  letter-spacing:2px}
+.guia-precio .gp-fila{margin-top:10px;font-size:15px;color:var(--ink)}
+.guia-precio .gp-fila b{font-family:var(--serif);font-size:24px;color:var(--bronze-hi);
+  font-weight:600;margin-right:8px}
+.guia-precio .gp-fila span{color:var(--ink)}
+.guia-precio .gp-fila i{display:block;font-style:normal;font-size:13px;color:var(--muted);
+  margin-top:2px}
+.guia-precio .gp-nota{margin-top:10px;font-size:14px;color:var(--muted);line-height:1.65}
+.guia-precio .gp-ir{display:inline-flex;margin-top:18px;padding:13px 26px;
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:500;
+  background:var(--bronze);color:#0A0B0E;text-decoration:none;
+  transition:background .35s}
+.guia-precio .gp-ir:hover{background:var(--bronze-hi)}
+.fuentes{margin-top:44px;padding-top:22px;border-top:1px solid var(--line-soft)}
+.fuentes h2{font-size:clamp(19px,2.2vw,23px);margin-bottom:12px}
+.fuentes ol{margin-left:20px;color:var(--muted);font-size:14px;line-height:1.9}
+.fuentes a{color:var(--bronze-hi)}
+.otras{margin-top:40px;padding-top:22px;border-top:1px solid var(--line-soft)}
+.otras h2{font-size:clamp(19px,2.2vw,23px);margin-bottom:14px}
+.otras ul{list-style:none;display:grid;gap:10px}
+.otras a{display:block;padding:13px 16px;border:1px solid var(--line-soft);
+  color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.5;
+  transition:border-color .35s,background .35s}
+.otras a:hover{border-color:var(--bronze);background:var(--bg2)}
+.firma{margin-top:34px;font-size:13px;color:var(--dim);line-height:1.7}
+.firma b{color:var(--muted);font-weight:500}
+.guia-enl{margin:34px 0 8px;padding-top:20px;border-top:1px solid var(--line-soft);
+  font-size:14.5px;color:var(--muted);line-height:1.7}
+.guia-enl a{color:var(--bronze-hi)}

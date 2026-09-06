@@ -64,6 +64,12 @@ document.documentElement.classList.add('js');
    "telephone":"+524423697248",
    "areaServed":{"@type":"Country","name":"México"},
    "address":{"@type":"PostalAddress","addressLocality":"San Luis Potosí","addressRegion":"San Luis Potosí","addressCountry":"MX"},
+   "priceRange":"$399-$6,199 MXN",
+   "currenciesAccepted":"MXN",
+   "paymentAccepted":"Tarjeta de crédito, tarjeta de débito, efectivo, transferencia",
+   "openingHoursSpecification":[
+    {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"23:00"},
+    {"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday","Sunday"],"opens":"10:00","closes":"22:00"}],
    "knowsAbout":["Diseño web","Inteligencia artificial","Automatización de procesos","Análisis de datos","Perfil de Empresa en Google"],
    "sameAs":[],
    "makesOffer":[
@@ -1125,6 +1131,13 @@ html[data-tema="claro"] .hero-mas{text-shadow:0 1px 10px rgba(255,255,255,.9),0 
 .faq .faq-r{padding:0 38px clamp(15px,1.8vw,21px) 0;color:var(--muted);
   font-size:15px;line-height:1.75}
 .faq .faq-r a{color:var(--bronze-hi);border-bottom:1px solid var(--line)}
+/* Los enlaces a las guías: lista de bloques, no párrafo con enlaces sueltos.
+   Cada uno es un destino, y como tal tiene que tener su propia caja tocable. */
+.faq-guias{display:grid;gap:8px;margin-top:6px}
+.faq-guias a{display:block;padding:13px 16px;border:1px solid var(--line-soft);
+  color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.5;
+  transition:border-color .35s,background .35s}
+.faq-guias a:hover,.faq-guias a:focus-visible{border-color:var(--bronze);background:var(--bg2)}
 .faq .faq-r b{color:var(--bronze-hi);font-weight:500}
 @media(max-width:620px){.faq .faq-r{font-size:14px;padding-right:8px}
   .faq summary{padding-right:32px}}
@@ -3331,6 +3344,20 @@ html.js .pc-alt{display:none}
           «No lo sé aún — asesórenme» en el formulario, y dinos qué hace tu negocio.
           Contestamos en <b>menos de 24 horas</b>.</p>
       </details>
+      <!-- LAS GUÍAS. Sin un enlace desde aquí serían páginas huérfanas: existen
+           en el sitemap pero no llega nadie, y un buscador que no ve enlaces
+           internos hacia una página deduce que no importa. Van pegadas a las
+           preguntas frecuentes porque son lo mismo pero largo: quien acaba de
+           leer una respuesta de dos renglones es justo quien quiere la de
+           veinte. -->
+      <p class="faq-k">Guías completas</p>
+      <div class="faq-guias">
+        <a href="guia-precio-pagina-web.html">Cu&#225;nto cuesta una p&#225;gina web en San Luis Potos&#237;</a>
+        <a href="guia-mas-resenas-google.html">C&#243;mo conseguir m&#225;s rese&#241;as en Google</a>
+        <a href="guia-placas-nfc-resenas.html">&#191;Sirven las placas NFC para rese&#241;as?</a>
+        <a href="guia-negocio-en-google-maps.html">C&#243;mo poner tu negocio en Google Maps</a>
+        <a href="guia-agente-whatsapp-ia.html">&#191;Vale la pena un agente de WhatsApp con IA?</a>
+      </div>
     </div>
   </div>
 </section>
