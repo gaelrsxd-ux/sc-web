@@ -1619,8 +1619,88 @@ function heroPlaca() {
    la menos autoexplicativa en dos palabras y tiene su tarjeta abajo. */
 const HERO_FAMILIAS = ['google', 'web', 'ia'];
 
+/* ═══════════ EL PRECIO DENTRO DE UNA GUÍA ═══════════
+   Las guías responden preguntas y para responderlas citan cifras. Escritas a
+   mano se separarían de la tabla el primer día que suba un precio —la guía
+   diría una cosa y el cobro otra—, que es exactamente el fallo que este
+   archivo existe para impedir. Así que el recuadro del precio lo escribe la
+   misma tabla, y precios.mjs --check, que ya corre en CI, lo vigila.
+
+   `clave` es una familia de servicios o la palabra «placa», que no es una
+   familia sino la escalera de PAQUETES. */
+function bloqueGuiaPrecio(clave) {
+  const pesos = n => '$' + miles(n);
+  let cuerpo;
+  if (clave === 'placa') {
+    const una = PAQUETES[0];
+    const cinco = PAQUETES.find(p => p.piezas === 5);
+    if (!cinco) throw new Error('bloqueGuiaPrecio: la tabla ya no tiene el paquete de 5 placas');
+    cuerpo =
+      `        <p class="gp-que">${ent('Placa de rese\u00f1as para Google (NFC + QR)')}</p>\n` +
+      `        <p class="gp-cifra">${pesos(una.precio)} <span>MXN</span></p>\n` +
+      `        <p class="gp-nota">${ent(`Una pieza, m\u00e1s ${pesos(una.envio)} de env\u00edo. Desde dos, el env\u00edo es gratis: cinco salen en ${pesos(cinco.precio)}, o sea ${pesos(Math.round(cinco.precio / cinco.piezas))} cada una.`)}</p>\n` +
+      '        <a class="gp-ir" href="pedido.html">Ver todas las cantidades y pagar</a>\n';
+  } else {
+    const fam = FAMILIAS[clave];
+    if (!fam) throw new Error(`bloqueGuiaPrecio: familia \u00ab${clave}\u00bb desconocida`);
+    const orden = SERVICIOS.filter(x => x.familia === clave).sort((a, b) => a.precio - b.precio);
+    if (!orden.length) throw new Error(`bloqueGuiaPrecio: la familia \u00ab${clave}\u00bb no tiene paquetes`);
+    const filas = orden.map(x => {
+      const mitad = x.anticipo
+        ? ` <i>o ${pesos(x.anticipo)} de anticipo y el resto al entregar</i>` : '';
+      return `        <p class="gp-fila"><b>${pesos(x.precio)}</b> <span>${ent(x.corto || x.nombre)}</span>${mitad}</p>`;
+    }).join('\n');
+    cuerpo =
+      `        <p class="gp-que">${ent(fam.titulo)}</p>\n` + filas + '\n' +
+      `        <a class="gp-ir" href="${fam.pagina}">Ver qu\u00e9 incluye y pagar</a>\n`;
+  }
+  return '<!-- guia:precio -->\n' +
+    '      <div class="guia-precio">\n' + cuerpo + '      </div>\n' +
+    '      <!-- /guia:precio -->';
+}
+
+/* Las guías, y de qué familia saca su precio cada una. Viven aquí y no en un
+   índice aparte porque este archivo es el que tiene que reescribirlas. */
+const GUIAS = [
+  { archivo: 'guia-precio-pagina-web.html', clave: 'web',
+    titulo: 'Cuánto cuesta una página web en San Luis Potosí',
+    resumen: 'precio cerrado, qué debe incluir el presupuesto y por qué una web barata sale cara' },
+  { archivo: 'guia-mas-resenas-google.html', clave: 'placa',
+    titulo: 'Cómo conseguir más reseñas en Google',
+    resumen: 'cuántas hacen falta, cuándo pedirlas, qué funciona y qué puede suspenderte la ficha' },
+  { archivo: 'guia-placas-nfc-resenas.html', clave: 'placa',
+    titulo: '¿Sirven las placas NFC para reseñas de Google?',
+    resumen: 'cómo funcionan sin app, dónde colocarlas, cuántas hacen falta y qué no hacen' },
+  { archivo: 'guia-negocio-en-google-maps.html', clave: 'google',
+    titulo: 'Cómo poner tu negocio en Google Maps',
+    resumen: 'los pasos, la verificación, los errores que suspenden la ficha y qué hacer después' },
+  { archivo: 'guia-agente-whatsapp-ia.html', clave: 'ia',
+    titulo: '¿Vale la pena un agente de WhatsApp con IA?',
+    resumen: 'cuándo sí y cuándo no, en qué se diferencia de un menú automático y qué no debe hacer nunca' },
+];
+
+const PAGINAS_GUIA = GUIAS.map(g => ({
+  ...g,
+  ruta: path.join(RAIZ, 'Kimi_Agent_Web 3D Optimizada', 'app', g.archivo),
+  bloques: [
+    { nombre: `precio de ${g.archivo}`,
+      re: /<!-- guia:precio -->[\s\S]*?<!-- \/guia:precio -->/,
+      pinta: () => bloqueGuiaPrecio(g.clave) },
+  ],
+}));
+
 const BLOQUES = [
   { nombre: 'precio del esquema', re: /"price":"\d+"/, pinta: precioEsquema },
+  /* El rango de precios del negocio, de la placa más barata al paquete más caro.
+     Escrito a mano se quedaría viejo, y es una de las cosas que un buscador
+     enseña literalmente en la ficha del negocio. */
+  { nombre: 'rango de precios del esquema',
+    re: /"priceRange":"[^"]*"/,
+    pinta: () => {
+      const min = Math.min(PAQUETES[0].precio, ...SERVICIOS.map(x => x.precio));
+      const max = Math.max(PAQUETES[0].precio, ...SERVICIOS.map(x => x.precio));
+      return `"priceRange":"$${miles(min)}-$${miles(max)} MXN"`;
+    } },
   /* ⚠ `[\s\S]*?` Y NO `[^<]*`. El patrón exigía que dentro del <span> no hubiera
      ni una etiqueta, y en cuanto el contenido pasó de «Desde $1,490» a dos
      cifras con su nombre en <b> y <i>, dejó de encontrarse a sí mismo: la
@@ -1733,6 +1813,20 @@ const paginasServicio = PAGINAS_SERVICIO.map(pg => {
     console.error('  Con la dirección mal, el botón de pagar no lleva a ninguna parte.\n');
     process.exit(1);
   }
+  return { ...pg, original, generado: aplica(original, pg.bloques) };
+});
+
+/* Las guías responden preguntas y citan cifras. A diferencia de las páginas de
+   servicio, aquí NO se exige el formulario de cobro: una guía no cobra, enlaza
+   a la página que cobra. Lo que sí se exige es que exista y traiga su marca:
+   una guía sin recuadro de precio es una guía que responde «cuánto cuesta» sin
+   decir cuánto. */
+const paginasGuia = PAGINAS_GUIA.map(pg => {
+  if (!fs.existsSync(pg.ruta)) {
+    console.error(`\n  Falta app/${pg.archivo}: está en la lista GUIAS y no existe.\n`);
+    process.exit(1);
+  }
+  const original = fs.readFileSync(pg.ruta, 'utf8');
   return { ...pg, original, generado: aplica(original, pg.bloques) };
 });
 
@@ -1873,6 +1967,17 @@ function paraLlms() {
     L.push(`- [${f.titulo}](${urlPagina(f)}): qué es, qué incluye, precio, plazo, preguntas frecuentes y contratación`);
   L.push('- [Términos y condiciones](https://sycsolutions.company/terminos): alcance, plazos y condiciones de cada paquete');
   L.push('- [Aviso de privacidad](https://sycsolutions.company/aviso-de-privacidad)');
+  /* Las guías, desde la misma lista que las escribe. A mano, el día que entre
+     una sexta guía, esta tarjeta se quedaría con cinco y nadie lo vería: es
+     justo el archivo que nadie vuelve a abrir. */
+  L.push('');
+  L.push('## Guías');
+  L.push('');
+  L.push('Respuestas a preguntas concretas, con los precios reales y las fuentes citadas.');
+  L.push('');
+  for (const g of GUIAS) {
+    L.push(`- [${g.titulo}](https://sycsolutions.company/${g.archivo.replace(/\.html$/, '')}): ${g.resumen}`);
+  }
   L.push('');
   return L.join('\n') + '\n';
 }
@@ -1914,6 +2019,12 @@ if (args.includes('--check')) {
     console.error('  Arréglalo con:  node tools/precios.mjs\n');
     process.exit(1);
   }
+  for (const pg of paginasGuia) if (pg.original !== pg.generado) {
+    console.error(`\n  El precio de app/${pg.archivo} no coincide con la tabla.`);
+    console.error('  La guía respondería «cuánto cuesta» con una cifra vieja.');
+    console.error('  Arréglalo con:  node tools/precios.mjs\n');
+    process.exit(1);
+  }
   if (original === generado) {
     console.log('OK: la lista de precios del HTML y de pedido.html coincide con tools/precios.mjs.');
     process.exit(0);
@@ -1948,6 +2059,11 @@ if (pedidoOriginal !== pedidoGenerado) {
 for (const pg of paginasServicio) if (pg.original !== pg.generado) {
   fs.writeFileSync(pg.ruta, pg.generado);
   console.log(`Reescritos los paquetes de app/${pg.archivo}.`);
+}
+
+for (const pg of paginasGuia) if (pg.original !== pg.generado) {
+  fs.writeFileSync(pg.ruta, pg.generado);
+  console.log(`Reescrito el precio de app/${pg.archivo}.`);
 }
 
 if (original === generado) {
