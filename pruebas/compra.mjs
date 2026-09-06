@@ -25,7 +25,7 @@
    ========================================================================= */
 
 import { chromium } from 'playwright';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 /* Los términos, para contrastar contra ellos lo que promete el esquema: lo que
    Google enseña en el resultado y lo que obliga el contrato tienen que ser lo
@@ -306,11 +306,19 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(wa.includes('Calle Falsa 123') && wa.includes('4423697248'),
      'y arma el WhatsApp con el pedido escrito');
 
+  await pg.goto(BASE + '/gracias.html');
+  ok(await pg.locator('[data-gr-resena] .gr-rb').isVisible(),
+     'la vuelta normal ofrece dejar la reseña en Google');
+
   /* Un pago en efectivo vuelve SIN estar cobrado. Decir «gracias por tu compra»
      ahí es la forma de que nadie llegue a pagarlo. */
   await pg.goto(BASE + '/gracias.html?estado=pendiente');
   ok((await pg.locator('[data-gr-t]').innerText()).toLowerCase().includes('pendiente'),
      'con ?estado=pendiente la página NO da el pago por hecho');
+  /* Y con el pago a medias no se pide nada más: el único mensaje que puede
+     caber ahí es que hay que ir a terminar de pagar. */
+  ok(!(await pg.locator('[data-gr-resena]').isVisible()),
+     'y con el pago pendiente el bloque de la reseña se calla');
 
   /* ---- EL ZOOM DEL DOBLE TOQUE, AHORA EN LAS PESTANAS ----
      El titular lo reportó desde su iPhone sobre el «+» del contador: pulsar
@@ -973,6 +981,41 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(campos.negocio === 'Bar Central' && campos.calle === 'Hidalgo 45', 'con todos los datos');
   ok(!('total' in campos) && !('precio' in campos), 'y tampoco viaja ningún importe');
   await ctx.close();
+}
+
+/* ══════════════ EL ENLACE DE RESEÑAS, SÓLO PARA QUIEN YA COMPRÓ ══════════════
+
+   Es el enlace corto de la ficha de Google del negocio: abre el cuadro de
+   escribir la reseña de un toque. Vive en las tres páginas de gracias porque
+   son las únicas a las que se llega DESPUÉS de pagar.
+
+   ⚠ LO QUE ESTA PRUEBA DEFIENDE ES QUE NO SE MUEVA DE AHÍ. Las normas de
+   Google prohíben pedir reseñas a quien no ha sido cliente; el mismo botón en
+   la portada, en una guía o en la página de cobro sería pedírsela a cualquiera
+   que pase, y eso acaba con las reseñas borradas y la ficha castigada. Es una
+   tentación razonable —«ponlo también en el pie, que lo vea más gente»— y por
+   eso hace falta que falle algo cuando ocurra.
+
+   Y comprueba que las tres digan LA MISMA dirección: si una se queda con un
+   enlace viejo, las reseñas que salgan de ahí van a otra ficha o a ninguna. */
+{
+  const RESENA = 'https://g.page/r/CZEX5z6-l1aNEBM/review';
+  const dir = f => new URL('../Kimi_Agent_Web 3D Optimizada/app/' + f, import.meta.url);
+  const GRACIAS = ['gracias.html', 'gracias-paquete.html', 'gracias-servicio.html'];
+
+  for (const f of GRACIAS) {
+    const html = readFileSync(dir(f), 'utf8');
+    const veces = html.split(RESENA).length - 1;
+    ok(veces === 1, f + ' lleva el enlace de reseñas del negocio, una vez');
+    /* Sin «noindex» este enlace acabaría siendo público de todos modos: Google
+       indexaría la página de gracias y cualquiera llegaría a ella buscando. */
+    ok(/name="robots"[^>]*noindex/.test(html), f + ' sigue fuera de Google (noindex)');
+  }
+
+  const publicas = readdirSync(dir('.')).filter(f => f.endsWith('.html') && !GRACIAS.includes(f));
+  const coladas = publicas.filter(f => readFileSync(dir(f), 'utf8').includes(RESENA));
+  ok(coladas.length === 0,
+     'y NINGUNA página pública lo lleva' + (coladas.length ? ' — se coló en: ' + coladas : ''));
 }
 
 await navegador.close();
