@@ -89,6 +89,26 @@ for (const pg of PAGINAS) {
   });
 
   ok(res.esquema === 'dark', `declara color-scheme oscuro para los controles nativos («${res.esquema}»)`);
+
+  /* ⚠ EL ICONO QUE ENSEÑA GOOGLE TIENE QUE SER CUADRADO Y NO PUEDE SER SVG.
+     Google exige 1:1 y su lista de formatos es BMP, GIF, ICO, PNG, JPEG, PPM y
+     TIFF. El sitio declaraba el CARTEL de la marca, un SVG de 1600x900, así que
+     recortaba el centro y de «S&C SOLUTIONS» se leía «S&(». Se comprueba en cada
+     página porque basta una que declare otra cosa para que Google dude. */
+  const iconos = await p.evaluate(() => [...document.querySelectorAll('link[rel~="icon"], link[rel="apple-touch-icon"]')]
+    .map(l => ({ href: l.getAttribute('href'), tipo: l.type, rel: l.rel })));
+  ok(iconos.length >= 2, `declara ${iconos.length} iconos`);
+  ok(iconos.every(i => !/\.svg$/i.test(i.href)), 'ninguno es SVG, que Google no admite como icono');
+  ok(iconos.some(i => i.rel === 'apple-touch-icon'), 'y hay apple-touch-icon, que Google también acepta');
+  for (const i of iconos) {
+    const r = await p.request.get(new URL(i.href, `${B}/`).href);
+    ok(r.status() === 200, `${i.href} responde ${r.status()}`);
+    /* Cuadratura leída del propio PNG: los 8 bytes tras «IHDR» son ancho y alto. */
+    const b = await r.body();
+    const j = b.indexOf(Buffer.from('IHDR'));
+    const an = b.readUInt32BE(j + 4), al = b.readUInt32BE(j + 8);
+    ok(an === al && an >= 48, `y mide ${an}x${al}: cuadrado y por encima de 48`);
+  }
   ok(res.texto.length === 0, `${res.nTexto} textos legibles (4,5:1; 3:1 los grandes)` + (res.texto.length ? `: ${res.texto.join(' · ')}` : ''));
   if (res.nPh) ok(res.placeholders.length === 0, `${res.nPh} textos de ayuda de campo legibles` + (res.placeholders.length ? `: ${res.placeholders.join(' · ')}` : ''));
   if (res.nBordes) ok(res.bordes.length === 0, `${res.nBordes} bordes de control a 3:1 o más` + (res.bordes.length ? `: ${res.bordes.join(' · ')}` : ''));
