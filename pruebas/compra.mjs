@@ -25,6 +25,13 @@
    ========================================================================= */
 
 import { chromium } from 'playwright';
+import { readFileSync } from 'node:fs';
+
+/* Los términos, para contrastar contra ellos lo que promete el esquema: lo que
+   Google enseña en el resultado y lo que obliga el contrato tienen que ser lo
+   mismo. */
+const TERMINOS = readFileSync(new URL(
+  '../Kimi_Agent_Web 3D Optimizada/app/terminos.html', import.meta.url), 'utf8');
 
 const BASE = process.env.BASE || 'http://127.0.0.1:8099';
 const COBRO = 'https://pagos.sycsolutions.company/**';
@@ -169,6 +176,32 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      y tiene que ser el mismo que cobra la tabla. */
   ok(producto?.offers?.shippingDetails?.shippingRate?.value === String(tramos[0].e),
      `el envío del esquema es $${producto?.offers?.shippingDetails?.shippingRate?.value}, igual que el de la tabla`);
+
+  /* ⚠ LA POLÍTICA DEL ESQUEMA Y LA DE LOS TÉRMINOS SON LA MISMA. Google enseña
+     la del esquema en el resultado, y lo que obliga es la de los términos: si
+     una dice cinco días y la otra diez, el buscador anuncia una condición que
+     el contrato no da. Los cinco días no son cortesía nuestra, son el artículo
+     56 de la LFPC, así que tampoco pueden bajar. */
+  const dev = producto?.offers?.hasMerchantReturnPolicy;
+  ok(!!dev, 'la oferta declara su política de devolución');
+  ok(dev?.merchantReturnDays >= 5, `declara ${dev?.merchantReturnDays} días, que es lo que da la ley como mínimo`);
+  ok(/MerchantReturnFiniteReturnWindow$/.test(dev?.returnPolicyCategory || ''), 'con ventana de plazo, no «no se admiten»');
+  ok(/ReturnFeesCustomerResponsibility$/.test(dev?.returnFees || ''), 'y el envío de vuelta a cargo del cliente, como dicen los términos');
+  ok(/FullRefund$/.test(dev?.refundType || ''), 'con devolución del importe íntegro');
+  /* El enlace de la política tiene que llevar a un sitio que exista de verdad. */
+  const anclaDev = (dev?.merchantReturnLink || '').split('#')[1] || '';
+  ok(TERMINOS.includes(`id="${anclaDev}"`), `y su enlace apunta a #${anclaDev}, que existe en los términos`);
+  /* Y los términos tienen que decir el mismo plazo, con letra y todo: si alguien
+     reescribe el párrafo y cambia el número, esto se cae. */
+  const txt = TERMINOS.replace(/&#237;/g, 'í').replace(/&#225;/g, 'á').replace(/&#243;/g, 'ó');
+  ok(/cinco d[ií]as h[áa]biles/.test(txt), 'los términos dicen «cinco días hábiles»');
+  ok(/env[ií]o de vuelta corre por tu\s*\n?\s*cuenta/.test(txt) || /env[ií]o de vuelta corre por tu/.test(txt.replace(/\s+/g, ' ')),
+     'y que el envío de vuelta lo paga el cliente');
+  ok(/reponemos\s+la placa sin costo/.test(txt.replace(/\s+/g, ' ')), 'y que una placa defectuosa se repone sin costo');
+
+  /* Código de producto: Google lo pide para identificar la placa entre las de
+     otros. Es nuestro, pero tiene que estar y no puede quedar vacío. */
+  ok(/^[A-Z]{2,4}(-[A-Z0-9]+){2,}$/.test(producto?.sku || ''), `código de producto con forma propia: ${producto?.sku}`);
 
   await pg.selectOption('#ped-cant', '4');
   await pg.waitForTimeout(250);
