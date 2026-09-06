@@ -131,6 +131,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
 
   /* Los datos estructurados de la portada, leídos ANTES de irnos de ella. */
   const esquema = (await pg.locator('script[type="application/ld+json"]').allTextContents()).join(' ');
+  const portadaLD = await pg.locator('script[type="application/ld+json"]').first().textContent();
 
   /* ---- de la ficha al pedido ---- */
   await pg.locator('[data-pc-ir]').click();
@@ -149,6 +150,25 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      —y Google penaliza justo ese desfase—. */
   ok(esquema.includes('"price":"' + (tramos[0].tot - tramos[0].e) + '"'),
      'el precio de los datos estructurados es el mismo que la cifra grande');
+
+  /* ⚠ EL PRODUCTO TIENE QUE DECLARAR FOTO. Sin `image`, Google no lo acepta
+     como ficha de comerciante: Search Console lo marcó «no válido» y el
+     producto no puede salir con foto y precio en los resultados. Se comprueba
+     que estén declaradas y que cada una exista de verdad, porque una URL de
+     foto rota vale lo mismo que no ponerla. */
+  const producto = (JSON.parse(portadaLD)['@graph'] || []).find(x => x['@type'] === 'Product');
+  ok(!!producto, 'la portada declara el producto en su esquema');
+  const fotos = [].concat(producto?.image || []);
+  ok(fotos.length >= 1, `y declara ${fotos.length} foto(s), que Google exige para la ficha de comerciante`);
+  for (const u of fotos) {
+    ok(/^https:\/\/sycsolutions\.company\/assets\//.test(u), `foto con URL absoluta del sitio: ${u.split('/').pop()}`);
+    const r = await pg.request.get(u.replace('https://sycsolutions.company', BASE));
+    ok(r.status() === 200, `y existe de verdad (${r.status()})`);
+  }
+  /* El envío del esquema es el de UNA pieza, que es la cantidad de esta oferta,
+     y tiene que ser el mismo que cobra la tabla. */
+  ok(producto?.offers?.shippingDetails?.shippingRate?.value === String(tramos[0].e),
+     `el envío del esquema es $${producto?.offers?.shippingDetails?.shippingRate?.value}, igual que el de la tabla`);
 
   await pg.selectOption('#ped-cant', '4');
   await pg.waitForTimeout(250);

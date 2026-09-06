@@ -86,6 +86,12 @@ document.documentElement.classList.add('js');
    "name":"Placa de reseñas para Google (NFC + QR)",
    "description":"Placa de sobremesa con NFC y código QR que lleva al cliente directo a la ficha de Google del negocio para dejar su reseña. Sin pilas, sin aplicación y con una vida útil de 5 a 10 años.",
    "category":"Señalización NFC para reseñas",
+   "image":[
+    "https://sycsolutions.company/assets/producto-resenas-frontal-1400.webp",
+    "https://sycsolutions.company/assets/producto-resenas-perfil-1400.webp",
+    "https://sycsolutions.company/assets/producto-resenas-trasera-1400.webp",
+    "https://sycsolutions.company/assets/og-placa.jpg"
+   ],
    "brand":{"@id":"https://sycsolutions.company/#organizacion"},
    "offers":{
     "@type":"Offer",
@@ -95,6 +101,11 @@ document.documentElement.classList.add('js');
     "availability":"https://schema.org/InStock",
     "itemCondition":"https://schema.org/NewCondition",
     "eligibleQuantity":{"@type":"QuantitativeValue","value":1,"unitText":"unidad"},
+    "shippingDetails":{
+     "@type":"OfferShippingDetails",
+     "shippingRate":{"@type":"MonetaryAmount","value":"179","currency":"MXN"},
+     "shippingDestination":{"@type":"DefinedRegion","addressCountry":"MX"}
+    },
     "seller":{"@id":"https://sycsolutions.company/#organizacion"}
    }
   },
