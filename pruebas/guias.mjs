@@ -33,9 +33,12 @@ for (const g of GUIAS) {
   ok(llms.includes(`/${slug})`), `${slug} está en llms.txt`);
 }
 
-/* ---- y la portada enlaza a todas: sin enlace interno son huérfanas ---- */
+/* ---- y ninguna es huérfana: la enlaza la portada o el índice /guias,
+   que a su vez cuelga de la portada (se comprueba más abajo). ---- */
 const portada = fs.readFileSync(path.join(APP, 'index.html'), 'utf8');
-for (const g of GUIAS) ok(portada.includes(`href="${g}"`), `la portada enlaza a ${g}`);
+const indice = fs.readFileSync(path.join(APP, 'guias.html'), 'utf8');
+for (const g of GUIAS) ok(portada.includes(`href="${g}"`) || indice.includes(`href="${g}"`),
+  `la portada o el índice enlazan a ${g}`);
 
 for (const g of GUIAS) {
   const slug = g.replace(/\.html$/, '');
@@ -57,6 +60,9 @@ for (const g of GUIAS) {
     fuentes: [...document.querySelectorAll('.fuentes a')].map(a => a.href),
     otras: [...document.querySelectorAll('.otras a')].map(a => a.getAttribute('href')),
     ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map(s => s.textContent),
+    faqVis: document.querySelectorAll('.preguntas details').length,
+    cta: document.querySelector('.guia-cta .gc-wa')?.href || '',
+    prosa: document.querySelector('main')?.innerText || '',
   }));
 
   ok(meta.h1 === 1, `un solo <h1> (hay ${meta.h1})`);
@@ -75,13 +81,17 @@ for (const g of GUIAS) {
 
   /* La descripción también: es lo que se lee en el resultado sin entrar. */
   ok(/\d/.test(meta.desc), 'la meta descripción también trae una cifra');
+  /* Un precio en la descripción caduca el día que cambie la tabla, y la
+     descripción no la reescribe nadie. Cifras sí; precios propios, no. */
+  ok(!/\$\d/.test(meta.desc), 'y ningún precio propio escrito a mano en ella');
 
   /* Fuentes primarias enlazadas: el otro factor que se midió. */
   ok(meta.fuentes.length >= 3, `cita ${meta.fuentes.length} fuentes con enlace`);
   ok(meta.fuentes.every(u => /^https:\/\//.test(u)), 'y todas apuntan fuera por https');
 
-  /* Enlaces a las demás guías: sin ellos cada una es una isla. */
-  ok(meta.otras.length === GUIAS.length - 1, `enlaza a las otras ${meta.otras.length} guías`);
+  /* Enlaces a las guías de su tema y al índice: sin ellos cada una es una isla. */
+  ok(meta.otras.length >= 3, `enlaza a ${meta.otras.length} guías de su tema`);
+  ok(meta.otras.includes('guias.html'), 'y al índice /guias');
 
   /* El precio, escrito por la tabla. */
   ok(/\$[\d,]+/.test(meta.precio), `el recuadro de precio trae cifra: «${meta.precio.slice(0, 60)}…»`);
@@ -107,8 +117,35 @@ for (const g of GUIAS) {
   ok((faq?.mainEntity || []).length >= 3, `${(faq?.mainEntity || []).length} preguntas en el esquema`);
   const vacias = (faq?.mainEntity || []).filter(q => !q.acceptedAnswer?.text?.trim());
   ok(vacias.length === 0, 'ninguna pregunta del esquema se queda sin respuesta');
+  /* ⚠ Un FAQPage cuyas preguntas no se ven en la página es marcado engañoso
+     para Google. Las visibles y las del esquema salen de la misma lista, y
+     aquí se comprueba que sigan siendo las mismas. */
+  ok(meta.faqVis === (faq?.mainEntity || []).length, `las ${meta.faqVis} preguntas del esquema se ven en la página`);
+  /* La llamada a la acción: WhatsApp con el mensaje escrito para esta guía. */
+  ok(/^https:\/\/wa\.me\/\d{10,15}\?text=./.test(meta.cta), 'el botón abre WhatsApp con un mensaje ya escrito');
+  ok(meta.cta.includes('gu%C3%ADa') || /gu%C3%ADa|guia/i.test(meta.cta), 'y el mensaje dice de qué guía viene');
+  /* Las cifras de la prosa las escribe la tabla; «$0» es el marcador sin resolver. */
+  ok(!/\$0\b/.test(meta.prosa), 'ninguna cifra de precio quedó sin generar');
 
   await pg.close();
+}
+
+/* ---- el índice: existe, lista todas, y la portada y el pie lo enlazan ---- */
+console.log('\n── guias (índice)');
+{
+  const pi = await b.newPage({ viewport: { width: 1280, height: 900 } });
+  const r = await pi.goto(`${B}/guias.html`, { waitUntil: 'domcontentloaded' });
+  ok(r.status() === 200, 'responde 200');
+  const enlaces = await pi.locator('.indice-guias a').evaluateAll(as => as.map(a => a.getAttribute('href')));
+  for (const g of GUIAS) ok(enlaces.includes(g), `lista ${g}`);
+  ok(await pi.locator('h1').count() === 1, 'un solo h1');
+  const ld = await pi.locator('script[type="application/ld+json"]').first().textContent();
+  let d = null; try { d = JSON.parse(ld); } catch {}
+  ok(d && d['@type'] === 'CollectionPage' && d.mainEntity?.numberOfItems === GUIAS.length,
+     `CollectionPage con ${d?.mainEntity?.numberOfItems} elementos`);
+  ok(sitemap.includes('/guias<'), 'está en el sitemap');
+  ok(portada.includes('href="guias.html"'), 'la portada enlaza al índice');
+  await pi.close();
 }
 
 /* ---- sin JavaScript: los rastreadores de IA no lo ejecutan ----

@@ -1677,7 +1677,74 @@ const GUIAS = [
   { archivo: 'guia-agente-whatsapp-ia.html', clave: 'ia',
     titulo: '¿Vale la pena un agente de WhatsApp con IA?',
     resumen: 'cuándo sí y cuándo no, en qué se diferencia de un menú automático y qué no debe hacer nunca' },
+  /* Las que llegaron después, ordenadas por lo que la gente teclea. */
+  { archivo: 'guia-diseno-web-san-luis-potosi.html', clave: 'web',
+    titulo: 'Diseño web en San Luis Potosí: precios reales, plazos y qué incluye',
+    resumen: 'qué cobran las agencias de la ciudad, qué incluye cada rango y cómo comparar presupuestos' },
+  { archivo: 'guia-que-debe-tener-pagina-web-negocio.html', clave: 'web',
+    titulo: 'Qué debe tener la página web de un negocio (y qué sobra)',
+    resumen: 'las 7 cosas que no pueden faltar, las que estorban y cómo saber si la tuya vende' },
+  { archivo: 'guia-pagina-web-o-redes-sociales.html', clave: 'web',
+    titulo: '¿Página web o redes sociales? Qué le conviene a un negocio pequeño',
+    resumen: 'para qué sirve cada una, por qué no se sustituyen y en qué orden invertir' },
+  { archivo: 'guia-como-aparecer-en-google.html', clave: 'google',
+    titulo: 'Cómo hacer que mi negocio aparezca en Google',
+    resumen: 'los tres sitios donde se aparece, cuál importa primero y cuánto tarda cada uno' },
+  { archivo: 'guia-enlace-resenas-google.html', clave: 'placa',
+    titulo: 'Cómo obtener el enlace para reseñas de Google de tu negocio',
+    resumen: 'dónde está el enlace oficial, cómo compartirlo y cómo convertirlo en QR o placa' },
+  { archivo: 'guia-codigo-qr-resenas-google.html', clave: 'placa',
+    titulo: 'Código QR para reseñas de Google: cómo hacerlo y dónde ponerlo',
+    resumen: 'el QR gratuito de Google, dónde funciona, dónde no, y por qué el NFC lo complementa' },
+  { archivo: 'guia-frases-para-pedir-resenas.html', clave: 'placa',
+    titulo: 'Frases para pedir reseñas a tus clientes sin que sea incómodo',
+    resumen: 'frases que funcionan en persona y por WhatsApp, cuándo decirlas y las que están prohibidas' },
+  { archivo: 'guia-responder-resenas-negativas.html', clave: 'google',
+    titulo: 'Cómo responder una reseña negativa en Google, con ejemplos',
+    resumen: 'la estructura de una buena respuesta, tres ejemplos reales y qué no contestar nunca' },
+  { archivo: 'guia-resenas-no-aparecen.html', clave: 'google',
+    titulo: 'Por qué no aparecen mis reseñas en Google y qué hacer',
+    resumen: 'las causas más comunes, cuáles se arreglan y cuáles no, y cómo evitar que se repita' },
+  { archivo: 'guia-aparecer-primero-google-maps.html', clave: 'google',
+    titulo: 'Cómo aparecer primero en Google Maps en tu ciudad',
+    resumen: 'los factores que deciden el orden, con su peso, y qué mover primero' },
+  { archivo: 'guia-negocio-no-aparece-google-maps.html', clave: 'google',
+    titulo: 'Mi negocio no aparece en Google Maps: 6 causas y cómo arreglarlas',
+    resumen: 'de la ficha sin verificar a la suspensión, qué revisar en orden y cuánto tarda' },
+  { archivo: 'guia-automatizar-whatsapp-business.html', clave: 'ia',
+    titulo: 'Cómo automatizar las respuestas de WhatsApp Business sin que parezca un robot',
+    resumen: 'lo que trae WhatsApp Business gratis, dónde se queda corto y cuándo pasar a un agente' },
+  { archivo: 'guia-automatizar-tareas-negocio.html', clave: 'auto',
+    titulo: 'Qué tareas de un negocio pequeño se pueden automatizar y cuáles no',
+    resumen: 'las cinco que más se repiten, cómo saber si conviene y qué esperar de una automatización' },
 ];
+
+/* ═══════════ CIFRAS SUELTAS DENTRO DE LA PROSA DE UNA GUÍA ═══════════
+   El recuadro del precio ya lo escribe la tabla, pero una guía cita precios
+   también en su respuesta y en su texto. Escritos a mano caducan igual que en
+   una descripción —contenido.mjs los prohíbe ahí por eso mismo—. Así que la
+   prosa lleva <span data-precio="clave">…</span> y este archivo reescribe TODAS
+   las apariciones, no sólo una: por eso no pasa por aplica(), que exige una
+   coincidencia por patrón. Claves:
+     precio:<familia>   el paquete más barato de la familia   anticipo:<familia>
+     placa · placa-envio · placa-5 · placa-5-cu  (una placa, su envío, cinco, y cada una de esas cinco) */
+function cifraGuia(clave) {
+  const pesos = n => '$' + miles(n);
+  const fam = f => SERVICIOS.filter(x => x.familia === f).sort((a, b) => a.precio - b.precio)[0];
+  let m;
+  if ((m = clave.match(/^precio:(\w+)$/))) { const x = fam(m[1]); if (!x) throw new Error(`cifraGuia: familia «${m[1]}»`); return pesos(x.precio); }
+  if ((m = clave.match(/^anticipo:(\w+)$/))) { const x = fam(m[1]); if (!x || !x.anticipo) throw new Error(`cifraGuia: sin anticipo «${m[1]}»`); return pesos(x.anticipo); }
+  const una = PAQUETES[0], cinco = PAQUETES.find(p => p.piezas === 5);
+  if (clave === 'placa') return pesos(una.precio);
+  if (clave === 'placa-envio') return pesos(una.envio);
+  if (clave === 'placa-5') return pesos(cinco.precio);
+  if (clave === 'placa-5-cu') return pesos(Math.round(cinco.precio / cinco.piezas));
+  throw new Error(`cifraGuia: clave desconocida «${clave}»`);
+}
+function aplicaCifras(html) {
+  return html.replace(/<span data-precio="([^"]+)">[^<]*<\/span>/g,
+    (_, clave) => `<span data-precio="${clave}">${cifraGuia(clave)}</span>`);
+}
 
 const PAGINAS_GUIA = GUIAS.map(g => ({
   ...g,
@@ -1827,7 +1894,7 @@ const paginasGuia = PAGINAS_GUIA.map(pg => {
     process.exit(1);
   }
   const original = fs.readFileSync(pg.ruta, 'utf8');
-  return { ...pg, original, generado: aplica(original, pg.bloques) };
+  return { ...pg, original, generado: aplicaCifras(aplica(original, pg.bloques)) };
 });
 
 /* Las dos guías del Worker enseñan la respuesta de /estado como ejemplo, y ahí
