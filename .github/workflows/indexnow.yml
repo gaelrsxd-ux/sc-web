@@ -1,0 +1,29 @@
+# Cada vez que main cambia, se avisa a los buscadores con IndexNow (Bing y los
+# que lo comparten; ChatGPT busca con el índice de Bing) de todas las URL del
+# sitemap. Google no participa: a Google se le avisa desde Search Console.
+#
+# Corre sólo en push a main, nunca en pull requests: un aviso desde una rama
+# mandaría a indexar algo que todavía no está publicado.
+
+name: indexnow
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  avisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
+        with:
+          node-version: '24'
+      # Cloudflare Pages publica el mismo push en uno o dos minutos. El buscador
+      # lee la clave y las páginas más tarde, pero mejor avisar cuando ya estén.
+      - run: sleep 120
+      - run: node tools/indexnow.mjs
