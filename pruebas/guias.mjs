@@ -40,6 +40,24 @@ const indice = fs.readFileSync(path.join(APP, 'guias.html'), 'utf8');
 for (const g of GUIAS) ok(portada.includes(`href="${g}"`) || indice.includes(`href="${g}"`),
   `la portada o el índice enlazan a ${g}`);
 
+/* Las frases que la gente teclea de verdad (autocompletado de Google, México,
+   septiembre de 2026). Cada guía prioritaria tiene que llevarlas en el título o
+   en el h1; si alguien las «mejora» por estilo, esto lo dice. */
+const FRASES = {
+  'guia-diseno-web-san-luis-potosi':     [/p[áa]ginas web/i, /San Luis Potos/i, /dise[ñn]o/i],
+  'guia-precio-pagina-web':              [/cu[áa]nto cuesta una p[áa]gina web/i, /M[ée]xico/i],
+  'guia-mas-resenas-google':             [/conseguir m[áa]s rese[ñn]as en Google/i],
+  'guia-placas-nfc-resenas':             [/placa nfc/i, /rese[ñn]as de Google/i, /producto/i],
+  'guia-negocio-en-google-maps':         [/configurar Google Business Profile/i, /Google Maps/i],
+  'guia-como-aparecer-en-google':        [/mi negocio aparezca en Google/i],
+  'guia-aparecer-primero-google-maps':   [/primero en Google Maps/i],
+  'guia-negocio-no-aparece-google-maps': [/no aparece en Google Maps/i],
+  'guia-codigo-qr-resenas-google':       [/c[óo]digo QR/i, /rese[ñn]as de Google/i],
+  'guia-automatizar-whatsapp-business':  [/automatizar WhatsApp Business/i],
+};
+/* A dónde puede llevar el botón de arriba: sólo a páginas que venden. */
+const DESTINOS = ['web.html', 'pedido.html', 'servicio.html', 'ia.html', 'automatizacion.html'];
+
 for (const g of GUIAS) {
   const slug = g.replace(/\.html$/, '');
   console.log(`\n── ${slug}`);
@@ -47,6 +65,9 @@ for (const g of GUIAS) {
   pg.on('pageerror', e => err.push(`${slug}: ${e.message}`));
   const r = await pg.goto(`${B}/${g}`, { waitUntil: 'domcontentloaded' });
   ok(r.status() === 200, `responde 200`);
+  /* La hoja de estilos llega después del DOM y no hay scripts que la esperen:
+     lo que dependa de CSS (la barra oculta en escritorio) se mira tras «load». */
+  await pg.waitForLoadState('load');
 
   const meta = await pg.evaluate(() => ({
     titulo: document.title,
@@ -63,7 +84,29 @@ for (const g of GUIAS) {
     faqVis: document.querySelectorAll('.preguntas details').length,
     cta: document.querySelector('.guia-cta .gc-wa')?.href || '',
     prosa: document.querySelector('main')?.innerText || '',
+    og: document.querySelector('meta[property="og:image"]')?.content || '',
+    firma: document.querySelector('.firma')?.textContent.replace(/\s+/g, ' ') || '',
+    accion: (() => {
+      const a = document.querySelector('.accion'); if (!a) return null;
+      const h2 = document.querySelector('main h2');
+      return {
+        antesDelPrimerH2: !!h2 && (a.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0,
+        ir: a.querySelector('.ac-ir')?.getAttribute('href') || '',
+        irTxt: a.querySelector('.ac-ir')?.textContent.trim() || '',
+        wa: a.querySelector('.ac-wa')?.href || '',
+        prueba: a.querySelector('.ac-prueba')?.textContent.replace(/\s+/g, ' ').trim() || '',
+        pruebaHref: a.querySelector('.ac-prueba a')?.getAttribute('href') || '',
+      };
+    })(),
+    clientes: [...document.querySelectorAll('.clientes .cl-fila img')].map(i => ({ src: i.getAttribute('src'), alt: i.alt })),
+    clientesHref: [...document.querySelectorAll('.clientes a')].map(a => a.getAttribute('href')),
+    barra: { ir: document.querySelector('.barra-fija .bf-ir')?.getAttribute('href') || '',
+             wa: document.querySelector('.barra-fija .bf-wa')?.href || '' },
+    barraCaja: document.querySelector('.barra-fija')?.getBoundingClientRect().height || 0,
   }));
+
+  /* ---- la frase buscada, en el título o en el h1 ---- */
+  for (const re of FRASES[slug] || []) ok(re.test(meta.titulo + ' ' + meta.h1t), `título/h1 llevan ${re}`);
 
   ok(meta.h1 === 1, `un solo <h1> (hay ${meta.h1})`);
   ok(meta.canonical === `https://sycsolutions.company/${slug}`, `canonical correcto: ${meta.canonical}`);
@@ -127,7 +170,57 @@ for (const g of GUIAS) {
   /* Las cifras de la prosa las escribe la tabla; «$0» es el marcador sin resolver. */
   ok(!/\$0\b/.test(meta.prosa), 'ninguna cifra de precio quedó sin generar');
 
+  /* ⚠ LA ACCIÓN VA ARRIBA. El 57% del tiempo de lectura se queda en la primera
+     pantalla (NN/g) y la mitad de los lectores no pasa de la mitad (Chartbeat):
+     el botón de comprar o de WhatsApp tiene que existir antes del primer h2. */
+  ok(!!meta.accion, 'hay un bloque de acción');
+  if (meta.accion) {
+    ok(meta.accion.antesDelPrimerH2, 'y está antes del primer h2 del artículo');
+    ok(DESTINOS.includes(meta.accion.ir), `el botón lleva a una página que vende: ${meta.accion.ir}`);
+    const rd = await pg.request.get(`${B}/${meta.accion.ir}`);
+    ok(rd.status() === 200, `y esa página responde ${rd.status()}`);
+    ok(meta.accion.irTxt.length >= 6, `con texto propio: «${meta.accion.irTxt}»`);
+    ok(meta.accion.wa === meta.cta, 'el WhatsApp de arriba abre con el mismo mensaje de la guía');
+    ok(/Kabuki|Podol|Seminuevos/.test(meta.accion.prueba) && meta.accion.pruebaHref === '/#clientes',
+       'y al lado, clientes con nombre que llevan a las fotos');
+  }
+  ok(meta.barra.ir === meta.accion?.ir && meta.barra.wa === meta.cta, 'la barra fija repite los dos destinos');
+  ok(meta.barraCaja === 0, 'y en escritorio no se enseña');
+
+  /* Prueba de trabajo real: fotos que existen y llevan a la portada. */
+  ok(meta.clientes.length >= 3, `${meta.clientes.length} fotos de clientes`);
+  for (const c of meta.clientes) {
+    const ri = await pg.request.get(`${B}/${c.src}`);
+    ok(ri.status() === 200 && /San Luis/.test(c.alt), `foto ${c.src.replace(/^assets\//, '')} carga y su alt dice dónde`);
+  }
+  ok(meta.clientesHref.length > 0 && meta.clientesHref.every(h => h === '/#clientes'), 'todas llevan a /#clientes');
+  ok(/id="clientes"/.test(portada), 'y la portada tiene esa ancla');
+
+  /* Entidad: quién escribe, qué hace y dónde. Es lo que una IA asocia al nombre. */
+  ok(/S&C Solutions/.test(meta.firma) && /p[áa]ginas web/i.test(meta.firma) && /San Luis Potos/.test(meta.firma) && /M[ée]xico/.test(meta.firma),
+     'la firma dice quién es, qué hace y dónde');
+  ok(/^https:\/\/sycsolutions\.company\/assets\//.test(meta.og), `og:image para compartir por WhatsApp: ${meta.og.split('/').pop()}`);
+  if (articulo) ok(Array.isArray(articulo.image) && articulo.image.length > 0, 'el Article declara imagen');
+
   await pg.close();
+
+  /* ---- en el celular, que es desde donde entra casi todo el mundo ---- */
+  const mv = await b.newPage({ viewport: { width: 390, height: 844 } });
+  mv.on('pageerror', e => err.push(`${slug} (móvil): ${e.message}`));
+  await mv.goto(`${B}/${g}`, { waitUntil: 'load' });
+  const cajaIr = await mv.locator('.accion .ac-ir').boundingBox();
+  ok(!!cajaIr && cajaIr.y + cajaIr.height <= 844 * 1.35,
+     `el botón de comprar queda a ${cajaIr ? Math.round(cajaIr.y) : '?'}px: antes de pantalla y media`);
+  const barra = await mv.locator('.barra-fija').boundingBox();
+  ok(!!barra && Math.abs(barra.y + barra.height - 844) <= 1 && barra.width >= 388,
+     `la barra fija está pegada abajo (${barra ? Math.round(barra.y) : '?'}px)`);
+  await mv.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
+  await mv.waitForTimeout(150);
+  const barra2 = await mv.locator('.barra-fija').boundingBox();
+  const pie = await mv.locator('footer small').boundingBox();
+  ok(!!barra2 && Math.abs(barra2.y + barra2.height - 844) <= 1, 'y sigue ahí al final del artículo');
+  ok(!!pie && !!barra2 && pie.y + pie.height <= barra2.y, 'sin tapar el pie de página');
+  await mv.close();
 }
 
 /* ---- el índice: existe, lista todas, y la portada y el pie lo enlazan ---- */
