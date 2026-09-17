@@ -6,13 +6,21 @@
   <meta name="robots" content="noindex">
   <title>Menú demo | S&amp;C Solutions</title>
   <style>
-    :root{color-scheme:dark;--f:#0a0b0e;--p:#14171d;--t:#f4f1ea;--m:#aaa59a;--a:#c8a96a;--l:#2c3038}
-    *{box-sizing:border-box}body{margin:0;background:var(--f);color:var(--t);font-family:Inter,system-ui,sans-serif;line-height:1.5}
-    header,main,footer{width:min(100% - 32px,720px);margin:auto}header{padding:44px 0 24px;text-align:center;border-bottom:1px solid var(--l)}
-    .marca{color:var(--a);font-size:.75rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase}h1{margin:.4rem 0;font-family:Georgia,serif;font-size:clamp(2.2rem,11vw,4.2rem);font-weight:500}
-    header p,footer{color:var(--m)}section{padding:30px 0;border-bottom:1px solid var(--l)}h2{margin:0 0 18px;color:var(--a);font-family:Georgia,serif;font-size:1.7rem}
-    article{display:grid;grid-template-columns:1fr auto;gap:5px 18px;padding:15px 0}article+article{border-top:1px dashed var(--l)}h3{margin:0;font-size:1rem}.precio{grid-column:2;grid-row:1;font-weight:800;color:var(--a)}article p{grid-column:1/-1;margin:0;color:var(--m);font-size:.92rem}
-    .aviso{margin:28px 0;padding:18px;background:var(--p);border:1px solid var(--l);border-radius:12px;text-align:center}footer{padding:28px 0 40px;text-align:center;font-size:.8rem}
+    :root{color-scheme:dark;--f:#0b0c0f;--p:#15171b;--t:#f7f3ea;--m:#bbb5a9;--a:#d5ad65;--l:#34363d;--ok:#91b69b}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--f);color:var(--t);font-family:Inter,ui-sans-serif,system-ui,sans-serif;line-height:1.5}
+    button{font:inherit}header,main,footer{width:min(100% - 28px,760px);margin:auto}header{padding:34px 0 22px;text-align:center}
+    .marca{color:var(--a);font-size:.7rem;font-weight:850;letter-spacing:.18em;text-transform:uppercase}h1{margin:.35rem 0;font-family:Georgia,serif;font-size:clamp(2.35rem,12vw,4.5rem);font-weight:500;line-height:1.05}
+    header p,footer{color:var(--m)}header p{margin:.65rem 0 0}.hero{overflow:hidden;background:var(--p);border:1px solid var(--l);border-radius:22px;box-shadow:0 22px 60px #0007}
+    .hero-media{position:relative;aspect-ratio:4/3;background:#222}.hero-media img{display:block;width:100%;height:100%;object-fit:cover;transition:opacity .18s ease}.hero-media img.cambiando{opacity:.35}
+    .etiqueta{position:absolute;top:14px;left:14px;padding:7px 11px;border-radius:999px;background:#0b0c0fd9;color:#fff;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;backdrop-filter:blur(8px)}
+    .hero-info{display:grid;grid-template-columns:1fr auto;gap:5px 18px;padding:20px}.hero-info h2{margin:0;color:var(--t);font-family:Georgia,serif;font-size:1.7rem}.hero-info .precio{font-size:1.15rem}.hero-info p{grid-column:1/-1;margin:3px 0 0;color:var(--m)}
+    .selector{padding:29px 0 10px}.titulo-bloque{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px}.titulo-bloque h2,section>h2{margin:0;color:var(--a);font-family:Georgia,serif;font-size:1.65rem}.titulo-bloque p{margin:0;color:var(--m);font-size:.78rem}
+    .opciones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.plato{display:grid;grid-template-columns:54px 1fr;align-items:center;gap:10px;min-width:0;padding:7px;text-align:left;color:var(--t);background:var(--p);border:1px solid var(--l);border-radius:14px;cursor:pointer;transition:border-color .18s,background .18s,transform .18s}
+    .plato img{width:54px;height:54px;object-fit:cover;border-radius:10px}.plato span{overflow:hidden;font-size:.82rem;font-weight:750;line-height:1.25}.plato:hover{transform:translateY(-2px);border-color:#777}.plato[aria-pressed="true"]{background:#27231d;border-color:var(--a);box-shadow:0 0 0 1px var(--a) inset}.plato:focus-visible{outline:3px solid #fff;outline-offset:2px}
+    .carta{padding-top:18px}.menu-section{padding:27px 0;border-bottom:1px solid var(--l)}article{display:grid;grid-template-columns:1fr auto;gap:5px 18px;padding:15px 0}article+article{border-top:1px dashed var(--l)}h3{margin:0;font-size:1rem}.precio{grid-column:2;grid-row:1;color:var(--a);font-weight:850}article p{grid-column:1/-1;margin:0;color:var(--m);font-size:.9rem}.favorito{color:var(--ok);font-size:.7rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+    .aviso{margin:28px 0;padding:18px;background:var(--p);border:1px solid var(--l);border-radius:14px;text-align:center;color:var(--m)}footer{padding:12px 0 38px;text-align:center;font-size:.78rem}
+    @media(min-width:650px){.hero{display:grid;grid-template-columns:1.25fr .75fr}.hero-media{aspect-ratio:auto;min-height:380px}.hero-info{align-content:end;padding:28px}.opciones{grid-template-columns:repeat(4,1fr)}.plato{grid-template-columns:1fr}.plato img{width:100%;height:auto;aspect-ratio:4/3}.plato span{padding:2px 3px 5px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-media img,.plato{transition:none}}
   </style>
 </head>
 <body>
@@ -22,24 +30,49 @@
     <p>Cocina mexicana contemporánea · Precios de ejemplo</p>
   </header>
   <main>
-    <section>
-      <h2>Para comenzar</h2>
-      <article><h3>Guacamole de la casa</h3><span class="precio">$145</span><p>Aguacate, pico de gallo, queso fresco y totopos.</p></article>
-      <article><h3>Esquites al carbón</h3><span class="precio">$110</span><p>Maíz tatemado, chile ancho, limón y mayonesa de la casa.</p></article>
+    <section class="hero" aria-live="polite">
+      <div class="hero-media">
+        <img id="foto-principal" src="/assets/menu-demo/guacamole.webp" alt="Guacamole de la casa servido en molcajete" width="960" height="720" fetchpriority="high">
+        <span class="etiqueta">Favorito de la casa</span>
+      </div>
+      <div class="hero-info">
+        <h2 id="nombre-principal">Guacamole de la casa</h2>
+        <span class="precio" id="precio-principal">$145</span>
+        <p id="detalle-principal">Aguacate, pico de gallo, queso fresco y totopos crujientes.</p>
+      </div>
     </section>
-    <section>
-      <h2>Platos fuertes</h2>
-      <article><h3>Tacos de arrachera</h3><span class="precio">$220</span><p>Tres tacos, cebolla asada, salsa molcajeteada y frijoles.</p></article>
-      <article><h3>Enchiladas de mole</h3><span class="precio">$195</span><p>Pollo, mole poblano, crema, queso y ajonjolí.</p></article>
-      <article><h3>Portobello rostizado</h3><span class="precio">$185</span><p>Quinoa, vegetales de temporada y vinagreta cítrica.</p></article>
+
+    <section class="selector" aria-labelledby="destacados-titulo">
+      <div class="titulo-bloque"><h2 id="destacados-titulo">Platillos destacados</h2><p>Toca uno para verlo</p></div>
+      <div class="opciones">
+        <button class="plato" type="button" aria-pressed="true" data-img="/assets/menu-demo/guacamole.webp" data-alt="Guacamole de la casa servido en molcajete" data-nombre="Guacamole de la casa" data-precio="$145" data-detalle="Aguacate, pico de gallo, queso fresco y totopos crujientes."><img src="/assets/menu-demo/guacamole.webp" alt="" width="160" height="120"><span>Guacamole</span></button>
+        <button class="plato" type="button" aria-pressed="false" data-img="/assets/menu-demo/tacos-arrachera.webp" data-alt="Tres tacos de arrachera con salsa y limón" data-nombre="Tacos de arrachera" data-precio="$220" data-detalle="Tres tacos, cebolla asada, salsa molcajeteada y frijoles."><img src="/assets/menu-demo/tacos-arrachera.webp" alt="" width="160" height="120" loading="lazy"><span>Tacos de arrachera</span></button>
+        <button class="plato" type="button" aria-pressed="false" data-img="/assets/menu-demo/enchiladas-mole.webp" data-alt="Enchiladas cubiertas de mole poblano" data-nombre="Enchiladas de mole" data-precio="$195" data-detalle="Pollo, mole poblano, crema, queso fresco y ajonjolí."><img src="/assets/menu-demo/enchiladas-mole.webp" alt="" width="160" height="120" loading="lazy"><span>Enchiladas de mole</span></button>
+        <button class="plato" type="button" aria-pressed="false" data-img="/assets/menu-demo/portobello.webp" data-alt="Portobello rostizado relleno de vegetales" data-nombre="Portobello rostizado" data-precio="$185" data-detalle="Vegetales de temporada, frijoles, hojas frescas y vinagreta cítrica."><img src="/assets/menu-demo/portobello.webp" alt="" width="160" height="120" loading="lazy"><span>Portobello rostizado</span></button>
+      </div>
     </section>
-    <section>
-      <h2>Bebidas</h2>
-      <article><h3>Agua fresca del día</h3><span class="precio">$55</span><p>Pregunta por el sabor disponible.</p></article>
-      <article><h3>Café de olla</h3><span class="precio">$60</span><p>Café, piloncillo y canela.</p></article>
-    </section>
+
+    <div class="carta">
+      <section class="menu-section">
+        <h2>Para comenzar</h2>
+        <article><h3>Guacamole de la casa <span class="favorito">Destacado</span></h3><span class="precio">$145</span><p>Aguacate, pico de gallo, queso fresco y totopos.</p></article>
+        <article><h3>Esquites al carbón</h3><span class="precio">$110</span><p>Maíz tatemado, chile ancho, limón y mayonesa de la casa.</p></article>
+      </section>
+      <section class="menu-section">
+        <h2>Platos fuertes</h2>
+        <article><h3>Tacos de arrachera <span class="favorito">Destacado</span></h3><span class="precio">$220</span><p>Tres tacos, cebolla asada, salsa molcajeteada y frijoles.</p></article>
+        <article><h3>Enchiladas de mole <span class="favorito">Destacado</span></h3><span class="precio">$195</span><p>Pollo, mole poblano, crema, queso y ajonjolí.</p></article>
+        <article><h3>Portobello rostizado <span class="favorito">Destacado</span></h3><span class="precio">$185</span><p>Vegetales de temporada, frijoles y vinagreta cítrica.</p></article>
+      </section>
+      <section class="menu-section">
+        <h2>Bebidas</h2>
+        <article><h3>Agua fresca del día</h3><span class="precio">$55</span><p>Pregunta por el sabor disponible.</p></article>
+        <article><h3>Café de olla</h3><span class="precio">$60</span><p>Café, piloncillo y canela.</p></article>
+      </section>
+    </div>
     <p class="aviso">Este menú demuestra cómo se verá una carta móvil. El contenido puede sustituirse sin cambiar el QR de la mesa.</p>
   </main>
   <footer>S&amp;C Solutions Company · Menús QR permanentes</footer>
+  <script src="/assets/menu-demo/menu-demo.js" defer></script>
 </body>
 </html>
