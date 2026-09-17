@@ -13,6 +13,19 @@ const path = require('path');
 const raiz = path.join(__dirname, 'Kimi_Agent_Web 3D Optimizada', 'app');
 const puerto = +(process.argv[2] || 8090);
 
+function redirecciones() {
+  try {
+    return fs.readFileSync(path.join(raiz, '_redirects'), 'utf8')
+      .split(/\r?\n/)
+      .map(linea => linea.trim())
+      .filter(linea => linea && !linea.startsWith('#'))
+      .map(linea => {
+        const [origen, destino, estado = '302'] = linea.split(/\s+/);
+        return { origen, destino, estado: Number(estado) };
+      });
+  } catch (_) { return []; }
+}
+
 /* ---------- LA MISMA POLÍTICA DE CONTENIDO QUE EN PRODUCCIÓN ----------
    Cloudflare Pages lee app/_headers al desplegar; este servidor no lo hacía, así
    que en local la página se veía SIN CSP. Eso convertía la prueba en local en un
@@ -79,8 +92,19 @@ const servidor = http.createServer((req, res) => {
     res.writeHead(400, { 'Content-Type': 'text/plain' }).end('400');
     return;
   }
+  const regla = redirecciones().find(({ origen }) =>
+    origen.endsWith('*') ? rel.startsWith(origen.slice(0, -1)) : rel === origen
+  );
+  if (regla) {
+    if (regla.estado >= 300 && regla.estado < 400) {
+      res.writeHead(regla.estado, { Location: regla.destino, 'Cache-Control': 'no-store' }).end();
+      return;
+    }
+    if (regla.estado === 200 && regla.destino.startsWith('/')) rel = regla.destino;
+  }
   if (rel === '/') rel = '/index.html';
-  const destino = path.join(raiz, rel);
+  let destino = path.join(raiz, rel);
+  if (!path.extname(destino)) destino = path.join(destino, 'index.html');
   /* Nunca servir fuera de la raíz. El separador final es necesario: sin él,
      startsWith deja pasar un directorio HERMANO cuyo nombre empiece igual
      ("app-privado" contiene "app"). Hoy no existe ninguno, pero la comprobación

@@ -1,0 +1,13 @@
+{
+  "dominio": "https://sycsolutions.company",
+  "origenesExternosPermitidos": [],
+  "restaurantes": [
+    {
+      "id": "MENU-001",
+      "codigo": "m001",
+      "nombre": "Restaurante demo",
+      "destino": "/menu/demo",
+      "activo": true
+    }
+  ]
+}

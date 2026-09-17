@@ -1,0 +1,8 @@
+# GENERADO por: node tools/menus.mjs
+# Edita datos/menus.json; no edites este archivo a mano.
+# 302 es intencional: permite cambiar el destino sin cache permanente.
+
+/q/m001 /menu/demo 302
+
+# Todo código no registrado muestra el estado pendiente.
+/q/* /menu/pendiente 200
