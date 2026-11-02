@@ -11,6 +11,8 @@
 .sc-cabecera h3{font-size:clamp(32px,5vw,62px);line-height:1.02;color:var(--ink);margin:14px 0 0}
 .sc-cabecera h3 em{font-weight:500;color:var(--bronze-hi)}
 .sc-cabecera p{max-width:43ch;font-size:14px;line-height:1.75;color:var(--muted)}
+.sc-cabecera.sc-cabecera--breve{display:block;padding:8px 0 13px}
+.sc-cabecera.sc-cabecera--breve h3{margin:0;font-size:clamp(28px,4.4vw,48px);line-height:1.12}
 .sc-accesos{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 26px}
 .sc-accesos a{display:inline-flex;align-items:center;justify-content:center;gap:10px;
   min-height:44px;padding:10px 15px;border:1px solid var(--line);font-size:10px;

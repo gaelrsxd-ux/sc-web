@@ -106,6 +106,12 @@ function preparar({ hash = '' } = {}) {
 }
 
 test('fichas y controles compactos existen sin alterar las placas clásicas', () => {
+  assert.match(html, /class="sc-cabecera sc-cabecera--breve"[\s\S]*?Un toque\. <em>Más clientes\.<\/em>/,
+    'El encabezado es breve y va directo al beneficio');
+  assert.doesNotMatch(html, /Tu marca merece|Smart Displays \/ Fabricación propia|Elige un modelo y los colores que quieras/,
+    'La introducción larga no debe robar pantalla al catálogo');
+  assert.match(estilos, /\.sc-cabecera\.sc-cabecera--breve\{display:block;padding:8px 0 13px\}/,
+    'El encabezado compacto elimina el espacio vacío de la segunda columna');
   for (const id of ['sc-catalogo', 'sc-personalizados', 'sc-config', 'sc-classic',
     'sc-modelo', 'sc-negro', 'sc-plateado', 'sc-dorado', 'sc-blanco',
     'sc-resumen', 'sc-total', 'sc-consulta']) {
