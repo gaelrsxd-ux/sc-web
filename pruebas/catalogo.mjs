@@ -9,6 +9,7 @@ import test from 'node:test';
 const app = join(dirname(fileURLToPath(import.meta.url)), '..', 'Kimi_Agent_Web 3D Optimizada', 'app');
 const html = readFileSync(join(app, 'index.html'), 'utf8');
 const codigo = readFileSync(join(app, 'assets/catalogo.js'), 'utf8');
+const estilos = readFileSync(join(app, 'assets/catalogo.css'), 'utf8');
 
 function nodo(value = '') {
   return {
@@ -28,7 +29,7 @@ function nodo(value = '') {
 function preparar() {
   const campos = Object.fromEntries([
     '#sc-modelo', '#sc-cantidad', '#sc-destino', '#sc-extra', '#sc-red1',
-    '#sc-red2', '#sc-cambio-base', '#sc-negocio', '#sc-notas', '#sc-preview',
+    '#sc-red2', '#sc-cambio-base', '#sc-negocio', '#sc-notas', '#sc-preview', '#sc-preview-modelo',
     '#sc-preview-pie', '#sc-consulta', '#sc-aviso'
   ].map(id => [id, nodo()]));
   campos['#sc-modelo'].value = 'tria';
@@ -39,7 +40,21 @@ function preparar() {
   campos['#sc-cambio-base'].value = 'Base del modelo elegido';
 
   const bases = ['Negro', 'Plateado', 'Dorado', 'Blanco'].map((value, i) => ({ value, checked: i === 0 }));
-  const tarjetas = ['tria', 'signa'].map(scTarjeta => ({ dataset: { scTarjeta } }));
+  const tarjetas = ['tria', 'signa'].map(scTarjeta => ({
+    dataset: { scTarjeta },
+    imagen: { src: '', alt: '' },
+    vistas: [],
+    querySelector(selector) { return selector === '.sc-modelo-imagen' ? this.imagen : null; },
+    querySelectorAll(selector) { return selector === '[data-sc-vista]' ? this.vistas : []; }
+  }));
+  tarjetas.forEach((tarjeta, i) => {
+    const nombre = i === 0 ? 'tria' : 'signa';
+    tarjeta.vistas = [nombre, `${nombre}-vista`].map(scVista => ({
+      ...nodo(),
+      dataset: { scVista: `assets/sc-${scVista}.webp`, scAlt: `Vista ${scVista}` },
+      closest() { return tarjeta; }
+    }));
+  });
   const elegir = ['tria', 'signa'].map(scElegir => ({ ...nodo(), dataset: { scElegir } }));
   const raiz = {
     eventos: {},
@@ -48,6 +63,7 @@ function preparar() {
       if (selector === 'input[name="sc-base"]') return bases;
       if (selector === '[data-sc-tarjeta]') return tarjetas;
       if (selector === '[data-sc-elegir]') return elegir;
+      if (selector === '[data-sc-vista]') return tarjetas.flatMap(tarjeta => tarjeta.vistas);
       return [];
     },
     addEventListener(tipo, fn) { this.eventos[tipo] = fn; }
@@ -66,6 +82,11 @@ test('las fichas, las opciones y las fotografías existen en el catálogo', () =
     assert.ok(html.includes(`assets/${archivo}`), `Falta referencia a ${archivo}`);
   }
   assert.ok(html.indexOf('id="sc-personalizados"') < html.indexOf('id="sc-classic"'));
+  assert.ok(html.indexOf('id="sc-config"') < html.indexOf('id="sc-classic"'));
+  assert.ok(html.indexOf('class="sc-propuesta"') > html.indexOf('id="sc-classic"'));
+  assert.doesNotMatch(html, /class="sc-ejemplos"|class="sc-config-media"/);
+  assert.match(estilos, /\.sc-modelo\{display:grid;grid-template-columns:min\(35%,130px\)/);
+  assert.match(estilos, /\.sc-modelo-foto>\.sc-modelo-imagen\{position:absolute/);
   assert.match(html, /id="sc-classic"[\s\S]*?<article class="prod">[\s\S]*?class="prod-compra"/);
   assert.match(html, /S&amp;C \/ 03[\s\S]*?DOCK[\s\S]*?Aún no disponible para compra/);
 });
@@ -94,6 +115,7 @@ test('SIGNA y la personalización actualizan foto, cantidad y opciones del mensa
   raiz.eventos.change();
   assert.equal(campos['#sc-extra'].hidden, true);
   assert.equal(campos['#sc-preview'].src, 'assets/sc-signa-alvia.webp');
+  assert.equal(campos['#sc-preview-modelo'].textContent, 'S&C SIGNA');
   assert.equal(tarjetas[1].dataset.scSeleccionado, 'true');
   assert.match(mensaje(), /Modelo: S&C SIGNA/);
   assert.match(mensaje(), /Cantidad: 12 piezas/);
@@ -123,4 +145,15 @@ test('elegir una ficha también selecciona el modelo del configurador', () => {
   elegir[1].eventos.click();
   assert.equal(campos['#sc-modelo'].value, 'signa');
   assert.match(mensaje(), /S&C SIGNA/);
+});
+
+test('miniaturas cambian solo la imagen del modelo elegido y actualizan accesibilidad', () => {
+  const { tarjetas, campos } = preparar();
+  const [inicio, segunda] = tarjetas[0].vistas;
+  segunda.eventos.click();
+  assert.equal(tarjetas[0].imagen.src, 'assets/sc-tria-vista.webp');
+  assert.equal(tarjetas[0].imagen.alt, 'Vista tria-vista');
+  assert.equal(inicio.atributos['aria-pressed'], 'false');
+  assert.equal(segunda.atributos['aria-pressed'], 'true');
+  assert.equal(campos['#sc-modelo'].value, 'tria');
 });

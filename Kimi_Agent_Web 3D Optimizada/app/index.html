@@ -2531,7 +2531,7 @@ html.js .pc-alt{display:none}
   .aud-form button:disabled::before{color:var(--dim)}
 }
 </style>
-<link rel="stylesheet" href="assets/catalogo.css?v=62856093">
+<link rel="stylesheet" href="assets/catalogo.css?v=43d81039">
 </head>
 <body>
 
@@ -2786,9 +2786,14 @@ html.js .pc-alt{display:none}
           <div class="sc-modelos">
             <article class="sc-modelo sc-modelo--tria" data-sc-tarjeta="tria" data-sc-seleccionado="true">
               <div class="sc-modelo-foto">
-                <img src="assets/sc-tria.webp" width="670" height="712" loading="lazy" decoding="async"
+                <img class="sc-modelo-imagen" src="assets/sc-tria.webp" width="670" height="712" loading="lazy" decoding="async"
                      alt="Presentación de TRIA, exhibidor negro con Google Reviews y botones para Instagram y WhatsApp">
                 <span class="sc-modelo-sello">3 accesos NFC</span>
+              </div>
+              <div class="sc-vistas" role="group" aria-label="Vistas del modelo TRIA">
+                <button type="button" class="sc-vista" aria-label="Ver presentación de TRIA" aria-pressed="true" data-sc-vista="assets/sc-tria.webp" data-sc-alt="Presentación frontal de TRIA con Google Reviews, Instagram y WhatsApp"><img src="assets/sc-tria.webp" width="670" height="712" loading="lazy" decoding="async" alt=""></button>
+                <button type="button" class="sc-vista" aria-label="Ver los NFC instalados de TRIA" aria-pressed="false" data-sc-vista="assets/sc-tria-nfc.webp" data-sc-alt="Parte posterior de TRIA con sus tres NFC instalados"><img src="assets/sc-tria-nfc.webp" width="900" height="1200" loading="lazy" decoding="async" alt=""></button>
+                <button type="button" class="sc-vista" aria-label="Ver el perfil de TRIA" aria-pressed="false" data-sc-vista="assets/sc-tria-perfil.webp" data-sc-alt="Vista lateral real del exhibidor TRIA impreso en 3D"><img src="assets/sc-tria-perfil.webp" width="900" height="1200" loading="lazy" decoding="async" alt=""></button>
               </div>
               <div class="sc-modelo-cuerpo">
                 <span class="sc-modelo-num">S&amp;C / 01</span>
@@ -2801,9 +2806,14 @@ html.js .pc-alt{display:none}
 
             <article class="sc-modelo" data-sc-tarjeta="signa" data-sc-seleccionado="false">
               <div class="sc-modelo-foto">
-                <img src="assets/sc-signa-alvia.webp" width="900" height="1200" loading="lazy" decoding="async"
+                <img class="sc-modelo-imagen" src="assets/sc-signa-alvia.webp" width="900" height="1200" loading="lazy" decoding="async"
                      alt="SIGNA: exhibidor blanco con el logotipo personalizado de ÁLVIA, tecnología NFC y código QR">
                 <span class="sc-modelo-sello">Tu identidad</span>
+              </div>
+              <div class="sc-vistas" role="group" aria-label="Ejemplos reales del modelo SIGNA">
+                <button type="button" class="sc-vista" aria-label="Ver exhibidor SIGNA de ÁLVIA" aria-pressed="true" data-sc-vista="assets/sc-signa-alvia.webp" data-sc-alt="SIGNA personalizado en blanco para ÁLVIA"><img src="assets/sc-signa-alvia.webp" width="900" height="1200" loading="lazy" decoding="async" alt=""></button>
+                <button type="button" class="sc-vista" aria-label="Ver exhibidor SIGNA de 3241 Seminuevos" aria-pressed="false" data-sc-vista="assets/sc-signa-3241.webp" data-sc-alt="SIGNA personalizado en negro y rojo para 3241 Seminuevos"><img src="assets/sc-signa-3241.webp" width="900" height="1200" loading="lazy" decoding="async" alt=""></button>
+                <button type="button" class="sc-vista" aria-label="Ver exhibidor SIGNA de DENTIVA" aria-pressed="false" data-sc-vista="assets/sc-signa-dentiva.webp" data-sc-alt="SIGNA personalizado en blanco y dorado para DENTIVA"><img src="assets/sc-signa-dentiva.webp" width="900" height="1200" loading="lazy" decoding="async" alt=""></button>
               </div>
               <div class="sc-modelo-cuerpo">
                 <span class="sc-modelo-num">S&amp;C / 02</span>
@@ -2829,25 +2839,15 @@ html.js .pc-alt{display:none}
             </article>
           </div>
 
-          <aside class="sc-propuesta">
-            <div>
-              <span class="sc-eyebrow">Fabricación a tu medida</span>
-              <h4>¿Tienes una idea diferente?</h4>
-              <p>Podemos revisar tu propuesta, referencias o modelo 3D para fabricar un exhibidor especial. Te confirmamos viabilidad, precio y plazo antes de producirlo.</p>
-            </div>
-            <a href="#sc-config">Cuéntanos tu propuesta &#8599;</a>
-          </aside>
-
           <section class="sc-config" id="sc-config" aria-labelledby="sc-config-titulo">
-            <div class="sc-config-media">
-              <img id="sc-preview" src="assets/sc-tria.webp" width="670" height="712" loading="lazy" decoding="async"
-                   alt="Presentación del exhibidor TRIA con tres puntos NFC y código QR">
-              <p id="sc-preview-pie">TRIA: render de presentación. Las fotos de la pieza impresa están en la galería.</p>
-            </div>
             <div class="sc-config-cuerpo">
               <span class="sc-eyebrow">Personaliza tu exhibidor</span>
               <h4 id="sc-config-titulo">Diseñado para tu negocio.</h4>
               <p class="sc-config-intro">Configura tu pedido desde una pieza. El logo y los archivos de referencia los enviarás por WhatsApp al terminar.</p>
+              <div class="sc-config-resumen" aria-live="polite">
+                <img id="sc-preview" src="assets/sc-tria.webp" width="670" height="712" loading="lazy" decoding="async" alt="Presentación del exhibidor TRIA con tres puntos NFC y código QR">
+                <div><span>Tu selección</span><strong id="sc-preview-modelo">S&amp;C TRIA</strong><p id="sc-preview-pie">Tres puntos NFC independientes y un código QR.</p></div>
+              </div>
               <div class="sc-campos" role="group" aria-label="Opciones del exhibidor personalizado">
                 <div class="sc-campo">
                   <label for="sc-modelo">Modelo</label>
@@ -2913,12 +2913,6 @@ html.js .pc-alt{display:none}
             </div>
           </section>
 
-          <div class="sc-ejemplos" aria-label="Fotografías de fabricación y personalización">
-            <figure><img src="assets/sc-tria-nfc.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Parte posterior de tres exhibidores TRIA impresos con sus NFC instalados"><figcaption>TRIA · NFC instalados</figcaption></figure>
-            <figure><img src="assets/sc-tria-perfil.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Vista lateral del exhibidor TRIA fabricado en impresión 3D"><figcaption>TRIA · Pieza real</figcaption></figure>
-            <figure><img src="assets/sc-signa-3241.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Exhibidor SIGNA negro con logotipo 3241 Seminuevos y detalles rojos"><figcaption>SIGNA · 3241 Seminuevos</figcaption></figure>
-            <figure><img src="assets/sc-signa-dentiva.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Exhibidor SIGNA blanco con identidad dorada de DENTIVA"><figcaption>SIGNA · DENTIVA</figcaption></figure>
-          </div>
         </section>
 
         <section class="sc-classic" id="sc-classic" aria-labelledby="sc-classic-titulo">
@@ -3053,6 +3047,14 @@ html.js .pc-alt{display:none}
         </div>
       </article>
         </section>
+        <aside class="sc-propuesta">
+          <div>
+            <span class="sc-eyebrow">Diseños especiales / fabricación propia</span>
+            <h4>¿Imaginas algo distinto?</h4>
+            <p>También fabricamos a medida. Cuéntanos tu idea o comparte tus referencias y revisamos juntos su viabilidad.</p>
+          </div>
+          <a href="https://wa.me/524423697248?text=Hola.%20Tengo%20una%20idea%20para%20un%20exhibidor%20NFC%20%2B%20QR%20personalizado.%20Quiero%20compartirles%20mi%20dise%C3%B1o%20o%20referencias%20para%20cotizarlo." target="_blank" rel="noopener noreferrer">Proponer un diseño &#8599;</a>
+        </aside>
       </div>
     </div>
 
@@ -6200,6 +6202,6 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
-<script src="assets/catalogo.js?v=23ef9ab3"></script>
+<script src="assets/catalogo.js?v=0b25f9e6"></script>
 </body>
 </html>

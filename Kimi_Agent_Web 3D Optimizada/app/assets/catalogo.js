@@ -17,23 +17,24 @@
   const negocio = raiz.querySelector('#sc-negocio');
   const notas = raiz.querySelector('#sc-notas');
   const imagen = raiz.querySelector('#sc-preview');
+  const nombrePreview = raiz.querySelector('#sc-preview-modelo');
   const pie = raiz.querySelector('#sc-preview-pie');
   const enlace = raiz.querySelector('#sc-consulta');
   const aviso = raiz.querySelector('#sc-aviso');
-  if (![modelo,cantidad,destino,extra,red1,red2,cambioBase,negocio,notas,imagen,pie,enlace,aviso].every(Boolean)) return;
+  if (![modelo,cantidad,destino,extra,red1,red2,cambioBase,negocio,notas,imagen,nombrePreview,pie,enlace,aviso].every(Boolean)) return;
 
   const catalogo = {
     tria: {
       titulo:'TRIA',
       foto:'assets/sc-tria.webp',
       alt:'Presentación del exhibidor TRIA con tres puntos NFC y código QR',
-      pie:'TRIA: render de presentación. Las fotos de la pieza impresa están en la galería.'
+      pie:'Tres accesos NFC independientes y un código QR.'
     },
     signa: {
       titulo:'SIGNA',
       foto:'assets/sc-signa-alvia.webp',
       alt:'Exhibidor SIGNA blanco personalizado para ÁLVIA',
-      pie:'SIGNA: fotografía de un exhibidor fabricado y personalizado para ÁLVIA.'
+      pie:'Un acceso NFC y código QR con la identidad de tu negocio.'
     }
   };
 
@@ -45,6 +46,7 @@
     extra.hidden = !esTria;
     imagen.src = elegido.foto;
     imagen.alt = elegido.alt;
+    nombrePreview.textContent = `S&C ${elegido.titulo}`;
     pie.textContent = elegido.pie;
 
     raiz.querySelectorAll('[data-sc-tarjeta]').forEach(t => {
@@ -88,6 +90,20 @@
         modelo.value = a.dataset.scElegir;
         actualizar();
       }
+    });
+  });
+
+  // Miniaturas dentro de cada modelo: una sola foto visible, sin galería gigante.
+  raiz.querySelectorAll('[data-sc-vista]').forEach(boton => {
+    boton.addEventListener('click', () => {
+      const tarjeta = boton.closest('[data-sc-tarjeta]');
+      const foto = tarjeta?.querySelector('.sc-modelo-imagen');
+      if (!foto) return;
+      foto.src = boton.dataset.scVista;
+      foto.alt = boton.dataset.scAlt;
+      tarjeta.querySelectorAll('[data-sc-vista]').forEach(b => {
+        b.setAttribute('aria-pressed', String(b === boton));
+      });
     });
   });
 
