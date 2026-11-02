@@ -81,7 +81,7 @@
 .sc-propuesta p{font-size:13px;color:var(--muted);line-height:1.65;max-width:65ch}
 .sc-propuesta a{flex:none;color:var(--bronze-hi);text-decoration:none;font-size:10px;
   text-transform:uppercase;letter-spacing:2px;border-bottom:1px solid var(--bronze);padding:8px 0}
-.sc-config{margin-top:20px;display:block;
+.sc-config{margin-top:20px;padding:0;display:block;
   border:1px solid var(--line-soft);background:var(--bg2);scroll-margin-top:125px}
 .sc-config-cuerpo{padding:clamp(16px,2.5vw,28px);max-width:900px;margin:auto}
 .sc-config-cabecera{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:17px}

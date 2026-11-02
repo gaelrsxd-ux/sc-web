@@ -50,12 +50,17 @@
 
     const partes = [
       'Hola, quiero cotizar exhibidores personalizados de S&C Solutions.',
-      `Modelo: S&C ${nombre}`,
-      `Total: ${suma} ${suma === 1 ? 'pieza' : 'piezas'}`,
-      'Colores y cantidades:',
-      ...activos.map(color => `- ${color.nombre}: ${color.n}`)
+      '',
+      `*Modelo:* S&C ${nombre}`,
+      `*Total:* ${suma} ${suma === 1 ? 'pieza' : 'piezas'}`,
+      '',
+      '*Colores y cantidades:*',
+      ...activos.map(color => `• ${color.nombre}: ${color.n}`),
+      '',
+      'Les enviaré mi logotipo por este chat para definir juntos el diseño, los enlaces NFC/QR y los acabados.',
+      '',
+      '¿Me comparten el precio y tiempo de entrega?'
     ];
-    partes.push('Quiero enviarles el logotipo de mi marca por este chat y definir con ustedes el diseño, los enlaces NFC/QR y los acabados. ¿Me comparten precio y tiempo de entrega?');
 
     enlace.href = 'https://wa.me/524423697248?text=' + encodeURIComponent(partes.join('\n'));
     enlace.removeAttribute('aria-disabled');

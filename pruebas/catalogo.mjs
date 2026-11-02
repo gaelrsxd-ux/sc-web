@@ -88,6 +88,8 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
   assert.match(html, /En WhatsApp nos envías tu logotipo y definimos juntos el diseño, enlaces NFC\/QR, precio y entrega/);
   assert.match(estilos, /\.sc-modelo-cta::before\{content:"";position:absolute;inset:0;z-index:1/);
   assert.match(estilos, /\.sc-vistas\{[^}]*z-index:2/);
+  assert.match(estilos, /\.sc-config\{[^}]*padding:0/,
+    'El configurador debe anular el padding vertical de la regla global section');
   assert.match(html, /id="sc-classic"[\s\S]*?<article class="prod">[\s\S]*?class="prod-compra"/);
   assert.match(html, /S&amp;C \/ 03[\s\S]*?DOCK[\s\S]*?Aún no disponible para compra/);
 });
@@ -95,11 +97,14 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
 test('TRIA genera WhatsApp directo con modelo y cantidad inicial y pide el logotipo', () => {
   const { campos, mensaje } = preparar();
   assert.match(campos['#sc-consulta'].href, /^https:\/\/wa\.me\/524423697248\?text=/);
-  assert.match(mensaje(), /Modelo: S&C TRIA/);
-  assert.match(mensaje(), /Total: 1 pieza/);
-  assert.match(mensaje(), /- Negro: 1/);
-  assert.match(mensaje(), /logotipo de mi marca por este chat/);
-  assert.match(mensaje(), /definir con ustedes el diseño, los enlaces NFC\/QR y los acabados/);
+  assert.match(mensaje(), /\*Modelo:\* S&C TRIA/);
+  assert.match(mensaje(), /\*Total:\* 1 pieza/);
+  assert.match(mensaje(), /• Negro: 1/);
+  assert.match(mensaje(), /mi logotipo por este chat/);
+  assert.match(mensaje(), /definir juntos el diseño, los enlaces NFC\/QR y los acabados/);
+  assert.match(mensaje(), /S&C Solutions\.\n\n\*Modelo:\* S&C TRIA\n\*Total:\* 1 pieza\n\n\*Colores y cantidades:\*\n• Negro: 1\n\n/,
+    'El mensaje debe tener espacios entre presentación, resumen, colores y conversación');
+  assert.match(mensaje(), /acabados\.\n\n¿Me comparten el precio y tiempo de entrega\?/);
   assert.doesNotMatch(mensaje(), /Destino principal|Acceso NFC adicional|Negocio:|Indicaciones:/);
   assert.equal(campos['#sc-resumen'].textContent, 'TRIA · 1 negro');
   assert.equal(campos['#sc-total'].textContent, '1 pieza');
@@ -115,9 +120,9 @@ test('permite múltiples cantidades y colores en un único mensaje con resumen',
   raiz.eventos.input();
   assert.equal(campos['#sc-total'].textContent, '8 piezas');
   assert.equal(campos['#sc-resumen'].textContent, 'TRIA · 1 negro · 2 plateados · 5 dorados');
-  assert.match(mensaje(), /Total: 8 piezas/);
-  assert.match(mensaje(), /- Negro: 1\n- Plateado: 2\n- Dorado: 5/);
-  assert.doesNotMatch(mensaje(), /- Blanco:/);
+  assert.match(mensaje(), /\*Total:\* 8 piezas/);
+  assert.match(mensaje(), /• Negro: 1\n• Plateado: 2\n• Dorado: 5/);
+  assert.doesNotMatch(mensaje(), /• Blanco:/);
 });
 
 test('SIGNA cotiza únicamente el modelo y los colores y lleva el diseño a WhatsApp', () => {
@@ -128,10 +133,10 @@ test('SIGNA cotiza únicamente el modelo y los colores y lleva el diseño a What
   raiz.eventos.change();
   assert.equal(tarjetas[1].dataset.scSeleccionado, 'true');
   assert.equal(campos['#sc-resumen'].textContent, 'SIGNA · 12 dorados');
-  assert.match(mensaje(), /Modelo: S&C SIGNA/);
-  assert.match(mensaje(), /Total: 12 piezas/);
-  assert.match(mensaje(), /- Dorado: 12/);
-  assert.match(mensaje(), /logotipo de mi marca/);
+  assert.match(mensaje(), /\*Modelo:\* S&C SIGNA/);
+  assert.match(mensaje(), /\*Total:\* 12 piezas/);
+  assert.match(mensaje(), /• Dorado: 12/);
+  assert.match(mensaje(), /mi logotipo por este chat/);
   assert.doesNotMatch(mensaje(), /Destino principal|Acceso NFC adicional|Negocio:|Indicaciones:/);
 });
 
@@ -163,7 +168,7 @@ test('los controles de más y menos funcionan y nunca generan negativos', () => 
   masDorado.eventos.click();
   masDorado.eventos.click();
   assert.equal(campos['#sc-dorado'].value, '2');
-  assert.match(mensaje(), /- Dorado: 2/);
+  assert.match(mensaje(), /• Dorado: 2/);
 });
 
 test('tocar la ficha selecciona el modelo y deja disponible la cotización', () => {
