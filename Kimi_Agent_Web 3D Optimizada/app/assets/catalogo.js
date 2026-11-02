@@ -6,6 +6,37 @@
   const raiz = document.getElementById('sc-catalogo');
   if (!raiz) return;
 
+  // El visitante elige una línea: la otra no alarga la página ni distrae.
+  const personalizados = raiz.querySelector('#sc-personalizados');
+  const classic = raiz.querySelector('#sc-classic');
+  const accesos = [...raiz.querySelectorAll('.sc-accesos a[href^="#sc-"]')];
+  if (personalizados && classic && accesos.length === 2) {
+    function mostrarLinea(linea) {
+      const esClassic = linea === 'classic';
+      personalizados.hidden = esClassic;
+      classic.hidden = !esClassic;
+      personalizados.dataset.scActivo = String(!esClassic);
+      classic.dataset.scActivo = String(esClassic);
+      accesos.forEach((acceso, i) => {
+        if ((i === 1) === esClassic) acceso.setAttribute('aria-current', 'page');
+        else acceso.removeAttribute('aria-current');
+      });
+    }
+    const sincronizarHash = () => {
+      if (location.hash === '#sc-classic') mostrarLinea('classic');
+      else if (location.hash === '#sc-personalizados' || location.hash === '#sc-config') {
+        mostrarLinea('personalizados');
+      }
+    };
+    accesos[0].addEventListener('click', () => mostrarLinea('personalizados'));
+    accesos[1].addEventListener('click', () => mostrarLinea('classic'));
+    mostrarLinea(location.hash === '#sc-classic' ? 'classic' : 'personalizados');
+    addEventListener('hashchange', sincronizarHash);
+    if (location.hash === '#sc-classic') {
+      requestAnimationFrame(() => classic.scrollIntoView({ block: 'start' }));
+    }
+  }
+
   const modelo = raiz.querySelector('#sc-modelo');
   const colores = [
     { nombre: 'Negro', id: 'sc-negro', input: raiz.querySelector('#sc-negro') },

@@ -16,12 +16,15 @@
   min-height:44px;padding:10px 15px;border:1px solid var(--line);font-size:10px;
   letter-spacing:1.8px;text-transform:uppercase;color:var(--bronze-hi);
   text-decoration:none;transition:background .2s,border-color .2s}
-.sc-accesos a:first-child{background:rgba(200,169,106,.09)}
+.sc-accesos a[aria-current="page"]{background:rgba(200,169,106,.09);border-color:var(--bronze)}
 .sc-accesos a:hover{background:rgba(200,169,106,.15);border-color:var(--bronze)}
 .sc-accesos a:focus-visible,.sc-catalogo a:focus-visible,.sc-catalogo button:focus-visible,
 .sc-catalogo select:focus-visible,.sc-catalogo input:focus-visible,.sc-catalogo textarea:focus-visible{
   outline:2px solid var(--bronze-hi);outline-offset:3px}
-.sc-bloque{scroll-margin-top:125px}
+.sc-bloque{padding:0;scroll-margin-top:125px}
+/* Sin JS las dos líneas siguen visibles; con JS se muestra solo la elegida. */
+.js #sc-personalizados:not([data-sc-activo="true"]),
+.js #sc-classic:not([data-sc-activo="true"]){display:none!important}
 .sc-modelos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .sc-modelo{display:flex;flex-direction:column;min-width:0;position:relative;
   border:1px solid var(--line-soft);background:var(--bg2);overflow:hidden;
@@ -133,7 +136,7 @@
   text-align:center;text-transform:uppercase;text-decoration:none;font-weight:600}
 .sc-config-pie a::after{content:"\2197";font-size:18px}
 .sc-config-pie a[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
-.sc-classic{margin-top:35px;padding-top:26px;border-top:1px solid var(--line);scroll-margin-top:125px}
+.sc-classic{margin-top:0;padding:0;border-top:0;scroll-margin-top:125px}
 .sc-classic h3{font-size:clamp(28px,4vw,47px);line-height:1.08;margin:12px 0 9px;color:var(--ink)}
 .sc-classic h3 em{color:var(--bronze-hi);font-weight:500}
 .sc-classic>p{color:var(--muted);font-size:14px;line-height:1.7;max-width:60ch}
@@ -187,6 +190,6 @@
   .sc-propuesta{flex-direction:column;align-items:flex-start;gap:10px;padding:17px}
   .sc-propuesta h4{font-size:23px}
   .sc-propuesta p{font-size:12px}
-  .sc-classic{margin-top:31px;padding-top:23px}
+  .sc-classic{margin-top:0;padding:0}
 }
 @media(prefers-reduced-motion:reduce){.sc-modelo,.sc-accesos a{transition:none}}

@@ -26,7 +26,7 @@ function nodo(value = '') {
   };
 }
 
-function preparar() {
+function preparar({ hash = '' } = {}) {
   const campos = Object.fromEntries([
     '#sc-modelo', '#sc-resumen', '#sc-total', '#sc-consulta', '#sc-aviso',
     '#sc-negro', '#sc-plateado', '#sc-dorado', '#sc-blanco'
@@ -34,6 +34,12 @@ function preparar() {
   campos['#sc-modelo'].value = 'tria';
   for (const id of ['#sc-negro', '#sc-plateado', '#sc-dorado', '#sc-blanco']) campos[id].value = '0';
   campos['#sc-negro'].value = '1';
+
+  const paneles = Object.fromEntries(['#sc-personalizados', '#sc-classic']
+    .map(id => [id, { ...nodo(), scrollIntoView() { this.desplazado = true; } }]));
+  const accesos = ['#sc-personalizados', '#sc-classic'].map(href => ({ ...nodo(), href }));
+  const location = { hash };
+  const eventosVentana = {};
 
   const tarjetas = ['tria', 'signa'].map(scTarjeta => ({
     dataset: { scTarjeta },
@@ -55,19 +61,25 @@ function preparar() {
     [-1, 1].map(scPaso => ({ ...nodo(), dataset: { scPara, scPaso: String(scPaso) } })));
   const raiz = {
     eventos: {},
-    querySelector(id) { return campos[id] || null; },
+    querySelector(id) { return campos[id] || paneles[id] || null; },
     querySelectorAll(selector) {
       if (selector === '[data-sc-tarjeta]') return tarjetas;
       if (selector === '[data-sc-elegir]') return elegir;
       if (selector === '[data-sc-paso]') return pasos;
       if (selector === '[data-sc-vista]') return tarjetas.flatMap(tarjeta => tarjeta.vistas);
+      if (selector === '.sc-accesos a[href^="#sc-"]') return accesos;
       return [];
     },
     addEventListener(tipo, fn) { this.eventos[tipo] = fn; }
   };
-  runInNewContext(codigo, { document: { getElementById: id => id === 'sc-catalogo' ? raiz : null } });
+  runInNewContext(codigo, {
+    document: { getElementById: id => id === 'sc-catalogo' ? raiz : null },
+    location,
+    addEventListener(tipo, fn) { eventosVentana[tipo] = fn; },
+    requestAnimationFrame(fn) { fn(); }
+  });
   const mensaje = () => decodeURIComponent(campos['#sc-consulta'].href.split('?text=')[1] || '');
-  return { campos, tarjetas, elegir, pasos, raiz, mensaje };
+  return { campos, tarjetas, elegir, pasos, raiz, mensaje, paneles, accesos, location, eventosVentana };
 }
 
 test('fichas y controles compactos existen sin alterar las placas clásicas', () => {
@@ -90,8 +102,28 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
   assert.match(estilos, /\.sc-vistas\{[^}]*z-index:2/);
   assert.match(estilos, /\.sc-config\{[^}]*padding:0/,
     'El configurador debe anular el padding vertical de la regla global section');
+  assert.match(estilos, /\.js #sc-classic:not\(\[data-sc-activo="true"\]\)/);
+  assert.match(estilos, /\.sc-bloque\{[^}]*padding:0/);
   assert.match(html, /id="sc-classic"[\s\S]*?<article class="prod">[\s\S]*?class="prod-compra"/);
   assert.match(html, /S&amp;C \/ 03[\s\S]*?DOCK[\s\S]*?Aún no disponible para compra/);
+});
+
+test('CLASSIC solo aparece al seleccionar la línea y el hash directo restaura la vista', () => {
+  const { paneles, accesos, location, eventosVentana } = preparar();
+  assert.equal(paneles['#sc-classic'].hidden, true);
+  assert.equal(paneles['#sc-personalizados'].hidden, false);
+  assert.equal(accesos[0].atributos['aria-current'], 'page');
+  accesos[1].eventos.click();
+  assert.equal(paneles['#sc-classic'].hidden, false);
+  assert.equal(paneles['#sc-personalizados'].hidden, true);
+  assert.equal(accesos[1].atributos['aria-current'], 'page');
+  location.hash = '#sc-config';
+  eventosVentana.hashchange();
+  assert.equal(paneles['#sc-classic'].hidden, true);
+  assert.equal(paneles['#sc-personalizados'].hidden, false);
+  const directo = preparar({ hash: '#sc-classic' });
+  assert.equal(directo.paneles['#sc-classic'].hidden, false);
+  assert.equal(directo.paneles['#sc-classic'].desplazado, true);
 });
 
 test('TRIA genera WhatsApp directo con modelo y cantidad inicial y pide el logotipo', () => {

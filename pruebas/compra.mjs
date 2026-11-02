@@ -81,6 +81,11 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pg.waitForTimeout(400);
 
   ok(await pg.locator('#soluciones').count() === 1, 'la portada tiene UNA sección de soluciones');
+  ok(!(await pg.locator('#sc-classic').isVisible()),
+     'la línea clásica no aparece debajo del configurador sin seleccionarla');
+  await pg.locator('.sc-accesos a[href="#sc-classic"]').click();
+  ok(await pg.locator('#sc-classic').isVisible() && !(await pg.locator('#sc-personalizados').isVisible()),
+     'al elegir CLASSIC aparece esa línea y se oculta Personalizados');
 
   /* ---- EL CONTADOR, EN LA PORTADA ----
      La cantidad se elige DONDE se ve el producto, que es donde nace la
@@ -543,12 +548,12 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(!destinos.some(d => /diagn[óo]stico|auditar|auditad/i.test(d.titulo + d.pie)),
      'sin jerga: no dice «diagnóstico» ni «auditar» en ningún destino');
 
-  /* Los cuatro servicios, cada uno al suyo. */
+  /* Los tres servicios vigentes, cada uno al suyo. */
   const svcs = await m.$$eval('#menu .men-s a', as => as.map(a => a.getAttribute('href')));
-  ok(svcs.length === 4, 'y los cuatro servicios por separado');
+  ok(svcs.length === 3, 'y los tres servicios por separado');
   const perdidos = [];
   for (const h of svcs) if (!(await m.locator(h).count())) perdidos.push(h);
-  ok(perdidos.length === 0, 'los cuatro tienen destino' + (perdidos.length ? ': ROTOS ' + perdidos : ''));
+  ok(perdidos.length === 0, 'los tres tienen destino' + (perdidos.length ? ': ROTOS ' + perdidos : ''));
 
   /* Escape cierra y devuelve el foco: sin eso quien navega con teclado cierra
      el menú y su foco se queda dentro de un panel invisible. */
@@ -563,11 +568,11 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      pantalla a la derecha y el menú habría mentido. */
   await boton.click();
   await m.waitForTimeout(300);
-  await m.locator('#menu .men-s a[href="#svc-atencion"]').click();
+  await m.locator('#menu .men-s a[href="#svc-tareas"]').click();
   await m.waitForTimeout(1200);
   ok(!(await panel.isVisible()), 'al elegir un destino el menú se aparta');
   ok(await m.locator('#servicios').isVisible(), 'y abre la pestaña donde vive ese servicio');
-  const dentro = await m.locator('#svc-atencion').evaluate(e => {
+  const dentro = await m.locator('#svc-tareas').evaluate(e => {
     const r = e.getBoundingClientRect();
     return r.left > -40 && r.right < innerWidth + 40;
   });
@@ -924,7 +929,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   const ve = async id => pg.locator('#' + id).isVisible();
   ok(await ve('productos') && await ve('servicios') && await ve('clientes'),
      'sin JS los tres paneles de Soluciones se ven a la vez');
-  ok(await pg.locator('#servicios .svc').count() === 4, 'y están los cuatro servicios');
+  ok(await pg.locator('#servicios .svc').count() === 3, 'y están los tres servicios vigentes');
   ok(await pg.locator('#clientes .insta-g figure').count() === 5, 'y las cinco instalaciones');
   ok((await pg.locator('[data-pc-total]').textContent()).trim() !== '',
      'y el precio de una placa se lee: es HTML, no lo escribe ningún script');

@@ -1617,7 +1617,10 @@ function heroPlaca() {
 }
 /* Sólo las familias que el hero enseña. «auto» no está arriba a propósito: es
    la menos autoexplicativa en dos palabras y tiene su tarjeta abajo. */
-const HERO_FAMILIAS = ['google', 'web', 'ia'];
+// La oferta de agente de WhatsApp ya no se anuncia en la portada.
+// Sus páginas históricas y lógica de pedidos se conservan para no romper enlaces previos.
+const PORTADA_FAMILIAS = ['web', 'google', 'auto'];
+const HERO_FAMILIAS = ['google', 'web'];
 
 /* ═══════════ EL PRECIO DENTRO DE UNA GUÍA ═══════════
    Las guías responden preguntas y para responderlas citan cifras. Escritas a
@@ -1777,7 +1780,7 @@ const BLOQUES = [
   /* Una tarjeta por familia en la portada, cada una con su cifra. El atributo
      lleva el nombre de la familia para que cada patrón encuentre la suya y
      sólo la suya. */
-  ...Object.keys(FAMILIAS).map(f => ({
+  ...PORTADA_FAMILIAS.map(f => ({
     nombre: `precio de «${f}» en la portada`,
     re: new RegExp(`<span data-svc-desde="${f}">[\\s\\S]*?</span>`),
     pinta: () => desdeServicio(f),
