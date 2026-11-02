@@ -18,7 +18,7 @@
       personalizados.dataset.scActivo = String(!esClassic);
       classic.dataset.scActivo = String(esClassic);
       accesos.forEach((acceso, i) => {
-        if ((i === 1) === esClassic) acceso.setAttribute('aria-current', 'page');
+        if ((i === 0) === esClassic) acceso.setAttribute('aria-current', 'page');
         else acceso.removeAttribute('aria-current');
       });
     }
@@ -28,9 +28,10 @@
         mostrarLinea('personalizados');
       }
     };
-    accesos[0].addEventListener('click', () => mostrarLinea('personalizados'));
-    accesos[1].addEventListener('click', () => mostrarLinea('classic'));
-    mostrarLinea(location.hash === '#sc-classic' ? 'classic' : 'personalizados');
+    accesos[0].addEventListener('click', () => mostrarLinea('classic'));
+    accesos[1].addEventListener('click', () => mostrarLinea('personalizados'));
+    mostrarLinea(location.hash === '#sc-personalizados' || location.hash === '#sc-config'
+      ? 'personalizados' : 'classic');
     addEventListener('hashchange', sincronizarHash);
     if (location.hash === '#sc-classic') {
       requestAnimationFrame(() => classic.scrollIntoView({ block: 'start' }));

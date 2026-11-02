@@ -541,22 +541,17 @@ section::before{position:absolute;inset:0;pointer-events:none;z-index:0}
 h2.title{font-size:clamp(38px,5.8vw,88px);line-height:1.08;margin-top:24px;font-weight:600}
 h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
 .lead{color:var(--muted);font-size:clamp(15px,1.4vw,17px);line-height:1.8;max-width:540px}
-.rv{opacity:0;transform:translateY(38px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv{opacity:1;transform:none;transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
+.rv.reveal-pending{opacity:0;transform:translateY(22px)}
 .rv.in{opacity:1;transform:none}
-/* Segunda pasada, al volver a subir. La entrada de bajada se ve una sola vez y
-   quien se distrajo ya no la recupera; ésta le da otra oportunidad.
-   Va deliberadamente más floja: la mitad de recorrido, en sentido contrario y
-   casi el doble de rápida. Repetir el mismo golpe cada vez que alguien sube a
-   releer un párrafo se siente como si la página se recargara sola. */
-.rv.sube:not(.in){transform:translateY(-16px)}
+/* Al subir, el regreso es más sutil; sin JS todo permanece visible. */
+.rv.reveal-pending.sube{transform:translateY(-12px)}
 .rv.sube{transition-duration:.55s}
-.sube:not(.in) .w{transform:translateY(-.3em)}
+.reveal-pending.sube .w{transform:translateY(-.25em)}
 .sube .w{transition-duration:.5s}
-/* zoom de secciones: entran ampliándose desde lejos (solo transform/opacity, GPU) */
-/* Antes entraba con scale(.8) y 70px de salto: un zoom tan marcado es el sello
-   de las plantillas, y además dejaba el fondo desnudo a la vista mientras el
-   contenido llegaba. Ahora sube 20px con un fundido breve. */
-.zoomsec{opacity:0;transform:translate3d(0,20px,0);transition:opacity .75s ease,transform .75s cubic-bezier(.16,.8,.24,1);will-change:transform,opacity}
+/* La sección nunca desaparece: se insinúa el movimiento sin vaciar la página. */
+.zoomsec{opacity:1;transform:none;transition:opacity .65s ease,transform .65s cubic-bezier(.16,.8,.24,1)}
+.zoomsec.zoom-pending{opacity:.92;transform:translate3d(0,12px,0)}
 /* Terminada la entrada, la sección suelta su capa de GPU. will-change es una
    promesa de que algo va a moverse, y el navegador reserva memoria de vídeo
    para cumplirla; dejarlo puesto para siempre es el uso que la especificación
@@ -584,7 +579,8 @@ h2.title em{font-style:italic;color:var(--bronze-hi);font-weight:500}
    pulsar un ancla lejano, las alturas reales iban sustituyendo a la estimación
    durante el trayecto, el destino se movía y el navegador abortaba el scroll
    suave. Con el margen de rendimiento que hay (300+ fps) no compensa. */
-.w{display:inline-block;opacity:0;transform:translateY(.5em);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.w{display:inline-block;opacity:1;transform:none;transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.reveal-pending .w{opacity:0;transform:translateY(.4em)}
 .in .w,.w.in{opacity:1;transform:none}
 
 /* ---------- HERO ---------- */
@@ -1538,9 +1534,10 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   /* La segunda variante (.sube) lleva una clase más y por eso ganaba a esta
      excepción: las fichas se quedaban desplazadas 16 px dentro de la baraja.
      Se nombra aquí explícitamente para que la neutralización siga mandando. */
-  .baraja>.rv,.baraja>.rv.sube:not(.in){opacity:1;transform:none;transition:none}
-  .baraja.bar-listo{opacity:0;transform:translateY(26px);
-    transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+  .baraja>.rv,.baraja>.rv.reveal-pending{opacity:1;transform:none;transition:none}
+  .baraja.bar-listo{opacity:1;transform:none;
+    transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
+  .baraja.bar-listo.bar-pending{opacity:0;transform:translateY(16px)}
   .baraja.bar-listo.entra{opacity:1;transform:none}
 
   /* La ficha centrada recibe el mismo trato que la que está bajo el puntero en
@@ -1891,8 +1888,9 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
    un gesto horizontal, asi que entrar desde la derecha es de donde el dedo las
    trae; y la prueba comprueba que las cuatro comparten renglon midiendo el top
    de cada figura, que un translateY movería. */
-.insta-g.desliza figure{opacity:0;transform:translateX(28px);
+.insta-g.desliza figure{opacity:1;transform:none;
   transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+.insta-g.desliza figure.foto-pendiente{opacity:.3;transform:translateX(14px)}
 .insta-g.desliza figure.dentro{opacity:1;transform:none}
 
 /* -------------------------------- EL CONTADOR -------------------------------
@@ -2431,7 +2429,7 @@ html.js .pc-alt{display:none}
   .aud-form button:disabled::before{color:var(--dim)}
 }
 </style>
-<link rel="stylesheet" href="assets/catalogo.css?v=6004573f">
+<link rel="stylesheet" href="assets/catalogo.css?v=9091e0d2">
 </head>
 <body>
 
@@ -2499,7 +2497,7 @@ html.js .pc-alt{display:none}
     <a class="men-l" href="#top"><span class="men-n">00</span>Inicio
       <small>La portada, arriba del todo</small></a>
     <a class="men-l" href="#productos"><span class="men-n">01</span>Exhibidores NFC + QR
-      <small>Personalizados, cl&#225;sicos y mayoreo</small></a>
+      <small>Cl&#225;sicos, mayoreo y personalizados</small></a>
     <a class="men-l" href="#servicios"><span class="men-n">02</span>Servicios digitales
       <small>P&#225;ginas web y Perfil de Empresa en Google</small></a>
     <a class="men-l" href="#clientes"><span class="men-n">03</span>Nuestros clientes
@@ -2507,8 +2505,8 @@ html.js .pc-alt{display:none}
 
     <p class="men-t">Ir a un servicio</p>
     <div class="men-s">
-      <a href="#svc-web">P&#225;gina web</a>
       <a href="#svc-google">Perfil de Empresa en Google</a>
+      <a href="#svc-web">P&#225;gina web</a>
     </div>
     <a class="men-l" href="#diagnostico"><span class="men-n">04</span>Revisa tu p&#225;gina
       <small>Te decimos gratis qu&#233; le falta</small></a>
@@ -2673,11 +2671,11 @@ html.js .pc-alt{display:none}
         </header>
 
         <nav class="sc-accesos" aria-label="Explorar exhibidores">
-          <a href="#sc-personalizados" aria-current="page">01 / Personalizados</a>
-          <a href="#sc-classic">02 / Clásicas y mayoreo</a>
+          <a href="#sc-classic" aria-current="page">01 / Clásicas y mayoreo</a>
+          <a href="#sc-personalizados">02 / Personalizados</a>
         </nav>
 
-        <section class="sc-bloque" id="sc-personalizados" aria-label="Exhibidores personalizados" data-sc-activo="true">
+        <section class="sc-bloque" id="sc-personalizados" aria-label="Exhibidores personalizados">
           <div class="sc-modelos">
             <article class="sc-modelo sc-modelo--tria" data-sc-tarjeta="tria" data-sc-seleccionado="true">
               <div class="sc-modelo-foto">
@@ -2780,9 +2778,9 @@ html.js .pc-alt{display:none}
 
         </section>
 
-        <section class="sc-classic" id="sc-classic" aria-labelledby="sc-classic-titulo">
+        <section class="sc-classic" id="sc-classic" aria-labelledby="sc-classic-titulo" data-sc-activo="true">
           <span class="sc-eyebrow">S&amp;C / 04 · Línea tradicional</span>
-          <h3 id="sc-classic-titulo">CLASSIC <em>&amp; mayoreo.</em></h3>
+          <h3 id="sc-classic-titulo">CLASSIC <span class="sc-classic-rombo" aria-hidden="true"></span> <em>mayoreo.</em></h3>
           <p>La placa NFC + QR de siempre, lista para tu mostrador. Elige una o varias piezas y aprovecha los precios por cantidad con nuestro proceso de compra habitual.</p>
       <article class="prod">
         <div class="prod-fig">
@@ -2924,21 +2922,11 @@ html.js .pc-alt{display:none}
     </div>
 
     <div class="sol-panel" id="servicios" role="tabpanel" aria-labelledby="t-servicios">
-      <p class="sol-sub">Te ayudamos a tener una página web y a aparecer correctamente en Google.</p>
+      <p class="sol-sub">Configuramos tu negocio en Google Maps y creamos páginas web para que tus clientes te encuentren.</p>
       <div class="svc-grid baraja" data-baraja="servicio">
-        <article class="svc" id="svc-web">
-          <span class="go">&#8599;</span>
-          <span class="idx">/ 01</span>
-          <h3>Páginas web para negocios</h3>
-          <p>Una página clara y rápida donde tus clientes ven lo que ofreces y pueden contactarte.</p>
-          <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
-          <!-- ⚠ La cifra la escribe tools/precios.mjs desde la tabla, como la de Google. -->
-          <p class="svc-desde"><span data-svc-desde="web"><b>$6,199</b> <i>Sitio web completo</i></span></p>
-          <a href="web.html" class="svc-btn"><span class="dia"></span>Ver el paquete</a>
-        </article>
         <article class="svc" id="svc-google">
           <span class="go">&#8599;</span>
-          <span class="idx">/ 02</span>
+          <span class="idx">/ 01</span>
           <h3>Tu negocio en Google Maps</h3>
           <p>Configuramos o mejoramos tu <b>Perfil de Empresa en Google</b> con fotos, horarios y datos correctos.</p>
           <ul><li>Fotos y horarios</li><li>Apareces en Maps</li><li>Más reseñas</li></ul>
@@ -2955,6 +2943,16 @@ html.js .pc-alt{display:none}
           <p class="svc-desde"><span data-svc-desde="google"><b>$1,490</b> <i>Lo esencial</i><em>o</em><b>$2,300</b> <i>Todo hecho</i></span></p>
           <p class="svc-combo">Y le puedes a&#241;adir tus <b>placas de rese&#241;as</b> con descuento.</p>
           <a href="servicio.html" class="svc-btn"><span class="dia"></span>Ver los dos paquetes</a>
+        </article>
+        <article class="svc" id="svc-web">
+          <span class="go">&#8599;</span>
+          <span class="idx">/ 02</span>
+          <h3>Páginas web para negocios</h3>
+          <p>Una página clara y rápida donde tus clientes ven lo que ofreces y pueden contactarte.</p>
+          <ul><li>PC, móvil, iPad</li><li>Diseño que vende</li><li>Fácil de actualizar</li></ul>
+          <!-- ⚠ La cifra la escribe tools/precios.mjs desde la tabla, como la de Google. -->
+          <p class="svc-desde"><span data-svc-desde="web"><b>$6,199</b> <i>Sitio web completo</i></span></p>
+          <a href="web.html" class="svc-btn"><span class="dia"></span>Ver el paquete</a>
         </article>
       </div>
     </div>
@@ -3441,40 +3439,54 @@ function splitWords(el){
 document.querySelectorAll('[data-split],[data-split-observer]').forEach(splitWords);
 
 /* ---------- REVEALS ----------
-   Las entradas ya no son de un solo uso. Al subir vuelven a jugarse, porque una
-   animación que sólo ocurre en la bajada la pierde entera quien iba distraído y
-   no hay forma de recuperarla.
-   Dos cautelas para que la segunda vuelta no estorbe:
-   - el rearme sólo ocurre cuando el elemento ha salido POR COMPLETO de la
-     pantalla, nunca mientras asoma. Reanimar algo que el visitante tiene medio
-     delante es exactamente lo molesto;
-   - la entrada de subida es más floja que la de bajada (ver .sube en el CSS). */
+   Primero contenido visible, siempre. Sólo se prepara la animación en bloques
+   que estén totalmente fuera de vista; el observador los descubre 160px antes
+   de entrar y un control en scroll evita depender exclusivamente de su callback.
+   Al salir por completo, se rearma para que funcione también al volver a subir. */
 let ultimaY=scrollY,subiendo=false;
 addEventListener('scroll',()=>{const y=scrollY;if(y!==ultimaY){subiendo=y<ultimaY;ultimaY=y;}},{passive:true});
-
-const io=new IntersectionObserver(es=>es.forEach(e=>{
-  if(!e.isIntersecting)return;
-  const t=e.target;
-  t.classList.toggle('sube',subiendo);
-  t.classList.add('in');
-  /* El desfase entre palabras se acorta a la vuelta: en un titular largo, seis
-     centésimas por palabra son casi un segundo de espera la segunda vez. */
-  const paso=subiendo?.028:.06;
-  t.querySelectorAll('.w').forEach((w,i)=>w.style.transitionDelay=Math.min(i*paso,.85).toFixed(3)+'s');
-}),{threshold:.15,rootMargin:'0px 0px -5% 0px'});
-
-/* El margen positivo ensancha la zona de vigilancia: el elemento sigue contando
-   como "a la vista" hasta un 25% de pantalla más allá del borde, y sólo pasado
-   eso se rearma. Ese colchón es lo que impide que algo se reanime a un dedo del
-   borde mientras se está leyendo. */
-const rearme=new IntersectionObserver(es=>es.forEach(e=>{
-  if(e.isIntersecting)return;
-  e.target.classList.remove('in','sube');
-}),{threshold:0,rootMargin:'25% 0px 25% 0px'});
-
-document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>{
-  io.observe(el);rearme.observe(el);
-});
+const animarScroll=('IntersectionObserver' in window)&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+function cercaDelViewport(el,margen=160){
+  const r=el.getBoundingClientRect();
+  /* Un panel que acaba de abrirse puede no tener medidas todavía: nunca ocultarlo. */
+  return !r.width||!r.height||(r.bottom>=-margen&&r.top<=innerHeight+margen);
+}
+if(animarScroll){
+  const elementos=[...new Set(document.querySelectorAll('.rv,[data-split],[data-split-observer]'))];
+  const entrar=t=>{
+    if(t.classList.contains('in')&&!t.classList.contains('reveal-pending'))return;
+    t.classList.toggle('sube',subiendo);
+    t.classList.remove('reveal-pending');
+    t.classList.add('in');
+    const paso=subiendo?.018:.03;
+    t.querySelectorAll('.w').forEach((w,i)=>w.style.transitionDelay=Math.min(i*paso,.24).toFixed(3)+'s');
+  };
+  elementos.forEach(el=>{
+    if(cercaDelViewport(el))el.classList.add('in');
+    else el.classList.add('reveal-pending');
+  });
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting)entrar(e.target);
+  }),{threshold:0,rootMargin:'160px 0px 160px 0px'});
+  const rearme=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting||cercaDelViewport(e.target,160))return;
+    e.target.classList.remove('in','sube');
+    e.target.classList.add('reveal-pending');
+  }),{threshold:0,rootMargin:'30% 0px 30% 0px'});
+  elementos.forEach(el=>{io.observe(el);rearme.observe(el);});
+  let pendiente=false;
+  const comprueba=()=>{
+    pendiente=false;
+    elementos.forEach(el=>{
+      if(el.classList.contains('reveal-pending')&&cercaDelViewport(el))entrar(el);
+    });
+  };
+  const pide=()=>{if(!pendiente){pendiente=true;requestAnimationFrame(comprueba);}};
+  addEventListener('scroll',pide,{passive:true});
+  addEventListener('resize',pide,{passive:true});
+  addEventListener('pageshow',pide);
+  pide();
+}
 
 /* ---------- PARALLAX SUTIL DEL HERO (solo transform, pausado fuera de vista) ---------- */
 (()=>{
@@ -3825,20 +3837,29 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
     pista.after(idx);
     const botones=[...idx.children];
 
-    /* La baraja entra como bloque porque sus fichas tienen la entrada anulada:
-       las que esperan a la derecha nunca asomarían por el viewport. La clase la
-       pone el JS para que, si no corre, no haya nada oculto. */
+    /* La baraja completa entra en bloque; nunca ocultamos las fichas laterales. */
     pista.classList.add('bar-listo');
-    const destapa=()=>pista.classList.add('entra');
-    const obs=new IntersectionObserver((es,o)=>{
-      if(es[0].isIntersecting){destapa();o.disconnect();}
-    },{threshold:.12});
-    obs.observe(pista);
-    /* Red de seguridad. La baraja nace en opacidad cero y sólo el observador la
-       destapa: si por cualquier motivo no llega a dispararse, el contenido se
-       quedaría invisible para siempre. Peor una entrada sin animación que una
-       sección en blanco, así que a los tres segundos se destapa igual. */
-    setTimeout(()=>{destapa();obs.disconnect();},3000);
+    const destapa=()=>{
+      pista.classList.remove('bar-pending');
+      pista.classList.add('entra');
+    };
+    if(animarScroll&&!cercaDelViewport(pista)){
+      pista.classList.add('bar-pending');
+      const obs=new IntersectionObserver((es,o)=>{
+        if(es[0].isIntersecting){destapa();o.disconnect();}
+      },{threshold:0,rootMargin:'160px 0px 160px 0px'});
+      obs.observe(pista);
+      const revisa=()=>{
+        if(cercaDelViewport(pista)){
+          destapa();obs.disconnect();
+          removeEventListener('scroll',revisa);
+          removeEventListener('resize',revisa);
+        }
+      };
+      addEventListener('scroll',revisa,{passive:true});
+      addEventListener('resize',revisa,{passive:true});
+      revisa();
+    }else destapa();
 
     let pend=false;
     function marca(){
@@ -3867,16 +3888,22 @@ document.querySelectorAll('.rv,[data-split],[data-split-observer]').forEach(el=>
 })();
 
 /* ---------- ENTRADA DE SECCIONES ----------
-   threshold .1 obligaba a que la sección estuviese un 10% dentro para
-   dispararse; en secciones altas eso son cientos de píxeles con el fondo a la
-   vista y el contenido aún ausente. Ahora se adelanta 220px con rootMargin. */
+   Movimiento decorativo, no control de visibilidad: el contenido se ve desde
+   el primer píxel incluso si no funciona IntersectionObserver. */
 (()=>{
   const secs=document.querySelectorAll('main section');
   secs.forEach(s=>s.classList.add('zoomsec'));
+  if(!animarScroll)return;
   const zo=new IntersectionObserver(es=>es.forEach(e=>{
-    if(e.isIntersecting){e.target.classList.add('zin');zo.unobserve(e.target);}
-  }),{threshold:0,rootMargin:'0px 0px 220px 0px'});
+    if(e.isIntersecting){
+      e.target.classList.remove('zoom-pending');
+      e.target.classList.add('zin');
+      zo.unobserve(e.target);
+    }
+  }),{threshold:0,rootMargin:'160px 0px 160px 0px'});
   secs.forEach(s=>{
+    if(!cercaDelViewport(s))s.classList.add('zoom-pending');
+    else s.classList.add('zin');
     zo.observe(s);
     /* libera la capa GPU cuando termina el zoom: cero costo el resto del tiempo */
     s.addEventListener('transitionend',()=>{s.style.willChange='auto';},{once:true});
@@ -4805,6 +4832,13 @@ function cargaTurnstile(){
   const figs=[...tira.querySelectorAll('figure')];
   if(!figs.length)return;
   tira.classList.add('desliza');
+  /* Las que asoman por el borde se ven desde el primer momento; sólo las
+     completamente a la derecha preparan una entrada breve al deslizar. */
+  const asoma=f=>{
+    const caja=tira.getBoundingClientRect(),r=f.getBoundingClientRect();
+    return r.left<caja.right+70&&r.right>caja.left-70;
+  };
+  figs.forEach(f=>{if(!asoma(f))f.classList.add('foto-pendiente');});
 
 /* ---------- CUÁL ES LA SIGUIENTE ----------
    Lo que se pidió: que al arrastrar se note que hay otra a la derecha. La
@@ -4847,9 +4881,10 @@ function cargaTurnstile(){
   pinta();
 })();
 
+  const destapa=f=>{f.classList.remove('foto-pendiente');f.classList.add('dentro');};
   const ob=new IntersectionObserver((es,o)=>es.forEach(e=>{
     if(!e.isIntersecting)return;
-    e.target.classList.add('dentro');
+    destapa(e.target);
     o.unobserve(e.target);
   /* ⚠ EL UMBRAL NO ES ARBITRARIO. La segunda foto asoma un 34% de si misma
      —columnas al 72% del ancho— y es la que anuncia que hay mas: si no se
@@ -4857,8 +4892,18 @@ function cargaTurnstile(){
      contrario de invitar a arrastrar. Con .35 quedaba a un pelo por debajo y
      salia visible o no segun el redondeo. Con .2 se descubre siempre, y la
      tercera —que no asoma nada— sigue esperando al gesto. */
-  }),{root:tira,threshold:.2});
+  }),{root:tira,threshold:0,rootMargin:'0px 70px 0px 70px'});
   figs.forEach(f=>ob.observe(f));
+  /* Safari puede retardar el callback durante un gesto: destapar también al
+     desplazarse evita una miniatura atenuada bajo el dedo. */
+  const comprueba=()=>figs.forEach(f=>{
+    if(f.classList.contains('foto-pendiente')&&asoma(f)){
+      destapa(f);ob.unobserve(f);
+    }
+  });
+  tira.addEventListener('scroll',comprueba,{passive:true});
+  addEventListener('resize',comprueba,{passive:true});
+  comprueba();
 })();
 
 /* ---------- AVANCE DE LECTURA E ÍNDICE DEL RECORRIDO ----------
@@ -5912,6 +5957,6 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
-<script src="assets/catalogo.js?v=2c157e14"></script>
+<script src="assets/catalogo.js?v=5f946d2a"></script>
 </body>
 </html>

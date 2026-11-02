@@ -81,11 +81,12 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   await pg.waitForTimeout(400);
 
   ok(await pg.locator('#soluciones').count() === 1, 'la portada tiene UNA sección de soluciones');
-  ok(!(await pg.locator('#sc-classic').isVisible()),
-     'la línea clásica no aparece debajo del configurador sin seleccionarla');
-  await pg.locator('.sc-accesos a[href="#sc-classic"]').click();
   ok(await pg.locator('#sc-classic').isVisible() && !(await pg.locator('#sc-personalizados').isVisible()),
-     'al elegir CLASSIC aparece esa línea y se oculta Personalizados');
+     'la línea clásica aparece primero y personalizadas espera su selección');
+  await pg.locator('.sc-accesos a[href="#sc-personalizados"]').click();
+  ok(await pg.locator('#sc-personalizados').isVisible() && !(await pg.locator('#sc-classic').isVisible()),
+     'al elegir Personalizados aparece su línea y se oculta CLASSIC');
+  await pg.locator('.sc-accesos a[href="#sc-classic"]').click();
 
   /* ---- EL CONTADOR, EN LA PORTADA ----
      La cantidad se elige DONDE se ve el producto, que es donde nace la
@@ -929,7 +930,7 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   const ve = async id => pg.locator('#' + id).isVisible();
   ok(await ve('productos') && await ve('servicios') && await ve('clientes'),
      'sin JS los tres paneles de Soluciones se ven a la vez');
-  ok(await pg.locator('#servicios .svc').count() === 3, 'y están los tres servicios vigentes');
+  ok(await pg.locator('#servicios .svc').count() === 2, 'y están los dos servicios vigentes');
   ok(await pg.locator('#clientes .insta-g figure').count() === 5, 'y las cinco instalaciones');
   ok((await pg.locator('[data-pc-total]').textContent()).trim() !== '',
      'y el precio de una placa se lee: es HTML, no lo escribe ningún script');

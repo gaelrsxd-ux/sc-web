@@ -139,6 +139,9 @@
 .sc-classic{margin-top:0;padding:0;border-top:0;scroll-margin-top:125px}
 .sc-classic h3{font-size:clamp(28px,4vw,47px);line-height:1.08;margin:12px 0 9px;color:var(--ink)}
 .sc-classic h3 em{color:var(--bronze-hi);font-weight:500}
+.sc-classic-rombo{display:inline-block;width:.18em;height:.18em;margin:0 .11em .1em;
+  border:1px solid var(--bronze-hi);background:rgba(200,169,106,.18);
+  transform:rotate(45deg);vertical-align:middle;box-shadow:0 0 0 3px rgba(200,169,106,.04)}
 .sc-classic>p{color:var(--muted);font-size:14px;line-height:1.7;max-width:60ch}
 @media(max-width:900px){
   .sc-cabecera{grid-template-columns:1fr}

@@ -14,6 +14,10 @@ const estilos = readFileSync(join(app, 'assets/catalogo.css'), 'utf8');
 test('portada clara: web, Google, NFC y revisión sin bloques repetidos', () => {
   const servicios = html.match(/<article class="svc"/g) || [];
   assert.equal(servicios.length, 2, 'Solo hay dos servicios digitales activos');
+  assert.ok(html.indexOf('id="svc-google"') < html.indexOf('id="svc-web"'),
+    'Google va como servicio 01 y páginas web como 02');
+  assert.match(html, /id="svc-google"[\s\S]*?class="idx"[^>]*>\/ 01/);
+  assert.match(html, /id="svc-web"[\s\S]*?class="idx"[^>]*>\/ 02/);
   assert.doesNotMatch(html, /id="svc-tareas"|>Automatización de Procesos</);
   assert.match(html, /Configurar mi negocio en Google Maps/);
   assert.match(html, /Placas y exhibidores personalizados NFC \+ QR/);
@@ -56,7 +60,7 @@ function preparar({ hash = '' } = {}) {
 
   const paneles = Object.fromEntries(['#sc-personalizados', '#sc-classic']
     .map(id => [id, { ...nodo(), scrollIntoView() { this.desplazado = true; } }]));
-  const accesos = ['#sc-personalizados', '#sc-classic'].map(href => ({ ...nodo(), href }));
+  const accesos = ['#sc-classic', '#sc-personalizados'].map(href => ({ ...nodo(), href }));
   const location = { hash };
   const eventosVentana = {};
 
@@ -125,24 +129,42 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
   assert.match(estilos, /\.sc-bloque\{[^}]*padding:0/);
   assert.match(html, /id="sc-classic"[\s\S]*?<article class="prod">[\s\S]*?class="prod-compra"/);
   assert.match(html, /S&amp;C \/ 03[\s\S]*?DOCK[\s\S]*?Aún no disponible para compra/);
+  assert.match(html, /01 \/ Clásicas y mayoreo[\s\S]*02 \/ Personalizados/,
+    'Las clásicas deben aparecer primero, a la izquierda');
+  assert.match(html, /CLASSIC <span class="sc-classic-rombo" aria-hidden="true"><\/span> <em>mayoreo\.<\/em>/,
+    'Un rombo reemplaza el ampersand tipográfico del encabezado');
+  assert.match(estilos, /\.sc-classic-rombo\{/);
 });
 
-test('CLASSIC solo aparece al seleccionar la línea y el hash directo restaura la vista', () => {
+test('CLASSIC abre primero, Personalizados va segundo y los enlaces restauran la vista', () => {
   const { paneles, accesos, location, eventosVentana } = preparar();
-  assert.equal(paneles['#sc-classic'].hidden, true);
-  assert.equal(paneles['#sc-personalizados'].hidden, false);
-  assert.equal(accesos[0].atributos['aria-current'], 'page');
-  accesos[1].eventos.click();
   assert.equal(paneles['#sc-classic'].hidden, false);
   assert.equal(paneles['#sc-personalizados'].hidden, true);
-  assert.equal(accesos[1].atributos['aria-current'], 'page');
-  location.hash = '#sc-config';
-  eventosVentana.hashchange();
+  assert.equal(accesos[0].atributos['aria-current'], 'page');
+  accesos[1].eventos.click();
   assert.equal(paneles['#sc-classic'].hidden, true);
   assert.equal(paneles['#sc-personalizados'].hidden, false);
-  const directo = preparar({ hash: '#sc-classic' });
-  assert.equal(directo.paneles['#sc-classic'].hidden, false);
-  assert.equal(directo.paneles['#sc-classic'].desplazado, true);
+  assert.equal(accesos[1].atributos['aria-current'], 'page');
+  location.hash = '#sc-classic';
+  eventosVentana.hashchange();
+  assert.equal(paneles['#sc-classic'].hidden, false);
+  assert.equal(paneles['#sc-personalizados'].hidden, true);
+  const directo = preparar({ hash: '#sc-personalizados' });
+  assert.equal(directo.paneles['#sc-personalizados'].hidden, false);
+  const classic = preparar({ hash: '#sc-classic' });
+  assert.equal(classic.paneles['#sc-classic'].hidden, false);
+  assert.equal(classic.paneles['#sc-classic'].desplazado, true);
+});
+
+test('animaciones progresivas visibles por defecto y con margen para reaccionar antes', () => {
+  assert.match(html, /\.rv\{opacity:1;transform:none/);
+  assert.match(html, /\.rv\.reveal-pending\{opacity:0;transform:translateY\(22px\)/);
+  assert.match(html, /\.zoomsec\{opacity:1;transform:none/);
+  assert.match(html, /\.baraja\.bar-listo\{opacity:1;transform:none/);
+  assert.match(html, /\.w\{display:inline-block;opacity:1;transform:none/);
+  assert.match(html, /if\(animarScroll\)/);
+  assert.match(html, /rootMargin:'160px 0px 160px 0px'/);
+  assert.doesNotMatch(html, /setTimeout\(\(\)=>\{destapa\(\);obs\.disconnect\(\);\},3000\)/);
 });
 
 test('TRIA genera WhatsApp directo con modelo y cantidad inicial y pide el logotipo', () => {
