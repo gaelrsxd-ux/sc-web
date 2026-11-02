@@ -548,12 +548,12 @@ const navegador = await chromium.launch({ executablePath: CHROME });
   ok(!destinos.some(d => /diagn[óo]stico|auditar|auditad/i.test(d.titulo + d.pie)),
      'sin jerga: no dice «diagnóstico» ni «auditar» en ningún destino');
 
-  /* Los tres servicios vigentes, cada uno al suyo. */
+  /* Los dos servicios digitales vigentes, cada uno al suyo. */
   const svcs = await m.$$eval('#menu .men-s a', as => as.map(a => a.getAttribute('href')));
-  ok(svcs.length === 3, 'y los tres servicios por separado');
+  ok(svcs.length === 2, 'y los dos servicios por separado');
   const perdidos = [];
   for (const h of svcs) if (!(await m.locator(h).count())) perdidos.push(h);
-  ok(perdidos.length === 0, 'los tres tienen destino' + (perdidos.length ? ': ROTOS ' + perdidos : ''));
+  ok(perdidos.length === 0, 'los dos tienen destino' + (perdidos.length ? ': ROTOS ' + perdidos : ''));
 
   /* Escape cierra y devuelve el foco: sin eso quien navega con teclado cierra
      el menú y su foco se queda dentro de un panel invisible. */
@@ -568,11 +568,11 @@ const navegador = await chromium.launch({ executablePath: CHROME });
      pantalla a la derecha y el menú habría mentido. */
   await boton.click();
   await m.waitForTimeout(300);
-  await m.locator('#menu .men-s a[href="#svc-tareas"]').click();
+  await m.locator('#menu .men-s a[href="#svc-google"]').click();
   await m.waitForTimeout(1200);
   ok(!(await panel.isVisible()), 'al elegir un destino el menú se aparta');
   ok(await m.locator('#servicios').isVisible(), 'y abre la pestaña donde vive ese servicio');
-  const dentro = await m.locator('#svc-tareas').evaluate(e => {
+  const dentro = await m.locator('#svc-google').evaluate(e => {
     const r = e.getBoundingClientRect();
     return r.left > -40 && r.right < innerWidth + 40;
   });

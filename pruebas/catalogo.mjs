@@ -11,6 +11,25 @@ const html = readFileSync(join(app, 'index.html'), 'utf8');
 const codigo = readFileSync(join(app, 'assets/catalogo.js'), 'utf8');
 const estilos = readFileSync(join(app, 'assets/catalogo.css'), 'utf8');
 
+test('portada clara: web, Google, NFC y revisión sin bloques repetidos', () => {
+  const servicios = html.match(/<article class="svc"/g) || [];
+  assert.equal(servicios.length, 2, 'Solo hay dos servicios digitales activos');
+  assert.doesNotMatch(html, /id="svc-tareas"|>Automatización de Procesos</);
+  assert.match(html, /Configurar mi negocio en Google Maps/);
+  assert.match(html, /Placas y exhibidores personalizados NFC \+ QR/);
+  assert.match(html, /data-solicitud="Perfil de Empresa en Google"/);
+  assert.match(html, /data-solicitud="Exhibidores personalizados NFC \+ QR"/);
+  assert.match(html, /const tema=campos\.servicio\.selectedOptions\[0\]\?\.dataset\.solicitud/);
+  assert.match(html, /datos\.mensaje=encabezado\+datos\.mensaje/,
+    'El mensaje incluye la categoría real sin cambiar los valores validados por el servidor');
+  assert.doesNotMatch(html, /id="viva"|getElementById\('viva'\)/,
+    'La franja rotatoria repetida no debe ocupar espacio');
+  assert.match(html, /\.aud-out:has\(\.aud-idle\)\{display:none\}/,
+    'La caja de diagnóstico vacía queda oculta hasta tener resultados');
+  assert.match(html, /#contacto \.frame\{padding:22px 18px\}/,
+    'Contacto tiene un relleno ajustado en móvil');
+});
+
 function nodo(value = '') {
   return {
     value,

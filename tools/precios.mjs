@@ -1619,7 +1619,7 @@ function heroPlaca() {
    la menos autoexplicativa en dos palabras y tiene su tarjeta abajo. */
 // La oferta de agente de WhatsApp ya no se anuncia en la portada.
 // Sus páginas históricas y lógica de pedidos se conservan para no romper enlaces previos.
-const PORTADA_FAMILIAS = ['web', 'google', 'auto'];
+const PORTADA_FAMILIAS = ['web', 'google'];
 const HERO_FAMILIAS = ['google', 'web'];
 
 /* ═══════════ EL PRECIO DENTRO DE UNA GUÍA ═══════════
