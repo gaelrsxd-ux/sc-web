@@ -1,5 +1,5 @@
 /* Configurador de la línea S&C Smart Displays.
-   La cotización se prepara en el navegador: no hay cobro, almacenamiento ni API. */
+   El pedido se prepara localmente y abre WhatsApp; no cobra ni almacena datos. */
 (() => {
   'use strict';
 
@@ -7,93 +7,100 @@
   if (!raiz) return;
 
   const modelo = raiz.querySelector('#sc-modelo');
-  const base = raiz.querySelectorAll('input[name="sc-base"]');
-  const cantidad = raiz.querySelector('#sc-cantidad');
   const destino = raiz.querySelector('#sc-destino');
+  const colores = [
+    { nombre: 'Negro', id: 'sc-negro', input: raiz.querySelector('#sc-negro') },
+    { nombre: 'Plateado', id: 'sc-plateado', input: raiz.querySelector('#sc-plateado') },
+    { nombre: 'Dorado', id: 'sc-dorado', input: raiz.querySelector('#sc-dorado') },
+    { nombre: 'Blanco', id: 'sc-blanco', input: raiz.querySelector('#sc-blanco') }
+  ];
   const extra = raiz.querySelector('#sc-extra');
   const red1 = raiz.querySelector('#sc-red1');
   const red2 = raiz.querySelector('#sc-red2');
-  const cambioBase = raiz.querySelector('#sc-cambio-base');
   const negocio = raiz.querySelector('#sc-negocio');
   const notas = raiz.querySelector('#sc-notas');
-  const imagen = raiz.querySelector('#sc-preview');
-  const nombrePreview = raiz.querySelector('#sc-preview-modelo');
-  const pie = raiz.querySelector('#sc-preview-pie');
+  const resumen = raiz.querySelector('#sc-resumen');
+  const total = raiz.querySelector('#sc-total');
   const enlace = raiz.querySelector('#sc-consulta');
   const aviso = raiz.querySelector('#sc-aviso');
-  if (![modelo,cantidad,destino,extra,red1,red2,cambioBase,negocio,notas,imagen,nombrePreview,pie,enlace,aviso].every(Boolean)) return;
+  if (![modelo, destino, extra, red1, red2, negocio, notas, resumen, total, enlace, aviso]
+    .every(Boolean) || colores.some(color => !color.input)) return;
 
-  const catalogo = {
-    tria: {
-      titulo:'TRIA',
-      foto:'assets/sc-tria.webp',
-      alt:'Presentación del exhibidor TRIA con tres puntos NFC y código QR',
-      pie:'Tres accesos NFC independientes y un código QR.'
-    },
-    signa: {
-      titulo:'SIGNA',
-      foto:'assets/sc-signa-alvia.webp',
-      alt:'Exhibidor SIGNA blanco personalizado para ÁLVIA',
-      pie:'Un acceso NFC y código QR con la identidad de tu negocio.'
-    }
-  };
-
-  const texto = v => String(v || '').trim();
+  const modelos = { tria: 'TRIA', signa: 'SIGNA' };
+  const texto = valor => String(valor || '').trim();
 
   function actualizar() {
-    const elegido = catalogo[modelo.value] || catalogo.tria;
+    const nombre = modelos[modelo.value] || modelos.tria;
     const esTria = modelo.value === 'tria';
     extra.hidden = !esTria;
-    imagen.src = elegido.foto;
-    imagen.alt = elegido.alt;
-    nombrePreview.textContent = `S&C ${elegido.titulo}`;
-    pie.textContent = elegido.pie;
 
-    raiz.querySelectorAll('[data-sc-tarjeta]').forEach(t => {
-      t.dataset.scSeleccionado = String(t.dataset.scTarjeta === modelo.value);
+    raiz.querySelectorAll('[data-sc-tarjeta]').forEach(tarjeta => {
+      tarjeta.dataset.scSeleccionado = String(tarjeta.dataset.scTarjeta === modelo.value);
     });
 
-    const n = Number(cantidad.value);
-    if (!Number.isSafeInteger(n) || n < 1) {
+    const cantidades = colores.map(color => {
+      const valor = color.input.value.trim();
+      const n = Number(valor);
+      return { nombre: color.nombre, n, valido: valor !== '' && Number.isSafeInteger(n) && n >= 0 };
+    });
+    const valido = cantidades.every(color => color.valido);
+    const suma = cantidades.reduce((acum, color) => acum + color.n, 0);
+    const activos = cantidades.filter(color => color.n > 0);
+
+    resumen.textContent = `${nombre} · ${activos.length ? activos.map(color => `${color.n} ${color.nombre.toLowerCase()}`).join(' · ') : 'sin piezas'}`;
+    total.textContent = `${suma} ${suma === 1 ? 'pieza' : 'piezas'}`;
+
+    if (!valido || !Number.isSafeInteger(suma) || suma < 1) {
       enlace.removeAttribute('href');
-      enlace.setAttribute('aria-disabled','true');
-      aviso.textContent = 'Escribe una cantidad válida de una pieza o más.';
+      enlace.setAttribute('aria-disabled', 'true');
+      aviso.textContent = 'Indica al menos una pieza. Usa cantidades enteras de 0 en adelante.';
       return;
     }
 
-    const color = [...base].find(x => x.checked)?.value || 'Negro';
     const partes = [
-      'Hola, quiero cotizar un exhibidor personalizado de S&C Solutions.',
-      `Modelo: S&C ${elegido.titulo}`,
-      `Cantidad: ${n} ${n===1?'pieza':'piezas'}`,
-      `Color de la base: ${color}`,
+      'Hola, quiero cotizar exhibidores personalizados de S&C Solutions.',
+      `Modelo: S&C ${nombre}`,
+      `Total: ${suma} ${suma === 1 ? 'pieza' : 'piezas'}`,
+      'Colores y cantidades:',
+      ...activos.map(color => `- ${color.nombre}: ${color.n}`),
       `Destino principal NFC + QR: ${destino.value}`
     ];
     if (esTria) {
       partes.push(`Acceso NFC adicional 1: ${red1.value}`);
       partes.push(`Acceso NFC adicional 2: ${red2.value}`);
     }
-    partes.push(`Diseño de la base: ${cambioBase.value}`);
     if (texto(negocio.value)) partes.push(`Negocio: ${texto(negocio.value)}`);
-    if (texto(notas.value)) partes.push(`Mi propuesta: ${texto(notas.value)}`);
-    partes.push('Quiero personalizarlo con mi marca. Puedo enviar mi logo, imágenes o archivos 3D por este chat.');
+    if (texto(notas.value)) partes.push(`Indicaciones: ${texto(notas.value)}`);
+    partes.push('Me gustaría conocer el precio y tiempo de elaboración. Puedo enviar mi logo por aquí.');
 
     enlace.href = 'https://wa.me/524423697248?text=' + encodeURIComponent(partes.join('\n'));
     enlace.removeAttribute('aria-disabled');
-    enlace.textContent = `Cotizar S&C ${elegido.titulo} por WhatsApp`;
-    aviso.textContent = 'Revisamos contigo diseño, costo final y tiempo de fabricación antes de confirmar.';
+    enlace.textContent = 'Cotizar por WhatsApp';
+    aviso.textContent = 'El diseño, precio final y tiempo de entrega se confirman por WhatsApp.';
   }
 
-  raiz.querySelectorAll('[data-sc-elegir]').forEach(a => {
-    a.addEventListener('click', () => {
-      if (catalogo[a.dataset.scElegir]) {
-        modelo.value = a.dataset.scElegir;
+  raiz.querySelectorAll('[data-sc-elegir]').forEach(enlaceModelo => {
+    enlaceModelo.addEventListener('click', () => {
+      if (modelos[enlaceModelo.dataset.scElegir]) {
+        modelo.value = enlaceModelo.dataset.scElegir;
         actualizar();
       }
     });
   });
 
-  // Miniaturas dentro de cada modelo: una sola foto visible, sin galería gigante.
+  raiz.querySelectorAll('[data-sc-paso]').forEach(boton => {
+    boton.addEventListener('click', () => {
+      const color = colores.find(item => item.id === boton.dataset.scPara);
+      if (!color) return;
+      const actual = Number(color.input.value);
+      const base = Number.isSafeInteger(actual) && actual >= 0 ? actual : 0;
+      const paso = Number(boton.dataset.scPaso);
+      color.input.value = String(Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, base + paso)));
+      actualizar();
+    });
+  });
+
+  // Las miniaturas muestran otra vista sin abrir la ficha ni cambiar el modelo.
   raiz.querySelectorAll('[data-sc-vista]').forEach(boton => {
     boton.addEventListener('click', () => {
       const tarjeta = boton.closest('[data-sc-tarjeta]');

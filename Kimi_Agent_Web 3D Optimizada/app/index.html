@@ -2531,7 +2531,7 @@ html.js .pc-alt{display:none}
   .aud-form button:disabled::before{color:var(--dim)}
 }
 </style>
-<link rel="stylesheet" href="assets/catalogo.css?v=43d81039">
+<link rel="stylesheet" href="assets/catalogo.css?v=867db072">
 </head>
 <body>
 
@@ -2841,14 +2841,11 @@ html.js .pc-alt{display:none}
 
           <section class="sc-config" id="sc-config" aria-labelledby="sc-config-titulo">
             <div class="sc-config-cuerpo">
-              <span class="sc-eyebrow">Personaliza tu exhibidor</span>
-              <h4 id="sc-config-titulo">Diseñado para tu negocio.</h4>
-              <p class="sc-config-intro">Configura tu pedido desde una pieza. El logo y los archivos de referencia los enviarás por WhatsApp al terminar.</p>
-              <div class="sc-config-resumen" aria-live="polite">
-                <img id="sc-preview" src="assets/sc-tria.webp" width="670" height="712" loading="lazy" decoding="async" alt="Presentación del exhibidor TRIA con tres puntos NFC y código QR">
-                <div><span>Tu selección</span><strong id="sc-preview-modelo">S&amp;C TRIA</strong><p id="sc-preview-pie">Tres puntos NFC independientes y un código QR.</p></div>
+              <div class="sc-config-cabecera">
+                <div><span class="sc-eyebrow">Personaliza tu exhibidor</span><h4 id="sc-config-titulo">Arma tu pedido.</h4></div>
+                <p>Elige tu modelo y combina los colores que quieras. Cotiza directo por WhatsApp.</p>
               </div>
-              <div class="sc-campos" role="group" aria-label="Opciones del exhibidor personalizado">
+              <div class="sc-config-sencillo">
                 <div class="sc-campo">
                   <label for="sc-modelo">Modelo</label>
                   <select id="sc-modelo" name="modelo">
@@ -2856,59 +2853,54 @@ html.js .pc-alt{display:none}
                     <option value="signa">SIGNA · 1 NFC + QR</option>
                   </select>
                 </div>
-                <div class="sc-campo">
-                  <label for="sc-cantidad">Cantidad de piezas</label>
-                  <input id="sc-cantidad" type="number" inputmode="numeric" name="cantidad" min="1" step="1" value="1" required>
-                </div>
-                <div class="sc-campo sc-campo--ancho">
-                  <span id="sc-base-etiqueta">Color de la base</span>
-                  <div class="sc-bases" role="group" aria-labelledby="sc-base-etiqueta">
-                    <label class="sc-base"><input type="radio" name="sc-base" value="Negro" checked><span style="--muestra:#161616">Negro</span></label>
-                    <label class="sc-base"><input type="radio" name="sc-base" value="Plateado"><span style="--muestra:#b8bbc1">Plateado</span></label>
-                    <label class="sc-base"><input type="radio" name="sc-base" value="Dorado"><span style="--muestra:#c9a454">Dorado</span></label>
-                    <label class="sc-base"><input type="radio" name="sc-base" value="Blanco"><span style="--muestra:#f1f0eb">Blanco</span></label>
+                <fieldset class="sc-colores">
+                  <legend>¿Cuántos de cada color?</legend>
+                  <div class="sc-colores-grid">
+                    <div class="sc-color-cantidad">
+                      <label for="sc-negro"><i style="--muestra:#161616"></i>Negro</label>
+                      <div class="sc-stepper"><button type="button" data-sc-paso="-1" data-sc-para="sc-negro" aria-label="Quitar un exhibidor negro">−</button><input id="sc-negro" type="number" inputmode="numeric" min="0" step="1" value="1" aria-label="Cantidad de exhibidores negros"><button type="button" data-sc-paso="1" data-sc-para="sc-negro" aria-label="Añadir un exhibidor negro">+</button></div>
+                    </div>
+                    <div class="sc-color-cantidad">
+                      <label for="sc-plateado"><i style="--muestra:#b8bbc1"></i>Plateado</label>
+                      <div class="sc-stepper"><button type="button" data-sc-paso="-1" data-sc-para="sc-plateado" aria-label="Quitar un exhibidor plateado">−</button><input id="sc-plateado" type="number" inputmode="numeric" min="0" step="1" value="0" aria-label="Cantidad de exhibidores plateados"><button type="button" data-sc-paso="1" data-sc-para="sc-plateado" aria-label="Añadir un exhibidor plateado">+</button></div>
+                    </div>
+                    <div class="sc-color-cantidad">
+                      <label for="sc-dorado"><i style="--muestra:#c9a454"></i>Dorado</label>
+                      <div class="sc-stepper"><button type="button" data-sc-paso="-1" data-sc-para="sc-dorado" aria-label="Quitar un exhibidor dorado">−</button><input id="sc-dorado" type="number" inputmode="numeric" min="0" step="1" value="0" aria-label="Cantidad de exhibidores dorados"><button type="button" data-sc-paso="1" data-sc-para="sc-dorado" aria-label="Añadir un exhibidor dorado">+</button></div>
+                    </div>
+                    <div class="sc-color-cantidad">
+                      <label for="sc-blanco"><i style="--muestra:#f1f0eb"></i>Blanco</label>
+                      <div class="sc-stepper"><button type="button" data-sc-paso="-1" data-sc-para="sc-blanco" aria-label="Quitar un exhibidor blanco">−</button><input id="sc-blanco" type="number" inputmode="numeric" min="0" step="1" value="0" aria-label="Cantidad de exhibidores blancos"><button type="button" data-sc-paso="1" data-sc-para="sc-blanco" aria-label="Añadir un exhibidor blanco">+</button></div>
+                    </div>
                   </div>
-                </div>
-                <div class="sc-campo sc-campo--ancho">
-                  <label for="sc-destino">Destino principal del NFC y QR</label>
+                </fieldset>
+                <div class="sc-campo">
+                  <label for="sc-destino">Destino principal NFC + QR</label>
                   <select id="sc-destino" name="destino">
                     <option>Google Reviews</option><option>Instagram</option><option>WhatsApp</option>
                     <option>Facebook</option><option>TikTok</option><option>Menú digital</option>
                     <option>Sitio web</option><option>Otro enlace</option>
                   </select>
                 </div>
-                <div id="sc-extra" class="sc-campo sc-campo--ancho">
-                  <div class="sc-campos">
-                    <div class="sc-campo">
-                      <label for="sc-red1">Segundo acceso NFC</label>
-                      <select id="sc-red1"><option>Instagram</option><option>WhatsApp</option><option>Facebook</option><option>TikTok</option><option>Google Reviews</option><option>Otro enlace</option></select>
-                    </div>
-                    <div class="sc-campo">
-                      <label for="sc-red2">Tercer acceso NFC</label>
-                      <select id="sc-red2"><option>WhatsApp</option><option>Instagram</option><option>Facebook</option><option>TikTok</option><option>Google Reviews</option><option>Otro enlace</option></select>
+              </div>
+              <details class="sc-config-opcional">
+                <summary>Más detalles <span>(opcional)</span></summary>
+                <div class="sc-campos">
+                  <div id="sc-extra" class="sc-campo sc-campo--ancho">
+                    <div class="sc-campos">
+                      <div class="sc-campo"><label for="sc-red1">Segundo NFC (TRIA)</label><select id="sc-red1"><option>Instagram</option><option>WhatsApp</option><option>Facebook</option><option>TikTok</option><option>Google Reviews</option><option>Otro enlace</option></select></div>
+                      <div class="sc-campo"><label for="sc-red2">Tercer NFC (TRIA)</label><select id="sc-red2"><option>WhatsApp</option><option>Instagram</option><option>Facebook</option><option>TikTok</option><option>Google Reviews</option><option>Otro enlace</option></select></div>
                     </div>
                   </div>
+                  <div class="sc-campo"><label for="sc-negocio">Tu negocio</label><input id="sc-negocio" type="text" maxlength="90" autocomplete="organization" placeholder="Nombre del negocio"></div>
+                  <div class="sc-campo"><label for="sc-notas">Indicaciones</label><input id="sc-notas" type="text" maxlength="250" placeholder="Logo, acabado o idea especial"></div>
                 </div>
-                <div class="sc-campo sc-campo--ancho">
-                  <label for="sc-cambio-base">Diseño de la base</label>
-                  <select id="sc-cambio-base">
-                    <option>Base del modelo elegido</option>
-                    <option>Quiero proponer otra forma o diseño 3D</option>
-                  </select>
-                </div>
-                <div class="sc-campo sc-campo--ancho">
-                  <label for="sc-negocio">Nombre de tu negocio (opcional)</label>
-                  <input id="sc-negocio" type="text" maxlength="90" autocomplete="organization" placeholder="Ej. Mi restaurante">
-                </div>
-                <div class="sc-campo sc-campo--ancho">
-                  <label for="sc-notas">Tu idea o indicaciones especiales (opcional)</label>
-                  <textarea id="sc-notas" maxlength="500" rows="3" placeholder="Cuéntanos qué colores, logotipo, forma o acabado imaginas."></textarea>
-                </div>
-              </div>
+              </details>
               <div class="sc-config-pie">
-                <p id="sc-aviso" aria-live="polite">Revisamos contigo diseño, costo final y tiempo de fabricación antes de confirmar.</p>
-                <a id="sc-consulta" href="https://wa.me/524423697248?text=Hola.%20Quiero%20cotizar%20un%20exhibidor%20personalizado%20S%26C%20TRIA." target="_blank" rel="noopener noreferrer">Cotizar S&amp;C TRIA por WhatsApp</a>
-                <p>No se realiza ningún cobro aquí. Puedes enviarnos tu logotipo, fotografías o archivos 3D directamente en la conversación.</p>
+                <div class="sc-pedido-resumen" aria-live="polite"><span>Tu pedido</span><strong id="sc-resumen">TRIA · 1 negro</strong><small id="sc-total">1 pieza</small></div>
+                <p id="sc-aviso" aria-live="polite">Te enviamos la cotización y acordamos diseño y tiempos.</p>
+                <a id="sc-consulta" href="https://wa.me/524423697248?text=Hola.%20Quiero%20cotizar%20un%20exhibidor%20personalizado%20S%26C%20TRIA." target="_blank" rel="noopener noreferrer">Cotizar por WhatsApp</a>
+                <p class="sc-config-nota">Se abrirá WhatsApp con tu pedido listo para enviar. Sin cobro en esta página.</p>
               </div>
             </div>
           </section>
@@ -6202,6 +6194,6 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
-<script src="assets/catalogo.js?v=0b25f9e6"></script>
+<script src="assets/catalogo.js?v=b841758f"></script>
 </body>
 </html>
