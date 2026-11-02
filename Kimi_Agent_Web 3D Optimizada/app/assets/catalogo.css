@@ -39,7 +39,7 @@
   border:1px solid rgba(228,205,154,.5);background:rgba(10,11,14,.88);
   color:var(--bronze-hi);font-size:9px;letter-spacing:2px;text-transform:uppercase}
 .sc-vistas{display:flex;align-items:center;gap:8px;padding:10px 16px 0;
-  position:relative;z-index:2}
+  width:max-content;max-width:100%;align-self:center;position:relative;z-index:2}
 .sc-vista{display:block;flex:0 0 44px;width:44px;height:44px;padding:0;overflow:hidden;
   border:1px solid var(--line);background:#14151a;cursor:pointer}
 .sc-vista[aria-pressed="true"]{border-color:var(--bronze-hi);box-shadow:0 0 0 1px var(--bronze)}

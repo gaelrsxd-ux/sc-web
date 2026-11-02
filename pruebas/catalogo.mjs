@@ -118,7 +118,7 @@ test('permite múltiples cantidades y colores en un único mensaje con resumen',
   campos['#sc-blanco'].value = '0';
   raiz.eventos.input();
   assert.equal(campos['#sc-total'].textContent, '8 piezas');
-  assert.equal(campos['#sc-resumen'].textContent, 'TRIA · 1 negro · 2 plateado · 5 dorado');
+  assert.equal(campos['#sc-resumen'].textContent, 'TRIA · 1 negro · 2 plateados · 5 dorados');
   assert.match(mensaje(), /Total: 8 piezas/);
   assert.match(mensaje(), /- Negro: 1\n- Plateado: 2\n- Dorado: 5/);
   assert.doesNotMatch(mensaje(), /- Blanco:/);
@@ -135,7 +135,7 @@ test('SIGNA actualiza los detalles opcionales y el mensaje sin dos NFC extras', 
   raiz.eventos.change();
   assert.equal(campos['#sc-extra'].hidden, true);
   assert.equal(tarjetas[1].dataset.scSeleccionado, 'true');
-  assert.equal(campos['#sc-resumen'].textContent, 'SIGNA · 12 dorado');
+  assert.equal(campos['#sc-resumen'].textContent, 'SIGNA · 12 dorados');
   assert.match(mensaje(), /Modelo: S&C SIGNA/);
   assert.match(mensaje(), /Total: 12 piezas/);
   assert.match(mensaje(), /- Dorado: 12/);

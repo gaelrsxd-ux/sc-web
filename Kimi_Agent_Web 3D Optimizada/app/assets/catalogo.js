@@ -47,7 +47,7 @@
     const suma = cantidades.reduce((acum, color) => acum + color.n, 0);
     const activos = cantidades.filter(color => color.n > 0);
 
-    resumen.textContent = `${nombre} · ${activos.length ? activos.map(color => `${color.n} ${color.nombre.toLowerCase()}`).join(' · ') : 'sin piezas'}`;
+    resumen.textContent = `${nombre} · ${activos.length ? activos.map(color => `${color.n} ${color.nombre.toLowerCase()}${color.n === 1 ? '' : 's'}`).join(' · ') : 'sin piezas'}`;
     total.textContent = `${suma} ${suma === 1 ? 'pieza' : 'piezas'}`;
 
     if (!valido || !Number.isSafeInteger(suma) || suma < 1) {
