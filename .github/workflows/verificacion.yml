@@ -80,6 +80,9 @@ jobs:
       - name: Seguridad del catálogo de menús
         run: node --test pruebas/menus.mjs
 
+      - name: Catálogo de exhibidores NFC y cotizaciones
+        run: node --test pruebas/catalogo.mjs
+
       # El Worker de cobros. Estas pruebas no necesitan red ni wrangler: el
       # fetch se sustituye por un doble. La que justifica tenerlas en CI es la
       # que exige que el importe salga de la tabla del servidor y no del

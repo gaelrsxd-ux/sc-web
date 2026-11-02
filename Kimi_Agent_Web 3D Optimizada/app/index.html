@@ -2531,6 +2531,7 @@ html.js .pc-alt{display:none}
   .aud-form button:disabled::before{color:var(--dim)}
 }
 </style>
+<link rel="stylesheet" href="assets/catalogo.css?v=62856093">
 </head>
 <body>
 
@@ -2597,8 +2598,8 @@ html.js .pc-alt{display:none}
          volver. -->
     <a class="men-l" href="#top"><span class="men-n">00</span>Inicio
       <small>La portada, arriba del todo</small></a>
-    <a class="men-l" href="#productos"><span class="men-n">01</span>La placa de rese&#241;as
-      <small>Qu&#233; es, para qu&#233; sirve y cu&#225;nto cuesta</small></a>
+    <a class="men-l" href="#productos"><span class="men-n">01</span>Exhibidores NFC + QR
+      <small>Personalizados, cl&#225;sicos y mayoreo</small></a>
     <a class="men-l" href="#servicios"><span class="men-n">02</span>Lo que hacemos
       <small>P&#225;ginas, Google, atenci&#243;n al cliente y tareas</small></a>
     <a class="men-l" href="#clientes"><span class="men-n">03</span>Nuestros clientes
@@ -2666,7 +2667,7 @@ html.js .pc-alt{display:none}
   </a>
   <ul>
     <li><a href="#top">Inicio</a></li>
-    <li><a href="#productos">La placa</a></li>
+    <li><a href="#productos">Exhibidores</a></li>
     <li><a href="#servicios">Servicios</a></li>
     <li><a href="#clientes">Clientes</a></li>
     <li><a href="#diagnostico">Revisa tu página</a></li>
@@ -2700,7 +2701,7 @@ html.js .pc-alt{display:none}
     <!-- La línea que dice A QUÉ NOS DEDICAMOS. Sin ella, el coche, las montañas
          y «tu competencia ya nos llamó» se leen como un taller de detailing.
          Va sin data-split y sin .rv a propósito: ver el CSS de .hero-sub. -->
-    <p class="hero-sub">Páginas web, perfil de Google y un WhatsApp que contesta solo. Precio&nbsp;cerrado, desde San&nbsp;Luis&nbsp;Potosí.</p>
+    <p class="hero-sub">Páginas web, perfil de Google, exhibidores NFC personalizados en 3D y un WhatsApp que contesta solo. Desde San&nbsp;Luis&nbsp;Potosí.</p>
     <!-- LA OFERTA, EN CUATRO FICHAS. Nombre, precio y a dónde ir: quien entra
          buscando una placa, una web o un WhatsApp que conteste lo ve aquí y no
          tiene que adivinar en qué pestaña está. Cada ficha lleva a su tarjeta
@@ -2722,7 +2723,7 @@ html.js .pc-alt{display:none}
            sección. La flecha respira; con movimiento reducido se queda quieta. -->
       <a class="hero-mas" href="#soluciones">
         <span class="hm-t">Sigue bajando</span>
-        <span class="hm-q">La placa de cerca, los paquetes completos y negocios que ya la tienen</span>
+        <span class="hm-q">Exhibidores personalizados, soluciones completas y negocios que ya confían en S&amp;C</span>
         <i aria-hidden="true"></i>
       </a>
     </div>
@@ -2759,7 +2760,7 @@ html.js .pc-alt{display:none}
 
     <div class="sol-tabs" role="tablist" aria-label="Tipo de soluci&#243;n">
       <button class="sol-t" type="button" role="tab" id="t-productos"
-              aria-controls="productos" aria-selected="true">La placa</button>
+              aria-controls="productos" aria-selected="true">Exhibidores</button>
       <button class="sol-t" type="button" role="tab" id="t-servicios"
               aria-controls="servicios" aria-selected="false" tabindex="-1">Servicios</button>
       <button class="sol-t" type="button" role="tab" id="t-clientes"
@@ -2767,6 +2768,163 @@ html.js .pc-alt{display:none}
     </div>
 
     <div class="sol-panel" id="productos" role="tabpanel" aria-labelledby="t-productos">
+      <div class="sc-catalogo" id="sc-catalogo">
+        <header class="sc-cabecera">
+          <div>
+            <span class="sc-eyebrow">S&amp;C Smart Displays / Fabricación propia</span>
+            <h3>Tu marca merece <em>algo único.</em></h3>
+          </div>
+          <p>Exhibidores de mostrador fabricados en impresión 3D, con tecnología NFC y QR. Elige un diseño, personaliza los detalles y deja que tu negocio destaque desde el primer contacto.</p>
+        </header>
+
+        <nav class="sc-accesos" aria-label="Explorar exhibidores">
+          <a href="#sc-personalizados">01 / Personalizados</a>
+          <a href="#sc-classic">02 / Clásicas y mayoreo</a>
+        </nav>
+
+        <section class="sc-bloque" id="sc-personalizados" aria-label="Exhibidores personalizados">
+          <div class="sc-modelos">
+            <article class="sc-modelo sc-modelo--tria" data-sc-tarjeta="tria" data-sc-seleccionado="true">
+              <div class="sc-modelo-foto">
+                <img src="assets/sc-tria.webp" width="670" height="712" loading="lazy" decoding="async"
+                     alt="Presentación de TRIA, exhibidor negro con Google Reviews y botones para Instagram y WhatsApp">
+                <span class="sc-modelo-sello">3 accesos NFC</span>
+              </div>
+              <div class="sc-modelo-cuerpo">
+                <span class="sc-modelo-num">S&amp;C / 01</span>
+                <h4>TRIA</h4>
+                <p>Tres puntos NFC independientes y un QR. Reseñas, Instagram y WhatsApp en un exhibidor premium impreso en 3D.</p>
+                <span class="sc-modelo-meta">Fabricado y funcional · Personalizable</span>
+                <a class="sc-modelo-cta" href="#sc-config" data-sc-elegir="tria">Elegir TRIA</a>
+              </div>
+            </article>
+
+            <article class="sc-modelo" data-sc-tarjeta="signa" data-sc-seleccionado="false">
+              <div class="sc-modelo-foto">
+                <img src="assets/sc-signa-alvia.webp" width="900" height="1200" loading="lazy" decoding="async"
+                     alt="SIGNA: exhibidor blanco con el logotipo personalizado de ÁLVIA, tecnología NFC y código QR">
+                <span class="sc-modelo-sello">Tu identidad</span>
+              </div>
+              <div class="sc-modelo-cuerpo">
+                <span class="sc-modelo-num">S&amp;C / 02</span>
+                <h4>SIGNA</h4>
+                <p>Una placa NFC + QR diseñada alrededor de tu marca. Personalizamos logotipo, colores, composición y base.</p>
+                <span class="sc-modelo-meta">Fabricado y funcional · 1 NFC + QR</span>
+                <a class="sc-modelo-cta" href="#sc-config" data-sc-elegir="signa">Elegir SIGNA</a>
+              </div>
+            </article>
+
+            <article class="sc-modelo sc-modelo--dock">
+              <div class="sc-modelo-foto" role="img" aria-label="Ilustración conceptual de una estación con tres códigos QR; el diseño final está en desarrollo">
+                <span class="sc-modelo-sello">Próximamente</span>
+                <div class="sc-dock-arte" aria-hidden="true"><div class="sc-dock-cuadros"><span></span><span></span><span></span></div><b>S&amp;C</b></div>
+              </div>
+              <div class="sc-modelo-cuerpo">
+                <span class="sc-modelo-num">S&amp;C / 03</span>
+                <h4>DOCK</h4>
+                <p>Una estación para reunir tus redes sociales y colocar una terminal de cobro. Diseño propio en desarrollo.</p>
+                <span class="sc-modelo-meta">Concepto · Aún no disponible para compra</span>
+                <a class="sc-modelo-cta" href="https://wa.me/524423697248?text=Hola.%20Me%20interesa%20conocer%20el%20lanzamiento%20de%20S%26C%20DOCK." target="_blank" rel="noopener noreferrer">Preguntar por DOCK</a>
+              </div>
+            </article>
+          </div>
+
+          <aside class="sc-propuesta">
+            <div>
+              <span class="sc-eyebrow">Fabricación a tu medida</span>
+              <h4>¿Tienes una idea diferente?</h4>
+              <p>Podemos revisar tu propuesta, referencias o modelo 3D para fabricar un exhibidor especial. Te confirmamos viabilidad, precio y plazo antes de producirlo.</p>
+            </div>
+            <a href="#sc-config">Cuéntanos tu propuesta &#8599;</a>
+          </aside>
+
+          <section class="sc-config" id="sc-config" aria-labelledby="sc-config-titulo">
+            <div class="sc-config-media">
+              <img id="sc-preview" src="assets/sc-tria.webp" width="670" height="712" loading="lazy" decoding="async"
+                   alt="Presentación del exhibidor TRIA con tres puntos NFC y código QR">
+              <p id="sc-preview-pie">TRIA: render de presentación. Las fotos de la pieza impresa están en la galería.</p>
+            </div>
+            <div class="sc-config-cuerpo">
+              <span class="sc-eyebrow">Personaliza tu exhibidor</span>
+              <h4 id="sc-config-titulo">Diseñado para tu negocio.</h4>
+              <p class="sc-config-intro">Configura tu pedido desde una pieza. El logo y los archivos de referencia los enviarás por WhatsApp al terminar.</p>
+              <div class="sc-campos" role="group" aria-label="Opciones del exhibidor personalizado">
+                <div class="sc-campo">
+                  <label for="sc-modelo">Modelo</label>
+                  <select id="sc-modelo" name="modelo">
+                    <option value="tria">TRIA · 3 NFC + QR</option>
+                    <option value="signa">SIGNA · 1 NFC + QR</option>
+                  </select>
+                </div>
+                <div class="sc-campo">
+                  <label for="sc-cantidad">Cantidad de piezas</label>
+                  <input id="sc-cantidad" type="number" inputmode="numeric" name="cantidad" min="1" step="1" value="1" required>
+                </div>
+                <div class="sc-campo sc-campo--ancho">
+                  <span id="sc-base-etiqueta">Color de la base</span>
+                  <div class="sc-bases" role="group" aria-labelledby="sc-base-etiqueta">
+                    <label class="sc-base"><input type="radio" name="sc-base" value="Negro" checked><span style="--muestra:#161616">Negro</span></label>
+                    <label class="sc-base"><input type="radio" name="sc-base" value="Plateado"><span style="--muestra:#b8bbc1">Plateado</span></label>
+                    <label class="sc-base"><input type="radio" name="sc-base" value="Dorado"><span style="--muestra:#c9a454">Dorado</span></label>
+                    <label class="sc-base"><input type="radio" name="sc-base" value="Blanco"><span style="--muestra:#f1f0eb">Blanco</span></label>
+                  </div>
+                </div>
+                <div class="sc-campo sc-campo--ancho">
+                  <label for="sc-destino">Destino principal del NFC y QR</label>
+                  <select id="sc-destino" name="destino">
+                    <option>Google Reviews</option><option>Instagram</option><option>WhatsApp</option>
+                    <option>Facebook</option><option>TikTok</option><option>Menú digital</option>
+                    <option>Sitio web</option><option>Otro enlace</option>
+                  </select>
+                </div>
+                <div id="sc-extra" class="sc-campo sc-campo--ancho">
+                  <div class="sc-campos">
+                    <div class="sc-campo">
+                      <label for="sc-red1">Segundo acceso NFC</label>
+                      <select id="sc-red1"><option>Instagram</option><option>WhatsApp</option><option>Facebook</option><option>TikTok</option><option>Google Reviews</option><option>Otro enlace</option></select>
+                    </div>
+                    <div class="sc-campo">
+                      <label for="sc-red2">Tercer acceso NFC</label>
+                      <select id="sc-red2"><option>WhatsApp</option><option>Instagram</option><option>Facebook</option><option>TikTok</option><option>Google Reviews</option><option>Otro enlace</option></select>
+                    </div>
+                  </div>
+                </div>
+                <div class="sc-campo sc-campo--ancho">
+                  <label for="sc-cambio-base">Diseño de la base</label>
+                  <select id="sc-cambio-base">
+                    <option>Base del modelo elegido</option>
+                    <option>Quiero proponer otra forma o diseño 3D</option>
+                  </select>
+                </div>
+                <div class="sc-campo sc-campo--ancho">
+                  <label for="sc-negocio">Nombre de tu negocio (opcional)</label>
+                  <input id="sc-negocio" type="text" maxlength="90" autocomplete="organization" placeholder="Ej. Mi restaurante">
+                </div>
+                <div class="sc-campo sc-campo--ancho">
+                  <label for="sc-notas">Tu idea o indicaciones especiales (opcional)</label>
+                  <textarea id="sc-notas" maxlength="500" rows="3" placeholder="Cuéntanos qué colores, logotipo, forma o acabado imaginas."></textarea>
+                </div>
+              </div>
+              <div class="sc-config-pie">
+                <p id="sc-aviso" aria-live="polite">Revisamos contigo diseño, costo final y tiempo de fabricación antes de confirmar.</p>
+                <a id="sc-consulta" href="https://wa.me/524423697248?text=Hola.%20Quiero%20cotizar%20un%20exhibidor%20personalizado%20S%26C%20TRIA." target="_blank" rel="noopener noreferrer">Cotizar S&amp;C TRIA por WhatsApp</a>
+                <p>No se realiza ningún cobro aquí. Puedes enviarnos tu logotipo, fotografías o archivos 3D directamente en la conversación.</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="sc-ejemplos" aria-label="Fotografías de fabricación y personalización">
+            <figure><img src="assets/sc-tria-nfc.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Parte posterior de tres exhibidores TRIA impresos con sus NFC instalados"><figcaption>TRIA · NFC instalados</figcaption></figure>
+            <figure><img src="assets/sc-tria-perfil.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Vista lateral del exhibidor TRIA fabricado en impresión 3D"><figcaption>TRIA · Pieza real</figcaption></figure>
+            <figure><img src="assets/sc-signa-3241.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Exhibidor SIGNA negro con logotipo 3241 Seminuevos y detalles rojos"><figcaption>SIGNA · 3241 Seminuevos</figcaption></figure>
+            <figure><img src="assets/sc-signa-dentiva.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Exhibidor SIGNA blanco con identidad dorada de DENTIVA"><figcaption>SIGNA · DENTIVA</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="sc-classic" id="sc-classic" aria-labelledby="sc-classic-titulo">
+          <span class="sc-eyebrow">S&amp;C / 04 · Línea tradicional</span>
+          <h3 id="sc-classic-titulo">CLASSIC <em>&amp; mayoreo.</em></h3>
+          <p>La placa NFC + QR de siempre, lista para tu mostrador. Elige una o varias piezas y aprovecha los precios por cantidad con nuestro proceso de compra habitual.</p>
       <article class="prod">
         <div class="prod-fig">
         <div class="prod-vista" role="group" aria-label="C&#243;mo ver el producto">
@@ -2894,6 +3052,8 @@ html.js .pc-alt{display:none}
             persona &#183; env&#237;o gratis desde 2 placas.</p>
         </div>
       </article>
+        </section>
+      </div>
     </div>
 
     <div class="sol-panel" id="servicios" role="tabpanel" aria-labelledby="t-servicios">
@@ -6040,5 +6200,6 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
+<script src="assets/catalogo.js?v=23ef9ab3"></script>
 </body>
 </html>
