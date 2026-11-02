@@ -7,32 +7,23 @@
   if (!raiz) return;
 
   const modelo = raiz.querySelector('#sc-modelo');
-  const destino = raiz.querySelector('#sc-destino');
   const colores = [
     { nombre: 'Negro', id: 'sc-negro', input: raiz.querySelector('#sc-negro') },
     { nombre: 'Plateado', id: 'sc-plateado', input: raiz.querySelector('#sc-plateado') },
     { nombre: 'Dorado', id: 'sc-dorado', input: raiz.querySelector('#sc-dorado') },
     { nombre: 'Blanco', id: 'sc-blanco', input: raiz.querySelector('#sc-blanco') }
   ];
-  const extra = raiz.querySelector('#sc-extra');
-  const red1 = raiz.querySelector('#sc-red1');
-  const red2 = raiz.querySelector('#sc-red2');
-  const negocio = raiz.querySelector('#sc-negocio');
-  const notas = raiz.querySelector('#sc-notas');
   const resumen = raiz.querySelector('#sc-resumen');
   const total = raiz.querySelector('#sc-total');
   const enlace = raiz.querySelector('#sc-consulta');
   const aviso = raiz.querySelector('#sc-aviso');
-  if (![modelo, destino, extra, red1, red2, negocio, notas, resumen, total, enlace, aviso]
+  if (![modelo, resumen, total, enlace, aviso]
     .every(Boolean) || colores.some(color => !color.input)) return;
 
   const modelos = { tria: 'TRIA', signa: 'SIGNA' };
-  const texto = valor => String(valor || '').trim();
 
   function actualizar() {
     const nombre = modelos[modelo.value] || modelos.tria;
-    const esTria = modelo.value === 'tria';
-    extra.hidden = !esTria;
 
     raiz.querySelectorAll('[data-sc-tarjeta]').forEach(tarjeta => {
       tarjeta.dataset.scSeleccionado = String(tarjeta.dataset.scTarjeta === modelo.value);
@@ -62,21 +53,14 @@
       `Modelo: S&C ${nombre}`,
       `Total: ${suma} ${suma === 1 ? 'pieza' : 'piezas'}`,
       'Colores y cantidades:',
-      ...activos.map(color => `- ${color.nombre}: ${color.n}`),
-      `Destino principal NFC + QR: ${destino.value}`
+      ...activos.map(color => `- ${color.nombre}: ${color.n}`)
     ];
-    if (esTria) {
-      partes.push(`Acceso NFC adicional 1: ${red1.value}`);
-      partes.push(`Acceso NFC adicional 2: ${red2.value}`);
-    }
-    if (texto(negocio.value)) partes.push(`Negocio: ${texto(negocio.value)}`);
-    if (texto(notas.value)) partes.push(`Indicaciones: ${texto(notas.value)}`);
-    partes.push('Me gustaría conocer el precio y tiempo de elaboración. Puedo enviar mi logo por aquí.');
+    partes.push('Quiero enviarles el logotipo de mi marca por este chat y definir con ustedes el diseño, los enlaces NFC/QR y los acabados. ¿Me comparten precio y tiempo de entrega?');
 
     enlace.href = 'https://wa.me/524423697248?text=' + encodeURIComponent(partes.join('\n'));
     enlace.removeAttribute('aria-disabled');
     enlace.textContent = 'Cotizar por WhatsApp';
-    aviso.textContent = 'El diseño, precio final y tiempo de entrega se confirman por WhatsApp.';
+    aviso.textContent = 'En WhatsApp nos envías tu logotipo y definimos juntos el diseño, enlaces NFC/QR, precio y entrega.';
   }
 
   raiz.querySelectorAll('[data-sc-elegir]').forEach(enlaceModelo => {

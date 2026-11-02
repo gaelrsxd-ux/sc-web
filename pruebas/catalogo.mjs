@@ -28,14 +28,10 @@ function nodo(value = '') {
 
 function preparar() {
   const campos = Object.fromEntries([
-    '#sc-modelo', '#sc-destino', '#sc-extra', '#sc-red1', '#sc-red2', '#sc-negocio',
-    '#sc-notas', '#sc-resumen', '#sc-total', '#sc-consulta', '#sc-aviso',
+    '#sc-modelo', '#sc-resumen', '#sc-total', '#sc-consulta', '#sc-aviso',
     '#sc-negro', '#sc-plateado', '#sc-dorado', '#sc-blanco'
   ].map(id => [id, nodo()]));
   campos['#sc-modelo'].value = 'tria';
-  campos['#sc-destino'].value = 'Google Reviews';
-  campos['#sc-red1'].value = 'Instagram';
-  campos['#sc-red2'].value = 'WhatsApp';
   for (const id of ['#sc-negro', '#sc-plateado', '#sc-dorado', '#sc-blanco']) campos[id].value = '0';
   campos['#sc-negro'].value = '1';
 
@@ -76,7 +72,7 @@ function preparar() {
 
 test('fichas y controles compactos existen sin alterar las placas clásicas', () => {
   for (const id of ['sc-catalogo', 'sc-personalizados', 'sc-config', 'sc-classic',
-    'sc-modelo', 'sc-destino', 'sc-negro', 'sc-plateado', 'sc-dorado', 'sc-blanco',
+    'sc-modelo', 'sc-negro', 'sc-plateado', 'sc-dorado', 'sc-blanco',
     'sc-resumen', 'sc-total', 'sc-consulta']) {
     assert.match(html, new RegExp(`id="${id}"`));
   }
@@ -88,26 +84,26 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
   assert.ok(html.indexOf('id="sc-personalizados"') < html.indexOf('id="sc-classic"'));
   assert.ok(html.indexOf('id="sc-config"') < html.indexOf('id="sc-classic"'));
   assert.ok(html.indexOf('class="sc-propuesta"') > html.indexOf('id="sc-classic"'));
-  assert.doesNotMatch(html, /id="sc-cantidad"|id="sc-preview"|name="sc-base"/);
-  assert.match(html, /<details class="sc-config-opcional">/);
+  assert.doesNotMatch(html, /id="sc-cantidad"|id="sc-preview"|name="sc-base"|id="sc-destino"|class="sc-config-opcional"|\(opcional\)/);
+  assert.match(html, /En WhatsApp nos envías tu logotipo y definimos juntos el diseño, enlaces NFC\/QR, precio y entrega/);
   assert.match(estilos, /\.sc-modelo-cta::before\{content:"";position:absolute;inset:0;z-index:1/);
   assert.match(estilos, /\.sc-vistas\{[^}]*z-index:2/);
   assert.match(html, /id="sc-classic"[\s\S]*?<article class="prod">[\s\S]*?class="prod-compra"/);
   assert.match(html, /S&amp;C \/ 03[\s\S]*?DOCK[\s\S]*?Aún no disponible para compra/);
 });
 
-test('TRIA genera WhatsApp directo con los NFC y una pieza inicial', () => {
+test('TRIA genera WhatsApp directo con modelo y cantidad inicial y pide el logotipo', () => {
   const { campos, mensaje } = preparar();
   assert.match(campos['#sc-consulta'].href, /^https:\/\/wa\.me\/524423697248\?text=/);
   assert.match(mensaje(), /Modelo: S&C TRIA/);
   assert.match(mensaje(), /Total: 1 pieza/);
   assert.match(mensaje(), /- Negro: 1/);
-  assert.match(mensaje(), /Destino principal NFC \+ QR: Google Reviews/);
-  assert.match(mensaje(), /Acceso NFC adicional 1: Instagram/);
-  assert.match(mensaje(), /Acceso NFC adicional 2: WhatsApp/);
+  assert.match(mensaje(), /logotipo de mi marca por este chat/);
+  assert.match(mensaje(), /definir con ustedes el diseño, los enlaces NFC\/QR y los acabados/);
+  assert.doesNotMatch(mensaje(), /Destino principal|Acceso NFC adicional|Negocio:|Indicaciones:/);
   assert.equal(campos['#sc-resumen'].textContent, 'TRIA · 1 negro');
   assert.equal(campos['#sc-total'].textContent, '1 pieza');
-  assert.equal(campos['#sc-extra'].hidden, false);
+  assert.match(campos['#sc-aviso'].textContent, /nos envías tu logotipo/);
 });
 
 test('permite múltiples cantidades y colores en un único mensaje con resumen', () => {
@@ -124,25 +120,19 @@ test('permite múltiples cantidades y colores en un único mensaje con resumen',
   assert.doesNotMatch(mensaje(), /- Blanco:/);
 });
 
-test('SIGNA actualiza los detalles opcionales y el mensaje sin dos NFC extras', () => {
+test('SIGNA cotiza únicamente el modelo y los colores y lleva el diseño a WhatsApp', () => {
   const { campos, raiz, mensaje, tarjetas } = preparar();
   campos['#sc-modelo'].value = 'signa';
   campos['#sc-negro'].value = '0';
   campos['#sc-dorado'].value = '12';
-  campos['#sc-destino'].value = 'TikTok';
-  campos['#sc-negocio'].value = 'Dentiva';
-  campos['#sc-notas'].value = 'Logo en relieve';
   raiz.eventos.change();
-  assert.equal(campos['#sc-extra'].hidden, true);
   assert.equal(tarjetas[1].dataset.scSeleccionado, 'true');
   assert.equal(campos['#sc-resumen'].textContent, 'SIGNA · 12 dorados');
   assert.match(mensaje(), /Modelo: S&C SIGNA/);
   assert.match(mensaje(), /Total: 12 piezas/);
   assert.match(mensaje(), /- Dorado: 12/);
-  assert.match(mensaje(), /Destino principal NFC \+ QR: TikTok/);
-  assert.match(mensaje(), /Negocio: Dentiva/);
-  assert.match(mensaje(), /Logo en relieve/);
-  assert.doesNotMatch(mensaje(), /Acceso NFC adicional/);
+  assert.match(mensaje(), /logotipo de mi marca/);
+  assert.doesNotMatch(mensaje(), /Destino principal|Acceso NFC adicional|Negocio:|Indicaciones:/);
 });
 
 test('cantidades vacías, negativas, decimales y sin piezas invalidan el enlace', () => {
