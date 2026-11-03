@@ -84,6 +84,7 @@ function preparar({ hash = '' } = {}) {
     [-1, 1].map(scPaso => ({ ...nodo(), dataset: { scPara, scPaso: String(scPaso) } })));
   const raiz = {
     eventos: {},
+    dataset: {},
     querySelector(id) { return campos[id] || paneles[id] || null; },
     querySelectorAll(selector) {
       if (selector === '[data-sc-tarjeta]') return tarjetas;
@@ -266,6 +267,22 @@ test('las miniaturas actualizan imágenes sin seleccionar otro producto', () => 
   assert.equal(inicio.atributos['aria-pressed'], 'false');
   assert.equal(segunda.atributos['aria-pressed'], 'true');
   assert.equal(campos['#sc-modelo'].value, 'tria');
+});
+
+test('solo SIGNÁ muestra las fotografías de bases y TRIA conserva las cantidades', () => {
+  const { campos, raiz, mensaje } = preparar();
+  assert.equal(raiz.dataset.scModelo, 'tria');
+  assert.match(estilos, /:not\(\[data-sc-modelo="signa"\]\) \.sc-color-ver\{display:none\}/);
+  assert.match(mensaje(), /S&C TRIA/);
+  campos['#sc-modelo'].value = 'signa';
+  raiz.eventos.change();
+  assert.equal(raiz.dataset.scModelo, 'signa');
+  assert.equal(campos['#sc-negro'].value, '1');
+  assert.match(mensaje(), /S&C SIGNA/);
+  campos['#sc-modelo'].value = 'tria';
+  raiz.eventos.change();
+  assert.equal(raiz.dataset.scModelo, 'tria');
+  assert.equal(campos['#sc-negro'].value, '1');
 });
 
 test('el selector de colores permite ampliar las cuatro fotos y cerrarlas de forma accesible', () => {

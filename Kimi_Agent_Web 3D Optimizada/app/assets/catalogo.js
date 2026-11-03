@@ -56,6 +56,8 @@
 
   function actualizar() {
     const nombre = modelos[modelo.value] || modelos.tria;
+    // Las fotografías de bases pertenecen a SIGNA; TRIA conserva sus colores sin esas fotos.
+    raiz.dataset.scModelo = modelo.value;
 
     raiz.querySelectorAll('[data-sc-tarjeta]').forEach(tarjeta => {
       tarjeta.dataset.scSeleccionado = String(tarjeta.dataset.scTarjeta === modelo.value);

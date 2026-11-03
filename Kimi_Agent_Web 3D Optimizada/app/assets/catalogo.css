@@ -109,6 +109,11 @@
   margin:0;padding:0;border:1px solid var(--line-soft);border-radius:2px;
   overflow:hidden;background:#f4f3f0;cursor:zoom-in}
 .sc-color-ejemplo{display:block;width:100%;height:100%;object-fit:cover}
+/* No atribuir a TRIA las fotografías de las bases SIGNÁ. El selector mantiene colores y cantidades. */
+.sc-catalogo:not([data-sc-modelo="signa"]) .sc-color-ver{display:none}
+.sc-catalogo:not([data-sc-modelo="signa"]) .sc-color-cantidad{min-height:72px;grid-template-columns:minmax(0,1fr)}
+.sc-catalogo:not([data-sc-modelo="signa"]) .sc-color-cantidad label,
+.sc-catalogo:not([data-sc-modelo="signa"]) .sc-color-cantidad .sc-stepper{grid-column:1}
 .sc-catalogo .sc-color-ver:hover,.sc-catalogo .sc-color-ver:focus-visible{
   border-color:var(--bronze-hi);outline:2px solid var(--bronze-hi);outline-offset:2px}
 .sc-color-cantidad label{grid-column:2}
