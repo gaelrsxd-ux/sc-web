@@ -119,7 +119,7 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
     assert.match(html, new RegExp(`id="${id}"`));
   }
   for (const archivo of ['sc-tria.webp', 'sc-tria-nfc.webp', 'sc-tria-perfil.webp',
-    'sc-signa-alvia.webp', 'sc-signa-3241.webp', 'sc-signa-dentiva.webp']) {
+    'sc-signa-alvia-natural.webp', 'sc-signa-3241.webp', 'sc-signa-dentiva.webp']) {
     assert.ok(existsSync(join(app, 'assets', archivo)), `Falta ${archivo}`);
     assert.ok(html.includes(`assets/${archivo}`), `Falta referencia a ${archivo}`);
   }
@@ -285,13 +285,13 @@ test('solo SIGNÁ muestra las fotografías de bases y TRIA conserva las cantidad
   assert.equal(campos['#sc-negro'].value, '1');
 });
 
-test('TRIA y SIGNÁ amplían sus fotos sin mandar al cotizador y 3241 abre la galería', () => {
+test('TRIA y SIGNÁ amplían sus fotos sin mandar al cotizador y ÁLVIA es la portada de la galería', () => {
   assert.equal((html.match(/class="sc-modelo-foto sc-foto-abrir"/g) || []).length, 2);
   assert.match(html, /aria-label="Ampliar fotografía de TRIA"/);
   assert.match(html, /aria-label="Ampliar fotografía de SIGNA"/);
-  assert.match(html, /class="sc-modelo-imagen" src="assets\/sc-signa-3241.webp"/);
-  assert.match(html, /aria-label="Ver exhibidor SIGNA de ÁLVIA" aria-pressed="false"/);
-  assert.match(html, /aria-label="Ver exhibidor SIGNA de 3241 Seminuevos" aria-pressed="true"/);
+  assert.match(html, /class="sc-modelo-imagen" src="assets\/sc-signa-alvia-natural.webp"/);
+  assert.match(html, /aria-label="Ver exhibidor SIGNA de ÁLVIA" aria-pressed="true"/);
+  assert.match(html, /aria-label="Ver exhibidor SIGNA de 3241 Seminuevos" aria-pressed="false"/);
   assert.match(codigo, /querySelectorAll\('\.sc-color-ver, \.sc-foto-abrir'\)/);
   assert.match(codigo, /modal\.classList\.toggle\('sc-color-modal--producto'/);
   assert.match(estilos, /\.sc-catalogo \.sc-foto-abrir\{display:block;z-index:2/);
