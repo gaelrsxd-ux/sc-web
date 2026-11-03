@@ -298,6 +298,20 @@ test('TRIA y SIGNÁ amplían sus fotos sin mandar al cotizador y ÁLVIA es la po
   assert.match(estilos, /\.sc-color-modal--producto \.sc-color-modal__img\{/);
 });
 
+test('la foto ampliada navega entre las vistas del mismo modelo, con flechas de borde', () => {
+  assert.match(codigo, /tarjeta\.querySelectorAll\('\[data-sc-vista\]'\)/);
+  assert.match(codigo, /const seleccionada = botones\.findIndex/);
+  assert.match(codigo, /if \(vista\.boton\) vista\.boton\.click\(\)/);
+  assert.match(codigo, /anterior\.hidden = indice === 0/);
+  assert.match(codigo, /siguiente\.hidden = indice === vistas\.length - 1/);
+  assert.match(codigo, /evento\.stopPropagation\(\)/);
+  assert.match(codigo, /evento\.key === 'ArrowLeft'/);
+  assert.match(codigo, /evento\.key === 'ArrowRight'/);
+  assert.match(estilos, /\.sc-color-modal__flecha\[hidden\],\.sc-color-modal__contador\[hidden\]\{display:none\}/);
+  assert.match(estilos, /\.sc-color-modal__flecha--anterior\{left:/);
+  assert.match(estilos, /\.sc-color-modal__flecha--siguiente\{right:/);
+});
+
 test('el selector de colores permite ampliar las cuatro fotos y cerrarlas de forma accesible', () => {
   for (const color of ['negro', 'plateado', 'dorado', 'blanco']) {
     assert.match(html, new RegExp('class="sc-color-ver" aria-label="Ampliar foto de la base en color ' + color + '"'));

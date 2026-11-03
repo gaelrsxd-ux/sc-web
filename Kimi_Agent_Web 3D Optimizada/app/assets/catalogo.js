@@ -142,8 +142,8 @@
   actualizar();
 })();
 
-/* Fotos de productos y acabados: ampliar con diálogo nativo (accesible en iOS).
-   Se crea solo cuando hay DOM real; no interfiere con las cantidades. */
+/* Fotos de productos y acabados: ampliación con navegación por modelo.
+   El diálogo nativo mantiene el cierre al tocar la foto o el fondo. */
 (() => {
   'use strict';
   const raiz = document.getElementById('sc-catalogo');
@@ -156,36 +156,92 @@
   modal.setAttribute('aria-label', 'Fotografía ampliada del exhibidor');
   const imagen = document.createElement('img');
   imagen.className = 'sc-color-modal__img';
+  const anterior = document.createElement('button');
+  anterior.type = 'button';
+  anterior.className = 'sc-color-modal__flecha sc-color-modal__flecha--anterior';
+  anterior.textContent = '‹';
+  anterior.setAttribute('aria-label', 'Fotografía anterior');
+  anterior.hidden = true;
+  const siguiente = document.createElement('button');
+  siguiente.type = 'button';
+  siguiente.className = 'sc-color-modal__flecha sc-color-modal__flecha--siguiente';
+  siguiente.textContent = '›';
+  siguiente.setAttribute('aria-label', 'Fotografía siguiente');
+  siguiente.hidden = true;
+  const contador = document.createElement('span');
+  contador.className = 'sc-color-modal__contador';
+  contador.setAttribute('aria-live', 'polite');
+  contador.hidden = true;
   const cerrarBoton = document.createElement('button');
   cerrarBoton.type = 'button';
   cerrarBoton.className = 'sc-color-modal__cerrar';
   cerrarBoton.textContent = '×';
   cerrarBoton.setAttribute('aria-label', 'Cerrar fotografía');
-  modal.append(imagen, cerrarBoton);
+  modal.append(imagen, anterior, siguiente, contador, cerrarBoton);
   document.body.appendChild(modal);
 
   let origen = null;
   let overflowAnterior = '';
+  let vistas = [];
+  let indice = 0;
   function cerrar() { if (modal.open) modal.close(); }
+
+  function mostrarVista(nueva) {
+    if (nueva < 0 || nueva >= vistas.length) return;
+    indice = nueva;
+    const vista = vistas[indice];
+    imagen.src = vista.src;
+    imagen.alt = vista.alt;
+    anterior.hidden = indice === 0;
+    siguiente.hidden = indice === vistas.length - 1;
+    contador.hidden = vistas.length < 2;
+    contador.textContent = String(indice + 1) + ' / ' + vistas.length;
+    // Mantiene la miniatura y la portada sincronizadas al cerrar la ampliación.
+    if (vista.boton) vista.boton.click();
+  }
 
   muestras.forEach(boton => boton.addEventListener('click', () => {
     const miniatura = boton.querySelector('img');
     if (!miniatura || typeof modal.showModal !== 'function') return;
-    imagen.src = miniatura.currentSrc || miniatura.getAttribute('src');
-    imagen.alt = miniatura.alt;
-    modal.classList.toggle('sc-color-modal--producto', boton.classList.contains('sc-foto-abrir'));
+    const producto = boton.classList.contains('sc-foto-abrir');
+    const tarjeta = producto ? boton.closest('[data-sc-tarjeta]') : null;
+    const botones = tarjeta ? [...tarjeta.querySelectorAll('[data-sc-vista]')] : [];
+    vistas = botones.length
+      ? botones.map(b => ({ src: b.dataset.scVista, alt: b.dataset.scAlt, boton: b }))
+      : [{ src: miniatura.currentSrc || miniatura.getAttribute('src'), alt: miniatura.alt }];
+    const seleccionada = botones.findIndex(b => b.getAttribute('aria-pressed') === 'true');
+    modal.classList.toggle('sc-color-modal--producto', producto);
     origen = boton;
     overflowAnterior = document.documentElement.style.overflow;
+    mostrarVista(seleccionada >= 0 ? seleccionada : 0);
     modal.showModal();
     document.documentElement.style.overflow = 'hidden';
     cerrarBoton.focus();
   }));
-  // Incluye toques sobre la fotografía, sobre el fondo o sobre la X.
+
+  anterior.addEventListener('click', evento => {
+    evento.stopPropagation();
+    mostrarVista(indice - 1);
+  });
+  siguiente.addEventListener('click', evento => {
+    evento.stopPropagation();
+    mostrarVista(indice + 1);
+  });
+  modal.addEventListener('keydown', evento => {
+    if (vistas.length < 2) return;
+    if (evento.key === 'ArrowLeft' || evento.key === 'ArrowRight') {
+      evento.preventDefault();
+      mostrarVista(indice + (evento.key === 'ArrowRight' ? 1 : -1));
+    }
+  });
+  // Tocar la fotografía o el fondo sigue cerrando el diálogo; las flechas no.
   modal.addEventListener('click', cerrar);
   cerrarBoton.addEventListener('click', cerrar);
   modal.addEventListener('close', () => {
     document.documentElement.style.overflow = overflowAnterior;
     imagen.removeAttribute('src');
+    vistas = [];
+    indice = 0;
     if (origen && origen.isConnected) origen.focus();
   });
 })();
