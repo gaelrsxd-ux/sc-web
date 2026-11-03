@@ -142,18 +142,18 @@
   actualizar();
 })();
 
-/* Fotos de acabados: ampliar con diálogo nativo (accesible en iOS).
+/* Fotos de productos y acabados: ampliar con diálogo nativo (accesible en iOS).
    Se crea solo cuando hay DOM real; no interfiere con las cantidades. */
 (() => {
   'use strict';
   const raiz = document.getElementById('sc-catalogo');
   if (!raiz || typeof document.createElement !== 'function' || !document.body) return;
-  const muestras = [...raiz.querySelectorAll('.sc-color-ver')];
+  const muestras = [...raiz.querySelectorAll('.sc-color-ver, .sc-foto-abrir')];
   if (!muestras.length) return;
 
   const modal = document.createElement('dialog');
   modal.className = 'sc-color-modal';
-  modal.setAttribute('aria-label', 'Fotografía ampliada del color del exhibidor');
+  modal.setAttribute('aria-label', 'Fotografía ampliada del exhibidor');
   const imagen = document.createElement('img');
   imagen.className = 'sc-color-modal__img';
   const cerrarBoton = document.createElement('button');
@@ -173,6 +173,7 @@
     if (!miniatura || typeof modal.showModal !== 'function') return;
     imagen.src = miniatura.currentSrc || miniatura.getAttribute('src');
     imagen.alt = miniatura.alt;
+    modal.classList.toggle('sc-color-modal--producto', boton.classList.contains('sc-foto-abrir'));
     origen = boton;
     overflowAnterior = document.documentElement.style.overflow;
     modal.showModal();

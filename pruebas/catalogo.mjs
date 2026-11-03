@@ -285,6 +285,19 @@ test('solo SIGNÁ muestra las fotografías de bases y TRIA conserva las cantidad
   assert.equal(campos['#sc-negro'].value, '1');
 });
 
+test('TRIA y SIGNÁ amplían sus fotos sin mandar al cotizador y 3241 abre la galería', () => {
+  assert.equal((html.match(/class="sc-modelo-foto sc-foto-abrir"/g) || []).length, 2);
+  assert.match(html, /aria-label="Ampliar fotografía de TRIA"/);
+  assert.match(html, /aria-label="Ampliar fotografía de SIGNA"/);
+  assert.match(html, /class="sc-modelo-imagen" src="assets\/sc-signa-3241.webp"/);
+  assert.match(html, /aria-label="Ver exhibidor SIGNA de ÁLVIA" aria-pressed="false"/);
+  assert.match(html, /aria-label="Ver exhibidor SIGNA de 3241 Seminuevos" aria-pressed="true"/);
+  assert.match(codigo, /querySelectorAll\('\.sc-color-ver, \.sc-foto-abrir'\)/);
+  assert.match(codigo, /modal\.classList\.toggle\('sc-color-modal--producto'/);
+  assert.match(estilos, /\.sc-catalogo \.sc-foto-abrir\{display:block;z-index:2/);
+  assert.match(estilos, /\.sc-color-modal--producto \.sc-color-modal__img\{/);
+});
+
 test('el selector de colores permite ampliar las cuatro fotos y cerrarlas de forma accesible', () => {
   for (const color of ['negro', 'plateado', 'dorado', 'blanco']) {
     assert.match(html, new RegExp('class="sc-color-ver" aria-label="Ampliar foto de la base en color ' + color + '"'));

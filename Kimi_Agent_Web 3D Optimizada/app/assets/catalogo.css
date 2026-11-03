@@ -35,6 +35,13 @@
 .sc-modelo:hover,.sc-modelo:focus-within{border-color:var(--bronze-hi)}
 .sc-modelo-foto{width:100%;aspect-ratio:1.5;max-height:260px;position:relative;overflow:hidden;
   background:radial-gradient(circle at 45% 40%,#33322c,#111318 76%)}
+.sc-catalogo .sc-foto-abrir{display:block;z-index:2;appearance:none;border:0;padding:0;margin:0;
+  color:inherit;text-align:left;cursor:zoom-in}
+.sc-catalogo .sc-foto-abrir:focus-visible{outline:3px solid var(--bronze-hi);outline-offset:-3px}
+.sc-foto-abrir::before{content:"AMPLIAR";position:absolute;right:10px;bottom:10px;z-index:2;
+  padding:6px 9px;border:1px solid rgba(228,205,154,.62);
+  background:rgba(8,9,12,.82);color:#f1d59a;font-size:10px;letter-spacing:1.3px;
+  pointer-events:none}
 .sc-modelo-foto>.sc-modelo-imagen{position:absolute;inset:0;width:100%;height:100%;
   max-height:100%;object-fit:cover;display:block}
 .sc-modelo--tria .sc-modelo-foto img{object-fit:contain}
@@ -241,6 +248,7 @@
 .sc-color-modal__img{display:block;width:min(86vw,480px);
   height:auto;max-height:76vh;max-height:76dvh;object-fit:contain;
   border-radius:4px;box-shadow:0 22px 65px rgba(0,0,0,.55);background:#fff}
+.sc-color-modal--producto .sc-color-modal__img{width:auto;height:auto;max-width:min(94vw,900px);max-height:82vh;max-height:82dvh;background:#101115}
 .sc-color-modal__cerrar{position:fixed;
   top:calc(14px + env(safe-area-inset-top,0px));
   right:calc(14px + env(safe-area-inset-right,0px));
