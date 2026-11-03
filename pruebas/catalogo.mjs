@@ -267,3 +267,18 @@ test('las miniaturas actualizan imágenes sin seleccionar otro producto', () => 
   assert.equal(segunda.atributos['aria-pressed'], 'true');
   assert.equal(campos['#sc-modelo'].value, 'tria');
 });
+
+test('el selector de colores permite ampliar las cuatro fotos y cerrarlas de forma accesible', () => {
+  for (const color of ['negro', 'plateado', 'dorado', 'blanco']) {
+    assert.match(html, new RegExp('class="sc-color-ver" aria-label="Ampliar foto de la base en color ' + color + '"'));
+    assert.match(html, new RegExp('src="assets/sc-ejemplo-' + color + '.webp"'));
+  }
+  assert.match(codigo, /modal\.showModal\(\)/);
+  assert.match(codigo, /modal\.addEventListener\('click', cerrar\)/);
+  assert.match(codigo, /modal\.addEventListener\('close'/);
+  assert.match(codigo, /aria-label', 'Cerrar fotografía'/);
+  assert.match(estilos, /\.sc-color-modal__cerrar\{/);
+  assert.match(estilos, /width:56px;height:56px/);
+  assert.match(estilos, /\.sc-color-cantidad label\[for="sc-dorado"\] i\{/);
+  assert.match(html, /--muestra:#b98517/);
+});

@@ -139,3 +139,50 @@
   raiz.addEventListener('change', actualizar);
   actualizar();
 })();
+
+/* Fotos de acabados: ampliar con diálogo nativo (accesible en iOS).
+   Se crea solo cuando hay DOM real; no interfiere con las cantidades. */
+(() => {
+  'use strict';
+  const raiz = document.getElementById('sc-catalogo');
+  if (!raiz || typeof document.createElement !== 'function' || !document.body) return;
+  const muestras = [...raiz.querySelectorAll('.sc-color-ver')];
+  if (!muestras.length) return;
+
+  const modal = document.createElement('dialog');
+  modal.className = 'sc-color-modal';
+  modal.setAttribute('aria-label', 'Fotografía ampliada del color del exhibidor');
+  const imagen = document.createElement('img');
+  imagen.className = 'sc-color-modal__img';
+  const cerrarBoton = document.createElement('button');
+  cerrarBoton.type = 'button';
+  cerrarBoton.className = 'sc-color-modal__cerrar';
+  cerrarBoton.textContent = '×';
+  cerrarBoton.setAttribute('aria-label', 'Cerrar fotografía');
+  modal.append(imagen, cerrarBoton);
+  document.body.appendChild(modal);
+
+  let origen = null;
+  let overflowAnterior = '';
+  function cerrar() { if (modal.open) modal.close(); }
+
+  muestras.forEach(boton => boton.addEventListener('click', () => {
+    const miniatura = boton.querySelector('img');
+    if (!miniatura || typeof modal.showModal !== 'function') return;
+    imagen.src = miniatura.currentSrc || miniatura.getAttribute('src');
+    imagen.alt = miniatura.alt;
+    origen = boton;
+    overflowAnterior = document.documentElement.style.overflow;
+    modal.showModal();
+    document.documentElement.style.overflow = 'hidden';
+    cerrarBoton.focus();
+  }));
+  // Incluye toques sobre la fotografía, sobre el fondo o sobre la X.
+  modal.addEventListener('click', cerrar);
+  cerrarBoton.addEventListener('click', cerrar);
+  modal.addEventListener('close', () => {
+    document.documentElement.style.overflow = overflowAnterior;
+    imagen.removeAttribute('src');
+    if (origen && origen.isConnected) origen.focus();
+  });
+})();
