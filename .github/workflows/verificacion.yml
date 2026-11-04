@@ -77,6 +77,9 @@ jobs:
       - name: Rutas permanentes de menús bien generadas
         run: node tools/menus.mjs --check
 
+      - name: SEO de las páginas publicadas
+        run: node tools/seo.mjs
+
       - name: Seguridad del catálogo de menús
         run: node --test pruebas/menus.mjs
 
