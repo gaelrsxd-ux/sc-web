@@ -38,5 +38,7 @@ html,body{width:100%;max-width:100%;overflow-x:clip;overscroll-behavior-x:none;t
 .carousel-step:disabled{opacity:.3;cursor:default;transform:none;background:#191a1d;border-color:var(--border)}
 .carousel-count{min-width:70px;text-align:center;font-size:11px;color:var(--bronze);font-weight:700;letter-spacing:.18em;font-variant-numeric:tabular-nums}
 .gallery-note{margin-top:17px}
+.filter-static{cursor:default}
+.filter-static:hover{color:#16130e}
 @media(max-width:699px){.gallery-stage{margin:0 -9px;border-radius:14px}.gallery{--card-width:min(74vw,320px);--side-offset:min(58vw,270px);height:410px}.gallery .project{height:370px;max-height:90%;border-radius:15px}.gallery .project.is-prev{transform:translate(-50%,-50%) translateX(calc(0px - var(--side-offset))) translateZ(-75px) rotateY(48deg) scale(.9)}.gallery .project.is-next{transform:translate(-50%,-50%) translateX(var(--side-offset)) translateZ(-75px) rotateY(-48deg) scale(.9)}.gallery .project-shade{padding:45px 15px 16px}.gallery .project-shade strong{font-size:15px}.carousel-controls{gap:25px}.carousel-step{height:42px;width:42px}}
 @media(max-width:360px){.gallery{height:365px}.gallery .project{height:330px}.gallery .project-shade strong{font-size:13px}}

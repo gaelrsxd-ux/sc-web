@@ -3,7 +3,6 @@
 
   const carousel = document.getElementById('gallery');
   const projects = [...carousel.querySelectorAll('.project')];
-  const filters = [...document.querySelectorAll('.filter')];
   const carouselCount = document.getElementById('carousel-count');
   const previousCard = document.querySelector('.carousel-prev');
   const nextCard = document.querySelector('.carousel-next');
@@ -16,7 +15,7 @@
   const previousPhoto = dialog.querySelector('.lightbox-prev');
   const nextPhoto = dialog.querySelector('.lightbox-next');
 
-  let visible = projects;
+  const visible = projects;
   let activeIndex = 0;
   let viewerIndex = 0;
   let previousFocus = null;
@@ -72,21 +71,6 @@
       renderViewer();
       dialog.showModal();
       closeButton.focus();
-    });
-  });
-
-  filters.forEach(filter => {
-    filter.addEventListener('click', () => {
-      const kind = filter.dataset.filter;
-      filters.forEach(button => {
-        const selected = button === filter;
-        button.classList.toggle('is-active', selected);
-        button.setAttribute('aria-pressed', String(selected));
-      });
-      projects.forEach(card => { card.hidden = kind !== 'all' && card.dataset.kind !== kind; });
-      visible = projects.filter(card => !card.hidden);
-      activeIndex = 0;
-      renderCarousel();
     });
   });
 
