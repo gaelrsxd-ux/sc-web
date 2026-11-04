@@ -48,9 +48,9 @@ html,body{width:100%;max-width:100%;overflow-x:clip;overscroll-behavior-x:none;t
 .portfolio .section-heading{margin-bottom:12px}
 .portfolio h2{font-size:clamp(38px,6vw,61px);line-height:1.02}
 .portfolio-lede{color:#bcb7ac;font-size:13px;line-height:1.5;margin:11px 0 18px}
-.service-compact{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:23px}
-.service-pill{min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 9px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(125deg,#211e1b,#14161a 75%);color:var(--ink);font-size:12px;font-weight:700;white-space:nowrap}
-.service-pill>span{font-size:19px;line-height:1;color:var(--bronze)}
+.service-compact{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:18px;row-gap:9px;margin-bottom:20px;padding:13px 0;border-top:1px solid rgba(200,169,106,.29);border-bottom:1px solid rgba(200,169,106,.16)}
+.service-pill{min-width:0;display:inline-flex;align-items:baseline;gap:7px;color:var(--ink);font-size:12px;font-weight:600;line-height:1.4;white-space:nowrap}
+.service-number{flex:none;color:var(--bronze);font:italic 500 17px/1 'Cormorant Garamond',Georgia,serif;letter-spacing:-.025em}
 .portfolio .filters{margin-bottom:16px}
 @media(max-width:699px){
   .hero{padding-bottom:30px}
@@ -58,9 +58,8 @@ html,body{width:100%;max-width:100%;overflow-x:clip;overscroll-behavior-x:none;t
   .portfolio{padding:35px 20px 24px}
   .portfolio h2{font-size:clamp(36px,9.5vw,47px)}
   .portfolio-lede{font-size:12px;line-height:1.45;margin:8px 0 16px}
-  .service-compact{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:18px}
-  .service-pill{min-height:42px;padding:8px 9px;border-radius:10px;font-size:11px}
-  .service-pill>span{font-size:17px}
+  .service-compact{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;row-gap:10px;padding:12px 2px;margin-bottom:15px}
+  .service-pill{font-size:12px;gap:7px}
   .portfolio .filters{margin-bottom:14px}
   /* Separación equilibrada entre el carrusel y el llamado a la acción. */
   .outro{padding:34px 20px 62px}
