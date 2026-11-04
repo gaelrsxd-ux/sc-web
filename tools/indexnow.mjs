@@ -1,7 +1,9 @@
 /* Avisa a los buscadores que usan IndexNow (Bing, Yandex, Naver, Seznam…) de
-   TODAS las URL del sitemap. ChatGPT busca con el índice de Bing, así que este
-   aviso es el camino más corto para que una guía nueva exista para él.
-   Google no participa en IndexNow: a Google se le avisa con Search Console.
+   TODAS las URL del sitemap. IndexNow avisa a Bing y otros buscadores
+   participantes. ChatGPT Search usa también su propio rastreador OAI-SearchBot:
+   hay que permitirlo y ofrecer contenido público, pero IndexNow no garantiza
+   aparecer en las respuestas de ChatGPT. Google no participa en IndexNow;
+   la indexación se comprueba en Search Console.
 
    La clave es pública por diseño: vive en app/<clave>.txt, el buscador la lee
    desde https://sycsolutions.company/<clave>.txt para confirmar que quien avisa
