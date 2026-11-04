@@ -42,3 +42,24 @@ html,body{width:100%;max-width:100%;overflow-x:clip;overscroll-behavior-x:none;t
 .filter-static:hover{color:#16130e}
 @media(max-width:699px){.gallery-stage{margin:0 -9px;border-radius:14px}.gallery{--card-width:min(74vw,320px);--side-offset:min(58vw,270px);height:410px}.gallery .project{height:370px;max-height:90%;border-radius:15px}.gallery .project.is-prev{transform:translate(-50%,-50%) translateX(calc(0px - var(--side-offset))) translateZ(-75px) rotateY(48deg) scale(.9)}.gallery .project.is-next{transform:translate(-50%,-50%) translateX(var(--side-offset)) translateZ(-75px) rotateY(-48deg) scale(.9)}.gallery .project-shade{padding:45px 15px 16px}.gallery .project-shade strong{font-size:15px}.carousel-controls{gap:25px}.carousel-step{height:42px;width:42px}}
 @media(max-width:360px){.gallery{height:365px}.gallery .project{height:330px}.gallery .project-shade strong{font-size:13px}}
+
+/* Presentación breve: cuatro especialidades sin ocupar otra pantalla en móvil. */
+.portfolio{padding-top:48px;padding-bottom:56px}
+.portfolio .section-heading{margin-bottom:12px}
+.portfolio h2{font-size:clamp(38px,6vw,61px);line-height:1.02}
+.portfolio-lede{color:#bcb7ac;font-size:13px;line-height:1.5;margin:11px 0 18px}
+.service-compact{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:23px}
+.service-pill{min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 9px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(125deg,#211e1b,#14161a 75%);color:var(--ink);font-size:12px;font-weight:700;white-space:nowrap}
+.service-pill>span{font-size:19px;line-height:1;color:var(--bronze)}
+.portfolio .filters{margin-bottom:16px}
+@media(max-width:699px){
+  .hero{padding-bottom:30px}
+  .discover{margin-top:31px}
+  .portfolio{padding:35px 20px 49px}
+  .portfolio h2{font-size:clamp(36px,9.5vw,47px)}
+  .portfolio-lede{font-size:12px;line-height:1.45;margin:8px 0 16px}
+  .service-compact{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:18px}
+  .service-pill{min-height:42px;padding:8px 9px;border-radius:10px;font-size:11px}
+  .service-pill>span{font-size:17px}
+  .portfolio .filters{margin-bottom:14px}
+}
