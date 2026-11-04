@@ -63,3 +63,6 @@ html,body{width:100%;max-width:100%;overflow-x:clip;overscroll-behavior-x:none;t
   .service-pill>span{font-size:17px}
   .portfolio .filters{margin-bottom:14px}
 }
+
+/* Ícono oficial de TikTok con acentos de marca, alineado con los demás accesos. */
+.link-icon .brand-tiktok{fill:#fff;filter:drop-shadow(-1px -1px 0 #25f4ee) drop-shadow(1px 1px 0 #fe2c55)}
