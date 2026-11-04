@@ -136,5 +136,53 @@
     if (previousFocus instanceof HTMLElement) visible[activeIndex].focus({ preventScroll: true });
   });
 
+  // Safari permite un rebote lateral del viewport visual después de pellizcar.
+  // Frenamos sólo el gesto que cruzaría los bordes; el zoom, el desplazamiento
+  // vertical y los gestos normales del carrusel continúan disponibles.
+  let pageTouch = null;
+  const rememberTouch = touch => ({
+    id: touch.identifier,
+    startX: touch.clientX,
+    startY: touch.clientY,
+    lastX: touch.clientX,
+    axis: null,
+    inCarousel: touch.target instanceof Element && Boolean(touch.target.closest('.gallery'))
+  });
+
+  document.addEventListener('touchstart', event => {
+    pageTouch = event.touches.length === 1 ? rememberTouch(event.touches[0]) : null;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', event => {
+    if (!pageTouch || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    if (touch.identifier !== pageTouch.id) return;
+    const totalX = touch.clientX - pageTouch.startX;
+    const totalY = touch.clientY - pageTouch.startY;
+    if (!pageTouch.axis && Math.hypot(totalX, totalY) >= 8) {
+      pageTouch.axis = Math.abs(totalX) > Math.abs(totalY) * 1.15 ? 'x' : 'y';
+    }
+    const movementX = touch.clientX - pageTouch.lastX;
+    pageTouch.lastX = touch.clientX;
+    if (pageTouch.axis !== 'x' || movementX === 0) return;
+
+    const viewport = window.visualViewport;
+    const scale = viewport?.scale || 1;
+    if (pageTouch.inCarousel && scale <= 1.01) return;
+    const pageWidth = document.documentElement.clientWidth;
+    const visibleWidth = viewport?.width || pageWidth;
+    const maxLeft = Math.max(0, pageWidth - visibleWidth);
+    const currentLeft = viewport?.pageLeft ?? window.scrollX;
+    const nextLeft = currentLeft - movementX / scale;
+    if ((nextLeft < 0 || nextLeft > maxLeft) && event.cancelable) {
+      event.preventDefault();
+    }
+  }, { passive: false, capture: true });
+
+  document.addEventListener('touchend', event => {
+    pageTouch = event.touches.length === 1 ? rememberTouch(event.touches[0]) : null;
+  }, { passive: true });
+  document.addEventListener('touchcancel', () => { pageTouch = null; }, { passive: true });
+
   renderCarousel();
 })();

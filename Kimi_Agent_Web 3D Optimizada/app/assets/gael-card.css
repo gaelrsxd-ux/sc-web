@@ -11,8 +11,8 @@
 @media(min-width:700px){.hero{padding-top:82px}.gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.project{height:270px}.project.project-tall{height:370px}.portfolio{padding-top:100px}.quick-link{min-height:81px}}@media(max-width:400px){.topbar{padding:20px;min-height:79px}.topbar-kicker{font-size:8px}.hero{width:calc(100% - 34px);padding-top:42px}.portfolio{padding-left:16px;padding-right:16px}.gallery{gap:8px}.project{height:193px}.project.project-tall{height:258px}.project-shade{padding-left:10px;padding-right:8px}.project-shade strong{font-size:11px}.lightbox-frame{padding-left:41px;padding-right:41px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* Evita que el zoom/pellizco en Safari desplace el lienzo fuera del ancho del iPhone. */
-html,body{width:100%;max-width:100%;overflow-x:clip;overscroll-behavior-x:none;touch-action:pan-y pinch-zoom}
+/* El ancho del documento es el límite del paneo, incluso al ampliar en Safari. */
+html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y pinch-zoom}
 .lightbox{width:100%;max-width:100%;max-height:100dvh}
 
 /* Carrusel coverflow: sólo la tarjeta central y sus dos vecinas se muestran. */
