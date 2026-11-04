@@ -55,13 +55,17 @@ html,body{width:100%;max-width:100%;overflow-x:clip;overscroll-behavior-x:none;t
 @media(max-width:699px){
   .hero{padding-bottom:30px}
   .discover{margin-top:31px}
-  .portfolio{padding:35px 20px 49px}
+  .portfolio{padding:35px 20px 24px}
   .portfolio h2{font-size:clamp(36px,9.5vw,47px)}
   .portfolio-lede{font-size:12px;line-height:1.45;margin:8px 0 16px}
   .service-compact{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:18px}
   .service-pill{min-height:42px;padding:8px 9px;border-radius:10px;font-size:11px}
   .service-pill>span{font-size:17px}
   .portfolio .filters{margin-bottom:14px}
+  /* Separación equilibrada entre el carrusel y el llamado a la acción. */
+  .outro{padding:34px 20px 62px}
+  .outro .index{margin:12px 0 14px}
+  .outro>p:not(.index){margin:14px auto 24px;line-height:1.55}
 }
 
 /* Ícono oficial de TikTok con acentos de marca, alineado con los demás accesos. */
