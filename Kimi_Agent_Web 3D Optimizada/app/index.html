@@ -2462,47 +2462,41 @@ html.js .pc-alt{display:none}
   .aud-form button:disabled::before{color:var(--dim)}
 }
 
-/* CONTACTO ÚNICO — una entrada rápida y un formulario sólo para quien lo prefiera. */
+/* CONTACTO ÚNICO — una sola tarjeta con WhatsApp y un formulario discreto dentro. */
 #contacto{scroll-margin-top:112px}
 #contacto .title{font-size:clamp(46px,7.1vw,102px);line-height:1.04;max-width:14ch;margin:14px 0 18px}
 #contacto .contacto-bajada{max-width:720px;font-size:clamp(17px,2vw,23px);line-height:1.55;color:var(--muted)}
-#contacto .contact-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:34px;align-items:start}
-#contacto .contacto-accion,#contacto .contacto-brief{background:rgba(var(--bg2-rgb),.78);border:1px solid var(--line);position:relative;min-width:0}
-#contacto .contacto-accion{padding:clamp(24px,3vw,44px);min-height:305px}
+#contacto .contact-grid{display:block;max-width:760px;margin-top:34px}
+#contacto .c-info{display:block}
+#contacto .contacto-accion{background:rgba(var(--bg2-rgb),.78);border:1px solid var(--line);position:relative;min-width:0;padding:clamp(24px,3vw,44px)}
 #contacto .contacto-accion::before{content:"";position:absolute;top:-1px;left:0;width:72px;height:2px;background:var(--bronze-hi)}
 #contacto .contacto-etiqueta{display:block;font:600 10px/1.5 var(--sans);letter-spacing:.28em;color:var(--bronze-hi)}
 #contacto .contacto-accion h3{font-family:var(--serif);font-weight:400;font-size:clamp(28px,3.4vw,44px);line-height:1.13;color:var(--ink);margin:18px 0 12px}
-#contacto .contacto-accion p{font-size:clamp(15px,1.6vw,18px);color:var(--muted);line-height:1.6}
+#contacto .contacto-accion>p{font-size:clamp(15px,1.6vw,18px);color:var(--muted);line-height:1.6}
 #contacto .contacto-whatsapp{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;margin-top:28px;min-height:60px;padding:16px 20px;text-align:left;font-size:12px;letter-spacing:.14em;white-space:normal}
 #contacto .contacto-whatsapp span{font-size:24px;line-height:1}
 #contacto .contacto-pie{display:grid;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line-soft);font-size:12px;line-height:1.5;color:var(--dim)}
 #contacto .contacto-pie a{color:var(--ink);text-underline-offset:4px}
-#contacto .contacto-brief{overflow:hidden}
-#contacto .contacto-brief>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:clamp(24px,3vw,44px);min-height:305px}
+#contacto .contacto-brief{margin-top:20px;min-width:0}
+#contacto .contacto-brief>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;min-height:44px;color:var(--ink);font-size:14px}
 #contacto .contacto-brief>summary::-webkit-details-marker{display:none}
-#contacto .contacto-brief>summary:focus-visible{outline:2px solid var(--bronze-hi);outline-offset:-5px}
-#contacto .contacto-brief summary strong{display:block;max-width:15ch;font-family:var(--serif);font-size:clamp(28px,3.4vw,44px);line-height:1.13;font-weight:400;color:var(--ink)}
-#contacto .contacto-brief summary small{font-size:clamp(15px,1.6vw,18px);line-height:1.6;color:var(--muted)}
-#contacto .contacto-abrir{display:block;margin-top:auto;padding-top:10px;border-bottom:1px solid var(--bronze);padding-bottom:8px;color:var(--bronze-hi);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
-#contacto .contacto-brief[open]>summary{min-height:0;border-bottom:1px solid var(--line-soft)}
-#contacto .contacto-brief[open] .contacto-abrir{font-size:0;border:0}
-#contacto .contacto-brief[open] .contacto-abrir::after{content:"Formulario abierto";font-size:11px}
-#contacto .contacto-brief>.frame{border:0;background:transparent;padding:clamp(22px,2.6vw,36px)}
+#contacto .contacto-brief>summary:focus-visible{outline:2px solid var(--bronze-hi);outline-offset:5px}
+#contacto .contacto-abrir{color:var(--bronze-hi);font-size:10px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+#contacto .contacto-brief[open]>summary{padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
+#contacto .contacto-brief[open] .contacto-abrir{font-size:0}
+#contacto .contacto-brief[open] .contacto-abrir::after{content:"Cerrar formulario";font-size:10px}
+#contacto .contacto-brief>.frame{border:0;background:transparent;padding:24px 0 0;margin:0}
 #contacto .contacto-brief>.frame::before{display:none}
 #contacto .contacto-brief .frame label{margin-top:18px}
 #contacto .contacto-brief .can-t{font-size:clamp(17px,2vw,22px)}
 @media(max-width:900px){
-  #contacto .contact-grid{grid-template-columns:1fr;gap:16px;margin-top:26px}
-  #contacto .c-info{display:block}
-  #contacto .contacto-accion{min-height:0}
-  #contacto .contacto-brief>summary{min-height:0}
-  #contacto .contacto-abrir{margin-top:7px}
+  #contacto .contact-grid{margin-top:26px}
 }
 @media(max-width:600px){
   #contacto .title{font-size:clamp(44px,11vw,62px);line-height:1.06}
   #contacto .contacto-bajada{font-size:17px;line-height:1.5}
-  #contacto .contacto-accion,#contacto .contacto-brief>summary{padding:25px 22px}
-  #contacto .contacto-accion h3,#contacto .contacto-brief summary strong{font-size:32px}
+  #contacto .contacto-accion{padding:25px 22px}
+  #contacto .contacto-accion h3{font-size:32px}
   #contacto .contacto-whatsapp{font-size:11px;letter-spacing:.1em;padding:16px;min-height:58px}
 }
 </style>
@@ -3243,16 +3237,9 @@ html.js .pc-alt{display:none}
         <p>Un mensaje basta para comenzar. Si tienes fotos o referencias, compártelas por el chat.</p>
         <a class="btn solid contacto-whatsapp" href="https://wa.me/524423697248?text=Hola%2C%20tengo%20una%20idea%20para%20mi%20negocio%20y%20me%20gustar%C3%ADa%20platicarla%20con%20S%26C."
            target="_blank" rel="noopener noreferrer">Contar mi idea por WhatsApp <span aria-hidden="true">&#8599;</span></a>
-        <div class="contacto-pie">
-          <span>También: <a href="mailto:hola@sycsolutions.company">hola@sycsolutions.company</a></span>
-          <span>San Luis Potosí · Atendemos a todo México</span>
-        </div>
-      </div>
-      <details class="contacto-brief rv">
+      <details class="contacto-brief">
         <summary>
-          <span class="contacto-etiqueta">OTRA FORMA DE COMENZAR</span>
-          <strong>¿Prefieres dejarlo por escrito?</strong>
-          <small>Abre el formulario y nosotros seguimos la conversación.</small>
+          <span>¿Prefieres escribir aquí?</span>
           <span class="contacto-abrir" aria-hidden="true">Abrir formulario &#8599;</span>
         </summary>
       <form class="frame rv" id="form" method="post" novalidate>
@@ -3313,6 +3300,11 @@ html.js .pc-alt{display:none}
         <p class="form-nota">Usaremos tus datos solo para responderte. Se guardan en nuestro sistema y llegan también a nuestro correo. <a href="aviso-de-privacidad.html">Aviso de privacidad</a>.</p>
       </form>
       </details>
+        <div class="contacto-pie">
+          <span>También: <a href="mailto:hola@sycsolutions.company">hola@sycsolutions.company</a></span>
+          <span>San Luis Potosí · Atendemos a todo México</span>
+        </div>
+      </div>
     </div>
 
     <!-- Preguntas frecuentes. Van DESPUÉS del formulario a propósito: plegadas
