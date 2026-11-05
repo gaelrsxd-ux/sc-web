@@ -132,7 +132,14 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
   assert.match(html, /<option value="signa">SIGNA · 1 NFC \+ QR<\/option>[\s\S]*?<option value="tria">TRIA · 3 NFC \+ QR<\/option>/,
     'SIGNA debe abrir primero en el selector del cotizador');
   assert.ok(html.indexOf('id="sc-config"') < html.indexOf('id="sc-classic"'));
-  assert.ok(html.indexOf('class="sc-propuesta"') > html.indexOf('id="sc-classic"'));
+  assert.doesNotMatch(html, /class="sc-propuesta"/, 'No debe haber un segundo bloque de contacto bajo el catálogo');
+  assert.match(html, /<section id="contacto" class="contacto-unico">[\s\S]*?¿Imaginas <em>algo distinto\?<\/em>/);
+  assert.match(html, /<details class="contacto-brief rv">[\s\S]*?<form class="frame rv" id="form"/,
+    'El formulario válido permanece disponible, pero sólo se abre si se necesita');
+  assert.match(html, /Contar mi idea por WhatsApp/);
+  for (const id of ['nombre','email','telefono','servicio','mensaje','form-go','form-ts']) {
+    assert.match(html, new RegExp(`id="${id}"`), `Falta campo de contacto ${id}`);
+  }
   assert.doesNotMatch(html, /id="sc-cantidad"|id="sc-preview"|name="sc-base"|id="sc-destino"|class="sc-config-opcional"|\(opcional\)/);
   assert.match(html, /En WhatsApp nos envías tu logotipo y definimos juntos el diseño, enlaces NFC\/QR, precio y entrega/);
   assert.match(estilos, /\.sc-modelo-cta::before\{content:"";position:absolute;inset:0;z-index:1/);
