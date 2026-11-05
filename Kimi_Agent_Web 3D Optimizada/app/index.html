@@ -1852,6 +1852,42 @@ html.oro body{filter:saturate(1.22) contrast(1.03)}
   background:rgba(200,169,106,.05);color:var(--muted);font-size:13px;line-height:1.7}
 .insta-pie b{color:var(--bronze-hi);font-weight:500}
 
+
+/* Caso documentado: resultados de Kabuki Villa Magna en dos meses. */
+.kabuki-story{margin:34px 0 0;padding:clamp(17px,2.5vw,28px);border:1px solid var(--line-soft);background:linear-gradient(145deg,rgba(200,169,106,.085),transparent 45%),var(--bg2)}
+.kabuki-story-head{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:19px}
+.kabuki-story-kicker{display:block;color:var(--bronze-hi);font-size:10px;font-weight:700;letter-spacing:2.7px;text-transform:uppercase}
+.kabuki-story h3{font-family:var(--serif);color:var(--ink);font-size:clamp(25px,3.6vw,37px);line-height:1.12;margin:8px 0}
+.kabuki-story h3 em{color:var(--bronze-hi);font-weight:400}
+.kabuki-story-head p{color:var(--muted);font-size:13px;line-height:1.55;max-width:54ch}
+.kabuki-story-growth{flex:none;text-align:center;border-left:1px solid var(--line-soft);padding-left:clamp(15px,3vw,33px);min-width:112px}
+.kabuki-story-growth b{display:block;font-family:var(--serif);font-size:clamp(46px,6vw,69px);line-height:.9;font-weight:500;color:var(--bronze-hi)}
+.kabuki-story-growth span{display:block;font-size:10px;font-weight:700;letter-spacing:1.1px;color:var(--muted);margin-top:9px}
+.kabuki-story-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kabuki-story-grid figure{margin:0;min-width:0}
+.kabuki-story-photo{display:block;width:100%;padding:0;border:1px solid var(--line-soft);background:var(--bg);cursor:zoom-in;overflow:hidden;position:relative}
+.kabuki-story-photo img{display:block;width:100%;height:auto;aspect-ratio:1.29;object-fit:cover;transition:transform .3s}
+.kabuki-story-photo:hover img{transform:scale(1.025)}
+.kabuki-story-photo:focus-visible{outline:2px solid var(--bronze-hi);outline-offset:3px}
+.kabuki-story-grid figcaption{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:var(--ink)}
+.kabuki-story-grid figcaption strong{font-size:12px;letter-spacing:1.5px;color:var(--bronze-hi)}
+.kabuki-story-grid figcaption span{font-size:12px;color:var(--muted)}
+.kabuki-story-note{font-size:10.5px;line-height:1.5;color:var(--muted);margin:15px 0 0}
+@media(max-width:580px){
+  .kabuki-story{margin-top:25px;padding:15px}
+  .kabuki-story-head{align-items:flex-start;gap:10px;margin-bottom:15px}
+  .kabuki-story-kicker{font-size:9px;letter-spacing:1.7px}
+  .kabuki-story h3{font-size:25px;line-height:1.03}
+  .kabuki-story-head p{font-size:11px}
+  .kabuki-story-growth{min-width:75px;padding-left:10px}
+  .kabuki-story-growth b{font-size:41px}
+  .kabuki-story-growth span{font-size:9px;letter-spacing:0}
+  .kabuki-story-grid{gap:8px}
+  .kabuki-story-grid figcaption{gap:2px;margin-top:7px;display:block}
+  .kabuki-story-grid figcaption strong{display:block;font-size:10px}
+  .kabuki-story-grid figcaption span{font-size:10px}
+}
+
 /* Sólo tiene sentido donde la tira se arrastra: en escritorio las cinco están
    a la vista y no hay ninguna «siguiente». */
 .insta-guia{display:none;margin-top:12px;font-size:12px;letter-spacing:.2px;color:var(--muted);
@@ -3030,6 +3066,40 @@ html.js .pc-alt{display:none}
         <p class="insta-pie">&#191;Quieres que la tuya salga aqu&#237;? El d&#237;a de la entrega
         te tomamos la foto &#8212; y <b>s&#243;lo se publica si nos dices que s&#237;</b>.</p>
         </div>
+
+        <section class="kabuki-story" aria-labelledby="kabuki-story-title">
+          <div class="kabuki-story-head">
+            <div>
+              <span class="kabuki-story-kicker">Resultados reales · 2 meses</span>
+              <h3 id="kabuki-story-title">Antes y <em>después.</em></h3>
+              <p>Kabuki Villa Magna · de 32 a 53 reseñas y de 4.5 a 4.6 estrellas en Google.</p>
+            </div>
+            <div class="kabuki-story-growth" aria-label="21 reseñas adicionales en dos meses"><b>+21</b><span>RESEÑAS</span></div>
+          </div>
+          <div class="kabuki-story-grid">
+            <figure>
+              <button class="kabuki-story-photo" type="button" data-galeria="kabuki-resultados"
+                data-grande="assets/kabuki-villamagna-antes.webp"
+                data-pie="Antes · Kabuki Villa Magna · 4.5 estrellas y 32 reseñas"
+                data-alt="Captura reconstruida del perfil de Kabuki Villa Magna con 4.5 estrellas y 32 reseñas"
+                aria-label="Ampliar captura del antes: 4.5 estrellas y 32 reseñas">
+                <img src="assets/kabuki-villamagna-antes.webp" width="1424" height="1105" loading="lazy" decoding="async" alt="Antes: perfil de Kabuki Villa Magna con 4.5 estrellas y 32 reseñas">
+              </button>
+              <figcaption><strong>ANTES</strong><span>4.5 ★ · 32 reseñas</span></figcaption>
+            </figure>
+            <figure>
+              <button class="kabuki-story-photo" type="button" data-galeria="kabuki-resultados"
+                data-grande="assets/kabuki-villamagna-despues.webp"
+                data-pie="Después · Kabuki Villa Magna · 4.6 estrellas y 53 reseñas"
+                data-alt="Perfil de Kabuki Villa Magna con 4.6 estrellas y 53 reseñas"
+                aria-label="Ampliar captura del después: 4.6 estrellas y 53 reseñas">
+                <img src="assets/kabuki-villamagna-despues.webp" width="1290" height="1001" loading="lazy" decoding="async" alt="Después: perfil de Kabuki Villa Magna con 4.6 estrellas y 53 reseñas">
+              </button>
+              <figcaption><strong>DESPUÉS</strong><span>4.6 ★ · 53 reseñas</span></figcaption>
+            </figure>
+          </div>
+          <p class="kabuki-story-note">Toca las imágenes para ampliarlas. La captura del «antes» fue recreada con los datos históricos confirmados.</p>
+        </section>
     </div>
   </div>
 </section>

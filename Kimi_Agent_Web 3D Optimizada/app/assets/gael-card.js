@@ -18,6 +18,8 @@
   const visible = projects;
   let activeIndex = 0;
   let viewerIndex = 0;
+  let viewerCards = visible;
+  let viewerFromCarousel = true;
   let previousFocus = null;
   let gestureStart = null;
   let ignoreClicksUntil = 0;
@@ -67,12 +69,25 @@
         return;
       }
       previousFocus = card;
+      viewerCards = visible;
+      viewerFromCarousel = true;
       viewerIndex = index;
       renderViewer();
       dialog.showModal();
       closeButton.focus();
     });
   });
+
+  const resultCards = [...document.querySelectorAll('.result-shot')];
+  resultCards.forEach((card, index) => card.addEventListener('click', () => {
+    previousFocus = card;
+    viewerCards = resultCards;
+    viewerFromCarousel = false;
+    viewerIndex = index;
+    renderViewer();
+    dialog.showModal();
+    closeButton.focus();
+  }));
 
   previousCard.addEventListener('click', () => stepCarousel(-1));
   nextCard.addEventListener('click', () => stepCarousel(1));
@@ -102,15 +117,15 @@
   carousel.addEventListener('pointercancel', () => { gestureStart = null; });
 
   function renderViewer() {
-    const card = visible[viewerIndex];
+    const card = viewerCards[viewerIndex];
     modalImage.src = card.dataset.full;
     modalImage.alt = card.querySelector('img').alt;
     modalCaption.textContent = card.dataset.caption;
-    modalCount.textContent = `${viewerIndex + 1} / ${visible.length}`;
+    modalCount.textContent = `${viewerIndex + 1} / ${viewerCards.length}`;
   }
 
   function moveViewer(direction) {
-    viewerIndex = wrapped(viewerIndex + direction, visible.length);
+    viewerIndex = wrapped(viewerIndex + direction, viewerCards.length);
     renderViewer();
   }
 
@@ -131,9 +146,11 @@
   }, { passive: true });
   dialog.addEventListener('close', () => {
     modalImage.removeAttribute('src');
-    activeIndex = viewerIndex;
-    renderCarousel();
-    if (previousFocus instanceof HTMLElement) visible[activeIndex].focus({ preventScroll: true });
+    if (viewerFromCarousel) {
+      activeIndex = viewerIndex;
+      renderCarousel();
+    }
+    if (previousFocus instanceof HTMLElement) previousFocus.focus({ preventScroll: true });
   });
 
   // Safari permite un rebote lateral del viewport visual después de pellizcar.

@@ -69,3 +69,37 @@ html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none
 
 /* Ícono oficial de TikTok con acentos de marca, alineado con los demás accesos. */
 .link-icon .brand-tiktok{fill:#fff;filter:drop-shadow(-1px -1px 0 #25f4ee) drop-shadow(1px 1px 0 #fe2c55)}
+
+
+/* Resultados reales dentro de Clientes: prueba visual compacta y ampliable. */
+.gael-results{margin-top:26px;padding-top:24px;border-top:1px solid rgba(200,169,106,.27)}
+.gael-results-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:17px}
+.gael-results-kicker{display:block;color:var(--bronze);font-size:10px;letter-spacing:.17em;font-weight:700}
+.gael-results h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(27px,4.5vw,39px);font-weight:500;line-height:1.06;color:var(--ink);margin:7px 0 5px}
+.gael-results h3 em{color:var(--bronze)}
+.gael-results-head p{font-size:12px;line-height:1.5;color:var(--muted)}
+.gael-results-growth{flex:none;min-width:100px;border-left:1px solid var(--border);padding-left:18px;text-align:center}
+.gael-results-growth b{display:block;font:500 49px/.9 'Cormorant Garamond',Georgia,serif;color:var(--bronze)}
+.gael-results-growth span{font-size:9px;letter-spacing:.14em;color:var(--muted);font-weight:700}
+.gael-results-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.gael-results-grid figure{margin:0;min-width:0}
+.gael-results-grid .result-shot{display:block;width:100%;padding:0;overflow:hidden;border:1px solid rgba(200,169,106,.22);border-radius:9px;background:#111318;cursor:zoom-in}
+.gael-results-grid .result-shot img{display:block;width:100%;height:auto;aspect-ratio:1.29;object-fit:cover;transition:transform .3s}
+.gael-results-grid .result-shot:hover img{transform:scale(1.025)}
+.gael-results-grid .result-shot:focus-visible{outline:2px solid var(--bronze);outline-offset:3px}
+.gael-results-grid figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:8px}
+.gael-results-grid figcaption b{color:var(--bronze);font-size:10px;letter-spacing:.16em}
+.gael-results-grid figcaption span{color:var(--muted);font-size:11px}
+.gael-results-note{font-size:10px;color:var(--muted);line-height:1.5;margin-top:13px}
+@media(max-width:480px){
+  .gael-results{margin-top:18px;padding-top:19px}
+  .gael-results-head{align-items:flex-start;margin-bottom:12px;gap:8px}
+  .gael-results h3{font-size:29px}
+  .gael-results-head p{font-size:11px}
+  .gael-results-growth{min-width:73px;padding-left:9px}
+  .gael-results-growth b{font-size:39px}
+  .gael-results-growth span{font-size:8px}
+  .gael-results-grid{gap:8px}
+  .gael-results-grid figcaption{display:block}
+  .gael-results-grid figcaption b,.gael-results-grid figcaption span{display:block;font-size:10px}
+}
