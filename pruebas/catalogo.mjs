@@ -134,8 +134,12 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
   assert.ok(html.indexOf('id="sc-config"') < html.indexOf('id="sc-classic"'));
   assert.doesNotMatch(html, /class="sc-propuesta"/, 'No debe haber un segundo bloque de contacto bajo el catálogo');
   assert.match(html, /<section id="contacto" class="contacto-unico">[\s\S]*?¿Imaginas <em>algo distinto\?<\/em>/);
-  assert.match(html, /<details class="contacto-brief rv">[\s\S]*?<form class="frame rv" id="form"/,
-    'El formulario válido permanece disponible, pero sólo se abre si se necesita');
+  assert.match(html, /<div class="c-info contacto-accion rv">[\s\S]*?<details class="contacto-brief">[\s\S]*?<form class="frame rv" id="form"/,
+    'El formulario válido debe estar plegado dentro de la única tarjeta de contacto');
+  assert.doesNotMatch(html, /class="contacto-brief rv"/,
+    'No debe existir una segunda tarjeta de contacto junto a WhatsApp');
+  assert.equal((html.match(/class="c-info contacto-accion rv"/g) || []).length, 1,
+    'Sólo debe aparecer una tarjeta de contacto');
   assert.match(html, /Contar mi idea por WhatsApp/);
   for (const id of ['nombre','email','telefono','servicio','mensaje','form-go','form-ts']) {
     assert.match(html, new RegExp(`id="${id}"`), `Falta campo de contacto ${id}`);
