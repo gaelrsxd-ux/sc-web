@@ -2530,7 +2530,7 @@ html.js .pc-alt{display:none}
     <a class="men-l" href="#top"><span class="men-n">00</span>Inicio
       <small>La portada, arriba del todo</small></a>
     <a class="men-l" href="#productos"><span class="men-n">01</span>Exhibidores NFC + QR
-      <small>Cl&#225;sicos, mayoreo y personalizados</small></a>
+      <small>Personalizados, cl&#225;sicos y mayoreo</small></a>
     <a class="men-l" href="#servicios"><span class="men-n">02</span>Servicios digitales
       <small>P&#225;ginas web y Perfil de Empresa en Google</small></a>
     <a class="men-l" href="#clientes"><span class="men-n">03</span>Nuestros clientes
@@ -2696,11 +2696,11 @@ html.js .pc-alt{display:none}
         </header>
 
         <nav class="sc-accesos" aria-label="Explorar exhibidores">
-          <a href="#sc-classic" aria-current="page">01 / Clásicas y mayoreo</a>
-          <a href="#sc-personalizados">02 / Personalizados</a>
+          <a href="#sc-personalizados" aria-current="page">01 / Personalizados</a>
+          <a href="#sc-classic">02 / Clásicas y mayoreo</a>
         </nav>
 
-        <section class="sc-bloque" id="sc-personalizados" aria-label="Exhibidores personalizados">
+        <section class="sc-bloque" id="sc-personalizados" aria-label="Exhibidores personalizados" data-sc-activo="true">
           <div class="sc-modelos">
             <article class="sc-modelo sc-modelo--tria" data-sc-tarjeta="tria" data-sc-seleccionado="true">
               <button type="button" class="sc-modelo-foto sc-foto-abrir" aria-label="Ampliar fotografía de TRIA">
@@ -2807,7 +2807,7 @@ html.js .pc-alt{display:none}
 
         </section>
 
-        <section class="sc-classic" id="sc-classic" aria-labelledby="sc-classic-titulo" data-sc-activo="true">
+        <section class="sc-classic" id="sc-classic" aria-labelledby="sc-classic-titulo" data-sc-activo="false">
           <span class="sc-eyebrow">S&amp;C / 04 · Línea tradicional</span>
           <h3 id="sc-classic-titulo">CLASSIC <span class="sc-classic-rombo" aria-hidden="true"></span> <em>mayoreo.</em></h3>
       <article class="prod">
@@ -6045,6 +6045,6 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
-<script src="assets/catalogo.js?v=b4f26a15"></script>
+<script src="assets/catalogo.js?v=20261105a"></script>
 </body>
 </html>
