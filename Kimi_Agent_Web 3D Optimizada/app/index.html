@@ -144,7 +144,7 @@ document.documentElement.classList.add('js');
     {"@type":"Question","name":"¿Cuánto cuesta revisar mi página?",
      "acceptedAnswer":{"@type":"Answer","text":"Nada, y sin registrarte. Analizamos sólo la página que nos digas —no la guardamos ni la compartimos— y te damos una nota con los fallos concretos."}},
     {"@type":"Question","name":"No sé qué necesito. ¿Puedo escribir igual?",
-     "acceptedAnswer":{"@type":"Answer","text":"Sí, es lo más habitual. Escríbenos por WhatsApp o elige «No sé qué necesito» en el formulario, y dinos qué hace tu negocio. Contestamos en menos de 24 horas."}}
+     "acceptedAnswer":{"@type":"Answer","text":"Sí. Escríbenos por WhatsApp y cuéntanos qué hace tu negocio, aunque aún no tengas claro qué solución necesitas. Contestamos en menos de 24 horas."}}
    ]
   },
   {
@@ -2462,7 +2462,7 @@ html.js .pc-alt{display:none}
   .aud-form button:disabled::before{color:var(--dim)}
 }
 
-/* CONTACTO ÚNICO — una sola tarjeta con WhatsApp y un formulario discreto dentro. */
+/* CONTACTO ÚNICO — un solo punto de contacto, con datos recuperados y accionables. */
 #contacto{scroll-margin-top:112px}
 #contacto .title{font-size:clamp(46px,7.1vw,102px);line-height:1.04;max-width:14ch;margin:14px 0 18px}
 #contacto .contacto-bajada{max-width:720px;font-size:clamp(17px,2vw,23px);line-height:1.55;color:var(--muted)}
@@ -2475,20 +2475,12 @@ html.js .pc-alt{display:none}
 #contacto .contacto-accion>p{font-size:clamp(15px,1.6vw,18px);color:var(--muted);line-height:1.6}
 #contacto .contacto-whatsapp{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;margin-top:28px;min-height:60px;padding:16px 20px;text-align:left;font-size:12px;letter-spacing:.14em;white-space:normal}
 #contacto .contacto-whatsapp span{font-size:24px;line-height:1}
-#contacto .contacto-pie{display:grid;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line-soft);font-size:12px;line-height:1.5;color:var(--dim)}
-#contacto .contacto-pie a{color:var(--ink);text-underline-offset:4px}
-#contacto .contacto-brief{margin-top:20px;min-width:0}
-#contacto .contacto-brief>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;min-height:44px;color:var(--ink);font-size:14px}
-#contacto .contacto-brief>summary::-webkit-details-marker{display:none}
-#contacto .contacto-brief>summary:focus-visible{outline:2px solid var(--bronze-hi);outline-offset:5px}
-#contacto .contacto-abrir{color:var(--bronze-hi);font-size:10px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
-#contacto .contacto-brief[open]>summary{padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
-#contacto .contacto-brief[open] .contacto-abrir{font-size:0}
-#contacto .contacto-brief[open] .contacto-abrir::after{content:"Cerrar formulario";font-size:10px}
-#contacto .contacto-brief>.frame{border:0;background:transparent;padding:24px 0 0;margin:0}
-#contacto .contacto-brief>.frame::before{display:none}
-#contacto .contacto-brief .frame label{margin-top:18px}
-#contacto .contacto-brief .can-t{font-size:clamp(17px,2vw,22px)}
+#contacto .contacto-datos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(24px,3vw,44px);margin-top:30px;padding-top:4px;border-top:1px solid var(--line-soft)}
+#contacto .contacto-datos .c-item{padding:19px 0}
+#contacto .contacto-datos .c-item:nth-last-child(-n+2){border-bottom:0;padding-bottom:0}
+#contacto .contacto-datos .c-item .v{font-size:clamp(18px,2.2vw,24px)}
+#contacto .contacto-datos .c-enl{overflow-wrap:anywhere}
+#contacto .contacto-datos .c-lin{white-space:normal}
 @media(max-width:900px){
   #contacto .contact-grid{margin-top:26px}
 }
@@ -2498,6 +2490,9 @@ html.js .pc-alt{display:none}
   #contacto .contacto-accion{padding:25px 22px}
   #contacto .contacto-accion h3{font-size:32px}
   #contacto .contacto-whatsapp{font-size:11px;letter-spacing:.1em;padding:16px;min-height:58px}
+  #contacto .contacto-datos{grid-template-columns:1fr;margin-top:24px}
+  #contacto .contacto-datos .c-item:nth-last-child(2){border-bottom:1px solid var(--line-soft);padding-bottom:17px}
+  #contacto .contacto-datos .c-item:last-child{border:0;padding-bottom:0}
 }
 </style>
 <link rel="stylesheet" href="assets/catalogo.css?v=aa2c4a0c">
@@ -2580,7 +2575,7 @@ html.js .pc-alt{display:none}
       <a href="#svc-web">P&#225;gina web</a>
     </div>
     <a class="men-l" href="#contacto"><span class="men-n">04</span>Habla con nosotros
-      <small>WhatsApp, correo y formulario</small></a>
+      <small>WhatsApp, correo y horarios</small></a>
   </nav>
 </div>
 
@@ -3237,85 +3232,30 @@ html.js .pc-alt{display:none}
         <p>Un mensaje basta para comenzar. Si tienes fotos o referencias, compártelas por el chat.</p>
         <a class="btn solid contacto-whatsapp" href="https://wa.me/524423697248?text=Hola%2C%20tengo%20una%20idea%20para%20mi%20negocio%20y%20me%20gustar%C3%ADa%20platicarla%20con%20S%26C."
            target="_blank" rel="noopener noreferrer">Contar mi idea por WhatsApp <span aria-hidden="true">&#8599;</span></a>
-      <details class="contacto-brief">
-        <summary>
-          <span>¿Prefieres escribir aquí?</span>
-          <span class="contacto-abrir" aria-hidden="true">Abrir formulario &#8599;</span>
-        </summary>
-      <form class="frame rv" id="form" method="post" novalidate>
-        <p class="can-k">TU PROYECTO, EN BREVE</p>
-        <p class="can-t">Déjanos lo esencial. Nosotros hacemos las preguntas técnicas después.</p>
-        <!-- Cada campo obligatorio lleva su aviso al lado, vacío y oculto hasta
-             que hace falta. Vive en el HTML y no lo crea el JS para que el
-             lector de pantalla ya tenga la relación establecida por
-             aria-describedby desde el primer momento.
-             Los maxlength son los del esquema del servidor, no una cifra
-             elegida aquí: 120, 200, 40, 120 y 4000. Puestos en el marcado, el
-             navegador impide pasarse antes de que el servidor tenga que
-             rechazarlo. -->
-        <label for="nombre">¿Cómo te llamas?</label>
-        <input id="nombre" name="nombre" type="text" required maxlength="120"
-               autocomplete="name" placeholder="¿Cómo te llamas?"
-               aria-describedby="nombre-av">
-        <p class="aviso" id="nombre-av"></p>
-        <label for="email">Tu correo</label>
-        <input id="email" name="email" type="email" required maxlength="200"
-               autocomplete="email" placeholder="tu@empresa.com"
-               aria-describedby="email-av">
-        <p class="aviso" id="email-av"></p>
-        <!-- El teléfono es obligatorio en el servidor, así que aquí también. No
-             se marca como "opcional" ni se pide "si quieres": pedir un dato
-             obligatorio como si fuera voluntario es la forma más rápida de que
-             el envío falle con un error que el visitante no entiende. -->
-        <label for="telefono">Tu WhatsApp o teléfono</label>
-        <input id="telefono" name="telefono" type="tel" required maxlength="40"
-               inputmode="tel" autocomplete="tel"
-               placeholder="Con clave de país si no es de México"
-               aria-describedby="telefono-av">
-        <p class="aviso" id="telefono-av"></p>
-        <!-- El gateway admite un catálogo limitado. La web conserva su valor
-             exacto, mientras Google y NFC usan la categoría genérica reconocida.
-             El script añade el servicio realmente seleccionado al mensaje. -->
-        <label for="servicio">¿Qué tienes en mente?</label>
-        <select id="servicio" name="servicio" required aria-describedby="servicio-av">
-          <option value="No lo sé aún — asesórenme">Quiero platicar mi idea</option>
-          <option value="Sitios Web Premium para tu Negocio">Una página web para mi negocio</option>
-          <option value="No lo sé aún — asesórenme" data-solicitud="Perfil de Empresa en Google">Configurar mi negocio en Google Maps</option>
-          <option value="No lo sé aún — asesórenme" data-solicitud="Exhibidores personalizados NFC + QR">Placas y exhibidores personalizados NFC + QR</option>
-        </select>
-        <p class="aviso" id="servicio-av"></p>
-        <label for="mensaje">Cuéntanos un poco</label>
-        <textarea id="mensaje" name="mensaje" required maxlength="4000"
-                  placeholder="¿Qué te gustaría crear o mejorar?"
-                  aria-describedby="mensaje-av"></textarea>
-        <p class="aviso" id="mensaje-av"></p>
-        <!-- Caja del desafío anti-bots. Nace vacía y sin alto: el widget se
-             renderiza la primera vez que alguien pulsa Enviar, y en modo
-             "sólo si hace falta interacción" lo normal es que no se vea nada. -->
-        <div class="ts-caja" id="form-ts"></div>
-        <button type="submit" class="btn solid" id="form-go">Enviar mi idea</button>
-        <!-- Región viva: aquí cae tanto el "Recibido" como el motivo exacto del
-             fallo, y en los dos casos se anuncia a quien no ve la pantalla. -->
-        <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
-        <p class="form-nota">Usaremos tus datos solo para responderte. Se guardan en nuestro sistema y llegan también a nuestro correo. <a href="aviso-de-privacidad.html">Aviso de privacidad</a>.</p>
-      </form>
-      </details>
-        <div class="contacto-pie">
-          <span>También: <a href="mailto:hola@sycsolutions.company">hola@sycsolutions.company</a></span>
-          <span>San Luis Potosí · Atendemos a todo México</span>
+        <div class="c-datos contacto-datos" aria-label="Datos de contacto de S&C Solutions">
+          <div class="c-item">
+            <div class="k">WhatsApp</div>
+            <div class="v"><a class="c-enl" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer">+52 442 369 7248</a></div>
+          </div>
+          <div class="c-item">
+            <div class="k">Correo electrónico</div>
+            <div class="v"><a class="c-enl" href="mailto:hola@sycsolutions.company"><em>hola@sycsolutions.company</em></a></div>
+          </div>
+          <div class="c-item">
+            <div class="k">Ubicación</div>
+            <div class="v">San Luis Potosí, México</div>
+            <p class="c-nota">Atendemos todo México y LATAM.</p>
+          </div>
+          <div class="c-item">
+            <div class="k">Horario</div>
+            <div class="v"><span class="c-lin">Lun — Vie · 9:00 a 23:00</span><span class="c-lin">Sáb y Dom · 10:00 a 22:00</span></div>
+            <p class="c-nota">Fuera de horario también solemos responder.</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Preguntas frecuentes. Van DESPUÉS del formulario a propósito: plegadas
-         ocupan 266 px, y puestas antes obligaban a rodearlas para llegar a la
-         única acción de la página. Quien ya decidió escribe sin estorbo; quien
-         duda las encuentra justo al pasar de largo, que es cuando pregunta.
-         Cada respuesta sale de un dato ya publicado en otra parte de la web
-         —el precio del catálogo, el plazo de los términos, el horario del
-         contacto— y cabe en dos renglones. Ninguna inventa nada: el día que
-         una cifra cambie en tools/precios.mjs o en terminos.html, hay que
-         mirar aquí. -->
+    <!-- Preguntas frecuentes al pie del contacto; no interrumpen la acción principal. -->
     <div class="faq rv" id="faq">
       <p class="faq-k">Antes de escribir</p>
       <details>
@@ -3349,8 +3289,8 @@ html.js .pc-alt{display:none}
       </details>
       <details>
         <summary>No sé qué necesito. ¿Puedo escribir igual?</summary>
-        <p class="faq-r">Sí, es lo más habitual. Escríbenos por WhatsApp o marca
-          «No sé qué necesito» en el formulario, y dinos qué hace tu negocio.
+        <p class="faq-r">Sí, es lo más habitual. Escríbenos por WhatsApp y cuéntanos
+          qué hace tu negocio, aunque aún no tengas claro qué solución necesitas.
           Contestamos en <b>menos de 24 horas</b>.</p>
       </details>
       <!-- LAS GUÍAS. Sin un enlace desde aquí serían páginas huérfanas: existen
