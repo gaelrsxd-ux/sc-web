@@ -2461,6 +2461,50 @@ html.js .pc-alt{display:none}
   .aud-form button:disabled{border-color:var(--line-soft)}
   .aud-form button:disabled::before{color:var(--dim)}
 }
+
+/* CONTACTO ÚNICO — una entrada rápida y un formulario sólo para quien lo prefiera. */
+#contacto{scroll-margin-top:112px}
+#contacto .title{font-size:clamp(46px,7.1vw,102px);line-height:1.04;max-width:14ch;margin:14px 0 18px}
+#contacto .contacto-bajada{max-width:720px;font-size:clamp(17px,2vw,23px);line-height:1.55;color:var(--muted)}
+#contacto .contact-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:34px;align-items:start}
+#contacto .contacto-accion,#contacto .contacto-brief{background:rgba(var(--bg2-rgb),.78);border:1px solid var(--line);position:relative;min-width:0}
+#contacto .contacto-accion{padding:clamp(24px,3vw,44px);min-height:305px}
+#contacto .contacto-accion::before{content:"";position:absolute;top:-1px;left:0;width:72px;height:2px;background:var(--bronze-hi)}
+#contacto .contacto-etiqueta{display:block;font:600 10px/1.5 var(--sans);letter-spacing:.28em;color:var(--bronze-hi)}
+#contacto .contacto-accion h3{font-family:var(--serif);font-weight:400;font-size:clamp(28px,3.4vw,44px);line-height:1.13;color:var(--ink);margin:18px 0 12px}
+#contacto .contacto-accion p{font-size:clamp(15px,1.6vw,18px);color:var(--muted);line-height:1.6}
+#contacto .contacto-whatsapp{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;margin-top:28px;min-height:60px;padding:16px 20px;text-align:left;font-size:12px;letter-spacing:.14em;white-space:normal}
+#contacto .contacto-whatsapp span{font-size:24px;line-height:1}
+#contacto .contacto-pie{display:grid;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line-soft);font-size:12px;line-height:1.5;color:var(--dim)}
+#contacto .contacto-pie a{color:var(--ink);text-underline-offset:4px}
+#contacto .contacto-brief{overflow:hidden}
+#contacto .contacto-brief>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:clamp(24px,3vw,44px);min-height:305px}
+#contacto .contacto-brief>summary::-webkit-details-marker{display:none}
+#contacto .contacto-brief>summary:focus-visible{outline:2px solid var(--bronze-hi);outline-offset:-5px}
+#contacto .contacto-brief summary strong{display:block;max-width:15ch;font-family:var(--serif);font-size:clamp(28px,3.4vw,44px);line-height:1.13;font-weight:400;color:var(--ink)}
+#contacto .contacto-brief summary small{font-size:clamp(15px,1.6vw,18px);line-height:1.6;color:var(--muted)}
+#contacto .contacto-abrir{display:block;margin-top:auto;padding-top:10px;border-bottom:1px solid var(--bronze);padding-bottom:8px;color:var(--bronze-hi);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+#contacto .contacto-brief[open]>summary{min-height:0;border-bottom:1px solid var(--line-soft)}
+#contacto .contacto-brief[open] .contacto-abrir{font-size:0;border:0}
+#contacto .contacto-brief[open] .contacto-abrir::after{content:"Formulario abierto";font-size:11px}
+#contacto .contacto-brief>.frame{border:0;background:transparent;padding:clamp(22px,2.6vw,36px)}
+#contacto .contacto-brief>.frame::before{display:none}
+#contacto .contacto-brief .frame label{margin-top:18px}
+#contacto .contacto-brief .can-t{font-size:clamp(17px,2vw,22px)}
+@media(max-width:900px){
+  #contacto .contact-grid{grid-template-columns:1fr;gap:16px;margin-top:26px}
+  #contacto .c-info{display:block}
+  #contacto .contacto-accion{min-height:0}
+  #contacto .contacto-brief>summary{min-height:0}
+  #contacto .contacto-abrir{margin-top:7px}
+}
+@media(max-width:600px){
+  #contacto .title{font-size:clamp(44px,11vw,62px);line-height:1.06}
+  #contacto .contacto-bajada{font-size:17px;line-height:1.5}
+  #contacto .contacto-accion,#contacto .contacto-brief>summary{padding:25px 22px}
+  #contacto .contacto-accion h3,#contacto .contacto-brief summary strong{font-size:32px}
+  #contacto .contacto-whatsapp{font-size:11px;letter-spacing:.1em;padding:16px;min-height:58px}
+}
 </style>
 <link rel="stylesheet" href="assets/catalogo.css?v=aa2c4a0c">
 </head>
@@ -2938,14 +2982,6 @@ html.js .pc-alt{display:none}
         </div>
       </article>
         </section>
-        <aside class="sc-propuesta">
-          <div>
-            <span class="sc-eyebrow">Diseños especiales / fabricación propia</span>
-            <h4>¿Imaginas algo distinto?</h4>
-            <p>También fabricamos a medida. Cuéntanos tu idea o comparte tus referencias y revisamos juntos su viabilidad.</p>
-          </div>
-          <a href="https://wa.me/524423697248?text=Hola.%20Tengo%20una%20idea%20para%20un%20exhibidor%20NFC%20%2B%20QR%20personalizado.%20Quiero%20compartirles%20mi%20dise%C3%B1o%20o%20referencias%20para%20cotizarlo." target="_blank" rel="noopener noreferrer">Proponer un diseño &#8599;</a>
-        </aside>
       </div>
     </div>
 
@@ -3194,92 +3230,34 @@ html.js .pc-alt{display:none}
      La numeración del recorrido termina en Contacto 02. -->
 
 <!-- ============ CONTACTO ============ -->
-<section id="contacto">
+<section id="contacto" class="contacto-unico">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">02 —</span> Contacto</span>
-    <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
-    <div class="contact-grid">
-      <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
-           entrada, el formulario y los datos puedan ordenarse por separado. La
-           animación de entrada va por eso en los hijos y no aquí. -->
-      <div class="c-info">
-        <p class="lead rv">Cuéntanos qué necesitas. Te respondemos en menos de 24 horas.</p>
-        <!-- Cuatro datos, cuatro renglones iguales: rótulo pequeño, valor, y
-             debajo su matiz si lo tiene. Cada uno ocupa el ancho entero y todos
-             empiezan en el mismo margen, que es lo único que hace que una lista
-             de datos se lea como una lista y no como un montón. -->
-        <div class="c-datos rv" style="margin-top:26px">
-          <div class="c-item">
-            <div class="k">Email</div>
-            <div class="c-fila">
-              <div class="v"><a class="c-enl" href="mailto:hola@sycsolutions.company"><em>hola@sycsolutions.company</em></a></div>
-              <button class="c-copia" type="button" data-copiar="hola@sycsolutions.company" data-que="El correo"
-                      aria-label="Copiar el correo hola@sycsolutions.company"><span class="dia" aria-hidden="true"></span>Copiar</button>
-            </div>
-          </div>
-          <div class="c-item">
-            <div class="k">WhatsApp</div>
-            <div class="c-fila">
-              <div class="v"><a class="c-enl" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer">+52 442 369 7248</a></div>
-              <button class="c-copia" type="button" data-copiar="+524423697248" data-que="El número de WhatsApp"
-                      aria-label="Copiar el número de WhatsApp +52 442 369 7248"><span class="dia" aria-hidden="true"></span>Copiar</button>
-            </div>
-          </div>
-          <div class="c-item">
-            <div class="k">Horario</div>
-            <!-- Cada tramo en su propio renglón y sin partir: "9:00 a" arriba y
-                 "23:00" abajo convertía una hora en un acertijo. -->
-            <div class="v"><span class="c-lin">Lun &#8212; Vie &#183; 9:00 a 23:00</span><span class="c-lin">S&#225;b y Dom &#183; 10:00 a 22:00</span></div>
-            <!-- Aclaración, no promesa: dice lo que suele pasar, sin poner un
-                 plazo que después haya que cumplir a las tres de la mañana. -->
-            <p class="c-nota">Fuera de horario también solemos responder.</p>
-          </div>
-          <div class="c-item">
-            <div class="k">Base</div>
-            <!-- Dónde estamos y a dónde llegamos son dos cosas, y colgadas de un
-                 mismo punto medio se leían como una sola frase larga que además
-                 partía por cualquier sitio. El alcance baja a matiz, que es su
-                 categoría: el dato es la ciudad. -->
-            <div class="v">San Luis Potos&#237;, M&#233;xico</div>
-            <p class="c-nota">Atendemos todo M&#233;xico y LATAM.</p>
-          </div>
-        </div>
-        <!-- El "Copiado" del botón es visual. Esto es lo mismo dicho para quien
-             no lo ve: una región viva, vacía hasta que hay algo que anunciar. -->
-        <p class="sr-only" id="c-avisa" role="status" aria-live="polite"></p>
-      </div>
-      <!-- Aquí vivió un formulario que no enviaba nada: validaba, decía
-           "Recibido", limpiaba los campos y tiraba el mensaje. Se retiró porque
-           prometía un envío que no ocurría, y prometerlo era peor que no
-           tenerlo. Vuelve ahora que existe el destinatario: el gateway público
-           de S&C, que guarda el mensaje y responde con un identificador.
-           Lo que lo hace distinto del anterior cabe en una línea, y está escrita
-           igual en el JavaScript: «Recibido» sólo se dice si el servidor
-           contestó 2xx. Si falla, se dice que falló y los campos NO se tocan.
+    <span class="sec-tag"><span class="n">02 —</span> Tu siguiente proyecto</span>
+    <h2 class="title" data-split>¿Imaginas <em>algo distinto?</em></h2>
+    <p class="contacto-bajada">Una pieza a medida, una web o una idea que aún no tiene nombre. Cuéntanos qué tienes en mente; nosotros te ayudamos a darle forma.</p>
 
-           method="post" y sin action a propósito. El envío lo hace el
-           JavaScript, pero si por lo que sea no llegara a correr, el navegador
-           haría el envío nativo a esta misma página: con POST eso muere en un
-           405 del alojamiento, mientras que con GET —el valor por defecto— el
-           mensaje entero acabaría escrito en la barra de direcciones, en el
-           historial y en los registros del servidor. novalidate porque la
-           validación la hace el script: los avisos del navegador llegan en el
-           idioma del sistema y no en el de esta página. -->
-      <form class="frame rv" id="form" method="post" novalidate>
-        <!-- Puente desde el diagnóstico. Sólo se muestra si este navegador
-             guardó un análisis: el dato es del propio visitante y no sale de
-             su equipo. El JS lo rellena y lo destapa. No escribe en ningún
-             campo: enseña la nota para que el visitante la tenga delante
-             mientras redacta, que es distinto de redactar por él. -->
-        <div class="puente" id="puente" hidden>
-          <p class="pk">Tu diagnóstico</p>
-          <p class="pv">Tu web sacó <b id="puente-n">—</b>. Cuéntanoslo al escribir y te decimos
-            <b>qué arreglar primero</b>.</p>
-          <p class="pu" id="puente-u"></p>
-          <ul class="pf" id="puente-f"></ul>
+    <div class="contact-grid">
+      <div class="c-info contacto-accion rv">
+        <span class="contacto-etiqueta">EMPECEMOS POR TU IDEA</span>
+        <h3>No necesitas tenerlo todo resuelto.</h3>
+        <p>Un mensaje basta para comenzar. Si tienes fotos o referencias, compártelas por el chat.</p>
+        <a class="btn solid contacto-whatsapp" href="https://wa.me/524423697248?text=Hola%2C%20tengo%20una%20idea%20para%20mi%20negocio%20y%20me%20gustar%C3%ADa%20platicarla%20con%20S%26C."
+           target="_blank" rel="noopener noreferrer">Contar mi idea por WhatsApp <span aria-hidden="true">&#8599;</span></a>
+        <div class="contacto-pie">
+          <span>También: <a href="mailto:hola@sycsolutions.company">hola@sycsolutions.company</a></span>
+          <span>San Luis Potosí · Atendemos a todo México</span>
         </div>
-        <p class="can-k">Escríbenos</p>
-        <p class="can-t">Elige lo que buscas y cuéntanos tu idea. Te responderemos por correo o teléfono.</p>
+      </div>
+      <details class="contacto-brief rv">
+        <summary>
+          <span class="contacto-etiqueta">OTRA FORMA DE COMENZAR</span>
+          <strong>¿Prefieres dejarlo por escrito?</strong>
+          <small>Abre el formulario y nosotros seguimos la conversación.</small>
+          <span class="contacto-abrir" aria-hidden="true">Abrir formulario &#8599;</span>
+        </summary>
+      <form class="frame rv" id="form" method="post" novalidate>
+        <p class="can-k">TU PROYECTO, EN BREVE</p>
+        <p class="can-t">Déjanos lo esencial. Nosotros hacemos las preguntas técnicas después.</p>
         <!-- Cada campo obligatorio lleva su aviso al lado, vacío y oculto hasta
              que hace falta. Vive en el HTML y no lo crea el JS para que el
              lector de pantalla ya tenga la relación establecida por
@@ -3288,12 +3266,12 @@ html.js .pc-alt{display:none}
              elegida aquí: 120, 200, 40, 120 y 4000. Puestos en el marcado, el
              navegador impide pasarse antes de que el servidor tenga que
              rechazarlo. -->
-        <label for="nombre">Nombre</label>
+        <label for="nombre">¿Cómo te llamas?</label>
         <input id="nombre" name="nombre" type="text" required maxlength="120"
                autocomplete="name" placeholder="¿Cómo te llamas?"
                aria-describedby="nombre-av">
         <p class="aviso" id="nombre-av"></p>
-        <label for="email">Email</label>
+        <label for="email">Tu correo</label>
         <input id="email" name="email" type="email" required maxlength="200"
                autocomplete="email" placeholder="tu@empresa.com"
                aria-describedby="email-av">
@@ -3302,7 +3280,7 @@ html.js .pc-alt{display:none}
              se marca como "opcional" ni se pide "si quieres": pedir un dato
              obligatorio como si fuera voluntario es la forma más rápida de que
              el envío falle con un error que el visitante no entiende. -->
-        <label for="telefono">Teléfono</label>
+        <label for="telefono">Tu WhatsApp o teléfono</label>
         <input id="telefono" name="telefono" type="tel" required maxlength="40"
                inputmode="tel" autocomplete="tel"
                placeholder="Con clave de país si no es de México"
@@ -3311,53 +3289,30 @@ html.js .pc-alt{display:none}
         <!-- El gateway admite un catálogo limitado. La web conserva su valor
              exacto, mientras Google y NFC usan la categoría genérica reconocida.
              El script añade el servicio realmente seleccionado al mensaje. -->
-        <label for="servicio">¿Qué necesitas?</label>
+        <label for="servicio">¿Qué tienes en mente?</label>
         <select id="servicio" name="servicio" required aria-describedby="servicio-av">
+          <option value="No lo sé aún — asesórenme">Quiero platicar mi idea</option>
           <option value="Sitios Web Premium para tu Negocio">Una página web para mi negocio</option>
           <option value="No lo sé aún — asesórenme" data-solicitud="Perfil de Empresa en Google">Configurar mi negocio en Google Maps</option>
           <option value="No lo sé aún — asesórenme" data-solicitud="Exhibidores personalizados NFC + QR">Placas y exhibidores personalizados NFC + QR</option>
-          <option value="No lo sé aún — asesórenme">No sé qué necesito — quiero asesoría</option>
         </select>
         <p class="aviso" id="servicio-av"></p>
-        <label for="mensaje">Tu idea</label>
+        <label for="mensaje">Cuéntanos un poco</label>
         <textarea id="mensaje" name="mensaje" required maxlength="4000"
-                  placeholder="Describe tu negocio y qué quieres lograr..."
+                  placeholder="¿Qué te gustaría crear o mejorar?"
                   aria-describedby="mensaje-av"></textarea>
         <p class="aviso" id="mensaje-av"></p>
         <!-- Caja del desafío anti-bots. Nace vacía y sin alto: el widget se
              renderiza la primera vez que alguien pulsa Enviar, y en modo
              "sólo si hace falta interacción" lo normal es que no se vea nada. -->
         <div class="ts-caja" id="form-ts"></div>
-        <button type="submit" class="btn solid" id="form-go">Enviar mensaje</button>
+        <button type="submit" class="btn solid" id="form-go">Enviar mi idea</button>
         <!-- Región viva: aquí cae tanto el "Recibido" como el motivo exacto del
              fallo, y en los dos casos se anuncia a quien no ve la pantalla. -->
         <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
-        <!-- Dice las DOS cosas que pasan con el mensaje, porque las dos pasan:
-             se guarda en el sistema y además llega por correo al buzón interno.
-             Decir sólo una de las dos era lo que hacía esta línea hasta hoy, y
-             el aviso de privacidad ya lo corrigió: si el formulario promete
-             menos de lo que hace, el que queda mal es el aviso. -->
-        <p class="form-nota">Al enviar, estos datos entran en nuestro sistema y
-          nos llegan también por correo a un buzón interno, para poder
-          responderte. Nada más: ni boletines, ni publicidad, ni cesión a
-          terceros. <a href="aviso-de-privacidad.html">Aviso de privacidad</a>.</p>
-        <!-- Los dos canales directos siguen aquí, y en formato pequeño a
-             propósito: quien prefiere WhatsApp lo tiene a un toque sin que le
-             discuta el sitio al formulario. Sin "arriba" ni "a la izquierda" en
-             el texto: en móvil los datos van debajo y en escritorio al lado, así
-             que cualquier dirección sería falsa en una de las dos. -->
-        <div class="can-alt">
-          <p class="can-n">¿Prefieres escribir por tu cuenta? Llega igual:</p>
-          <div class="can-btns">
-            <a class="btn" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer"
-               aria-label="Escribir por WhatsApp al +52 442 369 7248">
-              <span class="dia" aria-hidden="true"></span>WhatsApp</a>
-            <a class="btn" href="mailto:hola@sycsolutions.company"
-               aria-label="Enviar un correo a hola@sycsolutions.company">
-              <span class="dia" aria-hidden="true"></span>Correo</a>
-          </div>
-        </div>
+        <p class="form-nota">Usaremos tus datos solo para responderte. Se guardan en nuestro sistema y llegan también a nuestro correo. <a href="aviso-de-privacidad.html">Aviso de privacidad</a>.</p>
       </form>
+      </details>
     </div>
 
     <!-- Preguntas frecuentes. Van DESPUÉS del formulario a propósito: plegadas
