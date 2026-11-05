@@ -79,11 +79,11 @@
   });
 
   const resultCards = [...document.querySelectorAll('.result-shot')];
-  resultCards.forEach((card, index) => card.addEventListener('click', () => {
+  resultCards.forEach(card => card.addEventListener('click', () => {
     previousFocus = card;
-    viewerCards = resultCards;
+    viewerCards = resultCards.filter(item => item.dataset.resultGroup === card.dataset.resultGroup);
     viewerFromCarousel = false;
-    viewerIndex = index;
+    viewerIndex = viewerCards.indexOf(card);
     renderViewer();
     dialog.showModal();
     closeButton.focus();
