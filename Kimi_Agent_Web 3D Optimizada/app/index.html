@@ -2509,6 +2509,7 @@ html.js .pc-alt{display:none}
 }
 </style>
 <link rel="stylesheet" href="assets/catalogo.css?v=aa2c4a0c">
+<link rel="stylesheet" href="assets/casos-carrusel.css?v=20261105">
 </head>
 <body>
 
@@ -3114,6 +3115,8 @@ html.js .pc-alt{display:none}
         <p class="insta-guia" data-guia>Desliza para ver más <span class="ig-f">&#8594;</span></p>
         </div>
 
+        <div class="casos-carrusel" data-casos-carrusel>
+        <div class="casos-carrusel-pista" data-casos-pista role="region" aria-roledescription="carrusel" aria-label="Casos de antes y después" tabindex="0">
         <section class="kabuki-story" aria-labelledby="kabuki-story-title">
           <div class="kabuki-story-head">
             <div>
@@ -3214,6 +3217,14 @@ html.js .pc-alt{display:none}
           </div>
           <p class="kabuki-story-note">Toca para ampliar.</p>
         </section>
+        </div>
+        <div class="casos-carrusel-controles" aria-label="Navegación entre casos">
+          <button class="casos-carrusel-flecha" type="button" data-casos-anterior aria-label="Ver caso anterior" disabled>‹</button>
+          <span class="casos-carrusel-contador" data-casos-contador aria-live="polite">01 / 03</span>
+          <button class="casos-carrusel-flecha" type="button" data-casos-siguiente aria-label="Ver caso siguiente">›</button>
+        </div>
+        <p class="casos-carrusel-ayuda">Desliza para ver otros casos.</p>
+        </div>
     </div>
   </div>
 </section>
@@ -5964,5 +5975,6 @@ if('serviceWorker' in navigator){
 }
 </script>
 <script src="assets/catalogo.js?v=917af000"></script>
+<script src="assets/casos-carrusel.js?v=20261105"></script>
 </body>
 </html>
