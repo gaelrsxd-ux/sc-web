@@ -1,6 +1,19 @@
 (() => {
   'use strict';
 
+  // Dos vistas excluyentes: el portafolio se ve primero; los casos sólo a petición.
+  const portfolioTabs = [...document.querySelectorAll('[data-show-panel]')];
+  const portfolioPanels = [...document.querySelectorAll('[data-portfolio-panel]')];
+  function showPortfolioPanel(id) {
+    portfolioPanels.forEach(panel => { panel.hidden = panel.id !== id; });
+    portfolioTabs.forEach(tab => {
+      const selected = tab.dataset.showPanel === id;
+      tab.classList.toggle('is-active', selected);
+      tab.setAttribute('aria-pressed', String(selected));
+    });
+  }
+  portfolioTabs.forEach(tab => tab.addEventListener('click', () => showPortfolioPanel(tab.dataset.showPanel)));
+
   const carousel = document.getElementById('gallery');
   const projects = [...carousel.querySelectorAll('.project')];
   const carouselCount = document.getElementById('carousel-count');

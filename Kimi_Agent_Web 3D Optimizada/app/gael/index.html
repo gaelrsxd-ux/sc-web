@@ -17,8 +17,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/gael-card.css?v=kabukivm1">
-  <script defer src="/assets/gael-card.js?v=casos2"></script>
+  <link rel="stylesheet" href="/assets/gael-card.css?v=tabs1">
+  <script defer src="/assets/gael-card.js?v=tabs1"></script>
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -72,9 +72,11 @@
         <span class="service-pill"><span class="service-number" aria-hidden="true">03</span>NFC + QR</span>
         <span class="service-pill"><span class="service-number" aria-hidden="true">04</span>Web + Google</span>
       </div>
-      <div class="filters" aria-label="Galería de clientes">
-        <span class="filter is-active filter-static">Clientes</span>
+      <div class="filters" role="group" aria-label="Ver trabajos de S&C">
+        <button class="filter is-active" type="button" data-show-panel="clientes-panel" aria-controls="clientes-panel" aria-pressed="true">Clientes</button>
+        <button class="filter" type="button" data-show-panel="resultados-panel" aria-controls="resultados-panel" aria-pressed="false">Antes y después</button>
       </div>
+      <div id="clientes-panel" data-portfolio-panel>
       <div class="gallery-stage">
         <div class="gallery" id="gallery" role="region" aria-roledescription="carrusel" aria-label="Portafolio interactivo en 3D">
           <button class="project" type="button" data-kind="productos" data-full="https://sycsolutions.company/assets/sc-signa-alvia-natural.webp" data-caption="ÁLVIA · Exhibidor Signa personalizado" aria-label="Ampliar exhibidor personalizado ÁLVIA">
@@ -109,7 +111,9 @@
         <button type="button" class="carousel-step carousel-next" aria-label="Ver fotografía siguiente">›</button>
       </div>
       <p class="gallery-note">Desliza para girar el carrusel. Toca la fotografía central para ampliarla.</p>
+      </div>
 
+      <div id="resultados-panel" data-portfolio-panel hidden>
       <section class="gael-results" aria-labelledby="gael-results-title">
         <div class="gael-results-head">
           <div><span class="gael-results-kicker">RESULTADOS · 2 MESES</span><h3 id="gael-results-title">De 32 a <em>53 reseñas.</em></h3><p>Kabuki Villa Magna · 4.5 a 4.6 estrellas en Google.</p></div>
@@ -156,6 +160,7 @@
         </div>
         <p class="gael-results-note">Toca para ampliar.</p>
       </section>
+      </div>
     </section>
 
     <section class="outro" aria-labelledby="outro-title"><span class="outro-star">✦</span><p class="index">02 / TU SIGUIENTE PROYECTO</p><h2 id="outro-title">Ahora, hagamos <em>algo contigo.</em></h2><p>Una buena idea merece ejecutarse bien.</p><a class="outro-button" href="https://wa.me/524423697248?text=Hola%20Gael%2C%20vi%20tu%20tarjeta%20digital%20y%20quiero%20cotizar%20un%20proyecto." target="_blank" rel="noopener noreferrer">Conversemos por WhatsApp <span aria-hidden="true">↗</span></a></section>
