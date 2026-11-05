@@ -36,11 +36,11 @@ test('WhatsApp e Instagram flotan en todo el recorrido con accesos reales y nomb
   const whatsapp = new URL(enlaceWa);
   assert.equal(whatsapp.origin + whatsapp.pathname, 'https://wa.me/524423697248');
   assert.equal(whatsapp.searchParams.get('text'),
-    'Hola, vengo de su página web y me interesa conocer más sobre sus servicios. ¿Me podrían dar información, por favor?',
+    'Hola, vengo de su página web y estoy interesado en adquirir alguno de sus servicios. ¿Me pueden compartir más información, por favor?',
     'WhatsApp debe abrir con texto preparado sin enviarlo automáticamente');
-  assert.match(botones, /class="social-ig" href="https:\/\/ig\.me\/m\/sycsolutions_mx"/);
+  assert.match(botones, /class="social-ig" href="https:\/\/www\.instagram\.com\/sycsolutions_mx\/"/);
   assert.match(botones, /aria-label="Escribir a S&amp;C por WhatsApp con mensaje preparado"/);
-  assert.match(botones, /aria-label="Abrir Instagram y copiar un mensaje para pegar en el chat"/);
+  assert.match(botones, /aria-label="Ver el perfil de Instagram de S&amp;C Solutions"/);
   assert.match(html, /\.social-flotantes\{position:fixed;/,
     'Los botones deben acompañar al usuario al desplazarse');
   assert.match(html, /\.social-flotantes a\{[^}]*border-radius:50%/,
@@ -51,32 +51,19 @@ test('WhatsApp e Instagram flotan en todo el recorrido con accesos reales y nomb
     'En móvil los botones deben ir cerca del borde inferior sin pisar el área segura');
 });
 
-test('Instagram copia el mensaje en un toque y abre chat en móvil, perfil en escritorio', () => {
-  const codigoSocial = readFileSync(join(app, 'assets/social-contacto.js'), 'utf8');
-  for (const escritorio of [false, true]) {
-    const llamadas = [];
-    const enlace = { href: '', addEventListener(tipo, fn) { this[tipo] = fn; } };
-    const campo = {
-      style: {}, select() {}, setSelectionRange() {}, remove() {}
-    };
-    runInNewContext(codigoSocial, {
-      document: {
-        querySelector: () => enlace,
-        createElement: () => campo,
-        body: { appendChild() {} },
-        execCommand: accion => { llamadas.push({ accion, texto: campo.value }); return true; }
-      },
-      navigator: {},
-      window: { matchMedia: () => ({ matches: escritorio }) }
-    });
-    assert.equal(enlace.href, escritorio
-      ? 'https://www.instagram.com/sycsolutions_mx/'
-      : 'https://ig.me/m/sycsolutions_mx');
-    enlace.click();
-    assert.equal(llamadas.length, 1);
-    assert.equal(llamadas[0].accion, 'copy');
-    assert.match(llamadas[0].texto, /vengo de su página web/);
-  }
+test('La portada muestra cuatro ofertas en el orden comercial correcto', () => {
+  const bloque = html.match(/<nav class="hero-oferta"[\s\S]*?<\/nav>/)?.[0] || '';
+  const ofertas = [...bloque.matchAll(/<a href="([^"]+)"><b>([^<]+)<\/b><span[^>]*>([\s\S]*?)<\/span><\/a>/g)];
+  assert.deepEqual(ofertas.map(o => [o[1], o[2]]), [
+    ['#sc-personalizados', 'Exhibidores personalizados NFC + QR'],
+    ['#sc-classic', 'Exhibidores clásicos NFC + QR'],
+    ['#svc-google', 'Tu negocio en Google Maps'],
+    ['#svc-web', 'Página web profesional']
+  ]);
+  assert.match(ofertas[0][3], /\$640/);
+  assert.match(ofertas[1][3], /\$399/);
+  assert.doesNotMatch(html, /assets\/social-contacto\.js/,
+    'El perfil de Instagram no debe ejecutar el código antiguo para copiar mensajes');
 });
 
 function nodo(value = '') {
