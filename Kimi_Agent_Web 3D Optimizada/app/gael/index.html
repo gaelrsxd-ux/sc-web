@@ -18,7 +18,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/gael-card.css?v=tabs1">
+  <link rel="stylesheet" href="/assets/casos-carrusel.css?v=20261105">
   <script defer src="/assets/gael-card.js?v=tabs1"></script>
+  <script defer src="/assets/casos-carrusel.js?v=20261105"></script>
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -114,6 +116,9 @@
       </div>
 
       <div id="resultados-panel" data-portfolio-panel hidden>
+      <div class="casos-carrusel" data-casos-carrusel>
+      <div class="casos-carrusel-pista" data-casos-pista role="region" aria-roledescription="carrusel" aria-label="Casos de antes y después" tabindex="0">
+
       <section class="gael-results" aria-labelledby="gael-results-title">
         <div class="gael-results-head">
           <div><span class="gael-results-kicker">CASO 01 · 2 MESES</span><h3 id="gael-results-title">De 32 a <em>53 reseñas.</em></h3><p>Kabuki Villa Magna · 4.5 a 4.6 estrellas en Google.</p></div>
@@ -160,6 +165,14 @@
         </div>
         <p class="gael-results-note">Toca para ampliar.</p>
       </section>
+      </div>
+      <div class="casos-carrusel-controles" aria-label="Navegación entre casos">
+        <button class="casos-carrusel-flecha" type="button" data-casos-anterior aria-label="Ver caso anterior" disabled>‹</button>
+        <span class="casos-carrusel-contador" data-casos-contador aria-live="polite">01 / 03</span>
+        <button class="casos-carrusel-flecha" type="button" data-casos-siguiente aria-label="Ver caso siguiente">›</button>
+      </div>
+      <p class="casos-carrusel-ayuda">Desliza para ver otros casos.</p>
+      </div>
       </div>
     </section>
 
