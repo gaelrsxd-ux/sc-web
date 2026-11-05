@@ -45,6 +45,7 @@ function nodo(value = '') {
     eventos: {},
     addEventListener(tipo, fn) { this.eventos[tipo] = fn; },
     setAttribute(nombre, valor) { this.atributos[nombre] = valor; },
+    getAttribute(nombre) { return nombre === 'href' ? this.href : (this.atributos[nombre] ?? null); },
     removeAttribute(nombre) { delete this.atributos[nombre]; if (nombre === 'href') this.href = ''; }
   };
 }
@@ -60,7 +61,7 @@ function preparar({ hash = '' } = {}) {
 
   const paneles = Object.fromEntries(['#sc-personalizados', '#sc-classic']
     .map(id => [id, { ...nodo(), scrollIntoView() { this.desplazado = true; } }]));
-  const accesos = ['#sc-classic', '#sc-personalizados'].map(href => ({ ...nodo(), href }));
+  const accesos = ['#sc-personalizados', '#sc-classic'].map(href => ({ ...nodo(), href }));
   const location = { hash };
   const eventosVentana = {};
 
@@ -136,26 +137,26 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
   assert.match(estilos, /\.sc-bloque\{[^}]*padding:0/);
   assert.match(html, /id="sc-classic"[\s\S]*?<article class="prod">[\s\S]*?class="prod-compra"/);
   assert.match(html, /S&amp;C \/ 03[\s\S]*?DOCK[\s\S]*?Aún no disponible para compra/);
-  assert.match(html, /01 \/ Clásicas y mayoreo[\s\S]*02 \/ Personalizados/,
-    'Las clásicas deben aparecer primero, a la izquierda');
+  assert.match(html, /01 \/ Personalizados[\s\S]*02 \/ Clásicas y mayoreo/,
+    'Los personalizados deben aparecer primero, a la izquierda');
   assert.match(html, /CLASSIC <span class="sc-classic-rombo" aria-hidden="true"><\/span> <em>mayoreo\.<\/em>/,
     'Un rombo reemplaza el ampersand tipográfico del encabezado');
   assert.match(estilos, /\.sc-classic-rombo\{/);
 });
 
-test('CLASSIC abre primero, Personalizados va segundo y los enlaces restauran la vista', () => {
+test('Personalizados abre primero, Classic va segundo y los enlaces restauran la vista', () => {
   const { paneles, accesos, location, eventosVentana } = preparar();
-  assert.equal(paneles['#sc-classic'].hidden, false);
-  assert.equal(paneles['#sc-personalizados'].hidden, true);
+  assert.equal(paneles['#sc-personalizados'].hidden, false);
+  assert.equal(paneles['#sc-classic'].hidden, true);
   assert.equal(accesos[0].atributos['aria-current'], 'page');
   accesos[1].eventos.click();
-  assert.equal(paneles['#sc-classic'].hidden, true);
-  assert.equal(paneles['#sc-personalizados'].hidden, false);
-  assert.equal(accesos[1].atributos['aria-current'], 'page');
-  location.hash = '#sc-classic';
-  eventosVentana.hashchange();
-  assert.equal(paneles['#sc-classic'].hidden, false);
   assert.equal(paneles['#sc-personalizados'].hidden, true);
+  assert.equal(paneles['#sc-classic'].hidden, false);
+  assert.equal(accesos[1].atributos['aria-current'], 'page');
+  location.hash = '#sc-personalizados';
+  eventosVentana.hashchange();
+  assert.equal(paneles['#sc-personalizados'].hidden, false);
+  assert.equal(paneles['#sc-classic'].hidden, true);
   const directo = preparar({ hash: '#sc-personalizados' });
   assert.equal(directo.paneles['#sc-personalizados'].hidden, false);
   const classic = preparar({ hash: '#sc-classic' });
