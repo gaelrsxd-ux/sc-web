@@ -14,6 +14,9 @@
   scroll-snap-align:start;scroll-snap-stop:always;margin:0;
 }
 .casos-carrusel-pista>.gael-results{padding-top:0;border-top:0}
+.case-timeline{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.case-timeline-number{color:#dfc99f;letter-spacing:.14em;font:700 11px/1.3 Inter,Arial,sans-serif;white-space:nowrap}
+.case-timeline-duration{display:inline-flex;align-items:center;min-height:25px;padding:5px 10px;border-radius:3px;border:1px solid #dfc58f;background:#d6b674;color:#171719;font:800 10px/1.2 Inter,Arial,sans-serif;letter-spacing:.075em;white-space:nowrap;box-shadow:0 2px 12px rgba(214,182,116,.13)}
 .casos-carrusel-pista:focus-visible{outline:2px solid #c8a96a;outline-offset:4px}
 .casos-carrusel-controles{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:18px}
 .casos-carrusel-flecha{
@@ -29,6 +32,9 @@
 .casos-carrusel-ayuda{margin:9px 0 0;color:#9e9a92;text-align:center;font:12px/1.5 Inter,Arial,sans-serif}
 @media(max-width:600px){
   .casos-carrusel{margin-top:22px}
+  .case-timeline{gap:6px;margin-bottom:8px}
+  .case-timeline-number{font-size:10px}
+  .case-timeline-duration{min-height:23px;padding:5px 8px;font-size:9px;letter-spacing:.045em}
   .casos-carrusel-controles{margin-top:14px}
   .casos-carrusel-flecha{width:42px;height:42px}
 }
