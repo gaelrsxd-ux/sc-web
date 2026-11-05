@@ -19,19 +19,12 @@ test('portada clara: web, Google, NFC y revisión sin bloques repetidos', () => 
   assert.match(html, /id="svc-google"[\s\S]*?class="idx"[^>]*>\/ 01/);
   assert.match(html, /id="svc-web"[\s\S]*?class="idx"[^>]*>\/ 02/);
   assert.doesNotMatch(html, /id="svc-tareas"|>Automatización de Procesos</);
-  assert.match(html, /Configurar mi negocio en Google Maps/);
-  assert.match(html, /Placas y exhibidores personalizados NFC \+ QR/);
-  assert.match(html, /data-solicitud="Perfil de Empresa en Google"/);
-  assert.match(html, /data-solicitud="Exhibidores personalizados NFC \+ QR"/);
-  assert.match(html, /const tema=campos\.servicio\.selectedOptions\[0\]\?\.dataset\.solicitud/);
-  assert.match(html, /datos\.mensaje=encabezado\+datos\.mensaje/,
-    'El mensaje incluye la categoría real sin cambiar los valores validados por el servidor');
   assert.doesNotMatch(html, /id="viva"|getElementById\('viva'\)/,
     'La franja rotatoria repetida no debe ocupar espacio');
   assert.match(html, /\.aud-out:has\(\.aud-idle\)\{display:none\}/,
     'La caja de diagnóstico vacía queda oculta hasta tener resultados');
-  assert.match(html, /#contacto \.frame\{padding:22px 18px\}/,
-    'Contacto tiene un relleno ajustado en móvil');
+  assert.match(html, /#contacto \.contacto-datos\{display:grid/,
+    'Los datos de contacto deben quedar organizados dentro de la única tarjeta');
 });
 
 function nodo(value = '') {
@@ -134,16 +127,20 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
   assert.ok(html.indexOf('id="sc-config"') < html.indexOf('id="sc-classic"'));
   assert.doesNotMatch(html, /class="sc-propuesta"/, 'No debe haber un segundo bloque de contacto bajo el catálogo');
   assert.match(html, /<section id="contacto" class="contacto-unico">[\s\S]*?¿Imaginas <em>algo distinto\?<\/em>/);
-  assert.match(html, /<div class="c-info contacto-accion rv">[\s\S]*?<details class="contacto-brief">[\s\S]*?<form class="frame rv" id="form"/,
-    'El formulario válido debe estar plegado dentro de la única tarjeta de contacto');
-  assert.doesNotMatch(html, /class="contacto-brief rv"/,
-    'No debe existir una segunda tarjeta de contacto junto a WhatsApp');
+  const contacto = html.match(/<section id="contacto" class="contacto-unico">[\s\S]*?<\/section>/)?.[0] || '';
+  assert.doesNotMatch(contacto, /contacto-brief|id="form"|Abrir formulario|¿Prefieres escribir aquí\?/,
+    'La tarjeta de contacto no debe ofrecer ni mostrar el formulario retirado');
+  assert.equal((contacto.match(/class="c-item"/g) || []).length, 4,
+    'Se recuperan WhatsApp, correo, ubicación y horario');
   assert.equal((html.match(/class="c-info contacto-accion rv"/g) || []).length, 1,
     'Sólo debe aparecer una tarjeta de contacto');
   assert.match(html, /Contar mi idea por WhatsApp/);
-  for (const id of ['nombre','email','telefono','servicio','mensaje','form-go','form-ts']) {
-    assert.match(html, new RegExp(`id="${id}"`), `Falta campo de contacto ${id}`);
-  }
+  assert.match(contacto, /href="https:\/\/wa\.me\/524423697248"/,
+    'El teléfono debe abrir WhatsApp');
+  assert.match(contacto, /href="mailto:hola@sycsolutions\.company"/,
+    'El correo debe abrir el cliente de correo');
+  assert.match(contacto, /San Luis Potosí, México/);
+  assert.match(contacto, /Lun — Vie · 9:00 a 23:00/);
   assert.doesNotMatch(html, /id="sc-cantidad"|id="sc-preview"|name="sc-base"|id="sc-destino"|class="sc-config-opcional"|\(opcional\)/);
   assert.match(html, /En WhatsApp nos envías tu logotipo y definimos juntos el diseño, enlaces NFC\/QR, precio y entrega/);
   assert.match(estilos, /\.sc-modelo-cta::before\{content:"";position:absolute;inset:0;z-index:1/);
