@@ -125,6 +125,12 @@ test('fichas y controles compactos existen sin alterar las placas clásicas', ()
     assert.ok(html.includes(`assets/${archivo}`), `Falta referencia a ${archivo}`);
   }
   assert.ok(html.indexOf('id="sc-personalizados"') < html.indexOf('id="sc-classic"'));
+  assert.ok(html.indexOf('data-sc-tarjeta="signa"') < html.indexOf('data-sc-tarjeta="tria"'),
+    'SIGNA debe ser la primera tarjeta personalizada');
+  assert.match(html, /data-sc-tarjeta="signa" data-sc-seleccionado="true"/);
+  assert.match(html, /data-sc-tarjeta="tria" data-sc-seleccionado="false"/);
+  assert.match(html, /<option value="signa">SIGNA · 1 NFC \+ QR<\/option>[\s\S]*?<option value="tria">TRIA · 3 NFC \+ QR<\/option>/,
+    'SIGNA debe abrir primero en el selector del cotizador');
   assert.ok(html.indexOf('id="sc-config"') < html.indexOf('id="sc-classic"'));
   assert.ok(html.indexOf('class="sc-propuesta"') > html.indexOf('id="sc-classic"'));
   assert.doesNotMatch(html, /id="sc-cantidad"|id="sc-preview"|name="sc-base"|id="sc-destino"|class="sc-config-opcional"|\(opcional\)/);
