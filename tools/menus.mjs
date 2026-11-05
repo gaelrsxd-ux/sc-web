@@ -10,6 +10,7 @@ const ARCHIVO_REDIRECCIONES = path.join(
   'app',
   '_redirects'
 );
+const RUTAS_CORTAS = [{ origen: '/g', destino: '/gael/' }];
 
 export function validarCatalogo(catalogo) {
   if (!catalogo || typeof catalogo !== 'object') throw new Error('El catálogo debe ser un objeto JSON.');
@@ -92,10 +93,15 @@ export function generarRedirecciones(catalogo) {
   const { dominio, restaurantes } = validarCatalogo(catalogo);
   const lineas = [
     '# GENERADO por: node tools/menus.mjs',
-    '# Edita datos/menus.json; no edites este archivo a mano.',
+    '# Menús en datos/menus.json; rutas cortas en tools/menus.mjs. No editar a mano.',
     '# 302 es intencional: permite cambiar el destino sin cache permanente.',
     ''
   ];
+
+  for (const { origen, destino } of RUTAS_CORTAS) {
+    lineas.push(`${origen} ${destino} 302`);
+  }
+  lineas.push('');
 
   for (const restaurante of restaurantes) {
     if (!restaurante.activo) continue;

@@ -1,6 +1,8 @@
 # GENERADO por: node tools/menus.mjs
-# Edita datos/menus.json; no edites este archivo a mano.
+# Menús en datos/menus.json; rutas cortas en tools/menus.mjs. No editar a mano.
 # 302 es intencional: permite cambiar el destino sin cache permanente.
+
+/g /gael/ 302
 
 /q/m001 /menu/demo 302
 
