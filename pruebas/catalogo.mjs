@@ -27,6 +27,22 @@ test('portada clara: web, Google, NFC y revisión sin bloques repetidos', () => 
     'Los datos de contacto deben quedar organizados dentro de la única tarjeta');
 });
 
+test('WhatsApp e Instagram flotan en todo el recorrido con accesos reales y nombres accesibles', () => {
+  const botones = html.match(/<nav class="social-flotantes"[\s\S]*?<\/nav>/)?.[0] || '';
+  assert.equal((botones.match(/<a class="social-/g) || []).length, 2,
+    'El acceso flotante debe mostrar exactamente dos botones circulares');
+  assert.match(botones, /class="social-wa" href="https:\/\/wa\.me\/524423697248"/);
+  assert.match(botones, /class="social-ig" href="https:\/\/www\.instagram\.com\/sycsolutions_mx\/"/);
+  assert.match(botones, /aria-label="Escribir a S&amp;C por WhatsApp"/);
+  assert.match(botones, /aria-label="Ver Instagram de S&amp;C Solutions"/);
+  assert.match(html, /\.social-flotantes\{position:fixed;/,
+    'Los botones deben acompañar al usuario al desplazarse');
+  assert.match(html, /\.social-flotantes a\{[^}]*border-radius:50%/,
+    'Los botones deben ser verdaderamente circulares');
+  assert.match(html, /\.social-flotantes\{[^}]*z-index:48/,
+    'El menú y el visor deben poder tapar los accesos flotantes al abrirse');
+});
+
 function nodo(value = '') {
   return {
     value,
