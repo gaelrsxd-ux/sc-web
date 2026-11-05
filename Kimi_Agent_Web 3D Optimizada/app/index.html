@@ -2481,10 +2481,23 @@ html.js .pc-alt{display:none}
 #contacto .contacto-datos .c-item .v{font-size:clamp(18px,2.2vw,24px)}
 #contacto .contacto-datos .c-enl{overflow-wrap:anywhere}
 #contacto .contacto-datos .c-lin{white-space:normal}
+/* Accesos sociales flotantes: siempre visibles al recorrer, debajo del menú y del visor. */
+.social-flotantes{position:fixed;right:clamp(16px,2.4vw,32px);bottom:calc(30px + env(safe-area-inset-bottom,0px));z-index:48;display:flex;gap:12px;align-items:center}
+.social-flotantes a{display:grid;place-items:center;width:56px;height:56px;border:1px solid var(--line);border-radius:50%;background:rgba(var(--bg2-rgb),.95);box-shadow:0 10px 25px rgba(0,0,0,.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .2s ease,border-color .2s ease,background-color .2s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.social-flotantes svg{width:28px;height:28px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.social-flotantes .social-wa{color:#5ee0a1}
+.social-flotantes .social-ig{color:#e5b5c7}
+.social-flotantes a:hover{transform:translateY(-3px);border-color:var(--bronze-hi)}
+.social-flotantes a:active{transform:scale(.94)}
+.social-flotantes a:focus-visible{outline:2px solid var(--bronze-hi);outline-offset:4px}
+@media(prefers-reduced-motion:reduce){.social-flotantes a{transition:none}}
 @media(max-width:900px){
   #contacto .contact-grid{margin-top:26px}
 }
 @media(max-width:600px){
+  .social-flotantes{right:16px;bottom:calc(92px + env(safe-area-inset-bottom,0px));gap:10px}
+  .social-flotantes a{width:52px;height:52px}
+  .social-flotantes svg{width:26px;height:26px}
   #contacto .title{font-size:clamp(44px,11vw,62px);line-height:1.06}
   #contacto .contacto-bajada{font-size:17px;line-height:1.5}
   #contacto .contacto-accion{padding:25px 22px}
@@ -2583,6 +2596,23 @@ html.js .pc-alt{display:none}
      sección lo arrastre, y por encima de la barra de navegación: dos píxeles
      que dicen cuánto queda son la diferencia entre bajar y abandonar. -->
 <div id="avance" aria-hidden="true"></div>
+
+<!-- Contacto inmediato desde cualquier tramo, sin cubrir el menú ni las fotos ampliadas. -->
+<nav class="social-flotantes" aria-label="Redes sociales y contacto rápido">
+  <a class="social-wa" href="https://wa.me/524423697248" target="_blank" rel="noopener noreferrer" aria-label="Escribir a S&amp;C por WhatsApp" title="WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M20.2 11.8a8.2 8.2 0 0 1-12.2 7.1L3.5 20l1.2-4.3a8.2 8.2 0 1 1 15.5-3.9Z"/>
+      <path d="M8.3 7.8c.4 3.5 3 6.1 6.4 7.1l1.4-1.4-2.5-1.2-.9 1a7.5 7.5 0 0 1-3.5-3.5l1-.9L9 6.5 7.5 7.8Z" fill="currentColor" stroke="none"/>
+    </svg>
+  </a>
+  <a class="social-ig" href="https://www.instagram.com/sycsolutions_mx/" target="_blank" rel="noopener noreferrer" aria-label="Ver Instagram de S&amp;C Solutions" title="Instagram">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="3" y="3" width="18" height="18" rx="5"/>
+      <circle cx="12" cy="12" r="4"/>
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+    </svg>
+  </a>
+</nav>
 
 <!-- El riel izquierdo deja de ser un rótulo y pasa a ser el índice del
      recorrido: numera los cinco tramos, enciende el que se está leyendo y deja
