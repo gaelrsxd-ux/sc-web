@@ -2541,9 +2541,7 @@ html.js .pc-alt{display:none}
       <a href="#svc-google">Perfil de Empresa en Google</a>
       <a href="#svc-web">P&#225;gina web</a>
     </div>
-    <a class="men-l" href="#diagnostico"><span class="men-n">04</span>Revisa tu p&#225;gina
-      <small>Te decimos gratis qu&#233; le falta</small></a>
-    <a class="men-l" href="#contacto"><span class="men-n">05</span>Habla con nosotros
+    <a class="men-l" href="#contacto"><span class="men-n">04</span>Habla con nosotros
       <small>WhatsApp, correo y formulario</small></a>
   </nav>
 </div>
@@ -2560,8 +2558,7 @@ html.js .pc-alt{display:none}
 <nav class="rail l" id="riel" aria-label="Índice del recorrido">
   <div class="idxr">
     <a href="#soluciones"  data-sec="soluciones">01<b>Soluciones</b></a>
-    <a href="#diagnostico" data-sec="diagnostico">02<b>Tu página</b></a>
-    <a href="#contacto"    data-sec="contacto">03<b>Contacto</b></a>
+    <a href="#contacto"    data-sec="contacto">02<b>Contacto</b></a>
     <span class="sello" aria-hidden="true"></span>
   </div>
 </nav>
@@ -2597,7 +2594,6 @@ html.js .pc-alt{display:none}
     <li><a href="#productos">Exhibidores</a></li>
     <li><a href="#servicios">Servicios</a></li>
     <li><a href="#clientes">Clientes</a></li>
-    <li><a href="#diagnostico">Revisa tu página</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div style="display:flex;align-items:center;gap:14px">
@@ -3195,45 +3191,12 @@ html.js .pc-alt{display:none}
        y las animaciones bob y ringp (ringp-s, la de los botones de servicio, es
        otra y se queda).
 
-     La numeración quedó en tres tramos: Soluciones 01, Tu página 02 y Contacto
-     03, y así se escriben en la sección, en el riel y en el menú. -->
-
-<!-- ============ DIAGNÓSTICO ============
-     Va pegado al contacto y es el último escalón antes de pedir nada: mirar,
-     ver la prueba, probar gratis sin registro, escribir. Estando contiguos, el
-     puente que enseña la nota obtenida junto a los canales de contacto ocurre
-     sin que el visitante recorra media página por el camino.
-     El análisis lo hace un Worker de Cloudflare porque el navegador no puede
-     leer otro dominio (CORS); el endpoint se configura en AUDITOR abajo. -->
-<section id="diagnostico">
-  <div class="wrap">
-    <span class="sec-tag rv"><span class="n">02 —</span> Revisión gratuita</span>
-    <h2 class="title" data-split>Revisa tu <em>página web</em> gratis.</h2>
-    <div class="aud-grid">
-      <div class="rv">
-        <!-- Instrucción breve y resultado comprensible incluso sin conocer SEO. -->
-        <p class="lead">Escribe la dirección de tu web. Te mostramos una calificación y qué puedes mejorar para Google.</p>
-        <form class="aud-form" id="aud-form">
-          <label for="aud-url" class="sr-only"
-                 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dirección de tu web</label>
-          <input id="aud-url" type="url" inputmode="url" autocomplete="url" required
-                 placeholder="tuempresa.com">
-          <button type="submit" id="aud-go">Revisar web</button>
-        </form>
-        <p class="aud-note">Gratis y sin registro. Revisamos solo la página pública que nos indiques.</p>
-      </div>
-
-      <div class="aud-out" id="aud-out" aria-live="polite">
-        <p class="aud-idle">Aquí verás el resultado de tu revisión.</p>
-      </div>
-    </div>
-  </div>
-</section>
+     La numeración del recorrido termina en Contacto 02. -->
 
 <!-- ============ CONTACTO ============ -->
 <section id="contacto">
   <div class="wrap">
-    <span class="sec-tag"><span class="n">03 —</span> Contacto</span>
+    <span class="sec-tag"><span class="n">02 —</span> Contacto</span>
     <h2 class="title" data-split>Hablemos de <em>tu proyecto</em></h2>
     <div class="contact-grid">
       <!-- .c-info se disuelve en móvil (display:contents) para que la frase de
@@ -3436,12 +3399,6 @@ html.js .pc-alt{display:none}
           dos</b>.
           En <b>San Luis Potosí y Soledad</b>, además, vamos en persona: te
           instalamos la placa y tomamos las fotos de tu perfil.</p>
-      </details>
-      <details>
-        <summary>¿Cuánto cuesta revisar mi página?</summary>
-        <p class="faq-r">Nada, y sin registrarte. Analizamos sólo la página que nos
-          digas —no la guardamos ni la compartimos— y te damos una nota con los
-          fallos concretos. <a href="#diagnostico">Pruébalo ahora</a>.</p>
       </details>
       <details>
         <summary>No sé qué necesito. ¿Puedo escribir igual?</summary>
