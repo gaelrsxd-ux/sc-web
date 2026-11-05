@@ -41,6 +41,8 @@ test('WhatsApp e Instagram flotan en todo el recorrido con accesos reales y nomb
     'Los botones deben ser verdaderamente circulares');
   assert.match(html, /\.social-flotantes\{[^}]*z-index:48/,
     'El menú y el visor deben poder tapar los accesos flotantes al abrirse');
+  assert.match(html, /\.social-flotantes\{right:16px;bottom:calc\(20px \+ env\(safe-area-inset-bottom,0px\)\)/,
+    'En móvil los botones deben ir cerca del borde inferior sin pisar el área segura');
 });
 
 function nodo(value = '') {
