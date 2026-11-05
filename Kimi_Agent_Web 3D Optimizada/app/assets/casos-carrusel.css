@@ -1,0 +1,38 @@
+/* Cada caso conserva juntas sus capturas de antes y después.
+   Desplazamiento horizontal nativo: táctil, teclado y controles. */
+.casos-carrusel{min-width:0;margin-top:26px}
+.casos-carrusel-pista{
+  display:flex;overflow-x:auto;overflow-y:hidden;gap:0;
+  scroll-snap-type:x mandatory;scroll-behavior:smooth;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.casos-carrusel-pista::-webkit-scrollbar{display:none}
+.casos-carrusel-pista>.kabuki-story,
+.casos-carrusel-pista>.gael-results{
+  flex:0 0 100%;min-width:0;max-width:100%;box-sizing:border-box;
+  scroll-snap-align:start;scroll-snap-stop:always;margin:0;
+}
+.casos-carrusel-pista>.gael-results{padding-top:0;border-top:0}
+.casos-carrusel-pista:focus-visible{outline:2px solid #c8a96a;outline-offset:4px}
+.casos-carrusel-controles{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:18px}
+.casos-carrusel-flecha{
+  display:grid;place-items:center;width:44px;height:44px;
+  padding:0;border-radius:50%;border:1px solid rgba(200,169,106,.55);
+  background:rgba(18,19,23,.9);color:#e8d3ac;cursor:pointer;
+  font:32px/1 Georgia,serif;transition:border-color .2s,background .2s;
+}
+.casos-carrusel-flecha:hover:not(:disabled){background:rgba(200,169,106,.16);border-color:#c8a96a}
+.casos-carrusel-flecha:disabled{opacity:.32;cursor:default}
+.casos-carrusel-flecha:focus-visible{outline:2px solid #c8a96a;outline-offset:3px}
+.casos-carrusel-contador{min-width:68px;color:#c8a96a;text-align:center;letter-spacing:.17em;font:600 12px/1.4 Inter,Arial,sans-serif;font-variant-numeric:tabular-nums}
+.casos-carrusel-ayuda{margin:9px 0 0;color:#9e9a92;text-align:center;font:12px/1.5 Inter,Arial,sans-serif}
+@media(max-width:600px){
+  .casos-carrusel{margin-top:22px}
+  .casos-carrusel-controles{margin-top:14px}
+  .casos-carrusel-flecha{width:42px;height:42px}
+}
+@media(prefers-reduced-motion:reduce){
+  .casos-carrusel-pista{scroll-behavior:auto}
+  .casos-carrusel-flecha{transition:none}
+}
