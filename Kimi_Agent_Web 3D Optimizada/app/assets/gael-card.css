@@ -106,23 +106,46 @@ html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none
   .gael-results-grid figcaption b,.gael-results-grid figcaption span{display:block;font-size:10px}
 }
 
-/* Tres marcas de agua con el monograma S&C real. La imagen se invierte y
-   mezcla con el fondo oscuro para ocultar el recuadro claro del archivo. */
+/* Tres marcas de agua con el monograma S&C real. El alto contraste vuelve
+   blanco el fondo de la foto; multiply deja sólo las letras sobre la página. */
 .hero,.portfolio,.outro{position:relative;isolation:isolate}
 .hero::before,.portfolio::before,.outro::before{
   content:"";position:absolute;z-index:0;left:50%;pointer-events:none;
   width:min(90vw,540px);aspect-ratio:1;
   background:url('/assets/logo-icono.jpg') center / 155% no-repeat;
-  filter:grayscale(1) invert(1) contrast(5) sepia(.32);
-  mix-blend-mode:screen;opacity:.11;
+  filter:grayscale(1) contrast(5);
+  mix-blend-mode:multiply;opacity:.075;
   transform:translateX(-50%);
 }
 .hero>* , .portfolio>* , .outro>*{position:relative;z-index:1}
-.hero::before{top:100px;width:min(85vw,510px);opacity:.11}
-.portfolio::before{top:120px;width:min(92vw,570px);opacity:.10}
-.outro::before{top:-110px;width:min(94vw,540px);opacity:.12}
+.hero::before{top:100px;width:min(85vw,510px);opacity:.075}
+.portfolio::before{top:120px;width:min(92vw,570px);opacity:.065}
+.outro::before{top:-110px;width:min(94vw,540px);opacity:.075}
 @media(max-width:699px){
-  .hero::before{top:126px;width:88vw;opacity:.11}
-  .portfolio::before{top:142px;width:94vw;opacity:.10}
-  .outro::before{top:-96px;width:96vw;opacity:.11}
+  .hero::before{top:126px;width:88vw;opacity:.075}
+  .portfolio::before{top:142px;width:94vw;opacity:.065}
+  .outro::before{top:-96px;width:96vw;opacity:.075}
 }
+
+/* Fondo blanco continuo en toda la tarjeta: texto azul marino y detalles dorados. */
+:root{color-scheme:light;--bg:#fff;--panel:#fff;--ink:#192943;--muted:#667083;--bronze:#a98249;--border:rgba(25,41,67,.16)}
+.ambient{display:none}
+.topbar{border-bottom-color:var(--border)}
+.intro,.portfolio-lede{color:#535d6b}
+.position{color:#647085}
+.expertise span{background:#fbf8f2}
+.quick-link{background:#fff;border-color:rgba(25,41,67,.15);box-shadow:0 8px 24px rgba(25,41,67,.045)}
+.quick-link.primary{background:#fbf8f2;border-color:rgba(169,130,73,.55)}
+.quick-link:hover{background:#f7f9fc}
+.link-icon .brand-tiktok{fill:#15243a}
+.portfolio{border-top-color:var(--border)}
+.service-list>div{background:#f9fafc}
+.filters .filter{border-color:rgba(25,41,67,.2)}
+.filter.is-active{color:#fff}
+.gallery-stage{background:transparent}
+.carousel-step,.carousel-step:disabled{background:#fff}
+.carousel-step:hover{background:#f6f1e8}
+.gallery-note{color:#6e7785}
+.outro{background:#fff;border-top-color:var(--border)}
+.footer{border-top-color:var(--border)}
+.outro-button{color:#fff}
