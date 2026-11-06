@@ -32,7 +32,7 @@ for (const [nombre, html, clase] of paginas) {
   test(`Los tres resultados de la ${nombre} destacan caso y plazo sin repetirlo`, () => {
     const casos = Array.from(html.matchAll(/<div class="case-timeline">([\\s\\S]*?)<\\/div>/g), m => m[1]);
     assert.equal(casos.length, 3);
-    for (const [indice, plazo] of ['2 MESES', '2 MESES', '1 MES'].entries()) {
+    for (const [indice, plazo] of ['2 MESES', '1 MES', '1 MES'].entries()) {
       assert.match(casos[indice], new RegExp(`case-timeline-number">CASO 0${indice + 1}<`));
       assert.match(casos[indice], new RegExp(`case-timeline-duration">EN SOLO ${plazo}<`));
     }
