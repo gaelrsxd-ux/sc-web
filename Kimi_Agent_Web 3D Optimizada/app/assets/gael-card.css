@@ -106,35 +106,35 @@ html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none
   .gael-results-grid figcaption b,.gael-results-grid figcaption span{display:block;font-size:10px}
 }
 
-/* Tres marcas de agua con el monograma S&C real. El alto contraste vuelve
-   blanco el fondo de la foto; multiply deja sólo las letras sobre la página. */
+/* Monograma dibujado con tipografía: sin fotografía ni píxeles de fondo.
+   Las tres marcas son transparentes y nunca crean cuadros sobre la página. */
 .hero,.portfolio,.outro{position:relative;isolation:isolate}
 .hero::before,.portfolio::before,.outro::before{
-  content:"";position:absolute;z-index:0;left:50%;pointer-events:none;
-  width:min(90vw,540px);aspect-ratio:1;
-  background:url('/assets/logo-icono.jpg') center / 155% no-repeat;
-  filter:grayscale(1) contrast(5);
-  mix-blend-mode:multiply;opacity:.075;
+  content:"S&C";position:absolute;z-index:0;left:50%;pointer-events:none;
+  width:100%;height:310px;display:grid;place-items:center;
+  font:600 clamp(170px,29vw,340px)/1 'Cormorant Garamond',Georgia,serif;
+  letter-spacing:-.075em;white-space:nowrap;color:#192943;opacity:.07;
   transform:translateX(-50%);
 }
 .hero>* , .portfolio>* , .outro>*{position:relative;z-index:1}
-.hero::before{top:100px;width:min(85vw,510px);opacity:.075}
-.portfolio::before{top:120px;width:min(92vw,570px);opacity:.065}
-.outro::before{top:-110px;width:min(94vw,540px);opacity:.075}
+.hero::before{top:150px;opacity:.07}
+.portfolio::before{top:170px;opacity:.06}
+.outro::before{top:25px;opacity:.06}
 @media(max-width:699px){
-  .hero::before{top:126px;width:88vw;opacity:.075}
-  .portfolio::before{top:142px;width:94vw;opacity:.065}
-  .outro::before{top:-96px;width:96vw;opacity:.075}
+  .hero::before{top:145px;height:280px;font-size:clamp(150px,38vw,220px)}
+  .portfolio::before{top:150px;height:270px;font-size:clamp(150px,38vw,220px)}
+  .outro::before{top:0;height:260px;font-size:clamp(150px,38vw,220px)}
 }
 
-/* Fondo blanco continuo en toda la tarjeta: texto azul marino y detalles dorados. */
-:root{color-scheme:light;--bg:#fff;--panel:#fff;--ink:#192943;--muted:#667083;--bronze:#a98249;--border:rgba(25,41,67,.16)}
+/* Blanco cálido uniforme: textos de alto contraste y detalles dorados. */
+:root{color-scheme:light;--bg:#f8f8f6;--panel:#f8f8f6;--ink:#14233b;--muted:#465064;--bronze:#926c37;--border:rgba(20,35,59,.19)}
+body,.topbar,.hero,.portfolio,.outro,.footer{background:var(--bg)}
 .ambient{display:none}
 .portrait>span{color:#fff}
 .topbar{border-bottom-color:var(--border)}
-.intro,.portfolio-lede{color:#535d6b}
-.position{color:#647085}
-.expertise span{background:#fbf8f2}
+.intro,.portfolio-lede{color:#364354}
+.position{color:#404b5e}
+.expertise span{background:transparent}
 .quick-link{background:#fff;border-color:rgba(25,41,67,.15);box-shadow:0 8px 24px rgba(25,41,67,.045)}
 .quick-link.primary{background:#fbf8f2;border-color:rgba(169,130,73,.55)}
 .quick-link:hover{background:#f7f9fc}
@@ -146,7 +146,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none
 .gallery-stage{background:transparent}
 .carousel-step,.carousel-step:disabled{background:#fff}
 .carousel-step:hover{background:#f6f1e8}
-.gallery-note{color:#6e7785}
-.outro{background:#fff;border-top-color:var(--border)}
+.gallery-note{color:#4b5767}
+.outro{border-top-color:var(--border)}
 .footer{border-top-color:var(--border)}
 .outro-button{color:#fff}
