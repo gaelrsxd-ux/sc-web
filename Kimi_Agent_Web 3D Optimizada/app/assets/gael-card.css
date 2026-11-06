@@ -130,6 +130,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none
 /* Fondo blanco continuo en toda la tarjeta: texto azul marino y detalles dorados. */
 :root{color-scheme:light;--bg:#fff;--panel:#fff;--ink:#192943;--muted:#667083;--bronze:#a98249;--border:rgba(25,41,67,.16)}
 .ambient{display:none}
+.portrait>span{color:#fff}
 .topbar{border-bottom-color:var(--border)}
 .intro,.portfolio-lede{color:#535d6b}
 .position{color:#647085}
